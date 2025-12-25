@@ -3,12 +3,17 @@ Supabase Storage operations for file management.
 """
 
 import os
+import time
 import tempfile
 from pathlib import Path
 from typing import Optional, List, BinaryIO
 from datetime import datetime
 
 from .supabase_client import get_supabase_client
+
+# Retry configuration for transient errors
+MAX_UPLOAD_RETRIES = 5
+INITIAL_RETRY_DELAY = 1.0  # seconds
 
 # Import config - handle both package and direct execution
 try:
@@ -81,7 +86,7 @@ class StorageClient:
         content_type: str = "application/octet-stream"
     ) -> dict:
         """
-        Upload a file to storage.
+        Upload a file to storage with retry logic for transient errors.
 
         Args:
             file_data: File content as bytes
@@ -91,15 +96,41 @@ class StorageClient:
         Returns:
             Response from Supabase
         """
-        try:
-            response = self.client.storage.from_(self.bucket_name).upload(
-                storage_path,
-                file_data,
-                {"content-type": content_type}
-            )
-            return {"success": True, "path": storage_path, "response": response}
-        except Exception as e:
-            return {"success": False, "path": storage_path, "error": str(e)}
+        last_error = None
+
+        for attempt in range(MAX_UPLOAD_RETRIES):
+            try:
+                response = self.client.storage.from_(self.bucket_name).upload(
+                    storage_path,
+                    file_data,
+                    {"content-type": content_type}
+                )
+                return {"success": True, "path": storage_path, "response": response}
+            except Exception as e:
+                last_error = e
+                error_str = str(e)
+
+                # Check for transient errors that can be retried
+                is_transient = any(msg in error_str.lower() for msg in [
+                    'resource temporarily unavailable',
+                    'errno 35',
+                    'connection reset',
+                    'connection refused',
+                    'timeout',
+                    'temporarily unavailable',
+                    'too many requests',
+                    'rate limit'
+                ])
+
+                if is_transient and attempt < MAX_UPLOAD_RETRIES - 1:
+                    # Exponential backoff: 1s, 2s, 4s, 8s, 16s
+                    delay = INITIAL_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                else:
+                    break
+
+        return {"success": False, "path": storage_path, "error": str(last_error)}
 
     def upload_from_file(
         self,

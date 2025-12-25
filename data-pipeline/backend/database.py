@@ -2,12 +2,50 @@
 Database operations for CRUD and bulk operations.
 """
 
+import time
 import uuid
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any, Tuple
 from dataclasses import dataclass, asdict
 
 from .supabase_client import get_supabase_client, get_db_connection
+
+# Retry configuration for transient database errors
+MAX_DB_RETRIES = 3
+INITIAL_DB_RETRY_DELAY = 0.5  # seconds
+
+
+def _is_transient_error(error: Exception) -> bool:
+    """Check if an error is transient and can be retried."""
+    error_str = str(error).lower()
+    return any(msg in error_str for msg in [
+        'resource temporarily unavailable',
+        'errno 35',
+        'connection reset',
+        'connection refused',
+        'timeout',
+        'temporarily unavailable',
+        'too many connections',
+        'rate limit'
+    ])
+
+
+def _retry_on_transient(func):
+    """Decorator to retry database operations on transient errors."""
+    def wrapper(*args, **kwargs):
+        last_error = None
+        for attempt in range(MAX_DB_RETRIES):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                last_error = e
+                if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                    delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                raise
+        raise last_error
+    return wrapper
 
 
 @dataclass
@@ -82,6 +120,22 @@ class ProcessingError:
     updated_at: datetime = None
 
 
+@dataclass
+class DownloadError:
+    """Represents a download error record."""
+    id: Optional[str] = None
+    download_url: str = ""
+    source_page: str = ""
+    error_type: str = ""  # 'http_error', 'connection_error', 'upload_error', etc.
+    error_code: Optional[int] = None  # HTTP status code if applicable
+    error_message: str = ""
+    file_type: str = ""  # 'pdf', 'excel', 'zip'
+    retry_count: int = 0
+    resolved: bool = False
+    created_at: datetime = None
+    updated_at: datetime = None
+
+
 class DatabaseClient:
     """Client for database operations."""
 
@@ -92,43 +146,64 @@ class DatabaseClient:
     # ==================== Download Entries ====================
 
     def get_download_entry_by_link(self, download_link: str) -> Optional[Dict]:
-        """Check if a download link already exists."""
-        try:
-            response = self.client.table('download_entries').select('*').eq(
-                'download_link', download_link
-            ).execute()
-            if response.data:
-                return response.data[0]
-            return None
-        except Exception as e:
-            print(f"Error checking download link: {e}")
-            return None
+        """Check if a download link already exists with retry for transient errors."""
+        last_error = None
+
+        for attempt in range(MAX_DB_RETRIES):
+            try:
+                response = self.client.table('download_entries').select('*').eq(
+                    'download_link', download_link
+                ).execute()
+                if response.data:
+                    return response.data[0]
+                return None
+            except Exception as e:
+                last_error = e
+                if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                    delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                print(f"Error checking download link: {e}")
+                return None
+
+        print(f"Error checking download link after {MAX_DB_RETRIES} retries: {last_error}")
+        return None
 
     def create_download_entry(self, entry: DownloadEntry) -> Optional[str]:
         """
-        Create a new download entry.
+        Create a new download entry with retry for transient errors.
 
         Returns:
             The ID of the created entry, or None if failed
         """
-        try:
-            data = {
-                'row_name': entry.row_name,
-                'row_date': entry.row_date.isoformat() if entry.row_date else None,
-                'download_link': entry.download_link,
-                'source_table_link': entry.source_table_link,
-                'storage_path': entry.storage_path,
-                'file_type': entry.file_type,
-                'processed_status': False
-            }
+        data = {
+            'row_name': entry.row_name,
+            'row_date': entry.row_date.isoformat() if entry.row_date else None,
+            'download_link': entry.download_link,
+            'source_table_link': entry.source_table_link,
+            'storage_path': entry.storage_path,
+            'file_type': entry.file_type,
+            'processed_status': False
+        }
 
-            response = self.client.table('download_entries').insert(data).execute()
-            if response.data:
-                return response.data[0]['id']
-            return None
-        except Exception as e:
-            print(f"Error creating download entry: {e}")
-            return None
+        last_error = None
+        for attempt in range(MAX_DB_RETRIES):
+            try:
+                response = self.client.table('download_entries').insert(data).execute()
+                if response.data:
+                    return response.data[0]['id']
+                return None
+            except Exception as e:
+                last_error = e
+                if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                    delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                print(f"Error creating download entry: {e}")
+                return None
+
+        print(f"Error creating download entry after {MAX_DB_RETRIES} retries: {last_error}")
+        return None
 
     def get_unprocessed_download_entries(self) -> List[Dict]:
         """Get all download entries that haven't been processed."""
@@ -342,6 +417,69 @@ class DatabaseClient:
             return False
         except Exception as e:
             print(f"Error incrementing retry count: {e}")
+            return False
+
+    # ==================== Download Errors ====================
+
+    def create_download_error(self, error: DownloadError) -> Optional[str]:
+        """Create a new download error record with retry for transient errors."""
+        data = {
+            'download_url': error.download_url,
+            'source_page': error.source_page,
+            'error_type': error.error_type,
+            'error_code': error.error_code,
+            'error_message': error.error_message,
+            'file_type': error.file_type,
+            'retry_count': 0,
+            'resolved': False
+        }
+
+        last_error = None
+        for attempt in range(MAX_DB_RETRIES):
+            try:
+                response = self.client.table('download_errors').insert(data).execute()
+                if response.data:
+                    return response.data[0]['id']
+                return None
+            except Exception as e:
+                last_error = e
+                if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                    delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                # Don't print errors for error logging - avoid noise
+                return None
+
+        return None
+
+    def get_unresolved_download_errors(
+        self,
+        error_type: Optional[str] = None
+    ) -> List[Dict]:
+        """Get all unresolved download errors."""
+        try:
+            query = self.client.table('download_errors').select('*').eq(
+                'resolved', False
+            )
+            if error_type:
+                query = query.eq('error_type', error_type)
+
+            response = query.execute()
+            return response.data or []
+        except Exception as e:
+            print(f"Error getting unresolved download errors: {e}")
+            return []
+
+    def mark_download_error_resolved(self, error_id: str) -> bool:
+        """Mark a download error as resolved."""
+        try:
+            self.client.table('download_errors').update({
+                'resolved': True,
+                'updated_at': datetime.utcnow().isoformat()
+            }).eq('id', error_id).execute()
+            return True
+        except Exception as e:
+            print(f"Error marking download error resolved: {e}")
             return False
 
     # ==================== Utility Methods ====================

@@ -6,7 +6,6 @@ from DANE's SIPSA website archives.
 """
 
 import re
-import time
 from datetime import datetime, date
 from typing import List, Optional, Dict, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -23,8 +22,7 @@ from config import (
     SIPSA_MAIN_PAGE,
     MONTHS_ES,
     MONTHS_ES_REVERSE,
-    MAX_THREADS,
-    REQUEST_DELAY
+    MAX_THREADS
 )
 from scraping.scraper_base import ScraperBase, FileLink
 
@@ -63,12 +61,13 @@ class HistoricalScraper(ScraperBase):
 
         return None
 
-    def get_historical_month_urls(self) -> Dict[Tuple[int, int], str]:
+    def get_historical_month_urls(self) -> Dict[Tuple[int, int], List[str]]:
         """
         Get all historical month page URLs from the main page.
 
         Returns:
-            Dict mapping (year, month) tuples to page URLs
+            Dict mapping (year, month) tuples to list of page URLs
+            (some months have multiple URLs, e.g., with -1 suffix)
         """
         print("Fetching main page to find historical months...")
 
@@ -92,24 +91,27 @@ class HistoricalScraper(ScraperBase):
             if result:
                 year, month = result
                 key = (year, month)
+                full_url = f"{DANE_BASE_URL}{href}"
                 if key not in urls:
-                    urls[key] = f"{DANE_BASE_URL}{href}"
+                    urls[key] = []
+                if full_url not in urls[key]:
+                    urls[key].append(full_url)
 
         return urls
 
     def get_links_from_month_page(
         self,
         page_url: str,
-        year: int,
-        month: int
+        _year: int,
+        _month: int
     ) -> List[FileLink]:
         """
         Extract file links from a historical month page.
 
         Args:
             page_url: URL of the month page
-            year: Year of the data
-            month: Month of the data
+            _year: Year of the data (unused, for interface compatibility)
+            _month: Month of the data (unused, for interface compatibility)
 
         Returns:
             List of FileLink objects
@@ -205,7 +207,7 @@ class HistoricalScraper(ScraperBase):
 
         # Filter months within date range
         months_to_process = []
-        for (year, month), url in sorted(month_urls.items()):
+        for (year, month), url_list in sorted(month_urls.items()):
             month_start = date(year, month, 1)
             if month == 12:
                 month_end = date(year, 12, 31)
@@ -214,39 +216,53 @@ class HistoricalScraper(ScraperBase):
 
             # Check if this month overlaps with our date range
             if month_start <= end_date and month_end >= start_date:
-                months_to_process.append((year, month, url))
+                months_to_process.append((year, month, url_list))
 
         print(f"Months in date range: {len(months_to_process)}")
 
         # Collect all links from all month pages
         all_links = []
 
-        for i, (year, month, url) in enumerate(months_to_process):
+        for i, (year, month, url_list) in enumerate(months_to_process):
             month_name = MONTHS_ES[month].capitalize()
             print(f"\n[{i+1}/{len(months_to_process)}] Fetching {month_name} {year}...")
 
-            try:
-                links = self.get_links_from_month_page(url, year, month)
+            links = []
+            # Try each URL for this month until we find one that works
+            urls_to_try = list(url_list)
 
-                # Filter by file type
-                if anexo_only:
-                    links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'anexo']
-                elif informes_only:
-                    links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades']
+            # Add fallback URLs with -1, -2 suffixes for older data that may not be on main page
+            for url in list(url_list):
+                for suffix in ['-1', '-2']:
+                    alt_url = url + suffix
+                    if alt_url not in urls_to_try:
+                        urls_to_try.append(alt_url)
 
-                # Filter by exact date range
-                links = self.filter_links_by_date_range(links, start_date, end_date)
+            for url in urls_to_try:
+                try:
+                    links = self.get_links_from_month_page(url, year, month)
+                    if links:
+                        break  # Found links, no need to try other URLs
+                except Exception as e:
+                    # Silently continue for fallback URLs
+                    continue
 
-                if links:
-                    anexo_count = sum(1 for l in links if self.get_link_category(l.url, l.link_text) == 'anexo')
-                    informes_count = sum(1 for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades')
-                    print(f"  Found {len(links)} files (Anexo: {anexo_count}, Informes: {informes_count})")
-                    all_links.extend(links)
-                else:
-                    print(f"  No files found in date range")
+            # Filter by file type
+            if anexo_only:
+                links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'anexo']
+            elif informes_only:
+                links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades']
 
-            except Exception as e:
-                print(f"  ERROR fetching page: {e}")
+            # Filter by exact date range
+            links = self.filter_links_by_date_range(links, start_date, end_date)
+
+            if links:
+                anexo_count = sum(1 for l in links if self.get_link_category(l.url, l.link_text) == 'anexo')
+                informes_count = sum(1 for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades')
+                print(f"  Found {len(links)} files (Anexo: {anexo_count}, Informes: {informes_count})")
+                all_links.extend(links)
+            else:
+                print(f"  No files found in date range")
 
             self.respect_rate_limit()
 

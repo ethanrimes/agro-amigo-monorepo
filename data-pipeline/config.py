@@ -13,7 +13,8 @@ DATA_PIPELINE_ROOT = Path(__file__).parent
 EXPORTS_DIR = DATA_PIPELINE_ROOT / "exports"
 
 # Threading configuration
-MAX_THREADS = 8
+# Keep concurrent downloads reasonable to avoid Errno 35 (resource temporarily unavailable)
+MAX_THREADS = 4
 BATCH_SIZE = 100
 
 # Web scraping configuration
@@ -39,9 +40,10 @@ MONTHS_ES = {
 MONTHS_ES_REVERSE = {v: k for k, v in MONTHS_ES.items()}
 
 # Month abbreviations (for file parsing)
+# Includes both 3 and 4 letter variants (sept is used in older files)
 MONTH_ABBR_MAP = {
     'ene': 1, 'feb': 2, 'mar': 3, 'abr': 4, 'may': 5, 'jun': 6,
-    'jul': 7, 'ago': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dic': 12
+    'jul': 7, 'ago': 8, 'sep': 9, 'sept': 9, 'oct': 10, 'nov': 11, 'dic': 12
 }
 
 # File type mappings
