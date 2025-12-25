@@ -14,6 +14,7 @@ Commands:
     scrape-historical   Only scrape historical data
     process             Process all unprocessed entries
     retry-errors        Retry failed processing
+    download-errors     Download files that had processing errors
     migrate             Run database migrations
     upload-divipola     Upload DIVIPOLA reference data
     export-tuples       Export data tuples for cleaning review
@@ -42,7 +43,8 @@ def cmd_run_current(args):
     scraper = CurrentMonthScraper(dry_run=args.dry_run)
     scrape_result = scraper.run(
         anexo_only=args.anexo_only,
-        informes_only=args.informes_only
+        informes_only=args.informes_only,
+        include_boletin=args.include_boletin
     )
 
     if args.dry_run:
@@ -83,6 +85,7 @@ def cmd_run_historical(args):
         end_date=end,
         anexo_only=args.anexo_only,
         informes_only=args.informes_only,
+        include_boletin=args.include_boletin,
         parallel=not args.sequential
     )
 
@@ -111,7 +114,8 @@ def cmd_scrape_current(args):
     scraper = CurrentMonthScraper(dry_run=args.dry_run)
     result = scraper.run(
         anexo_only=args.anexo_only,
-        informes_only=args.informes_only
+        informes_only=args.informes_only,
+        include_boletin=args.include_boletin
     )
 
     return 0 if result['failed'] == 0 else 1
@@ -130,6 +134,7 @@ def cmd_scrape_historical(args):
         end_date=end,
         anexo_only=args.anexo_only,
         informes_only=args.informes_only,
+        include_boletin=args.include_boletin,
         parallel=not args.sequential
     )
 
@@ -163,6 +168,66 @@ def cmd_retry_errors(args):
 
     print(f"Resolved: {result['resolved']} / {result['total']}")
     return 0
+
+
+def cmd_download_errors(args):
+    """Download files that had processing errors."""
+    from processing.download_errors import download_error_files, list_error_types
+
+    # Handle list-error-types
+    if args.list_error_types:
+        types = list_error_types()
+        print("Available error types:")
+        for t in types:
+            print(f"  - {t}")
+        return 0
+
+    # Validate output is provided
+    if not args.output:
+        print("Error: --output is required unless using --list-error-types")
+        return 1
+
+    # Parse time arguments
+    start_time = None
+    end_time = None
+
+    if args.start_time:
+        try:
+            start_time = datetime.strptime(args.start_time, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            try:
+                start_time = datetime.strptime(args.start_time, '%Y-%m-%d')
+            except ValueError:
+                print("Error: Invalid start-time format. Use 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'")
+                return 1
+
+    if args.end_time:
+        try:
+            end_time = datetime.strptime(args.end_time, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            try:
+                end_time = datetime.strptime(args.end_time, '%Y-%m-%d')
+            except ValueError:
+                print("Error: Invalid end-time format. Use 'YYYY-MM-DD' or 'YYYY-MM-DD HH:MM:SS'")
+                return 1
+
+    # Parse resolved
+    resolved = None
+    if args.resolved:
+        resolved = args.resolved.lower() == 'true'
+
+    # Run download
+    result = download_error_files(
+        output_dir=args.output,
+        error_type=args.error_type,
+        error_message_contains=args.error_message,
+        start_time=start_time,
+        end_time=end_time,
+        resolved=resolved,
+        dry_run=args.dry_run
+    )
+
+    return 0 if result['failed'] == 0 else 1
 
 
 def cmd_migrate(args):
@@ -331,6 +396,8 @@ Examples:
     p_run_current.add_argument('--dry-run', action='store_true')
     p_run_current.add_argument('--anexo-only', action='store_true')
     p_run_current.add_argument('--informes-only', action='store_true')
+    p_run_current.add_argument('--include-boletin', action='store_true',
+                                help='Include Boletín PDF files (excluded by default)')
     p_run_current.add_argument('--sequential', action='store_true')
     p_run_current.add_argument('--threads', type=int, default=8)
 
@@ -346,6 +413,8 @@ Examples:
     p_run_hist.add_argument('--dry-run', action='store_true')
     p_run_hist.add_argument('--anexo-only', action='store_true')
     p_run_hist.add_argument('--informes-only', action='store_true')
+    p_run_hist.add_argument('--include-boletin', action='store_true',
+                            help='Include Boletín PDF files (excluded by default)')
     p_run_hist.add_argument('--sequential', action='store_true')
     p_run_hist.add_argument('--threads', type=int, default=8)
 
@@ -357,6 +426,8 @@ Examples:
     p_scrape_current.add_argument('--dry-run', action='store_true')
     p_scrape_current.add_argument('--anexo-only', action='store_true')
     p_scrape_current.add_argument('--informes-only', action='store_true')
+    p_scrape_current.add_argument('--include-boletin', action='store_true',
+                                   help='Include Boletín PDF files (excluded by default)')
 
     # ============== scrape-historical ==============
     p_scrape_hist = subparsers.add_parser(
@@ -370,6 +441,8 @@ Examples:
     p_scrape_hist.add_argument('--dry-run', action='store_true')
     p_scrape_hist.add_argument('--anexo-only', action='store_true')
     p_scrape_hist.add_argument('--informes-only', action='store_true')
+    p_scrape_hist.add_argument('--include-boletin', action='store_true',
+                                help='Include Boletín PDF files (excluded by default)')
     p_scrape_hist.add_argument('--sequential', action='store_true')
     p_scrape_hist.add_argument('--threads', type=int, default=8)
 
@@ -390,6 +463,52 @@ Examples:
     )
     p_retry.add_argument('--error-type', type=str)
     p_retry.add_argument('--threads', type=int, default=8)
+
+    # ============== download-errors ==============
+    p_download_errors = subparsers.add_parser(
+        'download-errors',
+        help='Download files that had processing errors'
+    )
+    p_download_errors.add_argument(
+        '--output', '-o',
+        type=str,
+        help='Output directory (required unless using --list-error-types)'
+    )
+    p_download_errors.add_argument(
+        '--error-type', '-t',
+        type=str,
+        help='Filter by error type (e.g., no_prices_extracted, corrupted_pdf)'
+    )
+    p_download_errors.add_argument(
+        '--error-message', '-m',
+        type=str,
+        help='Filter by substring in error message'
+    )
+    p_download_errors.add_argument(
+        '--start-time',
+        type=str,
+        help='Filter errors created after this time (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)'
+    )
+    p_download_errors.add_argument(
+        '--end-time',
+        type=str,
+        help='Filter errors created before this time (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)'
+    )
+    p_download_errors.add_argument(
+        '--resolved',
+        choices=['true', 'false'],
+        help='Filter by resolved status'
+    )
+    p_download_errors.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='List files without downloading'
+    )
+    p_download_errors.add_argument(
+        '--list-error-types',
+        action='store_true',
+        help='List all error types in the database'
+    )
 
     # ============== migrate ==============
     p_migrate = subparsers.add_parser(
@@ -437,6 +556,7 @@ Examples:
         'scrape-historical': cmd_scrape_historical,
         'process': cmd_process,
         'retry-errors': cmd_retry_errors,
+        'download-errors': cmd_download_errors,
         'migrate': cmd_migrate,
         'upload-divipola': cmd_upload_divipola,
         'export-tuples': cmd_export_tuples,

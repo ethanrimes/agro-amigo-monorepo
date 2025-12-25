@@ -267,6 +267,18 @@ class DataProcessor:
             for error in all_errors:
                 self.database.create_processing_error(error)
 
+            # Log error if no prices were extracted (all files should have price data)
+            if total_prices == 0:
+                no_prices_error = ProcessingError(
+                    error_type='no_prices_extracted',
+                    error_message=f"File processed but no prices were extracted. All files should contain price data.",
+                    source_path=storage_path,
+                    source_type=file_type,
+                    download_entry_id=entry_id
+                )
+                self.database.create_processing_error(no_prices_error)
+                total_errors += 1
+
             # Update entry status (mark as processed even if there were some errors)
             self.database.update_download_entry_status(entry_id, True)
 
@@ -319,6 +331,18 @@ class DataProcessor:
             )
             total_prices += prices
             all_errors.extend(errors)
+
+            # Log error if no prices were extracted from this PDF
+            if prices == 0 and not errors:
+                no_prices_error = ProcessingError(
+                    error_type='no_prices_extracted',
+                    error_message=f"PDF processed but no prices were extracted.",
+                    source_path=pdf_entry['storage_path'],
+                    source_type='pdf',
+                    download_entry_id=download_entry_id,
+                    extracted_pdf_id=pdf_entry['id']
+                )
+                all_errors.append(no_prices_error)
 
             # Update extracted PDF status
             if prices > 0 or not errors:

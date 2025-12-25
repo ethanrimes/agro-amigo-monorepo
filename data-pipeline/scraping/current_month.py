@@ -52,13 +52,14 @@ class CurrentMonthScraper(ScraperBase):
 
         return links_with_dates
 
-    def run(self, anexo_only: bool = False, informes_only: bool = False) -> dict:
+    def run(self, anexo_only: bool = False, informes_only: bool = False, include_boletin: bool = False) -> dict:
         """
         Run the current month scraper.
 
         Args:
             anexo_only: Only download Anexo files
             informes_only: Only download Informes por ciudades files
+            include_boletin: Include Boletín files (excluded by default)
 
         Returns:
             Summary dict with counts
@@ -82,6 +83,10 @@ class CurrentMonthScraper(ScraperBase):
                 'failed': 0,
                 'entry_ids': []
             }
+
+        # Filter out Boletín by default (unless explicitly included)
+        if not include_boletin:
+            links = [l for l in links if self.get_link_category(l.url, l.link_text) != 'boletin']
 
         # Filter by type if requested
         if anexo_only:
@@ -161,13 +166,16 @@ def main():
                         help='Download only Anexo files')
     parser.add_argument('--informes-only', action='store_true',
                         help='Download only Informes por ciudades files')
+    parser.add_argument('--include-boletin', action='store_true',
+                        help='Include Boletín PDF files (excluded by default)')
 
     args = parser.parse_args()
 
     scraper = CurrentMonthScraper(dry_run=args.dry_run)
     result = scraper.run(
         anexo_only=args.anexo_only,
-        informes_only=args.informes_only
+        informes_only=args.informes_only,
+        include_boletin=args.include_boletin
     )
 
     return 0 if result['failed'] == 0 else 1
