@@ -30,7 +30,7 @@ from config import (
     MONTHS_ES_REVERSE
 )
 from backend.storage import StorageClient
-from backend.database import DatabaseClient, DownloadEntry
+from backend.database import DatabaseClient, DownloadEntry, DownloadError
 
 
 @dataclass
@@ -104,12 +104,15 @@ class ScraperBase:
 
         Handles multiple formats:
         - Modern: anex-SIPSADiario-24dic2025.xlsx
-        - Historical: mayoristas_noviembre_30_2018.xlsx
+        - Historical full month: mayoristas_noviembre_30_2018.xlsx
+        - Historical abbreviated: anex_feb_28_2022.xlsx, bol_feb_28_2022.pdf
+        - Old anexo format: mayoristas_anexo_sept_28_2012.xls
+        - Regional format: bol-reg-28-02-2022.zip
         """
         url_lower = url.lower()
 
-        # Modern format: 24dic2025
-        pattern1 = re.search(r'(\d{1,2})([a-z]{3})(\d{4})', url_lower)
+        # Modern format: 24dic2025 (day + 3-letter-month + year concatenated)
+        pattern1 = re.search(r'(\d{1,2})([a-z]{3,4})(\d{4})', url_lower)
         if pattern1:
             day, month_abbr, year = pattern1.groups()
             month = MONTH_ABBR_MAP.get(month_abbr)
@@ -119,7 +122,7 @@ class ScraperBase:
                 except ValueError:
                     pass
 
-        # Historical format: mayoristas_noviembre_30_2018
+        # Historical format with full month: mayoristas_noviembre_30_2018
         pattern2 = re.search(r'mayoristas_([a-z]+)_(\d{1,2})_(\d{4})', url_lower)
         if pattern2:
             month_name, day, year = pattern2.groups()
@@ -129,6 +132,37 @@ class ScraperBase:
                     return datetime(int(year), month, int(day))
                 except ValueError:
                     pass
+
+        # Historical format with abbreviated month: anex_feb_28_2022, bol_feb_28_2022
+        pattern3 = re.search(r'(?:anex|bol)_([a-z]{3,4})_(\d{1,2})_(\d{4})', url_lower)
+        if pattern3:
+            month_abbr, day, year = pattern3.groups()
+            month = MONTH_ABBR_MAP.get(month_abbr)
+            if month:
+                try:
+                    return datetime(int(year), month, int(day))
+                except ValueError:
+                    pass
+
+        # Old anexo format: mayoristas_anexo_sept_28_2012.xls
+        pattern5 = re.search(r'mayoristas_anexo_([a-z]{3,4})_(\d{1,2})_(\d{4})', url_lower)
+        if pattern5:
+            month_abbr, day, year = pattern5.groups()
+            month = MONTH_ABBR_MAP.get(month_abbr)
+            if month:
+                try:
+                    return datetime(int(year), month, int(day))
+                except ValueError:
+                    pass
+
+        # Regional format: bol-reg-28-02-2022.zip (dd-mm-yyyy with hyphens)
+        pattern4 = re.search(r'bol-reg-(\d{1,2})-(\d{2})-(\d{4})', url_lower)
+        if pattern4:
+            day, month, year = pattern4.groups()
+            try:
+                return datetime(int(year), int(month), int(day))
+            except ValueError:
+                pass
 
         return None
 
@@ -225,6 +259,30 @@ class ScraperBase:
         existing = self.database.get_download_entry_by_link(download_link)
         return existing is not None
 
+    def log_download_error(
+        self,
+        url: str,
+        source_page: str,
+        error_type: str,
+        error_message: str,
+        file_type: str = "",
+        error_code: int = None
+    ) -> None:
+        """Log a download error to the database."""
+        try:
+            error = DownloadError(
+                download_url=url,
+                source_page=source_page,
+                error_type=error_type,
+                error_code=error_code,
+                error_message=str(error_message)[:1000],  # Truncate long messages
+                file_type=file_type
+            )
+            self.database.create_download_error(error)
+        except Exception as e:
+            # Don't let error logging failures break the main flow
+            print(f"  [WARN] Failed to log error: {e}")
+
     def download_and_store_file(
         self,
         file_link: FileLink
@@ -247,12 +305,29 @@ class ScraperBase:
             print(f"  [SKIP] Already downloaded: {file_link.filename}")
             return None
 
+        # Log if date could not be parsed
+        if file_link.file_date is None:
+            self.log_download_error(
+                url=file_link.url,
+                source_page=file_link.source_page,
+                error_type='date_parse_error',
+                error_message=f"Could not parse date from filename: {file_link.filename}",
+                file_type=file_link.file_type
+            )
+
         # Download the file
         print(f"  Downloading: {file_link.filename}")
         response = self._request_with_retry(file_link.url, stream=True)
 
         if response is None:
             print(f"  [ERROR] Failed to download: {file_link.filename}")
+            self.log_download_error(
+                url=file_link.url,
+                source_page=file_link.source_page,
+                error_type='http_error',
+                error_message=f"Failed to download after {MAX_RETRIES} retries",
+                file_type=file_link.file_type
+            )
             return None
 
         file_data = response.content
@@ -277,8 +352,16 @@ class ScraperBase:
         )
 
         if not upload_result.get('success'):
+            error_msg = upload_result.get('error', 'Unknown error')
             print(f"  [ERROR] Failed to upload: {file_link.filename}")
-            print(f"    {upload_result.get('error')}")
+            print(f"    {error_msg}")
+            self.log_download_error(
+                url=file_link.url,
+                source_page=file_link.source_page,
+                error_type='upload_error',
+                error_message=f"Upload failed: {error_msg}",
+                file_type=file_link.file_type
+            )
             return None
 
         # Create download entry
@@ -297,6 +380,13 @@ class ScraperBase:
             print(f"  [OK] Stored: {file_link.filename}")
         else:
             print(f"  [ERROR] Failed to create database entry: {file_link.filename}")
+            self.log_download_error(
+                url=file_link.url,
+                source_page=file_link.source_page,
+                error_type='database_error',
+                error_message="Failed to create database entry",
+                file_type=file_link.file_type
+            )
 
         return entry_id
 
