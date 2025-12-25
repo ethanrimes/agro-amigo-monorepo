@@ -194,10 +194,18 @@ class ScraperBase:
 
     def get_link_category(self, href: str, link_text: str) -> Optional[str]:
         """
-        Determine the category of a link (anexo, informes_ciudades, etc.)
+        Determine the category of a link (boletin, anexo, informes_ciudades, etc.)
         """
         text_lower = link_text.lower()
         href_lower = href.lower()
+
+        # Boletín detection - check first since some URLs may contain 'bol' prefix
+        if 'boletín' in text_lower or 'boletin' in text_lower:
+            return 'boletin'
+        if 'bol_' in href_lower or 'bol-' in href_lower:
+            # Make sure it's not a regional report (bol-reg-)
+            if 'bol-reg' not in href_lower:
+                return 'boletin'
 
         if 'informes por ciudades' in text_lower or 'regionales' in href_lower:
             return 'informes_ciudades'
@@ -208,6 +216,34 @@ class ScraperBase:
 
         return None
 
+    def parse_date_from_text(self, text: str) -> Optional[datetime]:
+        """
+        Parse a Spanish date string like "30 de septiembre de 2021".
+
+        Args:
+            text: Date text in Spanish format
+
+        Returns:
+            datetime object or None if parsing failed
+        """
+        if not text:
+            return None
+
+        text = text.strip().lower()
+
+        # Pattern: "30 de septiembre de 2021" or "30 de septiembre 2021"
+        pattern = re.search(r'(\d{1,2})\s+de\s+([a-záéíóú]+)(?:\s+de)?\s+(\d{4})', text)
+        if pattern:
+            day, month_name, year = pattern.groups()
+            month = MONTHS_ES_REVERSE.get(month_name)
+            if month:
+                try:
+                    return datetime(int(year), month, int(day))
+                except ValueError:
+                    pass
+
+        return None
+
     def extract_links_from_page(
         self,
         page_url: str,
@@ -215,6 +251,7 @@ class ScraperBase:
     ) -> List[FileLink]:
         """
         Extract all file links from a page's HTML content.
+        Prioritizes extracting dates from table row context over filename parsing.
 
         Args:
             page_url: URL of the page (for building absolute URLs)
@@ -226,31 +263,71 @@ class ScraperBase:
         soup = BeautifulSoup(html_content, 'html.parser')
         links = []
 
-        for a in soup.find_all('a', href=True):
-            href = a['href']
+        # First, try to extract links from table rows with date context
+        for table in soup.find_all('table'):
+            for row in table.find_all('tr'):
+                cells = row.find_all(['td', 'th'])
+                if not cells:
+                    continue
 
-            # Only process links to files
-            if not href.startswith('/files/'):
-                continue
+                # Try to find date in the first cell (Día column)
+                row_date = None
+                first_cell_text = cells[0].get_text(strip=True)
+                row_date = self.parse_date_from_text(first_cell_text)
 
-            link_text = a.get_text(strip=True)
-            file_type = self.get_file_type(href, link_text)
+                # Extract all file links from this row
+                for a in row.find_all('a', href=True):
+                    href = a['href']
 
-            if not file_type:
-                continue
+                    if not href.startswith('/files/'):
+                        continue
 
-            full_url = urljoin(DANE_BASE_URL, href)
-            file_date = self.extract_date_from_url(href)
-            filename = href.split('/')[-1]
+                    link_text = a.get_text(strip=True)
+                    file_type = self.get_file_type(href, link_text)
 
-            links.append(FileLink(
-                url=full_url,
-                link_text=link_text,
-                file_type=file_type,
-                file_date=file_date,
-                filename=filename,
-                source_page=page_url
-            ))
+                    if not file_type:
+                        continue
+
+                    full_url = urljoin(DANE_BASE_URL, href)
+                    # Use row date if available, otherwise fall back to URL parsing
+                    file_date = row_date if row_date else self.extract_date_from_url(href)
+                    filename = href.split('/')[-1]
+
+                    links.append(FileLink(
+                        url=full_url,
+                        link_text=link_text,
+                        file_type=file_type,
+                        file_date=file_date,
+                        filename=filename,
+                        source_page=page_url
+                    ))
+
+        # If no links found in tables, fall back to finding all links on page
+        if not links:
+            for a in soup.find_all('a', href=True):
+                href = a['href']
+
+                if not href.startswith('/files/'):
+                    continue
+
+                link_text = a.get_text(strip=True)
+                file_type = self.get_file_type(href, link_text)
+
+                if not file_type:
+                    continue
+
+                full_url = urljoin(DANE_BASE_URL, href)
+                file_date = self.extract_date_from_url(href)
+                filename = href.split('/')[-1]
+
+                links.append(FileLink(
+                    url=full_url,
+                    link_text=link_text,
+                    file_type=file_type,
+                    file_date=file_date,
+                    filename=filename,
+                    source_page=page_url
+                ))
 
         return links
 

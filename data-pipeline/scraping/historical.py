@@ -166,6 +166,7 @@ class HistoricalScraper(ScraperBase):
         end_date: date,
         anexo_only: bool = False,
         informes_only: bool = False,
+        include_boletin: bool = False,
         parallel: bool = True
     ) -> dict:
         """
@@ -176,6 +177,7 @@ class HistoricalScraper(ScraperBase):
             end_date: End date for download range
             anexo_only: Only download Anexo files
             informes_only: Only download Informes por ciudades files
+            include_boletin: Include Boletín files (excluded by default)
             parallel: Use multithreading for downloads
 
         Returns:
@@ -246,6 +248,10 @@ class HistoricalScraper(ScraperBase):
                 except Exception as e:
                     # Silently continue for fallback URLs
                     continue
+
+            # Filter out Boletín by default (unless explicitly included)
+            if not include_boletin:
+                links = [l for l in links if self.get_link_category(l.url, l.link_text) != 'boletin']
 
             # Filter by file type
             if anexo_only:
@@ -374,6 +380,8 @@ Note: Informes por ciudades are only available from March 2020 onwards.
                         help='Download only Anexo files')
     parser.add_argument('--informes-only', action='store_true',
                         help='Download only Informes por ciudades files')
+    parser.add_argument('--include-boletin', action='store_true',
+                        help='Include Boletín PDF files (excluded by default)')
     parser.add_argument('--sequential', action='store_true',
                         help='Disable parallel downloads')
     parser.add_argument('--threads', type=int, default=MAX_THREADS,
@@ -408,6 +416,7 @@ Note: Informes por ciudades are only available from March 2020 onwards.
         end_date=end,
         anexo_only=args.anexo_only,
         informes_only=args.informes_only,
+        include_boletin=args.include_boletin,
         parallel=not args.sequential
     )
 
