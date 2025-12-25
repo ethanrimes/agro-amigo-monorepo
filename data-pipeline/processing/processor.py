@@ -12,7 +12,7 @@ Handles the complete processing workflow:
 
 import os
 import tempfile
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional, List, Dict, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -244,7 +244,20 @@ class DataProcessor:
                 all_errors.extend(errors)
 
             elif file_type == 'pdf':
-                # Process single PDF directly
+                # Skip boletín PDFs - they don't contain price data
+                # Only process PDFs from extracted/ directory (from informes_ciudades ZIPs)
+                if '/pdf/' in storage_path:
+                    print(f"  [SKIP] Boletín PDF - no price data")
+                    # Mark as processed without error (boletíns are expected to have no prices)
+                    self.database.update_download_entry_status(entry_id, True)
+                    return ProcessingResult(
+                        entry_id=entry_id,
+                        prices_extracted=0,
+                        errors_count=0,
+                        success=True  # Not an error, just skipped
+                    )
+
+                # Process single PDF directly (from extracted/ directory)
                 prices, errors = self._process_pdf(
                     storage_path,
                     download_entry_id=entry_id
@@ -254,11 +267,31 @@ class DataProcessor:
                 all_errors.extend(errors)
 
             elif file_type == 'excel':
-                # Process Excel file
-                prices, errors = self._process_excel(
-                    storage_path,
-                    download_entry_id=entry_id
-                )
+                # Check if anexo is actually a PDF (some old files are PDFs)
+                if storage_path.lower().endswith('.pdf'):
+                    # Process as PDF using the PDF parser
+                    prices, errors = self._process_pdf(
+                        storage_path,
+                        download_entry_id=entry_id
+                    )
+                else:
+                    # Process Excel file - pass row_date from entry
+                    row_date = None
+                    if entry.get('row_date'):
+                        try:
+                            rd = entry['row_date']
+                            if isinstance(rd, str):
+                                row_date = datetime.strptime(rd, '%Y-%m-%d').date()
+                            else:
+                                row_date = rd
+                        except:
+                            pass
+
+                    prices, errors = self._process_excel(
+                        storage_path,
+                        download_entry_id=entry_id,
+                        row_date=row_date
+                    )
                 total_prices = prices
                 total_errors = len(errors)
                 all_errors.extend(errors)
@@ -393,7 +426,8 @@ class DataProcessor:
     def _process_excel(
         self,
         storage_path: str,
-        download_entry_id: Optional[str] = None
+        download_entry_id: Optional[str] = None,
+        row_date: Optional[date] = None
     ) -> Tuple[int, List[ProcessingError]]:
         """Process an Excel file."""
         # Determine file extension
@@ -411,8 +445,8 @@ class DataProcessor:
             )]
 
         try:
-            # Parse Excel
-            parser = ExcelParser(download_entry_id=download_entry_id)
+            # Parse Excel - pass row_date from scraper
+            parser = ExcelParser(download_entry_id=download_entry_id, row_date=row_date)
             result = parser.parse(temp_excel, storage_path)
 
             # Insert prices
