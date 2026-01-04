@@ -29,7 +29,7 @@ from backend.storage import StorageClient
 from backend.database import DatabaseClient, ProcessedPrice, ProcessingError
 from processing.pdf_parser import PDFParser
 from processing.excel_parser import ExcelParser
-from processing.zip_handler import ZIPHandler
+from processing.zip_handler import ZIPHandler, ExtractionResult
 
 
 @dataclass
@@ -234,11 +234,12 @@ class DataProcessor:
         total_errors = 0
         all_errors = []
         success = True
+        extraction_success = True  # Only relevant for ZIP files
 
         try:
             if file_type == 'zip':
                 # Extract and process PDFs from ZIP
-                prices, errors = self._process_zip(entry_id, storage_path)
+                prices, errors, extraction_success = self._process_zip(entry_id, storage_path)
                 total_prices = prices
                 total_errors = len(errors)
                 all_errors.extend(errors)
@@ -312,8 +313,14 @@ class DataProcessor:
                 self.database.create_processing_error(no_prices_error)
                 total_errors += 1
 
-            # Update entry status (mark as processed even if there were some errors)
-            self.database.update_download_entry_status(entry_id, True)
+            # Update entry status
+            # For ZIP files, only mark as processed if extraction was fully successful
+            # This allows re-processing of ZIPs that had extraction failures
+            if file_type == 'zip' and not extraction_success:
+                print(f"  [WARN] ZIP extraction had failures - not marking as processed")
+                success = False
+            else:
+                self.database.update_download_entry_status(entry_id, True)
 
             print(f"  Extracted {total_prices} prices, {total_errors} errors")
 
@@ -341,18 +348,27 @@ class DataProcessor:
         self,
         download_entry_id: str,
         storage_path: str
-    ) -> Tuple[int, List[ProcessingError]]:
-        """Process a ZIP file containing PDFs."""
+    ) -> Tuple[int, List[ProcessingError], bool]:
+        """
+        Process a ZIP file containing PDFs.
+
+        Returns:
+            Tuple of (total_prices, errors, extraction_success)
+            extraction_success is True if all PDFs were extracted/handled without failures
+        """
         total_prices = 0
         all_errors = []
 
         # Extract PDFs from ZIP
         zip_handler = ZIPHandler(download_entry_id)
-        extracted_ids = zip_handler.extract_and_store(storage_path)
+        extraction_result = zip_handler.extract_and_store(storage_path)
 
-        print(f"  Extracted {len(extracted_ids)} PDFs from ZIP")
+        print(f"  Extracted {extraction_result.newly_extracted} new PDFs from ZIP "
+              f"({extraction_result.already_processed} already processed, "
+              f"{len(extraction_result.pdf_ids)} to process, "
+              f"{extraction_result.failed_uploads} failed)")
 
-        # Get all extracted PDFs
+        # Get all extracted PDFs for this entry that need processing
         extracted_pdfs = zip_handler.get_unprocessed_pdfs()
 
         # Process each PDF
@@ -381,7 +397,7 @@ class DataProcessor:
             if prices > 0 or not errors:
                 self.database.update_extracted_pdf_status(pdf_entry['id'], True)
 
-        return total_prices, all_errors
+        return total_prices, all_errors, extraction_result.success
 
     def _process_pdf(
         self,

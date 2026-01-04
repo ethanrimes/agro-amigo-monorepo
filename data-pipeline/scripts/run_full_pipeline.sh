@@ -44,7 +44,7 @@ EOF
 cd "$PIPELINE_DIR"
 
 # Run the pipeline, tee output to both console and log
-python -m cli.main run-historical "$@" 2>&1 | tee "$LOG_FILE"
+python -u -m cli.main run-historical "$@" 2>&1 | tee "$LOG_FILE"
 EXIT_CODE=${PIPESTATUS[0]}
 
 # Extract errors to separate file

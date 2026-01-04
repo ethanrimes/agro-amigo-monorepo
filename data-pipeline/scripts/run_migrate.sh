@@ -42,7 +42,7 @@ EOF
 cd "$PIPELINE_DIR"
 
 # Run migrations
-python -m cli.main migrate "$@" 2>&1 | tee "$LOG_FILE"
+python -u -m cli.main migrate "$@" 2>&1 | tee "$LOG_FILE"
 EXIT_CODE=${PIPESTATUS[0]}
 
 # Update metadata

@@ -48,7 +48,7 @@ EOF
 cd "$PIPELINE_DIR"
 
 # Run scraping
-python -m cli.main "scrape-$SCRAPE_TYPE" "$@" 2>&1 | tee "$LOG_FILE"
+python -u -m cli.main "scrape-$SCRAPE_TYPE" "$@" 2>&1 | tee "$LOG_FILE"
 EXIT_CODE=${PIPESTATUS[0]}
 
 # Extract errors
