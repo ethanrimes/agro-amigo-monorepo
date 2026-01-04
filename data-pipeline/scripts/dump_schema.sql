@@ -5,7 +5,6 @@
 --   psql $SUPABASE_DB_URL -f scripts/dump_schema.sql
 --
 -- Output: ./schema_columns.csv
-
 \copy (SELECT table_name, column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_schema = 'public' AND table_name IN ('departamentos', 'divipola_municipios', 'download_entries', 'download_errors', 'extracted_pdfs', 'municipios', 'processed_prices', 'processing_errors', 'schema_migrations') ORDER BY table_name, ordinal_position) TO './schema_columns.csv' WITH CSV HEADER;
 
 -- Also output a summary view

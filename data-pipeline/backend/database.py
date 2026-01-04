@@ -252,6 +252,19 @@ class DatabaseClient:
             print(f"Error creating extracted PDF: {e}")
             return None
 
+    def get_extracted_pdf_by_storage_path(self, storage_path: str) -> Optional[Dict]:
+        """Check if an extracted PDF already exists by storage path."""
+        try:
+            response = self.client.table('extracted_pdfs').select('*').eq(
+                'storage_path', storage_path
+            ).execute()
+            if response.data:
+                return response.data[0]
+            return None
+        except Exception as e:
+            print(f"Error checking extracted PDF: {e}")
+            return None
+
     def get_unprocessed_extracted_pdfs(
         self,
         download_entry_id: Optional[str] = None
