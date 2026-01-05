@@ -164,7 +164,7 @@ class StorageClient:
 
     def download_file(self, storage_path: str) -> Optional[bytes]:
         """
-        Download a file from storage.
+        Download a file from storage with retry logic for transient errors.
 
         Args:
             storage_path: Path in storage bucket
@@ -172,12 +172,37 @@ class StorageClient:
         Returns:
             File content as bytes, or None if failed
         """
-        try:
-            data = self.client.storage.from_(self.bucket_name).download(storage_path)
-            return data
-        except Exception as e:
-            print(f"Error downloading {storage_path}: {e}")
-            return None
+        last_error = None
+
+        for attempt in range(MAX_UPLOAD_RETRIES):
+            try:
+                data = self.client.storage.from_(self.bucket_name).download(storage_path)
+                return data
+            except Exception as e:
+                last_error = e
+                error_str = str(e).lower()
+
+                # Check for transient errors that can be retried
+                is_transient = any(msg in error_str for msg in [
+                    'resource temporarily unavailable',
+                    'errno 35',
+                    'connection reset',
+                    'connection refused',
+                    'timeout',
+                    'temporarily unavailable',
+                    'too many requests',
+                    'rate limit'
+                ])
+
+                if is_transient and attempt < MAX_UPLOAD_RETRIES - 1:
+                    delay = INITIAL_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                else:
+                    break
+
+        print(f"Error downloading {storage_path}: {last_error}")
+        return None
 
     def download_to_file(self, storage_path: str, local_path: str) -> bool:
         """
