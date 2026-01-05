@@ -84,21 +84,17 @@ class CurrentMonthScraper(ScraperBase):
                 'entry_ids': []
             }
 
-        # Filter out Boletín by default (unless explicitly included)
-        if not include_boletin:
-            links = [l for l in links if self.get_link_category(l.url, l.link_text) != 'boletin']
-
         # Filter by type if requested
         if anexo_only:
-            links = [l for l in links if 'anexo' in l.link_text.lower() or 'anex-' in l.url.lower()]
+            links = [l for l in links if l.category == 'anexo']
             print("Filtering: Anexo only")
         elif informes_only:
-            links = [l for l in links if 'informes' in l.link_text.lower() or 'regionales' in l.url.lower()]
+            links = [l for l in links if l.category == 'informes_ciudades']
             print("Filtering: Informes por ciudades only")
 
-        # Categorize links
-        anexo_links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'anexo']
-        informes_links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades']
+        # Categorize links using column-based category (Boletines already excluded via column mapping)
+        anexo_links = [l for l in links if l.category == 'anexo']
+        informes_links = [l for l in links if l.category == 'informes_ciudades']
 
         print(f"\nFound {len(links)} files:")
         print(f"  - Anexo: {len(anexo_links)}")

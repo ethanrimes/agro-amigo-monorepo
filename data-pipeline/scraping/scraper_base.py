@@ -42,6 +42,7 @@ class FileLink:
     file_date: Optional[datetime]
     filename: str
     source_page: str
+    category: Optional[str] = None  # 'boletin', 'anexo', 'informes_ciudades'
 
 
 class ScraperBase:
@@ -108,6 +109,7 @@ class ScraperBase:
         - Historical abbreviated: anex_feb_28_2022.xlsx, bol_feb_28_2022.pdf
         - Old anexo format: mayoristas_anexo_sept_28_2012.xls
         - Regional format: bol-reg-28-02-2022.zip
+        - SIPSA regional: sipsa-08-01-2021.zip
         """
         url_lower = url.lower()
 
@@ -144,7 +146,7 @@ class ScraperBase:
                 except ValueError:
                     pass
 
-        # Old anexo format: mayoristas_anexo_sept_28_2012.xls
+        # Old anexo format with abbreviated month: mayoristas_anexo_sept_28_2012.xls
         pattern5 = re.search(r'mayoristas_anexo_([a-z]{3,4})_(\d{1,2})_(\d{4})', url_lower)
         if pattern5:
             month_abbr, day, year = pattern5.groups()
@@ -155,10 +157,41 @@ class ScraperBase:
                 except ValueError:
                     pass
 
+        # Old anexo format with full month name: mayoristas_anexo_agosto_31_2012.xls
+        pattern6 = re.search(r'mayoristas_anexo_([a-z]+)_(\d{1,2})_(\d{4})', url_lower)
+        if pattern6:
+            month_name, day, year = pattern6.groups()
+            month = MONTHS_ES_REVERSE.get(month_name)
+            if month:
+                try:
+                    return datetime(int(year), month, int(day))
+                except ValueError:
+                    pass
+
+        # Old format: mayoristas_julio_31_2012.xls (for Jun-Jul 2012)
+        pattern7 = re.search(r'mayoristas_([a-z]+)_(\d{1,2})_(\d{4})\.xls', url_lower)
+        if pattern7:
+            month_name, day, year = pattern7.groups()
+            month = MONTHS_ES_REVERSE.get(month_name)
+            if month:
+                try:
+                    return datetime(int(year), month, int(day))
+                except ValueError:
+                    pass
+
         # Regional format: bol-reg-28-02-2022.zip (dd-mm-yyyy with hyphens)
         pattern4 = re.search(r'bol-reg-(\d{1,2})-(\d{2})-(\d{4})', url_lower)
         if pattern4:
             day, month, year = pattern4.groups()
+            try:
+                return datetime(int(year), int(month), int(day))
+            except ValueError:
+                pass
+
+        # SIPSA regional reports: sipsa-08-01-2021.zip (dd-mm-yyyy with hyphens)
+        pattern_sipsa = re.search(r'sipsa-(\d{1,2})-(\d{2})-(\d{4})', url_lower)
+        if pattern_sipsa:
+            day, month, year = pattern_sipsa.groups()
             try:
                 return datetime(int(year), int(month), int(day))
             except ValueError:
@@ -199,29 +232,32 @@ class ScraperBase:
         text_lower = link_text.lower()
         href_lower = href.lower()
 
-        # Boletín detection - check first since some URLs may contain 'bol' prefix
+        # Check for regional/city reports FIRST (before boletín check)
+        # These URLs may contain 'bol-' prefix but are not boletines
+        # Formats: bol-reg-DD-MM-YYYY.zip, bol-SIPSADiario-regionales-DDmmmYYYY.zip
+        if 'informes por ciudades' in text_lower or 'regionales' in href_lower:
+            return 'informes_ciudades'
+
+        # Boletín detection
         if 'boletín' in text_lower or 'boletin' in text_lower:
             return 'boletin'
         if 'bol_' in href_lower or 'bol-' in href_lower:
-            # Make sure it's not a regional report (bol-reg-)
-            if 'bol-reg' not in href_lower:
-                return 'boletin'
+            return 'boletin'
 
-        if 'informes por ciudades' in text_lower or 'regionales' in href_lower:
-            return 'informes_ciudades'
-        elif 'anexo' in text_lower or 'anex-' in href_lower:
+        if 'anexo' in text_lower or 'anex-' in href_lower:
             return 'anexo'
         elif 'mayoristas' in href_lower:
             return 'anexo'
 
         return None
 
-    def parse_date_from_text(self, text: str) -> Optional[datetime]:
+    def parse_date_from_text(self, text: str, default_year: Optional[int] = None) -> Optional[datetime]:
         """
-        Parse a Spanish date string like "30 de septiembre de 2021".
+        Parse a Spanish date string like "30 de septiembre de 2021" or "30 de septiembre".
 
         Args:
             text: Date text in Spanish format
+            default_year: Year to use if not present in text (for current month pages)
 
         Returns:
             datetime object or None if parsing failed
@@ -231,10 +267,10 @@ class ScraperBase:
 
         text = text.strip().lower()
 
-        # Pattern: "30 de septiembre de 2021" or "30 de septiembre 2021"
-        pattern = re.search(r'(\d{1,2})\s+de\s+([a-záéíóú]+)(?:\s+de)?\s+(\d{4})', text)
-        if pattern:
-            day, month_name, year = pattern.groups()
+        # Pattern with year: "30 de septiembre de 2021" or "30 de septiembre 2021"
+        pattern_with_year = re.search(r'(\d{1,2})\s+de\s+([a-záéíóú]+)(?:\s+de)?\s+(\d{4})', text)
+        if pattern_with_year:
+            day, month_name, year = pattern_with_year.groups()
             month = MONTHS_ES_REVERSE.get(month_name)
             if month:
                 try:
@@ -242,28 +278,72 @@ class ScraperBase:
                 except ValueError:
                     pass
 
+        # Pattern without year: "30 de septiembre" (needs default_year)
+        if default_year:
+            pattern_no_year = re.search(r'(\d{1,2})\s+de\s+([a-záéíóú]+)', text)
+            if pattern_no_year:
+                day, month_name = pattern_no_year.groups()
+                month = MONTHS_ES_REVERSE.get(month_name)
+                if month:
+                    try:
+                        return datetime(default_year, month, int(day))
+                    except ValueError:
+                        pass
+
         return None
 
-    def extract_links_from_page(
+    def _get_page_format(self, target_date: Optional[datetime]) -> str:
+        """
+        Determine page format based on target date.
+
+        Returns one of:
+        - 'four_column': March 2020+ (Día, Boletín, Anexos, Informes por ciudades)
+        - 'three_column': Dec 2015 - Feb 2020 (Día, Documentos, Anexos)
+        - 'bullet_list': Aug 2012 - Nov 2015 (Boletín/Anexo bullet pairs)
+        - 'simple_links': Jun-Jul 2012 (just date links)
+        - 'current': No target date (use current page format)
+        """
+        if target_date is None:
+            return 'current'
+
+        # March 2020 onwards: 4-column format
+        if target_date >= datetime(2020, 3, 1):
+            return 'four_column'
+        # December 2015 - February 2020: 3-column format
+        elif target_date >= datetime(2015, 12, 1):
+            return 'three_column'
+        # August 2012 - November 2015: bullet list format
+        elif target_date >= datetime(2012, 8, 1):
+            return 'bullet_list'
+        # June-July 2012: simple date links
+        else:
+            return 'simple_links'
+
+    def _get_year_from_url(self, url: str) -> Optional[int]:
+        """Extract year from page URL."""
+        match = re.search(r'(\d{4})', url)
+        return int(match.group(1)) if match else None
+
+    def _extract_four_column_table(
         self,
+        soup: BeautifulSoup,
         page_url: str,
-        html_content: str
+        target_date: Optional[datetime] = None
     ) -> List[FileLink]:
         """
-        Extract all file links from a page's HTML content.
-        Prioritizes extracting dates from table row context over filename parsing.
-
-        Args:
-            page_url: URL of the page (for building absolute URLs)
-            html_content: HTML content of the page
-
-        Returns:
-            List of FileLink objects
+        Extract links from 4-column table format (March 2020+).
+        Columns: Día, Boletín (skip), Anexos, Precios mínimos y máximos
         """
-        soup = BeautifulSoup(html_content, 'html.parser')
         links = []
+        column_categories = {
+            # Column 1 (Boletines) intentionally omitted - returns None to skip
+            2: 'anexo',
+            3: 'informes_ciudades',
+        }
 
-        # First, try to extract links from table rows with date context
+        # Get default year for dates without year (e.g., "28 de enero")
+        default_year = target_date.year if target_date else self._get_year_from_url(page_url)
+
         for table in soup.find_all('table'):
             for row in table.find_all('tr'):
                 cells = row.find_all(['td', 'th'])
@@ -271,25 +351,77 @@ class ScraperBase:
                     continue
 
                 # Try to find date in the first cell (Día column)
-                row_date = None
                 first_cell_text = cells[0].get_text(strip=True)
-                row_date = self.parse_date_from_text(first_cell_text)
+                row_date = self.parse_date_from_text(first_cell_text, default_year)
 
-                # Extract all file links from this row
-                for a in row.find_all('a', href=True):
+                # Extract links from each cell, using column index for category
+                for col_index, cell in enumerate(cells):
+                    category = column_categories.get(col_index)
+                    if category is None:
+                        continue  # Skip column 0 (date) and column 1 (boletín)
+
+                    for a in cell.find_all('a', href=True):
+                        href = a['href']
+                        if '/files/' not in href:
+                            continue
+
+                        link_text = a.get_text(strip=True)
+                        file_type = self.get_file_type(href, link_text)
+                        if not file_type:
+                            continue
+
+                        full_url = urljoin(DANE_BASE_URL, href)
+                        file_date = row_date if row_date else self.extract_date_from_url(href)
+                        filename = href.split('/')[-1]
+
+                        links.append(FileLink(
+                            url=full_url,
+                            link_text=link_text,
+                            file_type=file_type,
+                            file_date=file_date,
+                            filename=filename,
+                            source_page=page_url,
+                            category=category
+                        ))
+        return links
+
+    def _extract_three_column_table(
+        self,
+        soup: BeautifulSoup,
+        page_url: str,
+        target_date: Optional[datetime] = None
+    ) -> List[FileLink]:
+        """
+        Extract links from 3-column table format (Dec 2015 - Feb 2020).
+        Columns: Día, Documentos (skip), Anexos
+        We only want the last column (Anexos).
+        """
+        links = []
+        default_year = target_date.year if target_date else self._get_year_from_url(page_url)
+
+        for table in soup.find_all('table'):
+            for row in table.find_all('tr'):
+                cells = row.find_all(['td', 'th'])
+                if len(cells) < 3:
+                    continue
+
+                # Try to find date in the first cell (Día column)
+                first_cell_text = cells[0].get_text(strip=True)
+                row_date = self.parse_date_from_text(first_cell_text, default_year)
+
+                # Only extract from the last column (Anexos = column 2)
+                last_cell = cells[-1]  # Use last cell to be safe
+                for a in last_cell.find_all('a', href=True):
                     href = a['href']
-
-                    if not href.startswith('/files/'):
+                    if '/files/' not in href:
                         continue
 
                     link_text = a.get_text(strip=True)
                     file_type = self.get_file_type(href, link_text)
-
                     if not file_type:
                         continue
 
                     full_url = urljoin(DANE_BASE_URL, href)
-                    # Use row date if available, otherwise fall back to URL parsing
                     file_date = row_date if row_date else self.extract_date_from_url(href)
                     filename = href.split('/')[-1]
 
@@ -299,20 +431,169 @@ class ScraperBase:
                         file_type=file_type,
                         file_date=file_date,
                         filename=filename,
-                        source_page=page_url
+                        source_page=page_url,
+                        category='anexo'
                     ))
+        return links
 
-        # If no links found in tables, fall back to finding all links on page
+    def _parse_date_from_bullet_text(self, text: str, page_url: str) -> Optional[datetime]:
+        """
+        Parse date from bullet list link text like "Anexo - 31 de agosto".
+        Extracts year from the page URL since it's not in the text.
+        """
+        # Extract year from page URL (e.g., "agosto-de-2012-1" -> 2012)
+        year_match = re.search(r'(\d{4})', page_url)
+        if not year_match:
+            return None
+        year = int(year_match.group(1))
+
+        # Pattern: "Anexo - DD de month" or "DD de month"
+        pattern = re.search(r'(\d{1,2})\s+de\s+([a-záéíóú]+)', text.lower())
+        if pattern:
+            day, month_name = pattern.groups()
+            month = MONTHS_ES_REVERSE.get(month_name)
+            if month:
+                try:
+                    return datetime(year, month, int(day))
+                except ValueError:
+                    pass
+        return None
+
+    def _extract_bullet_list(
+        self,
+        soup: BeautifulSoup,
+        page_url: str
+    ) -> List[FileLink]:
+        """
+        Extract links from bullet list format (Aug 2012 - Nov 2015).
+        Format: "Boletín - DD de month" and "Anexo - DD de month"
+        We only want the "Anexo" links.
+        """
+        links = []
+
+        for a in soup.find_all('a', href=True):
+            href = a['href']
+            if '/files/' not in href:
+                continue
+
+            link_text = a.get_text(strip=True)
+
+            # Only get Anexo links, skip Boletín
+            if not link_text.lower().startswith('anexo'):
+                continue
+
+            file_type = self.get_file_type(href, link_text)
+            if not file_type:
+                # Default to excel for anexo links
+                file_type = 'excel'
+
+            full_url = urljoin(DANE_BASE_URL, href)
+
+            # Parse date from link text "Anexo - DD de month" + year from URL
+            file_date = self._parse_date_from_bullet_text(link_text, page_url)
+            if not file_date:
+                file_date = self.extract_date_from_url(href)
+            filename = href.split('/')[-1]
+
+            links.append(FileLink(
+                url=full_url,
+                link_text=link_text,
+                file_type=file_type,
+                file_date=file_date,
+                filename=filename,
+                source_page=page_url,
+                category='anexo'
+            ))
+        return links
+
+    def _extract_simple_links(
+        self,
+        soup: BeautifulSoup,
+        page_url: str
+    ) -> List[FileLink]:
+        """
+        Extract links from simple date link format (Jun-Jul 2012).
+        Format: Just date text like "31 de julio de 2012" as link text
+        All links are anexos. Only extract SIPSA/mayoristas files.
+        """
+        links = []
+
+        for a in soup.find_all('a', href=True):
+            href = a['href']
+            if '/files/' not in href:
+                continue
+
+            # Only get SIPSA/mayoristas files, skip unrelated files
+            href_lower = href.lower()
+            if 'mayoristas' not in href_lower and 'sipsa' not in href_lower:
+                continue
+
+            link_text = a.get_text(strip=True)
+            file_type = self.get_file_type(href, link_text)
+            if not file_type:
+                # Default to excel for these old links
+                file_type = 'excel'
+
+            full_url = urljoin(DANE_BASE_URL, href)
+
+            # Date is in the link text itself: "31 de julio de 2012"
+            file_date = self.parse_date_from_text(link_text)
+            if not file_date:
+                file_date = self.extract_date_from_url(href)
+            filename = href.split('/')[-1]
+
+            links.append(FileLink(
+                url=full_url,
+                link_text=link_text,
+                file_type=file_type,
+                file_date=file_date,
+                filename=filename,
+                source_page=page_url,
+                category='anexo'
+            ))
+        return links
+
+    def extract_links_from_page(
+        self,
+        page_url: str,
+        html_content: str,
+        target_date: Optional[datetime] = None
+    ) -> List[FileLink]:
+        """
+        Extract all file links from a page's HTML content.
+        Uses different parsing strategies based on the page's date format.
+
+        Args:
+            page_url: URL of the page (for building absolute URLs)
+            html_content: HTML content of the page
+            target_date: Optional date to determine page format (for historical pages)
+
+        Returns:
+            List of FileLink objects
+        """
+        soup = BeautifulSoup(html_content, 'html.parser')
+        page_format = self._get_page_format(target_date)
+
+        if page_format == 'four_column' or page_format == 'current':
+            links = self._extract_four_column_table(soup, page_url, target_date)
+        elif page_format == 'three_column':
+            links = self._extract_three_column_table(soup, page_url, target_date)
+        elif page_format == 'bullet_list':
+            links = self._extract_bullet_list(soup, page_url)
+        elif page_format == 'simple_links':
+            links = self._extract_simple_links(soup, page_url)
+        else:
+            links = []
+
+        # If no links found with structured approach, fall back to generic extraction
         if not links:
             for a in soup.find_all('a', href=True):
                 href = a['href']
-
-                if not href.startswith('/files/'):
+                if '/files/' not in href:
                     continue
 
                 link_text = a.get_text(strip=True)
                 file_type = self.get_file_type(href, link_text)
-
                 if not file_type:
                     continue
 
@@ -320,13 +601,17 @@ class ScraperBase:
                 file_date = self.extract_date_from_url(href)
                 filename = href.split('/')[-1]
 
+                # Use keyword matching for category as fallback
+                category = self.get_link_category(href, link_text)
+
                 links.append(FileLink(
                     url=full_url,
                     link_text=link_text,
                     file_type=file_type,
                     file_date=file_date,
                     filename=filename,
-                    source_page=page_url
+                    source_page=page_url,
+                    category=category
                 ))
 
         return links
@@ -430,12 +715,22 @@ class ScraperBase:
 
         if not upload_result.get('success'):
             error_msg = upload_result.get('error', 'Unknown error')
+            error_str = str(error_msg).lower()
+
+            # Categorize upload errors
+            if '409' in error_str or 'duplicate' in error_str or 'already exists' in error_str:
+                error_type = 'upload_duplicate'
+            elif 'errno 35' in error_str or 'resource temporarily unavailable' in error_str:
+                error_type = 'upload_transient'
+            else:
+                error_type = 'upload_error'
+
             print(f"  [ERROR] Failed to upload: {file_link.filename}")
             print(f"    {error_msg}")
             self.log_download_error(
                 url=file_link.url,
                 source_page=file_link.source_page,
-                error_type='upload_error',
+                error_type=error_type,
                 error_message=f"Upload failed: {error_msg}",
                 file_type=file_link.file_type
             )

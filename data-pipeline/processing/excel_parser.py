@@ -98,9 +98,12 @@ class ExcelParser:
         parsed_date = self.row_date  # Use scraper date as primary
         cities_found = []
 
+        # Open workbook outside the main try/except so format errors
+        # can propagate up and trigger xlsx fallback in parse()
+        workbook = xlrd.open_workbook(filepath)
+        sheet = workbook.sheet_by_index(0)
+
         try:
-            workbook = xlrd.open_workbook(filepath)
-            sheet = workbook.sheet_by_index(0)
 
             # Find the date row to determine where data starts
             date_row_idx = self._find_date_row_xls(sheet, 10)

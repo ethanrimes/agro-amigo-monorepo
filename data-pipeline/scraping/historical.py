@@ -102,16 +102,16 @@ class HistoricalScraper(ScraperBase):
     def get_links_from_month_page(
         self,
         page_url: str,
-        _year: int,
-        _month: int
+        year: int,
+        month: int
     ) -> List[FileLink]:
         """
         Extract file links from a historical month page.
 
         Args:
             page_url: URL of the month page
-            _year: Year of the data (unused, for interface compatibility)
-            _month: Month of the data (unused, for interface compatibility)
+            year: Year of the data (used to determine page format)
+            month: Month of the data (used to determine page format)
 
         Returns:
             List of FileLink objects
@@ -121,7 +121,9 @@ class HistoricalScraper(ScraperBase):
             print(f"  Failed to fetch page: {page_url}")
             return []
 
-        links = self.extract_links_from_page(page_url, response.text)
+        # Pass target date to determine correct parsing format
+        target_date = datetime(year, month, 1)
+        links = self.extract_links_from_page(page_url, response.text, target_date)
         return links
 
     def filter_links_by_date_range(
@@ -250,21 +252,22 @@ class HistoricalScraper(ScraperBase):
                     continue
 
             # Filter out Boletín by default (unless explicitly included)
+            # Note: column-based extraction already excludes boletín, but this catches fallback cases
             if not include_boletin:
-                links = [l for l in links if self.get_link_category(l.url, l.link_text) != 'boletin']
+                links = [l for l in links if l.category != 'boletin']
 
-            # Filter by file type
+            # Filter by file type using the category field set during extraction
             if anexo_only:
-                links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'anexo']
+                links = [l for l in links if l.category == 'anexo']
             elif informes_only:
-                links = [l for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades']
+                links = [l for l in links if l.category == 'informes_ciudades']
 
             # Filter by exact date range
             links = self.filter_links_by_date_range(links, start_date, end_date)
 
             if links:
-                anexo_count = sum(1 for l in links if self.get_link_category(l.url, l.link_text) == 'anexo')
-                informes_count = sum(1 for l in links if self.get_link_category(l.url, l.link_text) == 'informes_ciudades')
+                anexo_count = sum(1 for l in links if l.category == 'anexo')
+                informes_count = sum(1 for l in links if l.category == 'informes_ciudades')
                 print(f"  Found {len(links)} files (Anexo: {anexo_count}, Informes: {informes_count})")
                 all_links.extend(links)
             else:
