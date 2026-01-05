@@ -12,6 +12,7 @@ Commands:
     run-historical      Scrape historical data + process
     scrape-current      Only scrape current month
     scrape-historical   Only scrape historical data
+    scrape-all          Scrape all available data (current + all historical)
     process             Process all unprocessed entries
     retry-errors        Retry failed processing
     download-errors     Download files that had processing errors
@@ -139,6 +140,65 @@ def cmd_scrape_historical(args):
     )
 
     return 0 if result['failed'] == 0 else 1
+
+
+def cmd_scrape_all(args):
+    """Scrape all available data (current month + all historical)."""
+    from scraping.current_month import CurrentMonthScraper
+    from scraping.historical import HistoricalScraper
+
+    # SIPSA data starts from June 2012
+    EARLIEST_DATE = date(2012, 6, 1)
+
+    print("=" * 60)
+    print("SIPSA Complete Data Scraper")
+    print("=" * 60)
+    print(f"Scraping all data from {EARLIEST_DATE} to today")
+    if args.dry_run:
+        print("Mode: DRY RUN")
+    print("=" * 60)
+
+    total_downloaded = 0
+    total_skipped = 0
+    total_failed = 0
+
+    # Step 1: Scrape current month
+    print("\n[1/2] Scraping current month...")
+    current_scraper = CurrentMonthScraper(dry_run=args.dry_run)
+    current_result = current_scraper.run(
+        anexo_only=args.anexo_only,
+        informes_only=args.informes_only,
+        include_boletin=args.include_boletin
+    )
+    total_downloaded += current_result['downloaded']
+    total_skipped += current_result['skipped']
+    total_failed += current_result['failed']
+
+    # Step 2: Scrape all historical data
+    print("\n[2/2] Scraping historical data...")
+    historical_scraper = HistoricalScraper(dry_run=args.dry_run, max_threads=args.threads)
+    historical_result = historical_scraper.run(
+        start_date=EARLIEST_DATE,
+        end_date=date.today(),
+        anexo_only=args.anexo_only,
+        informes_only=args.informes_only,
+        include_boletin=args.include_boletin,
+        parallel=not args.sequential
+    )
+    total_downloaded += historical_result['downloaded']
+    total_skipped += historical_result['skipped']
+    total_failed += historical_result['failed']
+
+    # Final summary
+    print("\n" + "=" * 60)
+    print("Complete Scrape Summary")
+    print("=" * 60)
+    print(f"  Total downloaded: {total_downloaded}")
+    print(f"  Total skipped (already exist): {total_skipped}")
+    print(f"  Total failed: {total_failed}")
+    print("=" * 60)
+
+    return 0 if total_failed == 0 else 1
 
 
 def cmd_process(args):
@@ -446,6 +506,19 @@ Examples:
     p_scrape_hist.add_argument('--sequential', action='store_true')
     p_scrape_hist.add_argument('--threads', type=int, default=8)
 
+    # ============== scrape-all ==============
+    p_scrape_all = subparsers.add_parser(
+        'scrape-all',
+        help='Scrape all available data (current + all historical from June 2012)'
+    )
+    p_scrape_all.add_argument('--dry-run', action='store_true')
+    p_scrape_all.add_argument('--anexo-only', action='store_true')
+    p_scrape_all.add_argument('--informes-only', action='store_true')
+    p_scrape_all.add_argument('--include-boletin', action='store_true',
+                               help='Include Boletín PDF files (excluded by default)')
+    p_scrape_all.add_argument('--sequential', action='store_true')
+    p_scrape_all.add_argument('--threads', type=int, default=8)
+
     # ============== process ==============
     p_process = subparsers.add_parser(
         'process',
@@ -554,6 +627,7 @@ Examples:
         'run-historical': cmd_run_historical,
         'scrape-current': cmd_scrape_current,
         'scrape-historical': cmd_scrape_historical,
+        'scrape-all': cmd_scrape_all,
         'process': cmd_process,
         'retry-errors': cmd_retry_errors,
         'download-errors': cmd_download_errors,
