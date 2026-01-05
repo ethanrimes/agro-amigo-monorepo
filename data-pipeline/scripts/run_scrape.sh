@@ -3,8 +3,10 @@
 #
 # Usage:
 #   ./scripts/run_scrape.sh current                      # Current month
-#   ./scripts/run_scrape.sh historical --year 2024      # Historical
-#   ./scripts/run_scrape.sh current --dry-run           # Dry run
+#   ./scripts/run_scrape.sh historical --year 2024       # Historical year
+#   ./scripts/run_scrape.sh all                          # All data (current + all historical)
+#   ./scripts/run_scrape.sh all --dry-run                # Dry run
+#   ./scripts/run_scrape.sh current --dry-run            # Dry run
 
 set -e
 
