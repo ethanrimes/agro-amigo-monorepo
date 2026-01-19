@@ -3,23 +3,63 @@ Supabase Storage operations for file management.
 """
 
 import os
+import re
 import time
 import tempfile
+import unicodedata
 from pathlib import Path
 from typing import Optional, List, BinaryIO
 from datetime import datetime
 
 from .supabase_client import get_supabase_client
 
+
+def sanitize_filename(filename: str) -> str:
+    """
+    Sanitize filename for Supabase storage by removing/replacing problematic characters.
+
+    Supabase storage doesn't accept accented characters in file paths.
+    This function normalizes accented characters to ASCII equivalents.
+
+    Examples:
+        Medellín -> Medellin
+        Bogotá -> Bogota
+        Cúcuta -> Cucuta
+    """
+    # Normalize unicode to decomposed form (NFD), then remove combining characters
+    # NFD decomposes é into e + combining accent, then we remove the accent
+    normalized = unicodedata.normalize('NFD', filename)
+    ascii_text = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+
+    # Replace any remaining problematic characters
+    # Keep alphanumeric, dash, underscore, period, space, comma, parentheses
+    sanitized = re.sub(r'[^\w\s\-_.,()]+', '', ascii_text)
+
+    return sanitized
+
+
+def sanitize_path(storage_path: str) -> str:
+    """
+    Sanitize a full storage path, preserving directory structure.
+
+    Only sanitizes the filename part, not the directory parts.
+    """
+    parts = storage_path.split('/')
+    if len(parts) > 1:
+        # Sanitize only the filename (last part)
+        parts[-1] = sanitize_filename(parts[-1])
+        return '/'.join(parts)
+    return sanitize_filename(storage_path)
+
 # Retry configuration for transient errors
-MAX_UPLOAD_RETRIES = 5
-INITIAL_RETRY_DELAY = 1.0  # seconds
+MAX_UPLOAD_RETRIES = 8
+INITIAL_RETRY_DELAY = 2.0  # seconds (exponential backoff: 2s, 4s, 8s, 16s, 32s, 64s, 128s)
 
 # Import config - handle both package and direct execution
 try:
-    from config import STORAGE_BUCKET, EXTRACTED_BUCKET
+    from config import STORAGE_BUCKET
 except ImportError:
-    from ..config import STORAGE_BUCKET, EXTRACTED_BUCKET
+    from ..config import STORAGE_BUCKET
 
 
 class StorageClient:
@@ -90,12 +130,21 @@ class StorageClient:
 
         Args:
             file_data: File content as bytes
-            storage_path: Path in storage bucket
+            storage_path: Path in storage bucket (will be sanitized for Supabase compatibility)
             content_type: MIME type of the file
 
         Returns:
-            Response from Supabase
+            Response dict with:
+                - success: True if uploaded or file already exists
+                - path: sanitized storage path
+                - original_path: original path before sanitization
+                - already_exists: True if file was already in storage
+                - error: error message if failed
         """
+        # Sanitize path to remove accented characters that Supabase doesn't accept
+        original_path = storage_path
+        storage_path = sanitize_path(storage_path)
+
         last_error = None
 
         for attempt in range(MAX_UPLOAD_RETRIES):
@@ -105,13 +154,26 @@ class StorageClient:
                     file_data,
                     {"content-type": content_type}
                 )
-                return {"success": True, "path": storage_path, "response": response}
+                return {"success": True, "path": storage_path, "original_path": original_path, "response": response, "already_exists": False}
             except Exception as e:
                 last_error = e
-                error_str = str(e)
+                error_str = str(e).lower()
+
+                # Check for "file already exists" errors (409 Duplicate)
+                # These are NOT failures - the file is in storage, we just need to continue processing
+                is_duplicate = any(msg in error_str for msg in [
+                    'duplicate',
+                    'already exists',
+                    '409',
+                    'statuscode\': 409',
+                    '"statuscode": 409',
+                ])
+
+                if is_duplicate:
+                    return {"success": True, "path": storage_path, "original_path": original_path, "already_exists": True}
 
                 # Check for transient errors that can be retried
-                is_transient = any(msg in error_str.lower() for msg in [
+                is_transient = any(msg in error_str for msg in [
                     'resource temporarily unavailable',
                     'errno 35',
                     'connection reset',
@@ -130,7 +192,7 @@ class StorageClient:
                 else:
                     break
 
-        return {"success": False, "path": storage_path, "error": str(last_error)}
+        return {"success": False, "path": storage_path, "original_path": original_path, "error": str(last_error), "already_exists": False}
 
     def upload_from_file(
         self,

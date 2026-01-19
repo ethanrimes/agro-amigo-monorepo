@@ -24,7 +24,6 @@ REQUEST_TIMEOUT = 60  # seconds
 
 # Supabase storage
 STORAGE_BUCKET = "sipsa-raw-files"
-EXTRACTED_BUCKET = "sipsa-extracted"
 
 # DANE SIPSA URLs
 DANE_BASE_URL = "https://www.dane.gov.co"
