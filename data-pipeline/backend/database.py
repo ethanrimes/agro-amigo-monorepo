@@ -231,39 +231,59 @@ class DatabaseClient:
     # ==================== Extracted PDFs ====================
 
     def create_extracted_pdf(self, pdf: ExtractedPdf) -> Optional[str]:
-        """Create a new extracted PDF record."""
-        try:
-            data = {
-                'download_entry_id': pdf.download_entry_id,
-                'original_zip_path': pdf.original_zip_path,
-                'pdf_filename': pdf.pdf_filename,
-                'storage_path': pdf.storage_path,
-                'city': pdf.city,
-                'market': pdf.market,
-                'pdf_date': pdf.pdf_date.isoformat() if pdf.pdf_date else None,
-                'processed_status': False
-            }
+        """Create a new extracted PDF record with retry for transient errors."""
+        data = {
+            'download_entry_id': pdf.download_entry_id,
+            'original_zip_path': pdf.original_zip_path,
+            'pdf_filename': pdf.pdf_filename,
+            'storage_path': pdf.storage_path,
+            'city': pdf.city,
+            'market': pdf.market,
+            'pdf_date': pdf.pdf_date.isoformat() if pdf.pdf_date else None,
+            'processed_status': False
+        }
 
-            response = self.client.table('extracted_pdfs').insert(data).execute()
-            if response.data:
-                return response.data[0]['id']
-            return None
-        except Exception as e:
-            print(f"Error creating extracted PDF: {e}")
-            return None
+        last_error = None
+        for attempt in range(MAX_DB_RETRIES):
+            try:
+                response = self.client.table('extracted_pdfs').insert(data).execute()
+                if response.data:
+                    return response.data[0]['id']
+                return None
+            except Exception as e:
+                last_error = e
+                if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                    delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                print(f"Error creating extracted PDF: {e}")
+                return None
+
+        print(f"Error creating extracted PDF after {MAX_DB_RETRIES} retries: {last_error}")
+        return None
 
     def get_extracted_pdf_by_storage_path(self, storage_path: str) -> Optional[Dict]:
-        """Check if an extracted PDF already exists by storage path."""
-        try:
-            response = self.client.table('extracted_pdfs').select('*').eq(
-                'storage_path', storage_path
-            ).execute()
-            if response.data:
-                return response.data[0]
-            return None
-        except Exception as e:
-            print(f"Error checking extracted PDF: {e}")
-            return None
+        """Check if an extracted PDF already exists by storage path with retry for transient errors."""
+        last_error = None
+        for attempt in range(MAX_DB_RETRIES):
+            try:
+                response = self.client.table('extracted_pdfs').select('*').eq(
+                    'storage_path', storage_path
+                ).execute()
+                if response.data:
+                    return response.data[0]
+                return None
+            except Exception as e:
+                last_error = e
+                if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                    delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                    time.sleep(delay)
+                    continue
+                print(f"Error checking extracted PDF: {e}")
+                return None
+
+        print(f"Error checking extracted PDF after {MAX_DB_RETRIES} retries: {last_error}")
+        return None
 
     def get_unprocessed_extracted_pdfs(
         self,
@@ -333,15 +353,31 @@ class DatabaseClient:
             }
             records.append(record)
 
-        # Insert in batches
+        # Insert in batches with retry for transient errors
         batch_size = 100
         for i in range(0, len(records), batch_size):
             batch = records[i:i + batch_size]
-            try:
-                self.client.table('processed_prices').insert(batch).execute()
-                success_count += len(batch)
-            except Exception as e:
-                print(f"Error inserting batch: {e}")
+            batch_inserted = False
+            last_error = None
+
+            for attempt in range(MAX_DB_RETRIES):
+                try:
+                    self.client.table('processed_prices').insert(batch).execute()
+                    success_count += len(batch)
+                    batch_inserted = True
+                    break
+                except Exception as e:
+                    last_error = e
+                    if _is_transient_error(e) and attempt < MAX_DB_RETRIES - 1:
+                        delay = INITIAL_DB_RETRY_DELAY * (2 ** attempt)
+                        time.sleep(delay)
+                        continue
+                    print(f"Error inserting batch: {e}")
+                    break
+
+            if not batch_inserted:
+                if last_error and _is_transient_error(last_error):
+                    print(f"Error inserting batch after {MAX_DB_RETRIES} retries: {last_error}")
                 error_count += len(batch)
 
         return success_count, error_count

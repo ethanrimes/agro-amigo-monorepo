@@ -19,7 +19,7 @@ _parent_dir = str(Path(__file__).parent.parent)
 if _parent_dir not in sys.path:
     sys.path.insert(0, _parent_dir)
 
-from backend.storage import StorageClient
+from backend.storage import StorageClient, sanitize_path
 from backend.database import DatabaseClient, ExtractedPdf
 
 
@@ -103,13 +103,17 @@ class ZIPHandler:
                     city, market, pdf_date = self._parse_pdf_filename(pdf_filename)
 
                     # Generate storage path for extracted PDF
+                    # Note: The path will be sanitized during upload to remove accented characters
                     if pdf_date:
                         extracted_storage_path = f"extracted/{pdf_date.year}/{pdf_date.month:02d}/{pdf_date.day:02d}/{pdf_filename}"
                     else:
                         extracted_storage_path = f"extracted/unknown_date/{pdf_filename}"
 
-                    # Check if this PDF already exists in database
-                    existing_pdf = self.database.get_extracted_pdf_by_storage_path(extracted_storage_path)
+                    # Sanitize path for database lookup (matches what will be stored)
+                    sanitized_storage_path = sanitize_path(extracted_storage_path)
+
+                    # Check if this PDF already exists in database (use sanitized path)
+                    existing_pdf = self.database.get_extracted_pdf_by_storage_path(sanitized_storage_path)
 
                     if existing_pdf:
                         if existing_pdf.get('processed_status'):
@@ -124,42 +128,39 @@ class ZIPHandler:
                     # PDF not in database - try to upload to storage
                     result = self.storage.upload_from_file(pdf_path, extracted_storage_path)
 
-                    # Check if upload failed due to file already existing in storage
-                    # In this case, we still need to create the database entry
-                    should_create_db_entry = result.get('success')
-
+                    # storage.py now returns success=True for both new uploads AND
+                    # files that already exist (409/duplicate). It sets already_exists=True
+                    # when the file was already in storage.
                     if not result.get('success'):
-                        error_msg = result.get('error', '').lower()
-                        # If file already exists in storage, we should still create db entry
-                        if 'already exists' in error_msg or 'duplicate' in error_msg:
-                            should_create_db_entry = True
-                        else:
-                            print(f"    [ERROR] Failed to upload: {pdf_filename}")
-                            failed_uploads += 1
-                            continue
+                        print(f"    [ERROR] Failed to upload: {pdf_filename}")
+                        failed_uploads += 1
+                        continue
 
-                    if should_create_db_entry:
-                        # Create extracted PDF entry
-                        extracted_pdf = ExtractedPdf(
-                            download_entry_id=self.download_entry_id,
-                            original_zip_path=storage_path,
-                            pdf_filename=pdf_filename,
-                            storage_path=extracted_storage_path,
-                            city=city,
-                            market=market,
-                            pdf_date=pdf_date,
-                            processed_status=False
-                        )
+                    # Create database entry (file is in storage, either new or existing)
+                    # Use the sanitized path from the upload result
+                    actual_storage_path = result.get('path', sanitized_storage_path)
 
-                        pdf_id = self.database.create_extracted_pdf(extracted_pdf)
+                    # Create extracted PDF entry
+                    extracted_pdf = ExtractedPdf(
+                        download_entry_id=self.download_entry_id,
+                        original_zip_path=storage_path,
+                        pdf_filename=pdf_filename,
+                        storage_path=actual_storage_path,
+                        city=city,
+                        market=market,
+                        pdf_date=pdf_date,
+                        processed_status=False
+                    )
 
-                        if pdf_id:
-                            extracted_pdf_ids.append(pdf_id)
-                            newly_extracted += 1
-                            print(f"    [OK] Extracted: {pdf_filename}")
-                        else:
-                            print(f"    [ERROR] Failed to create DB entry: {pdf_filename}")
-                            failed_uploads += 1
+                    pdf_id = self.database.create_extracted_pdf(extracted_pdf)
+
+                    if pdf_id:
+                        extracted_pdf_ids.append(pdf_id)
+                        newly_extracted += 1
+                        print(f"    [OK] Extracted: {pdf_filename}")
+                    else:
+                        print(f"    [ERROR] Failed to create DB entry: {pdf_filename}")
+                        failed_uploads += 1
 
         finally:
             # Clean up temp ZIP file

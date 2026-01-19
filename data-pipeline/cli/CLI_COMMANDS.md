@@ -1,8 +1,29 @@
 # Data Pipeline CLI Commands
 
+## Quick Start with Shell Wrapper
+
+The `scripts/pipeline.sh` script wraps all CLI commands with automatic logging:
+
 ```bash
 cd data-pipeline
-source .venv/bin/activate
+./scripts/pipeline.sh <command> [options]
+```
+
+This creates timestamped run directories in `runs/` with logs and metadata.
+
+**Examples:**
+```bash
+./scripts/pipeline.sh scrape-all                    # Scrape all data
+./scripts/pipeline.sh run-current                   # Scrape + process current month
+./scripts/pipeline.sh process                       # Process pending files
+./scripts/pipeline.sh run-historical --year 2024   # Scrape + process year
+```
+
+## Direct CLI Usage
+
+```bash
+cd data-pipeline
+source ../.venv/bin/activate
 python -m cli.main <command> [options]
 ```
 

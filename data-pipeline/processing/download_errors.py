@@ -19,7 +19,7 @@ if _parent_dir not in sys.path:
 
 from backend.supabase_client import get_supabase_client
 from backend.storage import StorageClient
-from config import STORAGE_BUCKET, EXTRACTED_BUCKET
+from config import STORAGE_BUCKET
 
 
 def get_error_files(
@@ -124,14 +124,7 @@ def download_error_files(
     for error in errors:
         source_path = error.get('source_path')
         if source_path and source_path not in paths_to_download:
-            # Determine which bucket this file is in
-            if source_path.startswith('extracted/'):
-                bucket = EXTRACTED_BUCKET
-            else:
-                bucket = STORAGE_BUCKET
-
             paths_to_download[source_path] = {
-                'bucket': bucket,
                 'error_type': error.get('error_type'),
                 'error_message': error.get('error_message'),
                 'created_at': error.get('created_at')
@@ -142,7 +135,7 @@ def download_error_files(
     if dry_run:
         print("\n[DRY-RUN] Files that would be downloaded:")
         for path, info in paths_to_download.items():
-            print(f"  [{info['bucket']}] {path}")
+            print(f"  {path}")
             print(f"    Error: {info['error_type']}")
         return {
             'total': len(paths_to_download),
@@ -155,11 +148,8 @@ def download_error_files(
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Initialize storage clients for both buckets
-    storage_clients = {
-        STORAGE_BUCKET: StorageClient(bucket_name=STORAGE_BUCKET),
-        EXTRACTED_BUCKET: StorageClient(bucket_name=EXTRACTED_BUCKET)
-    }
+    # Initialize storage client
+    storage = StorageClient(bucket_name=STORAGE_BUCKET)
 
     downloaded = 0
     failed = 0
@@ -168,14 +158,12 @@ def download_error_files(
     print("-" * 60)
 
     for source_path, info in paths_to_download.items():
-        bucket = info['bucket']
         local_path = output_path / source_path
 
         # Create parent directories preserving bucket structure
         local_path.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            storage = storage_clients[bucket]
             success = storage.download_to_file(source_path, str(local_path))
 
             if success:
