@@ -1,0 +1,6 @@
+data-pipeline/.env
+data-pipeline/failed_pdfs/
+.env
+__pycache__/
+*.pyc
+.venv/
