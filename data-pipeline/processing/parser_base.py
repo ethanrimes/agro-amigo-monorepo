@@ -184,13 +184,23 @@ def is_header_row(row: list) -> bool:
     Returns:
         True if row is a header
     """
-    if not row or not row[0]:
+    if not row:
         return False
 
-    first_cell = str(row[0]).strip().upper()
-    header_keywords = ['PRECIOS', 'PRODUCTO', 'MÍNIMO', 'MÁXIMO', 'PAGINA', 'RONDA', 'PRESENTACIÓN']
+    first_cell = str(row[0]).strip().upper() if row[0] else ''
+    first_cell_keywords = ['PRECIOS', 'PRODUCTO', 'PAGINA', 'RONDA', 'PRESENTACIÓN', 'PRESENTACION']
 
-    return any(kw in first_cell for kw in header_keywords)
+    if first_cell and any(kw in first_cell for kw in first_cell_keywords):
+        return True
+
+    # Check across all cells for subheader patterns (e.g., Mínimo/Máximo or Hora rows)
+    row_text = ' '.join(str(c).upper() for c in row if c)
+    subheader_keywords = ['MÍNIMO', 'MÁXIMO', 'MINIMO', 'MAXIMO',
+                          'HORA INICIO', 'HORA FINAL']
+    if any(kw in row_text for kw in subheader_keywords):
+        return True
+
+    return False
 
 
 def clean_text(text: str) -> str:

@@ -30,6 +30,7 @@ from backend.database import DatabaseClient, ProcessedPrice, ProcessingError
 from processing.pdf_parser import PDFParser
 from processing.excel_parser import ExcelParser
 from processing.zip_handler import ZIPHandler, ExtractionResult
+from processing.ocr_fallback import is_scanned_pdf, ocr_extract_prices
 
 
 @dataclass
@@ -382,16 +383,34 @@ class DataProcessor:
             all_errors.extend(errors)
 
             # Log error if no prices were extracted from this PDF
+            # (but not for bulletins which return 0 prices/0 errors intentionally)
             if prices == 0 and not errors:
-                no_prices_error = ProcessingError(
-                    error_type='no_prices_extracted',
-                    error_message=f"PDF processed but no prices were extracted.",
-                    source_path=pdf_entry['storage_path'],
-                    source_type='pdf',
-                    download_entry_id=download_entry_id,
-                    extracted_pdf_id=pdf_entry['id']
-                )
-                all_errors.append(no_prices_error)
+                # Check if file has extractable content (not a bulletin or empty stub)
+                import pdfplumber as _pdfplumber
+                _temp = self.storage.download_to_temp(pdf_entry['storage_path'], suffix='.pdf')
+                is_empty_or_bulletin = False
+                if _temp:
+                    try:
+                        _pdf = _pdfplumber.open(_temp)
+                        _text = _pdf.pages[0].extract_text() or "" if _pdf.pages else ""
+                        _pdf.close()
+                        is_empty_or_bulletin = len(_text) < 200 or 'PRECIOS DE VENTA MAYORISTA' not in _text.upper()
+                    except Exception:
+                        pass
+                    finally:
+                        if os.path.exists(_temp):
+                            os.remove(_temp)
+
+                if not is_empty_or_bulletin:
+                    no_prices_error = ProcessingError(
+                        error_type='no_prices_extracted',
+                        error_message=f"PDF processed but no prices were extracted.",
+                        source_path=pdf_entry['storage_path'],
+                        source_type='pdf',
+                        download_entry_id=download_entry_id,
+                        extracted_pdf_id=pdf_entry['id']
+                    )
+                    all_errors.append(no_prices_error)
 
             # Update extracted PDF status
             if prices > 0 or not errors:
@@ -405,7 +424,7 @@ class DataProcessor:
         download_entry_id: Optional[str] = None,
         extracted_pdf_id: Optional[str] = None
     ) -> Tuple[int, List[ProcessingError]]:
-        """Process a single PDF file."""
+        """Process a single PDF file, falling back to OCR for scanned images."""
         # Download PDF to temp file
         temp_pdf = self.storage.download_to_temp(storage_path, suffix='.pdf')
         if not temp_pdf:
@@ -419,20 +438,35 @@ class DataProcessor:
             )]
 
         try:
-            # Parse PDF
+            # Parse PDF with pdfplumber
             parser = PDFParser(
                 download_entry_id=download_entry_id,
                 extracted_pdf_id=extracted_pdf_id
             )
             result = parser.parse(temp_pdf, storage_path)
 
-            # Insert prices
+            # If pdfplumber extracted prices, use them
             if result.prices:
                 success, errors = self.database.bulk_insert_prices(result.prices)
                 print(f"    PDF: {result.record_count} records from {result.city}")
                 return success, result.errors
-            else:
-                return 0, result.errors
+
+            # If no prices and it's a scanned image, try OCR fallback
+            if is_scanned_pdf(temp_pdf):
+                print(f"    PDF: scanned image detected, trying Gemini OCR...")
+                ocr_prices, ocr_errors = ocr_extract_prices(
+                    temp_pdf, storage_path,
+                    download_entry_id=download_entry_id,
+                    extracted_pdf_id=extracted_pdf_id
+                )
+                if ocr_prices:
+                    success, errors = self.database.bulk_insert_prices(ocr_prices)
+                    print(f"    OCR: {len(ocr_prices)} records extracted")
+                    return success, ocr_errors
+                else:
+                    return 0, result.errors + ocr_errors
+
+            return 0, result.errors
 
         finally:
             # Clean up temp file
