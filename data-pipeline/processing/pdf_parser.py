@@ -93,6 +93,14 @@ class PDFParser:
                     # Extract header info from first page
                     if page_num == 0:
                         text = page.extract_text() or ""
+
+                        # Skip bulletin PDFs — they contain narrative prose, not price tables
+                        if self._is_bulletin_pdf(text):
+                            return PDFParseResult(
+                                prices=[], errors=[], city="", market="",
+                                date=None, record_count=0
+                            )
+
                         city, market, date_str = self._extract_header_info(text)
 
                         if date_str:
@@ -104,7 +112,7 @@ class PDFParser:
                     # Extract tables
                     tables = page.extract_tables()
                     for table in tables:
-                        if table:
+                        if table and not self._is_supply_table(table):
                             all_rows.extend(table)
 
                 # Determine number of rounds from header rows
@@ -145,7 +153,14 @@ class PDFParser:
                                 ))
                             header_stack.clear()
                         elif len(header_stack) == 1:
-                            current_subcategory = header_stack.pop()
+                            item = header_stack.pop()
+                            if current_category:
+                                # We already have a category, so this is a subcategory
+                                current_subcategory = item
+                            else:
+                                # No category yet — this single item IS the category
+                                current_category = item
+                                current_subcategory = ""
                         # If stack is empty, keep previous category and subcategory
 
                         # Check for missing category
@@ -255,13 +270,31 @@ class PDFParser:
 
         lines = text.split('\n')
 
+        # Lines to skip when looking for city after the header
+        skip_keywords = ['PRODUCTO', 'PRIMERA CALIDAD', 'BOLETIN', 'BOLETÍN',
+                         'SISTEMA DE INFORMACI', 'SIPSA']
+
         for i, line in enumerate(lines[:15]):  # Check first 15 lines
             # Look for "PRECIOS DE VENTA MAYORISTA" header
             if 'PRECIOS DE VENTA MAYORISTA' in line.upper():
-                # Location is usually on the next line
-                if i + 1 < len(lines):
-                    location = lines[i + 1].strip()
-                    city, market = extract_city_market(location)
+                # Location is on the next non-subtitle line
+                for j in range(i + 1, min(i + 5, len(lines))):
+                    candidate = lines[j].strip()
+                    if not candidate:
+                        continue
+                    candidate_upper = candidate.upper()
+                    # Skip subtitle/metadata lines
+                    if any(kw in candidate_upper for kw in skip_keywords):
+                        continue
+                    # Skip date lines
+                    if re.search(r'\d{1,2}\s+de\s+\w+\s+de\s+\d{4}', candidate, re.IGNORECASE):
+                        continue
+                    # Skip round/header lines
+                    if 'RONDA' in candidate_upper or 'MÍNIMO' in candidate_upper or 'MÁXIMO' in candidate_upper:
+                        continue
+                    # This should be the city/market line
+                    city, market = extract_city_market(candidate)
+                    break
                 continue
 
             # Look for date
@@ -271,6 +304,57 @@ class PDFParser:
                     date_str = parse_spanish_date(date_match.group()) or ""
 
         return city, market, date_str
+
+    def _is_supply_table(self, table: List[list]) -> bool:
+        """
+        Detect supply/abastecimiento tables that should be skipped.
+
+        These tables have headers like 'Mercado mayorista' with day-of-week
+        columns (Lunes, Martes, etc.) or date columns, and contain tonnage
+        data rather than price data.
+        """
+        supply_keywords = ['mercado mayorista', 'mercados mayoristas',
+                           'abastecimiento', 'toneladas']
+        day_keywords = ['lunes', 'martes', 'miércoles', 'miercoles',
+                        'jueves', 'viernes', 'sábado', 'sabado',
+                        'domingo', 'variación', 'variacion']
+
+        for row in table[:5]:  # Check first 5 rows
+            if not row:
+                continue
+            row_text = ' '.join(str(c).lower() for c in row if c)
+            if any(kw in row_text for kw in supply_keywords):
+                return True
+            # Check if multiple day-of-week names appear in the row
+            day_count = sum(1 for kw in day_keywords if kw in row_text)
+            if day_count >= 2:
+                return True
+            # Check for date pattern columns (DD/MM/YYYY)
+            date_cols = sum(1 for c in row if c and re.match(r'\d{2}/\d{2}/\d{4}', str(c).strip()))
+            if date_cols >= 2:
+                return True
+            # Check for abbreviated date columns (DD-mmm.)
+            abbrev_date_cols = sum(1 for c in row if c and re.match(r'\d{1,2}-\w{3}\.?$', str(c).strip()))
+            if abbrev_date_cols >= 2:
+                return True
+
+        return False
+
+    def _is_bulletin_pdf(self, text: str) -> bool:
+        """
+        Detect if a PDF is a news bulletin rather than a price table.
+
+        Bulletins contain narrative prose about market trends but no
+        structured price tables. They should be skipped entirely.
+        """
+        upper = text.upper()
+        # Price table PDFs always have this header
+        if 'PRECIOS DE VENTA MAYORISTA' in upper:
+            return False
+        # Bulletin indicators
+        bulletin_keywords = ['BOLETÍN DIARIO', 'BOLETIN DIARIO',
+                             'PRECIOS MAYORISTAS', 'SIPSA']
+        return any(kw in upper for kw in bulletin_keywords)
 
     def _detect_rounds(self, rows: List[list]) -> int:
         """Detect number of trading rounds from header rows."""

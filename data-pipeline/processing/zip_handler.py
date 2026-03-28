@@ -85,12 +85,14 @@ class ZIPHandler:
                     print(f"  [ERROR] Invalid ZIP file: {storage_path}")
                     return ExtractionResult([], 0, 0, 0, 1)
 
-                # Find all PDF files
+                # Find all PDF files (skip macOS resource forks and hidden files)
                 pdf_files = []
                 for root, dirs, files in os.walk(temp_dir):
                     for file in files:
-                        if file.lower().endswith('.pdf'):
+                        if file.lower().endswith('.pdf') and not file.startswith('._') and not file.startswith('__MACOSX'):
                             pdf_files.append(os.path.join(root, file))
+                    # Also skip __MACOSX directories entirely
+                    dirs[:] = [d for d in dirs if d != '__MACOSX']
 
                 total_found = len(pdf_files)
                 print(f"  Found {total_found} PDFs in ZIP")
