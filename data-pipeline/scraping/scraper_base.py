@@ -244,6 +244,11 @@ class ScraperBase:
         if 'bol_' in href_lower or 'bol-' in href_lower:
             return 'boletin'
 
+        # mayoristas_*.pdf are always news bulletins (narrative prose, no price tables)
+        # The actual price data mayoristas files are Excel (.xls/.xlsx)
+        if 'mayoristas' in href_lower and href_lower.endswith('.pdf'):
+            return 'boletin'
+
         if 'anexo' in text_lower or 'anex-' in href_lower:
             return 'anexo'
         elif 'mayoristas' in href_lower:
@@ -424,6 +429,7 @@ class ScraperBase:
                     full_url = urljoin(DANE_BASE_URL, href)
                     file_date = row_date if row_date else self.extract_date_from_url(href)
                     filename = href.split('/')[-1]
+                    category = self.get_link_category(href, link_text) or 'anexo'
 
                     links.append(FileLink(
                         url=full_url,
@@ -432,7 +438,7 @@ class ScraperBase:
                         file_date=file_date,
                         filename=filename,
                         source_page=page_url,
-                        category='anexo'
+                        category=category
                     ))
         return links
 
