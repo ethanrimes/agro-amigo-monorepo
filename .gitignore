@@ -4,3 +4,6 @@ data-pipeline/failed_pdfs/
 __pycache__/
 *.pyc
 .venv/
+scratch.md
+pastes
+data-pipeline/exports

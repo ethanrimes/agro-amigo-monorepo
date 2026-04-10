@@ -23,9 +23,18 @@ Commands:
 """
 
 import argparse
+import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
+
+# Fix Windows console encoding for Unicode characters (e.g. Colombian city names)
+if sys.platform == 'win32':
+    os.environ.setdefault('PYTHONIOENCODING', 'utf-8')
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -407,6 +416,104 @@ def cmd_generate_dimensions(args):
     return generate_dimensions(input_dir=args.input)
 
 
+def cmd_scrape_milk(args):
+    """Scrape SIPSA milk price data."""
+    from scraping.milk_scraper import MilkScraper
+
+    scraper = MilkScraper(dry_run=args.dry_run)
+
+    if args.historical:
+        result = scraper.scrape_historical()
+    elif args.current:
+        result = scraper.scrape_current()
+    else:
+        hist = scraper.scrape_historical()
+        curr = scraper.scrape_current()
+        result = {
+            'downloaded': hist['downloaded'] + curr['downloaded'],
+            'failed': hist['failed'] + curr['failed'],
+            'entry_ids': hist['entry_ids'] + curr['entry_ids'],
+        }
+
+    return 0 if result['failed'] == 0 else 1
+
+
+def cmd_process_milk(args):
+    """Process unprocessed milk price files."""
+    from backend.storage import StorageClient
+    from backend.database import DatabaseClient
+    from processing.milk_parser import MilkParser
+
+    db = DatabaseClient()
+    storage = StorageClient()
+
+    # Find unprocessed milk entries
+    from backend.supabase_client import get_supabase_client
+    client = get_supabase_client()
+
+    if args.entry_id:
+        response = client.table('download_entries').select('*').eq('id', args.entry_id).execute()
+    else:
+        response = client.table('download_entries').select('*').eq(
+            'processed_status', False
+        ).ilike('storage_path', 'milk/%').execute()
+
+    entries = response.data or []
+    print(f"Found {len(entries)} unprocessed milk entries")
+
+    total_prices = 0
+    total_errors = 0
+
+    for entry in entries:
+        entry_id = entry['id']
+        storage_path = entry['storage_path']
+        print(f"\n[Processing] {entry['row_name']}")
+
+        # Download to temp
+        suffix = '.xlsx' if storage_path.lower().endswith('.xlsx') else '.xls'
+        temp_file = storage.download_to_temp(storage_path, suffix=suffix)
+        if not temp_file:
+            print(f"  [ERROR] Failed to download: {storage_path}")
+            total_errors += 1
+            continue
+
+        try:
+            parser = MilkParser(download_entry_id=entry_id)
+            prices, errors = parser.parse(temp_file, storage_path)
+
+            if prices:
+                success, err_count = db.bulk_insert_prices(prices)
+                print(f"  Extracted {success} milk prices")
+                total_prices += success
+            else:
+                print(f"  No prices extracted")
+
+            for e in errors:
+                db.create_processing_error(e)
+                total_errors += 1
+
+            # Mark as processed
+            if prices or not errors:
+                db.update_download_entry_status(entry_id, True)
+
+        finally:
+            import os
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+
+    print(f"\nTotal: {total_prices} prices, {total_errors} errors")
+    return 0
+
+
+def cmd_populate_dimensions(args):
+    """Populate dimension tables from processed_prices."""
+    from cleaning.populate_dimensions import DimensionPopulator
+
+    populator = DimensionPopulator(dry_run=args.dry_run)
+    populator.run(skip_observations=args.skip_observations)
+    return 0
+
+
 def parse_date_arg(args):
     """Parse date arguments (--year/--month or --start-date)."""
     if hasattr(args, 'year') and args.year:
@@ -615,6 +722,34 @@ Examples:
     p_dims.add_argument('--input', type=str, default='exports',
                         help='Input directory with reviewed TSVs')
 
+    # ============== scrape-milk ==============
+    p_milk = subparsers.add_parser(
+        'scrape-milk',
+        help='Scrape SIPSA milk price data (historical + current)'
+    )
+    p_milk.add_argument('--dry-run', action='store_true')
+    p_milk.add_argument('--historical', action='store_true',
+                        help='Only download historical series')
+    p_milk.add_argument('--current', action='store_true',
+                        help='Only download current month')
+
+    # ============== process-milk ==============
+    p_process_milk = subparsers.add_parser(
+        'process-milk',
+        help='Process unprocessed milk price files'
+    )
+    p_process_milk.add_argument('--entry-id', type=str,
+                                help='Process specific entry by ID')
+
+    # ============== populate-dimensions ==============
+    p_pop_dims = subparsers.add_parser(
+        'populate-dimensions',
+        help='Populate dimension tables from processed_prices'
+    )
+    p_pop_dims.add_argument('--dry-run', action='store_true')
+    p_pop_dims.add_argument('--skip-observations', action='store_true',
+                            help='Only populate dimensions, skip price_observations')
+
     # Parse and dispatch
     args = parser.parse_args()
 
@@ -635,6 +770,9 @@ Examples:
         'upload-divipola': cmd_upload_divipola,
         'export-tuples': cmd_export_tuples,
         'generate-dimensions': cmd_generate_dimensions,
+        'scrape-milk': cmd_scrape_milk,
+        'process-milk': cmd_process_milk,
+        'populate-dimensions': cmd_populate_dimensions,
     }
 
     handler = commands.get(args.command)
