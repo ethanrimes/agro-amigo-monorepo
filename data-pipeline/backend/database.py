@@ -93,6 +93,7 @@ class ProcessedPrice:
     round: int = 1
     min_price: Optional[float] = None
     max_price: Optional[float] = None
+    avg_price: Optional[float] = None
     source_type: str = ""
     source_path: str = ""
     download_entry_id: Optional[str] = None
@@ -343,6 +344,7 @@ class DatabaseClient:
                 'round': price.round,
                 'min_price': price.min_price,
                 'max_price': price.max_price,
+                'avg_price': price.avg_price,
                 'source_type': price.source_type,
                 'source_path': price.source_path,
                 'download_entry_id': price.download_entry_id,
