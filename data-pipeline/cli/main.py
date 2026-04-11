@@ -25,6 +25,7 @@ Commands:
 import argparse
 import os
 import sys
+
 from datetime import date, datetime
 from pathlib import Path
 
@@ -514,6 +515,465 @@ def cmd_populate_dimensions(args):
     return 0
 
 
+def cmd_scrape_abastecimiento(args):
+    """Scrape SIPSA abastecimiento data."""
+    from scraping.abastecimiento_scraper import AbastecimientoScraper
+
+    scraper = AbastecimientoScraper(dry_run=args.dry_run)
+
+    if args.historical:
+        result = scraper.scrape_historical()
+    elif args.current:
+        result = scraper.scrape_current()
+    else:
+        hist = scraper.scrape_historical()
+        curr = scraper.scrape_current()
+        result = {
+            'downloaded': hist['downloaded'] + curr['downloaded'],
+            'failed': hist['failed'] + curr['failed'],
+            'entry_ids': hist['entry_ids'] + curr['entry_ids'],
+        }
+
+    return 0 if result['failed'] == 0 else 1
+
+
+def cmd_process_abastecimiento(args):
+    """Process unprocessed abastecimiento files."""
+    from backend.database import DatabaseClient
+    from backend.dimension_resolver import DimensionResolver
+    from processing.abastecimiento_parser import AbastecimientoParser
+    from backend.supabase_client import get_supabase_client, get_db_connection
+
+    client = get_supabase_client()
+    db = DatabaseClient()
+
+    # Find unprocessed abastecimiento entries (stored locally with 'local:' prefix)
+    if args.entry_id:
+        response = client.table('download_entries').select('*').eq('id', args.entry_id).execute()
+    else:
+        response = client.table('download_entries').select('*').eq(
+            'processed_status', False
+        ).ilike('storage_path', 'local:%abastecimiento%').execute()
+
+    entries = response.data or []
+    print(f"Found {len(entries)} unprocessed abastecimiento entries")
+
+    if not entries:
+        return 0
+
+    # Use a single DB connection for both resolver and inserts
+    conn = get_db_connection(new_connection=True)
+    resolver = DimensionResolver(conn=conn)
+    cursor = conn.cursor()
+    cursor.execute("SET statement_timeout = '300s'")
+
+    grand_total_inserted = 0
+    grand_total_skipped = 0
+
+    for entry in entries:
+        entry_id = entry['id']
+        storage_path = entry['storage_path']
+        print(f"\n[Processing] {entry['row_name']}")
+
+        # Get local file path (strip 'local:' prefix)
+        local_path = storage_path.replace('local:', '')
+        if not os.path.exists(local_path):
+            print(f"  [ERROR] Local file not found: {local_path}")
+            continue
+
+        parser = AbastecimientoParser()
+        supply_rows, cpc_map = parser.parse(local_path)
+
+        if not supply_rows:
+            print(f"  No supply rows parsed")
+            db.update_download_entry_status(entry_id, True)
+            continue
+
+        batch = []
+        batch_size = 2000
+        file_inserted = 0
+        file_skipped = 0
+
+        for row in supply_rows:
+            # Resolve category
+            cat_id = resolver.resolve_category(row.group)
+            if not cat_id:
+                file_skipped += 1
+                continue
+
+            # Resolve product (use CPC from row or from CPC map)
+            cpc = row.cpc_code or cpc_map.get(row.alimento, '')
+            prod_id = resolver.resolve_product(row.alimento, cat_id, cpc_code=cpc)
+            if not prod_id:
+                file_skipped += 1
+                continue
+
+            # Resolve city + market
+            city_id, market_id = resolver.resolve_city_market(row.city_market)
+            if not city_id:
+                file_skipped += 1
+                continue
+
+            cpc_clean = cpc.strip().strip("'") if cpc else None
+
+            batch.append((
+                row.observation_date.isoformat(),
+                city_id, market_id,
+                row.provenance_dept_code or None,
+                row.provenance_muni_code or None,
+                row.provenance_dept_name or None,
+                row.provenance_muni_name or None,
+                cat_id, prod_id, cpc_clean,
+                row.quantity_kg,
+                storage_path, entry_id
+            ))
+
+            if len(batch) >= batch_size:
+                _insert_supply_batch(cursor, batch)
+                file_inserted += len(batch)
+                batch = []
+                conn.commit()
+                if file_inserted % 50000 == 0:
+                    print(f"    Progress: {file_inserted} inserted...")
+
+        # Flush remaining
+        if batch:
+            _insert_supply_batch(cursor, batch)
+            file_inserted += len(batch)
+            conn.commit()
+
+        # Mark entry as processed
+        db.update_download_entry_status(entry_id, True)
+        print(f"  Inserted: {file_inserted}, Skipped: {file_skipped}")
+        grand_total_inserted += file_inserted
+        grand_total_skipped += file_skipped
+
+    cursor.close()
+    resolver.close()
+    print(f"\nGrand Total: {grand_total_inserted} inserted, {grand_total_skipped} skipped")
+    return 0
+
+
+def cmd_scrape_insumos(args):
+    """Scrape SIPSA insumos price data."""
+    from scraping.insumos_scraper import InsumosScraper
+
+    scraper = InsumosScraper(dry_run=args.dry_run)
+
+    if args.historical:
+        result = scraper.scrape_historical()
+    elif args.current:
+        result = scraper.scrape_current()
+    else:
+        result = scraper.scrape_all()
+
+    return 0 if result['failed'] == 0 else 1
+
+
+def cmd_process_insumos(args):
+    """Process unprocessed insumos files."""
+    from backend.database import DatabaseClient
+    from backend.dimension_resolver import DimensionResolver
+    from processing.insumos_parser import InsumosParser
+    from backend.supabase_client import get_supabase_client, get_db_connection
+
+    client = get_supabase_client()
+    db = DatabaseClient()
+
+    # Find unprocessed insumos entries
+    if args.entry_id:
+        response = client.table('download_entries').select('*').eq('id', args.entry_id).execute()
+    else:
+        response = client.table('download_entries').select('*').eq(
+            'processed_status', False
+        ).ilike('storage_path', 'local:%insumos%').execute()
+
+    entries = response.data or []
+    print(f"Found {len(entries)} unprocessed insumos entries")
+
+    if not entries:
+        return 0
+
+    conn = get_db_connection(new_connection=True)
+    cursor = conn.cursor()
+    cursor.execute("SET statement_timeout = '300s'")
+
+    # Simple caches for insumo and casa comercial dimensions
+    insumo_cache = {}   # (product_name, grupo, subgrupo) -> insumo_id
+    casa_cache = {}     # casa_name -> casa_comercial_id
+    dept_cache = {}     # dept_name -> department_id
+
+    parser = InsumosParser()
+    grand_total = 0
+
+    for entry in entries:
+        entry_id = entry['id']
+        storage_path = entry['storage_path']
+        local_path = storage_path.replace('local:', '')
+        print(f"\n[Processing] {entry['row_name']}")
+
+        if not os.path.exists(local_path):
+            print(f"  [ERROR] Local file not found: {local_path}")
+            continue
+
+        is_dept = 'Dep' in entry['row_name'] or 'Dep' in local_path
+
+        if is_dept:
+            rows = parser.parse_department(local_path)
+            file_inserted = _insert_dept_insumos(
+                cursor, conn, rows, storage_path, entry_id,
+                insumo_cache, casa_cache, dept_cache
+            )
+        else:
+            rows = parser.parse_municipality(local_path)
+            file_inserted = _insert_mun_insumos(
+                cursor, conn, rows, storage_path, entry_id,
+                insumo_cache, dept_cache
+            )
+
+        conn.commit()
+        db.update_download_entry_status(entry_id, True)
+        print(f"  Inserted: {file_inserted}")
+        grand_total += file_inserted
+
+    cursor.close()
+    conn.close()
+    print(f"\nGrand Total: {grand_total} insumo prices inserted")
+    return 0
+
+
+def _resolve_insumo(cursor, name, grupo, subgrupo, cpc_code, cache):
+    """Resolve or create an insumo dimension entry."""
+    key = (name, grupo, subgrupo)
+    if key in cache:
+        return cache[key]
+
+    # Check alias
+    cursor.execute("SELECT insumo_id FROM alias_insumo WHERE raw_value = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        cache[key] = row['insumo_id']
+        return row['insumo_id']
+
+    # Check dim directly
+    cursor.execute("SELECT id FROM dim_insumo WHERE canonical_name = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        cache[key] = row['id']
+        # Create alias
+        cursor.execute(
+            "INSERT INTO alias_insumo (raw_value, insumo_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+            (name, row['id'])
+        )
+        return row['id']
+
+    # Create new
+    cpc_clean = cpc_code.strip().strip("'") if cpc_code else None
+    cursor.execute(
+        "INSERT INTO dim_insumo (canonical_name, grupo, subgrupo, cpc_code) VALUES (%s, %s, %s, %s) "
+        "ON CONFLICT (canonical_name) DO NOTHING RETURNING id",
+        (name, grupo, subgrupo, cpc_clean)
+    )
+    r = cursor.fetchone()
+    if r:
+        insumo_id = r['id']
+    else:
+        cursor.execute("SELECT id FROM dim_insumo WHERE canonical_name = %s", (name,))
+        insumo_id = cursor.fetchone()['id']
+
+    cursor.execute(
+        "INSERT INTO alias_insumo (raw_value, insumo_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        (name, insumo_id)
+    )
+    cache[(name, grupo, subgrupo)] = insumo_id
+    return insumo_id
+
+
+def _resolve_casa_comercial(cursor, name, cache):
+    """Resolve or create a casa comercial dimension entry."""
+    if not name:
+        return None
+    if name in cache:
+        return cache[name]
+
+    cursor.execute("SELECT casa_comercial_id FROM alias_casa_comercial WHERE raw_value = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        cache[name] = row['casa_comercial_id']
+        return row['casa_comercial_id']
+
+    cursor.execute(
+        "INSERT INTO dim_casa_comercial (canonical_name) VALUES (%s) "
+        "ON CONFLICT (canonical_name) DO NOTHING RETURNING id", (name,)
+    )
+    r = cursor.fetchone()
+    if r:
+        cc_id = r['id']
+    else:
+        cursor.execute("SELECT id FROM dim_casa_comercial WHERE canonical_name = %s", (name,))
+        cc_id = cursor.fetchone()['id']
+
+    cursor.execute(
+        "INSERT INTO alias_casa_comercial (raw_value, casa_comercial_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        (name, cc_id)
+    )
+    cache[name] = cc_id
+    return cc_id
+
+
+def _resolve_dept(cursor, dept_name, dept_code, cache):
+    """Resolve or create a department dimension entry."""
+    if not dept_name:
+        return None
+    if dept_name in cache:
+        return cache[dept_name]
+
+    # Try case-insensitive match
+    cursor.execute("SELECT id FROM dim_department WHERE UPPER(canonical_name) = %s", (dept_name.upper(),))
+    row = cursor.fetchone()
+    if row:
+        cache[dept_name] = row['id']
+        return row['id']
+
+    # Create
+    cursor.execute(
+        "INSERT INTO dim_department (canonical_name, divipola_code) VALUES (%s, %s) "
+        "ON CONFLICT (canonical_name) DO NOTHING RETURNING id", (dept_name, dept_code)
+    )
+    r = cursor.fetchone()
+    dept_id = r['id'] if r else None
+    if not dept_id:
+        cursor.execute("SELECT id FROM dim_department WHERE canonical_name = %s", (dept_name,))
+        dept_id = cursor.fetchone()['id']
+    cache[dept_name] = dept_id
+    return dept_id
+
+
+def _insert_mun_insumos(cursor, conn, rows, storage_path, entry_id, insumo_cache, dept_cache):
+    """Insert municipality-level insumo rows."""
+    batch = []
+    batch_size = 2000
+    total = 0
+
+    for row in rows:
+        insumo_id = _resolve_insumo(cursor, row.product_name, row.grupo, row.subgrupo, '', insumo_cache)
+        dept_id = _resolve_dept(cursor, row.dept_name, row.dept_code, dept_cache)
+        if not insumo_id or not dept_id:
+            continue
+
+        batch.append((
+            row.price_date.isoformat(), dept_id, None,
+            row.dept_code, row.muni_code,
+            insumo_id, row.presentation, row.avg_price,
+            storage_path, entry_id
+        ))
+
+        if len(batch) >= batch_size:
+            _insert_mun_batch(cursor, batch)
+            total += len(batch)
+            batch = []
+            conn.commit()
+            if total % 50000 == 0:
+                print(f"    Progress: {total} inserted...")
+
+    if batch:
+        _insert_mun_batch(cursor, batch)
+        total += len(batch)
+
+    return total
+
+
+def _insert_mun_batch(cursor, batch):
+    cols = (
+        'price_date', 'department_id', 'city_id',
+        'dept_code', 'muni_code',
+        'insumo_id', 'presentation', 'avg_price',
+        'source_path', 'download_entry_id'
+    )
+    placeholders = ','.join(['%s'] * len(cols))
+    values_template = f"({placeholders})"
+    sql = f"INSERT INTO insumo_prices_municipality ({','.join(cols)}) VALUES {','.join([values_template] * len(batch))}"
+    flat = []
+    for row in batch:
+        flat.extend(row)
+    cursor.execute(sql, flat)
+
+
+def _insert_dept_insumos(cursor, conn, rows, storage_path, entry_id, insumo_cache, casa_cache, dept_cache):
+    """Insert department-level insumo rows."""
+    batch = []
+    batch_size = 2000
+    total = 0
+
+    for row in rows:
+        insumo_id = _resolve_insumo(cursor, row.product_name, row.grupo, row.subgrupo, row.cpc_code, insumo_cache)
+        dept_id = _resolve_dept(cursor, row.dept_name, row.dept_code, dept_cache)
+        casa_id = _resolve_casa_comercial(cursor, row.casa_comercial, casa_cache)
+        if not insumo_id or not dept_id:
+            continue
+
+        cpc_clean = row.cpc_code.strip().strip("'") if row.cpc_code else None
+
+        batch.append((
+            row.price_date.isoformat(), dept_id, row.dept_code,
+            insumo_id, row.articulo, casa_id, row.registro_ica,
+            cpc_clean, row.presentation, row.avg_price,
+            storage_path, entry_id
+        ))
+
+        if len(batch) >= batch_size:
+            _insert_dept_batch(cursor, batch)
+            total += len(batch)
+            batch = []
+            conn.commit()
+            if total % 50000 == 0:
+                print(f"    Progress: {total} inserted...")
+
+    if batch:
+        _insert_dept_batch(cursor, batch)
+        total += len(batch)
+
+    return total
+
+
+def _insert_dept_batch(cursor, batch):
+    cols = (
+        'price_date', 'department_id', 'dept_code',
+        'insumo_id', 'articulo', 'casa_comercial_id', 'registro_ica',
+        'cpc_code', 'presentation', 'avg_price',
+        'source_path', 'download_entry_id'
+    )
+    placeholders = ','.join(['%s'] * len(cols))
+    values_template = f"({placeholders})"
+    sql = f"INSERT INTO insumo_prices_department ({','.join(cols)}) VALUES {','.join([values_template] * len(batch))}"
+    flat = []
+    for row in batch:
+        flat.extend(row)
+    cursor.execute(sql, flat)
+
+
+def _insert_supply_batch(cursor, batch):
+    """Bulk insert supply observations."""
+    cols = (
+        'observation_date', 'city_id', 'market_id',
+        'provenance_dept_code', 'provenance_muni_code',
+        'provenance_dept_name', 'provenance_muni_name',
+        'category_id', 'product_id', 'cpc_code',
+        'quantity_kg', 'source_path', 'download_entry_id'
+    )
+    placeholders = ','.join(['%s'] * len(cols))
+    values_template = f"({placeholders})"
+
+    sql = f"""
+        INSERT INTO supply_observations ({','.join(cols)})
+        VALUES {','.join([values_template] * len(batch))}
+    """
+    flat = []
+    for row in batch:
+        flat.extend(row)
+    cursor.execute(sql, flat)
+
+
 def parse_date_arg(args):
     """Parse date arguments (--year/--month or --start-date)."""
     if hasattr(args, 'year') and args.year:
@@ -750,6 +1210,44 @@ Examples:
     p_pop_dims.add_argument('--skip-observations', action='store_true',
                             help='Only populate dimensions, skip price_observations')
 
+    # ============== scrape-abastecimiento ==============
+    p_abast_scrape = subparsers.add_parser(
+        'scrape-abastecimiento',
+        help='Scrape SIPSA abastecimiento (supply quantity) data'
+    )
+    p_abast_scrape.add_argument('--dry-run', action='store_true')
+    p_abast_scrape.add_argument('--historical', action='store_true',
+                                help='Only download historical files')
+    p_abast_scrape.add_argument('--current', action='store_true',
+                                help='Only download current year file')
+
+    # ============== process-abastecimiento ==============
+    p_abast_proc = subparsers.add_parser(
+        'process-abastecimiento',
+        help='Process unprocessed abastecimiento files'
+    )
+    p_abast_proc.add_argument('--entry-id', type=str,
+                              help='Process specific entry by ID')
+
+    # ============== scrape-insumos ==============
+    p_insumos_scrape = subparsers.add_parser(
+        'scrape-insumos',
+        help='Scrape SIPSA insumos (agricultural input) price data'
+    )
+    p_insumos_scrape.add_argument('--dry-run', action='store_true')
+    p_insumos_scrape.add_argument('--historical', action='store_true',
+                                  help='Only download historical files')
+    p_insumos_scrape.add_argument('--current', action='store_true',
+                                  help='Only download current files')
+
+    # ============== process-insumos ==============
+    p_insumos_proc = subparsers.add_parser(
+        'process-insumos',
+        help='Process unprocessed insumos files'
+    )
+    p_insumos_proc.add_argument('--entry-id', type=str,
+                                help='Process specific entry by ID')
+
     # Parse and dispatch
     args = parser.parse_args()
 
@@ -773,6 +1271,10 @@ Examples:
         'scrape-milk': cmd_scrape_milk,
         'process-milk': cmd_process_milk,
         'populate-dimensions': cmd_populate_dimensions,
+        'scrape-abastecimiento': cmd_scrape_abastecimiento,
+        'process-abastecimiento': cmd_process_abastecimiento,
+        'scrape-insumos': cmd_scrape_insumos,
+        'process-insumos': cmd_process_insumos,
     }
 
     handler = commands.get(args.command)
