@@ -654,6 +654,73 @@ def cmd_process_abastecimiento(args):
     return 0
 
 
+def cmd_scrape_rice(args):
+    """Scrape SIPSA rice mill price data."""
+    from scraping.rice_scraper import RiceScraper
+    scraper = RiceScraper(dry_run=args.dry_run)
+    if args.historical:
+        result = scraper.scrape_historical()
+    elif args.current:
+        result = scraper.scrape_current()
+    else:
+        hist = scraper.scrape_historical()
+        curr = scraper.scrape_current()
+        result = {'downloaded': hist['downloaded'] + curr['downloaded'],
+                  'failed': hist['failed'] + curr['failed'],
+                  'entry_ids': hist['entry_ids'] + curr['entry_ids']}
+    return 0 if result['failed'] == 0 else 1
+
+
+def cmd_process_rice(args):
+    """Process unprocessed rice price files."""
+    from backend.storage import StorageClient
+    from backend.database import DatabaseClient
+    from processing.rice_parser import RiceParser
+    from backend.supabase_client import get_supabase_client
+
+    client = get_supabase_client()
+    db = DatabaseClient()
+    storage = StorageClient()
+
+    if args.entry_id:
+        response = client.table('download_entries').select('*').eq('id', args.entry_id).execute()
+    else:
+        response = client.table('download_entries').select('*').eq(
+            'processed_status', False
+        ).ilike('storage_path', 'rice/%').execute()
+
+    entries = response.data or []
+    print(f"Found {len(entries)} unprocessed rice entries")
+
+    total_prices = 0
+    for entry in entries:
+        entry_id = entry['id']
+        storage_path = entry['storage_path']
+        print(f"\n[Processing] {entry['row_name']}")
+
+        temp = storage.download_to_temp(storage_path, suffix='.xlsx')
+        if not temp:
+            print(f"  [ERROR] Failed to download")
+            continue
+        try:
+            parser = RiceParser(download_entry_id=entry_id)
+            prices, errors = parser.parse(temp, storage_path)
+            if prices:
+                success, _ = db.bulk_insert_prices(prices)
+                print(f"  Extracted {success} rice prices")
+                total_prices += success
+            for e in errors:
+                db.create_processing_error(e)
+            if prices or not errors:
+                db.update_download_entry_status(entry_id, True)
+        finally:
+            if os.path.exists(temp):
+                os.remove(temp)
+
+    print(f"\nTotal: {total_prices} rice prices")
+    return 0
+
+
 def cmd_scrape_insumos(args):
     """Scrape SIPSA insumos price data."""
     from scraping.insumos_scraper import InsumosScraper
@@ -1248,6 +1315,22 @@ Examples:
     p_insumos_proc.add_argument('--entry-id', type=str,
                                 help='Process specific entry by ID')
 
+    # ============== scrape-rice ==============
+    p_rice_scrape = subparsers.add_parser(
+        'scrape-rice',
+        help='Scrape SIPSA rice mill price data'
+    )
+    p_rice_scrape.add_argument('--dry-run', action='store_true')
+    p_rice_scrape.add_argument('--historical', action='store_true')
+    p_rice_scrape.add_argument('--current', action='store_true')
+
+    # ============== process-rice ==============
+    p_rice_proc = subparsers.add_parser(
+        'process-rice',
+        help='Process unprocessed rice price files'
+    )
+    p_rice_proc.add_argument('--entry-id', type=str)
+
     # Parse and dispatch
     args = parser.parse_args()
 
@@ -1275,6 +1358,8 @@ Examples:
         'process-abastecimiento': cmd_process_abastecimiento,
         'scrape-insumos': cmd_scrape_insumos,
         'process-insumos': cmd_process_insumos,
+        'scrape-rice': cmd_scrape_rice,
+        'process-rice': cmd_process_rice,
     }
 
     handler = commands.get(args.command)
