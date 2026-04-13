@@ -44,7 +44,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 def cmd_run_current(args):
     """Scrape current month and process."""
     from scraping.current_month import CurrentMonthScraper
-    from processing.processor import DataProcessor
 
     print("=" * 60)
     print("Running Current Month Pipeline")
@@ -68,8 +67,15 @@ def cmd_run_current(args):
         print("Processing Downloaded Files")
         print("=" * 60)
 
-        processor = DataProcessor(max_threads=args.threads)
-        process_result = processor.process_all_pending(parallel=not args.sequential)
+        if args.sequential:
+            from processing.processor import DataProcessor
+            processor = DataProcessor(max_threads=args.threads)
+            process_result = processor.process_all_pending(parallel=False)
+        else:
+            import asyncio
+            from processing.async_processor import AsyncDataProcessor
+            processor = AsyncDataProcessor()
+            process_result = asyncio.run(processor.process_all_pending())
 
         return 0 if process_result['failed'] == 0 else 1
 
@@ -79,7 +85,6 @@ def cmd_run_current(args):
 def cmd_run_historical(args):
     """Scrape historical data and process."""
     from scraping.historical import HistoricalScraper
-    from processing.processor import DataProcessor
 
     # Parse dates
     start = parse_date_arg(args)
@@ -110,8 +115,15 @@ def cmd_run_historical(args):
         print("Processing Downloaded Files")
         print("=" * 60)
 
-        processor = DataProcessor(max_threads=args.threads)
-        process_result = processor.process_all_pending(parallel=not args.sequential)
+        if args.sequential:
+            from processing.processor import DataProcessor
+            processor = DataProcessor(max_threads=args.threads)
+            process_result = processor.process_all_pending(parallel=False)
+        else:
+            import asyncio
+            from processing.async_processor import AsyncDataProcessor
+            processor = AsyncDataProcessor()
+            process_result = asyncio.run(processor.process_all_pending())
 
         return 0 if process_result['failed'] == 0 else 1
 
@@ -213,20 +225,32 @@ def cmd_scrape_all(args):
 
 def cmd_process(args):
     """Process unprocessed entries."""
-    from processing.processor import DataProcessor
-
-    processor = DataProcessor(max_threads=args.threads)
-
-    if args.entry_id:
-        result = processor.process_entry(args.entry_id)
-        print(f"Result: {result}")
-        return 0 if result.success else 1
-    elif args.date:
-        result = processor.process_by_date(args.date)
-        return 0 if result.get('failed', 0) == 0 else 1
+    if args.sequential:
+        # Sync fallback
+        from processing.processor import DataProcessor
+        processor = DataProcessor(max_threads=args.threads)
+        if args.entry_id:
+            result = processor.process_entry(args.entry_id)
+            print(f"Result: {result}")
+            return 0 if result.success else 1
+        elif args.date:
+            result = processor.process_by_date(args.date)
+            return 0 if result.get('failed', 0) == 0 else 1
+        else:
+            result = processor.process_all_pending(parallel=False)
+            return 0 if result['failed'] == 0 else 1
     else:
-        result = processor.process_all_pending(parallel=not args.sequential)
-        return 0 if result['failed'] == 0 else 1
+        # Async (default) — parallel downloads via aiohttp
+        import asyncio
+        from processing.async_processor import AsyncDataProcessor
+        processor = AsyncDataProcessor()
+        if args.entry_id:
+            result = asyncio.run(processor.process_entry(args.entry_id))
+            print(f"Result: {result}")
+            return 0 if result.success else 1
+        else:
+            result = asyncio.run(processor.process_all_pending())
+            return 0 if result['failed'] == 0 else 1
 
 
 def cmd_retry_errors(args):
