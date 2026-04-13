@@ -59,6 +59,11 @@ def get_db_connection(new_connection: bool = False):
             raise ValueError("SUPABASE_DB_URL environment variable not set")
 
         _db_connection = psycopg2.connect(db_url, cursor_factory=RealDictCursor)
+        # Supabase pooler defaults to read-only; override for write access
+        _db_connection.autocommit = True
+        _cursor = _db_connection.cursor()
+        _cursor.execute("SET default_transaction_read_only = off")
+        _cursor.close()
         _db_connection.autocommit = False
 
     return _db_connection

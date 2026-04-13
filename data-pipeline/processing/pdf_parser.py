@@ -29,6 +29,57 @@ from processing.parser_base import (
     clean_text
 )
 
+# Valid subcategory names from the SIPSA PDF format.
+# If the parser produces a subcategory not in this set, it's likely a product name
+# that was misidentified as a header (happens with simpler PDF layouts that lack subcategories).
+VALID_SUBCATEGORIES = {
+    # Frutas
+    'Cítricos', 'CÍtricos', 'Citricos', 'CITRICOS',
+    'Otras frutas', 'OTRAS FRUTAS',
+    # Tubérculos, raíces y plátanos
+    'Otros tubérculos', 'Otros tuberculos', 'OTROS TUBERCULOS',
+    'Plátano', 'PlÁtano', 'Platano', 'PLATANO',
+    'Papa', 'PAPA',
+    'Yuca', 'YUCA',
+    # Verduras y hortalizas
+    'Leguminosas', 'LEGUMINOSAS',
+    'Otras hortalizas y verduras', 'OTRAS HORTALIZAS Y VERDURAS',
+    'Zanahorias', 'ZANAHORIAS',
+    'Cebollas', 'CEBOLLAS',
+    'Tomates', 'TOMATES',
+    'Hortalizas', 'HORTALIZAS',
+    # Carnes
+    'Carne de res', 'CARNE DE RES',
+    'Carne de cerdo', 'CARNE DE CERDO',
+    'Pollo', 'POLLO',
+    # Pescados
+    'Frescos y congelados', 'FRESCOS Y CONGELADOS',
+    # Granos y cereales
+    'Granos', 'GRANOS',
+    'Cereales', 'CEREALES',
+    # Procesados
+    'Otros procesados', 'OTROS PROCESADOS',
+    'Aceites y grasas', 'ACEITES Y GRASAS',
+    'Panela', 'PANELA',
+    'Azúcar', 'AzÚcar', 'Azucar', 'AZUCAR',
+    # Lácteos y huevos
+    'Lácteos', 'LÁcteos', 'Lacteos', 'LACTEOS',
+    'Huevos', 'HUEVOS',
+}
+
+# Valid category names (top-level headers in the PDF)
+VALID_CATEGORIES = {
+    'Frutas', 'FRUTAS',
+    'Verduras y hortalizas', 'VERDURAS Y HORTALIZAS', 'Verduras y Hortalizas',
+    'Tuberculos, raices y platanos', 'TUBERCULOS, RAICES Y PLATANOS',
+    'Tubérculos, raíces y plátanos', 'Tubérculos y plátanos',
+    'Procesados', 'PROCESADOS',
+    'Carnes', 'CARNES',
+    'Granos y cereales', 'GRANOS Y CEREALES',
+    'Pescados', 'PESCADOS',
+    'Lacteos y huevos', 'LACTEOS Y HUEVOS', 'Lácteos y huevos',
+}
+
 
 @dataclass
 class PDFParseResult:
@@ -138,29 +189,42 @@ class PDFParser:
                     if row_has_price_data(row):
                         # This is a product row - resolve the stack first
                         if len(header_stack) >= 2:
-                            current_subcategory = header_stack.pop()
-                            current_category = header_stack.pop()
-                            # Clear any remaining items
-                            if header_stack:
-                                # Log warning about unused stack items
-                                errors.append(ProcessingError(
-                                    error_type='unused_stack_items',
-                                    error_message=f"Unused items in stack: {header_stack}",
-                                    source_path=storage_path or filepath,
-                                    source_type='pdf',
-                                    download_entry_id=self.download_entry_id,
-                                    extracted_pdf_id=self.extracted_pdf_id
-                                ))
+                            candidate_sub = header_stack.pop()
+                            candidate_cat = header_stack.pop()
+
+                            if candidate_cat in VALID_CATEGORIES:
+                                current_category = candidate_cat
+                                if candidate_sub in VALID_SUBCATEGORIES:
+                                    current_subcategory = candidate_sub
+                                else:
+                                    # Subcategory is invalid — it's probably a product
+                                    # from a PDF that only has category-level headers.
+                                    # Use category-only mode.
+                                    current_subcategory = ""
+                            elif candidate_sub in VALID_CATEGORIES:
+                                # Items were in wrong order or extra item on stack
+                                current_category = candidate_sub
+                                current_subcategory = ""
+                            else:
+                                # Neither is a valid category — keep previous
+                                pass
+
                             header_stack.clear()
                         elif len(header_stack) == 1:
                             item = header_stack.pop()
-                            if current_category:
-                                # We already have a category, so this is a subcategory
-                                current_subcategory = item
-                            else:
-                                # No category yet — this single item IS the category
+                            if item in VALID_CATEGORIES:
                                 current_category = item
                                 current_subcategory = ""
+                            elif item in VALID_SUBCATEGORIES and current_category:
+                                current_subcategory = item
+                            elif current_category:
+                                # Not a valid subcategory — probably a product name
+                                # that the table parser didn't find prices for.
+                                # Keep current category, don't update subcategory.
+                                pass
+                            else:
+                                # No category yet and item isn't recognized — skip
+                                pass
                         # If stack is empty, keep previous category and subcategory
 
                         # Check for missing category
