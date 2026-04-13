@@ -1,6 +1,9 @@
 data-pipeline/.env
 data-pipeline/failed_pdfs/
 .env
+**/.env
+**/.env.local
+**/.env.*.local
 __pycache__/
 *.pyc
 .venv/
@@ -8,3 +11,5 @@ scratch.md
 pastes
 data-pipeline/exports
 design
+agroamigo-app/.env
+agroamigo-app/node_modules/

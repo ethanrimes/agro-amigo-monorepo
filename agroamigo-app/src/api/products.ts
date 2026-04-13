@@ -1,0 +1,129 @@
+import { supabase } from '../lib/supabase';
+
+export async function getCategories() {
+  const { data, error } = await supabase
+    .from('dim_category')
+    .select('id, canonical_name, sipsa_id')
+    .order('canonical_name');
+  if (error) throw error;
+  return data;
+}
+
+export async function getSubcategories(categoryId?: string) {
+  let query = supabase
+    .from('dim_subcategory')
+    .select('id, canonical_name, category_id')
+    .order('canonical_name');
+  if (categoryId) query = query.eq('category_id', categoryId);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function getProducts(options?: {
+  categoryId?: string;
+  subcategoryId?: string;
+  search?: string;
+  limit?: number;
+}) {
+  let query = supabase
+    .from('dim_product')
+    .select(`
+      id, canonical_name, subcategory_id, cpc_code, sipsa_id,
+      dim_subcategory!inner(
+        id, canonical_name, category_id,
+        dim_category!inner(id, canonical_name)
+      )
+    `)
+    .order('canonical_name')
+    .limit(options?.limit ?? 50);
+
+  if (options?.search) {
+    query = query.ilike('canonical_name', `%${options.search}%`);
+  }
+  if (options?.subcategoryId) {
+    query = query.eq('subcategory_id', options.subcategoryId);
+  }
+  if (options?.categoryId) {
+    query = query.eq('dim_subcategory.category_id', options.categoryId);
+  }
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function getProductById(id: string) {
+  const { data, error } = await supabase
+    .from('dim_product')
+    .select(`
+      id, canonical_name, subcategory_id, cpc_code, sipsa_id,
+      dim_subcategory(
+        id, canonical_name, category_id,
+        dim_category(id, canonical_name)
+      )
+    `)
+    .eq('id', id)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getProductPrices(productId: string, options?: {
+  marketId?: string;
+  days?: number;
+  limit?: number;
+}) {
+  const days = options?.days ?? 30;
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  let query = supabase
+    .from('price_observations')
+    .select('price_date, min_price, max_price, avg_price, market_id')
+    .eq('product_id', productId)
+    .gte('price_date', since.toISOString().split('T')[0])
+    .order('price_date', { ascending: true })
+    .limit(options?.limit ?? 500);
+
+  if (options?.marketId) {
+    query = query.eq('market_id', options.marketId);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function getLatestPrices(productIds: string[], limit = 1) {
+  const { data, error } = await supabase
+    .from('price_observations')
+    .select('product_id, price_date, min_price, max_price, avg_price')
+    .in('product_id', productIds)
+    .order('price_date', { ascending: false })
+    .limit(limit * productIds.length);
+  if (error) throw error;
+  return data;
+}
+
+export async function getTrendingProducts(limit = 10) {
+  // Get products with recent price data, ordered by recent activity
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  const { data, error } = await supabase
+    .from('price_observations')
+    .select(`
+      product_id,
+      min_price,
+      max_price,
+      avg_price,
+      price_date,
+      dim_product!inner(id, canonical_name, subcategory_id)
+    `)
+    .gte('price_date', weekAgo.toISOString().split('T')[0])
+    .order('price_date', { ascending: false })
+    .limit(200);
+
+  if (error) throw error;
+  return data;
+}
