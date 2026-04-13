@@ -54,7 +54,14 @@ Rules:
 - Return raw price strings exactly as shown in the PDF
 - If a price cell shows "0" or is empty, return null
 - Categories are the bold/larger section headers (e.g. "Frutas", "Verduras y hortalizas")
-- Subcategories are the sub-section headers (e.g. "Cítricos", "Otras frutas", "Plátano", "Papa")
+- Subcategories are the sub-section headers ONLY if they appear in the PDF. Valid subcategories are:
+  Cítricos, Otras frutas, Leguminosas, Otras hortalizas y verduras, Zanahorias, Cebollas,
+  Tomates, Hortalizas, Otros tubérculos, Plátano, Papa, Yuca, Carne de res, Carne de cerdo,
+  Pollo, Frescos y congelados, Granos, Cereales, Otros procesados, Aceites y grasas, Panela,
+  Azúcar, Lácteos, Huevos
+- If no subcategory header appears between the category and the products, use empty string ""
+- Some PDFs only have category-level headers without subcategories — that is normal
+- Do NOT use product names as subcategories
 - Extract ALL rows, do not skip any products
 - Return ONLY the JSON, no other text"""
 
