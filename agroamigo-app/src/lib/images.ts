@@ -17,7 +17,7 @@ const BASE_URL = `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}`;
 // Slug helper — mirrors the Python slugify() in fetch_product_images.py
 // -----------------------------------------------------------------------
 
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // strip combining diacriticals

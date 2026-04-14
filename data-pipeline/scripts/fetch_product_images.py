@@ -724,17 +724,32 @@ def get_public_url(supabase_url: str, storage_path: str) -> str:
 # Main orchestration
 # ---------------------------------------------------------------------------
 
-def find_image_for_product(product_key: str, search_term: str) -> Optional[bytes]:
+def find_image_for_product(product_key: str, search_term: str) -> tuple[Optional[bytes], Optional[dict]]:
     """
     Try multiple sources to find an image for a product.
-    Returns image bytes or None.
+    Returns (image_bytes, attribution_dict) or (None, None).
     """
     # 1. Try fruits-360 first (best quality for produce)
     safe_print(f"  Trying fruits-360...")
     img = get_fruits360_image(product_key)
     if img:
         safe_print(f"  Found in fruits-360!")
-        return img
+        # Determine which folder was matched
+        folder_name = None
+        for spanish, english in FRUITS360_MAPPING.items():
+            if spanish in product_key:
+                folder_name = english
+                break
+        attr = {
+            'source_name': 'fruits360',
+            'source_url': f'https://github.com/fruits-360/fruits-360-100x100/tree/main/Training/{folder_name}' if folder_name else '',
+            'source_image_url': '',
+            'license': 'CC BY-SA 4.0',
+            'license_url': 'https://creativecommons.org/licenses/by-sa/4.0/',
+            'author': 'Horea Muresan, Mihai Oltean',
+            'image_title': f'{folder_name} (fruits-360 dataset)' if folder_name else '',
+        }
+        return img, attr
     time.sleep(GITHUB_API_DELAY)
 
     # 2. Try Wikimedia Commons
@@ -745,7 +760,16 @@ def find_image_for_product(product_key: str, search_term: str) -> Optional[bytes
         img = download_image(r['thumb'])
         if img:
             safe_print(f"  Found on Wikimedia: {r['title']}")
-            return img
+            attr = {
+                'source_name': 'wikimedia',
+                'source_url': f"https://commons.wikimedia.org/wiki/File:{r['title'].replace('File:', '')}",
+                'source_image_url': r.get('url', ''),
+                'license': 'See Wikimedia page',
+                'license_url': '',
+                'author': 'See Wikimedia page',
+                'image_title': r['title'],
+            }
+            return img, attr
 
     # 3. Try Openverse (rate limited)
     safe_print(f"  Trying Openverse for '{search_term}'...")
@@ -755,9 +779,18 @@ def find_image_for_product(product_key: str, search_term: str) -> Optional[bytes
         img = download_image(r['thumb'])
         if img:
             safe_print(f"  Found on Openverse: {r['title']} (license: {r['license']})")
-            return img
+            attr = {
+                'source_name': 'openverse',
+                'source_url': r.get('source', ''),
+                'source_image_url': r.get('url', ''),
+                'license': r.get('license', 'Unknown'),
+                'license_url': '',
+                'author': r.get('creator', 'Unknown'),
+                'image_title': r.get('title', ''),
+            }
+            return img, attr
 
-    return None
+    return None, None
 
 
 def get_unique_products(conn) -> list[dict]:
@@ -877,7 +910,7 @@ def process_products(client, conn, dry_run: bool = False):
             stats['skipped'] += 1
             continue
 
-        img_data = find_image_for_product(product['key'], product['search_term'])
+        img_data, attr = find_image_for_product(product['key'], product['search_term'])
         if img_data:
             if upload_to_supabase(client, img_data, storage_path):
                 safe_print(f"  Uploaded to {storage_path} ({len(img_data)} bytes)")

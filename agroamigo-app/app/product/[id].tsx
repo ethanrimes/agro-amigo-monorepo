@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator, Dimensions, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Polyline, Line, Text as SvgText, Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
@@ -9,6 +9,8 @@ import { PriceChangeIndicator } from '../../src/components/PriceChangeIndicator'
 import { ProductImage } from '../../src/components/ProductImage';
 import { getProductById, getProductPrices } from '../../src/api/products';
 import { getProductSupply } from '../../src/api/supply';
+import { getImageAttribution, ImageAttribution } from '../../src/api/imageAttribution';
+import { slugify } from '../../src/lib/images';
 import { formatCOP, formatCOPCompact, formatDateShort, formatKg, pctChange } from '../../src/lib/format';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -29,6 +31,7 @@ export default function ProductDetailScreen() {
   const [product, setProduct] = useState<any>(null);
   const [prices, setPrices] = useState<any[]>([]);
   const [supply, setSupply] = useState<any[]>([]);
+  const [attribution, setAttribution] = useState<ImageAttribution | null>(null);
   const [timeRange, setTimeRange] = useState(1); // index into TIME_RANGES
   const [loading, setLoading] = useState(true);
 
@@ -48,6 +51,12 @@ export default function ProductDetailScreen() {
       ]);
       setProduct(prod);
       setSupply(sup || []);
+
+      // Load image attribution
+      if (prod?.canonical_name) {
+        const attr = await getImageAttribution('product', slugify(prod.canonical_name));
+        setAttribution(attr);
+      }
     } catch (err) {
       console.error('Error loading product:', err);
     } finally {
@@ -121,11 +130,25 @@ export default function ProductDetailScreen() {
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <ProductImage
-            productName={product.canonical_name}
-            categoryName={categoryName}
-            style={styles.headerImage}
-          />
+          <View>
+            <ProductImage
+              productName={product.canonical_name}
+              categoryName={categoryName}
+              style={styles.headerImage}
+            />
+            {attribution && attribution.source_name !== 'unknown' && (
+              <Pressable
+                onPress={() => attribution.source_url && Linking.openURL(attribution.source_url)}
+                style={styles.attributionRow}
+              >
+                <Ionicons name="camera-outline" size={10} color={colors.text.tertiary} />
+                <Text style={styles.attributionText} numberOfLines={1}>
+                  {attribution.author !== 'Unknown' ? attribution.author : attribution.source_name}
+                  {attribution.license ? ` (${attribution.license})` : ''}
+                </Text>
+              </Pressable>
+            )}
+          </View>
           <View style={styles.headerInfo}>
             <Text style={styles.headerCategory}>{categoryName} &gt; {subcategoryName}</Text>
             <Text style={styles.headerName}>{product.canonical_name}</Text>
@@ -318,6 +341,18 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: borderRadius.lg,
     backgroundColor: colors.borderLight,
+  },
+  attributionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 2,
+    maxWidth: 80,
+  },
+  attributionText: {
+    fontSize: 8,
+    color: colors.text.tertiary,
+    flex: 1,
   },
   headerInfo: {
     flex: 1,
