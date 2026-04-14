@@ -29,8 +29,7 @@ export async function getInsumos(options?: {
   let query = supabase
     .from('dim_insumo')
     .select(`
-      id, canonical_name, grupo, subgrupo, cpc_code, grupo_id, subgrupo_id,
-      insumo_prices_department!inner(insumo_id)
+      id, canonical_name, grupo, subgrupo, cpc_code, grupo_id, subgrupo_id
     `)
     .order('canonical_name')
     .limit(options?.limit ?? 50);

@@ -7,9 +7,11 @@ import { Card } from '../../src/components/Card';
 import { SectionHeader } from '../../src/components/SectionHeader';
 import { Sparkline } from '../../src/components/Sparkline';
 import { PriceChangeIndicator } from '../../src/components/PriceChangeIndicator';
-import { getCategories, getTrendingProducts } from '../../src/api/products';
+import { getCategories, getTrendingProducts, getWatchlistPrices } from '../../src/api/products';
 import { getCategoryImageUrl } from '../../src/lib/images';
-import { formatCOP, formatCOPCompact, pctChange } from '../../src/lib/format';
+import { formatCOP, formatCOPCompact, formatDateShort, formatPriceContext, pctChange } from '../../src/lib/format';
+import { useSettings } from '../../src/context/SettingsContext';
+import { useWatchlist } from '../../src/context/WatchlistContext';
 
 const CATEGORY_ICONS: Record<string, string> = {
   'Frutas': 'nutrition',
@@ -24,14 +26,44 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { settings } = useSettings();
+  const { items: watchlistItems, remove: removeFromWatchlist } = useWatchlist();
   const [categories, setCategories] = useState<any[]>([]);
   const [trending, setTrending] = useState<any[]>([]);
+  const [watchlistPrices, setWatchlistPrices] = useState<Map<string, any>>(new Map());
   const [loading, setLoading] = useState(true);
   const [showMethodology, setShowMethodology] = useState(false);
+  const [showMarketInfo, setShowMarketInfo] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Reload watchlist prices when watchlist items change
+  useEffect(() => {
+    loadWatchlistPrices();
+  }, [watchlistItems]);
+
+  async function loadWatchlistPrices() {
+    const productIds = watchlistItems.filter(i => i.type === 'product').map(i => i.id);
+    if (productIds.length === 0) {
+      setWatchlistPrices(new Map());
+      return;
+    }
+    try {
+      const data = await getWatchlistPrices(productIds);
+      // Get the latest observation per product
+      const map = new Map<string, any>();
+      for (const obs of (data || [])) {
+        if (!map.has(obs.product_id)) {
+          map.set(obs.product_id, obs);
+        }
+      }
+      setWatchlistPrices(map);
+    } catch (err) {
+      console.error('Error loading watchlist prices:', err);
+    }
+  }
 
   async function loadData() {
     try {
@@ -105,6 +137,127 @@ export default function HomeScreen() {
           </Pressable>
         ))}
       </ScrollView>
+
+      {/* Default Market Banner */}
+      <Pressable
+        style={styles.marketBanner}
+        onPress={() => setShowMarketInfo(true)}
+      >
+        <View style={styles.marketBannerLeft}>
+          <Ionicons
+            name={settings.defaultMarket.level === 'nacional' ? 'globe' : 'storefront'}
+            size={16}
+            color={settings.defaultMarket.level === 'nacional' ? colors.accent.blue : colors.primary}
+          />
+          <Text style={styles.marketBannerText} numberOfLines={1}>
+            {settings.defaultMarket.name}
+          </Text>
+        </View>
+        <Ionicons name="information-circle-outline" size={18} color={colors.text.tertiary} />
+      </Pressable>
+
+      {/* Market Info Modal */}
+      <Modal
+        visible={showMarketInfo}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setShowMarketInfo(false)}
+      >
+        <Pressable style={styles.infoOverlay} onPress={() => setShowMarketInfo(false)}>
+          <View style={styles.infoCard}>
+            <View style={styles.infoHeader}>
+              <Ionicons name="information-circle" size={22} color={colors.primary} />
+              <Text style={styles.infoTitle}>Mercado predeterminado</Text>
+            </View>
+            <Text style={styles.infoBody}>
+              Los precios que ves en la pantalla de inicio provienen de tu mercado predeterminado: {<Text style={{ fontWeight: '700' }}>{settings.defaultMarket.name}</Text>}.
+            </Text>
+            <Text style={styles.infoBody}>
+              {settings.defaultMarket.level === 'nacional'
+                ? 'Actualmente estás viendo promedios nacionales. Los precios reflejan el comportamiento general del mercado colombiano.'
+                : settings.defaultMarket.level === 'departamento'
+                ? 'Estás viendo precios promedio del departamento seleccionado.'
+                : settings.defaultMarket.level === 'ciudad'
+                ? 'Estás viendo precios promedio de la ciudad seleccionada.'
+                : 'Estás viendo precios de un mercado específico. Los datos corresponden directamente a las cotizaciones reportadas.'}
+            </Text>
+            <Text style={styles.infoBody}>
+              Puedes cambiar tu mercado en{' '}
+              <Text style={{ color: colors.primary, fontWeight: '600' }}>Configuración</Text>{' '}
+              (icono de engranaje en la esquina superior derecha).
+            </Text>
+            <View style={styles.infoLegend}>
+              <View style={styles.infoLegendRow}>
+                <View style={[styles.infoLegendDot, { backgroundColor: colors.primary }]} />
+                <Text style={styles.infoLegendText}>Precio del mercado seleccionado</Text>
+              </View>
+              <View style={styles.infoLegendRow}>
+                <View style={[styles.infoLegendDot, { backgroundColor: colors.accent.blue }]} />
+                <Text style={styles.infoLegendText}>Promedio nacional (cuando no hay datos locales)</Text>
+              </View>
+            </View>
+            <Pressable style={styles.infoCloseBtn} onPress={() => setShowMarketInfo(false)}>
+              <Text style={styles.infoCloseText}>Entendido</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Watchlist */}
+      {watchlistItems.length > 0 && (
+        <>
+          <SectionHeader title="Seguimiento" />
+          {watchlistItems.map((item) => {
+            const priceData = watchlistPrices.get(item.id);
+            const presentation = priceData?.dim_presentation?.canonical_name;
+            const units = priceData?.dim_units?.canonical_name;
+            const marketName = priceData?.dim_market?.canonical_name;
+            const ctx = formatPriceContext(presentation, units);
+
+            return (
+              <Card
+                key={item.id}
+                style={styles.watchlistCard}
+                onPress={() =>
+                  router.push(item.type === 'product' ? `/product/${item.id}` : `/insumo/${item.id}`)
+                }
+              >
+                <View style={styles.watchlistRow}>
+                  <View style={styles.watchlistInfo}>
+                    <Text style={styles.watchlistName} numberOfLines={1}>{item.name}</Text>
+                    {priceData ? (
+                      <>
+                        <Text style={styles.watchlistPrice}>
+                          {formatCOP(priceData.avg_price || priceData.min_price)}
+                          {priceData.max_price && priceData.max_price !== priceData.min_price
+                            ? ` - ${formatCOP(priceData.max_price)}`
+                            : ''}
+                        </Text>
+                        <Text style={styles.watchlistMeta} numberOfLines={1}>
+                          {[
+                            formatDateShort(priceData.price_date),
+                            marketName,
+                            ctx,
+                          ].filter(Boolean).join(' · ')}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text style={styles.watchlistMeta}>Sin datos recientes</Text>
+                    )}
+                  </View>
+                  <Pressable
+                    onPress={() => removeFromWatchlist(item.id)}
+                    hitSlop={12}
+                    style={styles.watchlistRemove}
+                  >
+                    <Ionicons name="close-circle" size={20} color={colors.text.tertiary} />
+                  </Pressable>
+                </View>
+              </Card>
+            );
+          })}
+        </>
+      )}
 
       {/* Categories */}
       <SectionHeader title="Categorías" />
@@ -320,6 +473,131 @@ const styles = StyleSheet.create({
     color: colors.text.inverse,
     fontSize: fontSize.sm,
     fontFamily: 'monospace',
+  },
+  // Market Banner
+  marketBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  marketBannerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  marketBannerText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text.primary,
+    flex: 1,
+  },
+  // Market Info Modal
+  infoOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  infoCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xl,
+    width: '100%',
+    maxWidth: 360,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  infoTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '700',
+    color: colors.text.primary,
+  },
+  infoBody: {
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    lineHeight: 20,
+    marginBottom: spacing.sm,
+  },
+  infoLegend: {
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.background,
+    borderRadius: borderRadius.sm,
+    marginBottom: spacing.md,
+  },
+  infoLegendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  infoLegendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  infoLegendText: {
+    fontSize: fontSize.xs,
+    color: colors.text.secondary,
+  },
+  infoCloseBtn: {
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+  },
+  infoCloseText: {
+    color: colors.text.inverse,
+    fontSize: fontSize.md,
+    fontWeight: '600',
+  },
+  // Watchlist
+  watchlistCard: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  watchlistRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  watchlistInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  watchlistName: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  watchlistPrice: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.primary,
+    fontFamily: 'monospace',
+  },
+  watchlistMeta: {
+    fontSize: fontSize.xs,
+    color: colors.text.tertiary,
+  },
+  watchlistRemove: {
+    padding: spacing.xs,
+    marginLeft: spacing.sm,
   },
   // Categories
   categoryGrid: {
