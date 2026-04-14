@@ -2,8 +2,8 @@
  * Product and insumo image handling.
  *
  * Images are stored in the public Supabase `product-images` bucket:
- *   products/{slug}.jpg   — one image per unique product type
- *   insumos/{slug}.jpg    — one image per insumo subgrupo
+ *   products/{slug}.jpg   — one image per individual product
+ *   insumos/{slug}.jpg    — one image per individual insumo
  *
  * Falls back to category-level Unsplash placeholders when a specific
  * image hasn't been uploaded yet.
@@ -92,11 +92,11 @@ const INSUMO_FALLBACK = 'https://images.unsplash.com/photo-1416879595882-3373a04
 
 /**
  * Get product image URL.
- * Tries product-specific image from Supabase first, falls back to category.
+ * Uses exact product slug for individual image lookup.
  */
 export function getProductImageUrl(productName?: string, categoryName?: string): string {
   if (productName) {
-    const slug = extractBaseProductKey(productName, categoryName);
+    const slug = slugify(productName);
     if (slug && slug.length >= 2) {
       return `${BASE_URL}/products/${slug}.jpg`;
     }
@@ -116,9 +116,15 @@ export function getCategoryImageUrl(categoryName: string): string {
 
 /**
  * Get insumo image URL.
- * Uses subgrupo-level image from Supabase, falls back to generic.
+ * Tries individual insumo slug first, then subgrupo-level fallback.
  */
 export function getInsumoImageUrl(insumoName?: string, subgrupo?: string): string {
+  if (insumoName) {
+    const slug = slugify(insumoName);
+    if (slug && slug.length >= 2) {
+      return `${BASE_URL}/insumos/${slug}.jpg`;
+    }
+  }
   if (subgrupo) {
     const slug = slugify(subgrupo);
     if (slug && slug.length >= 2) {
