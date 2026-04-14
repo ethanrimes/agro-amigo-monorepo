@@ -44,7 +44,7 @@ from backend.database import DatabaseClient, ProcessedPrice, ProcessingError
 from backend.storage import sanitize_path
 from processing.pdf_parser import PDFParser
 from processing.excel_parser import ExcelParser
-from processing.ocr_fallback import is_scanned_pdf, ocr_extract_prices
+from processing.ocr_fallback import is_scanned_pdf, needs_ocr_fallback, ocr_extract_prices
 
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_SECRET_KEY')
@@ -450,8 +450,8 @@ class AsyncDataProcessor:
             parser = PDFParser(download_entry_id=entry_id, extracted_pdf_id=pdf_id)
             result = parser.parse(tmp, storage_path)
 
-            # OCR fallback for scanned images
-            if not result.prices and is_scanned_pdf(tmp):
+            # OCR fallback for scanned images or PDFs with empty tables
+            if not result.prices and (is_scanned_pdf(tmp) or needs_ocr_fallback(tmp)):
                 ocr_prices, ocr_errors = ocr_extract_prices(
                     tmp, storage_path,
                     download_entry_id=entry_id, extracted_pdf_id=pdf_id
