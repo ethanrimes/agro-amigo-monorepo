@@ -1,6 +1,20 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
+import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, fontSize } from '../../src/theme';
+import { colors, fontSize, spacing } from '../../src/theme';
+
+function SettingsButton() {
+  const router = useRouter();
+  return (
+    <Pressable
+      onPress={() => router.push('/settings')}
+      hitSlop={12}
+      style={{ marginRight: spacing.md }}
+    >
+      <Ionicons name="settings-outline" size={22} color={colors.text.inverse} />
+    </Pressable>
+  );
+}
 
 export default function TabLayout() {
   return (
@@ -9,6 +23,7 @@ export default function TabLayout() {
         headerStyle: { backgroundColor: colors.dark },
         headerTintColor: colors.text.inverse,
         headerTitleStyle: { fontWeight: '700', fontSize: fontSize.lg },
+        headerRight: () => <SettingsButton />,
         tabBarStyle: {
           backgroundColor: colors.dark,
           borderTopColor: colors.darkSurface,

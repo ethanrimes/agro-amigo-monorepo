@@ -1,10 +1,13 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from '../src/theme';
+import { SettingsProvider } from '../src/context/SettingsContext';
+import { WatchlistProvider } from '../src/context/WatchlistContext';
 
 export default function RootLayout() {
   return (
-    <>
+    <SettingsProvider>
+    <WatchlistProvider>
       <StatusBar style="light" backgroundColor={colors.dark} />
       <Stack
         screenOptions={{
@@ -27,7 +30,12 @@ export default function RootLayout() {
           name="insumo/[id]"
           options={{ title: 'Insumo', headerBackTitle: 'Atrás' }}
         />
+        <Stack.Screen
+          name="settings"
+          options={{ title: 'Configuración', headerBackTitle: 'Atrás' }}
+        />
       </Stack>
-    </>
+    </WatchlistProvider>
+    </SettingsProvider>
   );
 }

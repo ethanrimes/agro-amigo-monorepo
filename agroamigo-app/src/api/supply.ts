@@ -10,7 +10,7 @@ export async function getProductSupply(productId: string, days = 30) {
     .eq('product_id', productId)
     .gte('observation_date', since.toISOString().split('T')[0])
     .order('observation_date', { ascending: true })
-    .limit(500);
+    .limit(days > 365 ? 5000 : 1000);
 
   if (error) throw error;
   return data;

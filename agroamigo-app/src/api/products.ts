@@ -33,8 +33,7 @@ export async function getProducts(options?: {
       dim_subcategory!inner(
         id, canonical_name, category_id,
         dim_category!inner(id, canonical_name)
-      ),
-      price_observations!inner(product_id)
+      )
     `)
     .order('canonical_name')
     .limit(options?.limit ?? 50);
@@ -130,6 +129,30 @@ export async function getLatestPrices(productIds: string[], limit = 1) {
     .in('product_id', productIds)
     .order('price_date', { ascending: false })
     .limit(limit * productIds.length);
+  if (error) throw error;
+  return data;
+}
+
+export async function getWatchlistPrices(productIds: string[]) {
+  if (productIds.length === 0) return [];
+  const twoWeeksAgo = new Date();
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+  const { data, error } = await supabase
+    .from('price_observations')
+    .select(`
+      product_id, price_date, min_price, max_price, avg_price,
+      market_id, presentation_id, units_id,
+      dim_market(id, canonical_name),
+      dim_presentation(id, canonical_name),
+      dim_units(id, canonical_name),
+      dim_product!inner(id, canonical_name)
+    `)
+    .in('product_id', productIds)
+    .gte('price_date', twoWeeksAgo.toISOString().split('T')[0])
+    .order('price_date', { ascending: false })
+    .limit(productIds.length * 5);
+
   if (error) throw error;
   return data;
 }

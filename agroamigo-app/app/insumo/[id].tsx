@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
@@ -7,9 +7,11 @@ import { Card } from '../../src/components/Card';
 import { ExpandableSection } from '../../src/components/ExpandableSection';
 import { getInsumoById, getInsumoPricesByDepartment } from '../../src/api/insumos';
 import { formatCOP, formatCOPCompact, formatDateShort, formatPriceContext } from '../../src/lib/format';
+import { useWatchlist } from '../../src/context/WatchlistContext';
 
 export default function InsumoDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { isWatched, toggle } = useWatchlist();
   const [insumo, setInsumo] = useState<any>(null);
   const [deptPrices, setDeptPrices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +93,22 @@ export default function InsumoDetailScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: insumo.canonical_name }} />
+      <Stack.Screen options={{
+        title: insumo.canonical_name,
+        headerRight: () => (
+          <Pressable
+            onPress={() => toggle(id!, 'insumo', insumo.canonical_name)}
+            hitSlop={12}
+            style={{ marginRight: spacing.md }}
+          >
+            <Ionicons
+              name={isWatched(id!) ? 'star' : 'star-outline'}
+              size={22}
+              color={isWatched(id!) ? '#FFD700' : colors.text.inverse}
+            />
+          </Pressable>
+        ),
+      }} />
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
