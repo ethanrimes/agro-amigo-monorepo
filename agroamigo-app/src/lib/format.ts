@@ -59,6 +59,14 @@ export function formatDateMedium(dateStr: string): string {
 }
 
 /**
+ * Format presentation and units into a compact string
+ */
+export function formatPriceContext(presentation?: string | null, units?: string | null): string {
+  const parts = [presentation, units].filter(Boolean);
+  return parts.join(' · ');
+}
+
+/**
  * Calculate percentage change between two values
  */
 export function pctChange(oldVal: number, newVal: number): number {

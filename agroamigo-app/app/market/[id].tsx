@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
 import { Card } from '../../src/components/Card';
+import { ExpandableSection } from '../../src/components/ExpandableSection';
 import { getMarketById, getMarketProducts } from '../../src/api/markets';
-import { formatCOP } from '../../src/lib/format';
+import { formatCOP, formatDateShort, formatPriceContext } from '../../src/lib/format';
 
 export default function MarketDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -22,11 +23,11 @@ export default function MarketDetailScreen() {
     try {
       const [mkt, prods] = await Promise.all([
         getMarketById(id!),
-        getMarketProducts(id!, 100),
+        getMarketProducts(id!, 200),
       ]);
       setMarket(mkt);
 
-      // Deduplicate products by product_id, keeping most recent
+      // Deduplicate: keep most recent observation per product
       const productMap = new Map<string, any>();
       for (const p of (prods || [])) {
         const pid = p.product_id;
@@ -41,6 +42,37 @@ export default function MarketDetailScreen() {
       setLoading(false);
     }
   }
+
+  // Group products by category > subcategory
+  const categoryGroups = useMemo(() => {
+    const catMap = new Map<string, { subcategories: Map<string, any[]> }>();
+
+    for (const p of products) {
+      const catName = p.dim_product?.dim_subcategory?.dim_category?.canonical_name || 'Otro';
+      const subName = p.dim_product?.dim_subcategory?.canonical_name || 'General';
+
+      if (!catMap.has(catName)) catMap.set(catName, { subcategories: new Map() });
+      const subMap = catMap.get(catName)!.subcategories;
+      if (!subMap.has(subName)) subMap.set(subName, []);
+      subMap.get(subName)!.push(p);
+    }
+
+    return [...catMap.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([catName, { subcategories }]) => ({
+        category: catName,
+        subcategories: [...subcategories.entries()]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([subName, items]) => ({ name: subName, items })),
+      }));
+  }, [products]);
+
+  // Check if all products share the same date
+  const sharedDate = useMemo(() => {
+    if (products.length === 0) return null;
+    const firstDate = products[0].price_date;
+    return products.every(p => p.price_date === firstDate) ? firstDate : null;
+  }, [products]);
 
   if (loading) {
     return (
@@ -86,38 +118,67 @@ export default function MarketDetailScreen() {
             <Text style={styles.statLabel}>Productos</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{market.sipsa_id || '—'}</Text>
-            <Text style={styles.statLabel}>SIPSA ID</Text>
+            <Text style={styles.statValue}>{categoryGroups.length}</Text>
+            <Text style={styles.statLabel}>Categorías</Text>
           </View>
         </View>
 
-        {/* Products at this market */}
+        {/* Products grouped by category */}
         <Card style={styles.productsCard}>
           <Text style={styles.sectionTitle}>Productos recientes</Text>
+          {sharedDate && (
+            <Text style={styles.dateContext}>Precios al {formatDateShort(sharedDate)}</Text>
+          )}
+
           {products.length === 0 ? (
             <Text style={styles.noDataText}>Sin datos de precios recientes</Text>
           ) : (
-            products.map((p) => (
-              <Card
-                key={p.product_id}
-                style={styles.productRow}
-                onPress={() => router.push(`/product/${p.product_id}`)}
-                padding={spacing.md}
+            categoryGroups.map((group, gi) => (
+              <ExpandableSection
+                key={group.category}
+                title={group.category}
+                icon="leaf"
+                badge={group.subcategories.reduce((s, sub) => s + sub.items.length, 0)}
+                initiallyExpanded={gi < 3}
               >
-                <View style={styles.productRowInner}>
-                  <View style={styles.productInfo}>
-                    <Text style={styles.productName} numberOfLines={1}>
-                      {(p as any).dim_product?.canonical_name || 'Producto'}
-                    </Text>
-                    <Text style={styles.productDate}>{p.price_date}</Text>
+                {group.subcategories.map((sub) => (
+                  <View key={sub.name}>
+                    {group.subcategories.length > 1 && (
+                      <Text style={styles.subHeader}>{sub.name}</Text>
+                    )}
+                    {sub.items.map((p: any) => {
+                      const presentation = p.dim_presentation?.canonical_name;
+                      const units = p.dim_units?.canonical_name;
+                      const ctx = formatPriceContext(presentation, units);
+                      return (
+                        <Card
+                          key={p.product_id}
+                          style={styles.productRow}
+                          onPress={() => router.push(`/product/${p.product_id}`)}
+                          padding={spacing.sm}
+                        >
+                          <View style={styles.productRowInner}>
+                            <View style={styles.productInfo}>
+                              <Text style={styles.productName} numberOfLines={1}>
+                                {p.dim_product?.canonical_name || 'Producto'}
+                              </Text>
+                              {ctx ? <Text style={styles.productContext} numberOfLines={1}>{ctx}</Text> : null}
+                            </View>
+                            <View style={styles.productPriceCol}>
+                              <Text style={styles.productPrice}>
+                                {formatCOP(p.min_price)}{p.max_price !== p.min_price ? ` - ${formatCOP(p.max_price)}` : ''}
+                              </Text>
+                              {!sharedDate && (
+                                <Text style={styles.productDate}>{formatDateShort(p.price_date)}</Text>
+                              )}
+                            </View>
+                          </View>
+                        </Card>
+                      );
+                    })}
                   </View>
-                  <View style={styles.productPriceCol}>
-                    <Text style={styles.productPrice}>
-                      {formatCOP(p.min_price)} - {formatCOP(p.max_price)}
-                    </Text>
-                  </View>
-                </View>
-              </Card>
+                ))}
+              </ExpandableSection>
             ))
           )}
         </Card>
@@ -208,7 +269,21 @@ const styles = StyleSheet.create({
     fontSize: fontSize.lg,
     fontWeight: '700',
     color: colors.text.primary,
+    marginBottom: spacing.xs,
+  },
+  dateContext: {
+    fontSize: fontSize.xs,
+    color: colors.text.tertiary,
     marginBottom: spacing.md,
+  },
+  subHeader: {
+    fontSize: fontSize.xs,
+    fontWeight: '600',
+    color: colors.text.tertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xs,
   },
   productRow: {
     marginBottom: spacing.xs,
@@ -222,24 +297,30 @@ const styles = StyleSheet.create({
   productInfo: {
     flex: 1,
     gap: 2,
+    marginRight: spacing.sm,
   },
   productName: {
     fontSize: fontSize.md,
     fontWeight: '600',
     color: colors.text.primary,
   },
-  productDate: {
+  productContext: {
     fontSize: fontSize.xs,
     color: colors.text.tertiary,
   },
   productPriceCol: {
     alignItems: 'flex-end',
+    gap: 2,
   },
   productPrice: {
     fontSize: fontSize.sm,
     fontWeight: '600',
     color: colors.primary,
     fontFamily: 'monospace',
+  },
+  productDate: {
+    fontSize: fontSize.xs,
+    color: colors.text.tertiary,
   },
   noDataText: {
     fontSize: fontSize.sm,

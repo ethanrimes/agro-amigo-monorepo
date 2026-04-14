@@ -33,7 +33,8 @@ export async function getProducts(options?: {
       dim_subcategory!inner(
         id, canonical_name, category_id,
         dim_category!inner(id, canonical_name)
-      )
+      ),
+      price_observations!inner(product_id)
     `)
     .order('canonical_name')
     .limit(options?.limit ?? 50);
@@ -79,7 +80,13 @@ export async function getProductPrices(productId: string, options?: {
 
   let query = supabase
     .from('price_observations')
-    .select('price_date, min_price, max_price, avg_price, market_id')
+    .select(`
+      price_date, min_price, max_price, avg_price, market_id,
+      presentation_id, units_id,
+      dim_market(id, canonical_name),
+      dim_presentation(id, canonical_name),
+      dim_units(id, canonical_name)
+    `)
     .eq('product_id', productId)
     .gte('price_date', since.toISOString().split('T')[0])
     .order('price_date', { ascending: true })
@@ -90,6 +97,28 @@ export async function getProductPrices(productId: string, options?: {
   }
 
   const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function getProductPricesByMarket(productId: string, limit = 100) {
+  const twoWeeksAgo = new Date();
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+  const { data, error } = await supabase
+    .from('price_observations')
+    .select(`
+      price_date, min_price, max_price, avg_price,
+      market_id, presentation_id, units_id,
+      dim_market(id, canonical_name),
+      dim_presentation(id, canonical_name),
+      dim_units(id, canonical_name)
+    `)
+    .eq('product_id', productId)
+    .gte('price_date', twoWeeksAgo.toISOString().split('T')[0])
+    .order('price_date', { ascending: false })
+    .limit(limit);
+
   if (error) throw error;
   return data;
 }

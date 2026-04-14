@@ -1,14 +1,42 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { View, Text, SectionList, FlatList, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
 import { Card } from '../../src/components/Card';
 import { SearchBar } from '../../src/components/SearchBar';
-import { Sparkline } from '../../src/components/Sparkline';
-import { PriceChangeIndicator } from '../../src/components/PriceChangeIndicator';
 import { ProductImage } from '../../src/components/ProductImage';
-import { getProducts, getCategories, getSubcategories } from '../../src/api/products';
-import { formatCOP } from '../../src/lib/format';
+import { getProducts, getCategories } from '../../src/api/products';
+
+interface Section {
+  title: string;
+  category: string;
+  isFirstInCategory: boolean;
+  data: any[];
+}
+
+function buildSections(products: any[]): Section[] {
+  const catMap = new Map<string, Map<string, any[]>>();
+
+  for (const p of products) {
+    const catName = p.dim_subcategory?.dim_category?.canonical_name || 'Otro';
+    const subName = p.dim_subcategory?.canonical_name || 'General';
+    if (!catMap.has(catName)) catMap.set(catName, new Map());
+    const subMap = catMap.get(catName)!;
+    if (!subMap.has(subName)) subMap.set(subName, []);
+    subMap.get(subName)!.push(p);
+  }
+
+  const sections: Section[] = [];
+  for (const [catName, subMap] of [...catMap.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+    let first = true;
+    for (const [subName, items] of [...subMap.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+      sections.push({ title: subName, category: catName, isFirstInCategory: first, data: items });
+      first = false;
+    }
+  }
+  return sections;
+}
 
 export default function ProductsScreen() {
   const router = useRouter();
@@ -43,9 +71,10 @@ export default function ProductsScreen() {
     }
   }
 
+  const sections = useMemo(() => buildSections(products), [products]);
+
   const renderProduct = useCallback(({ item }: { item: any }) => {
     const categoryName = item.dim_subcategory?.dim_category?.canonical_name;
-    const subcategoryName = item.dim_subcategory?.canonical_name;
 
     return (
       <Card
@@ -60,15 +89,29 @@ export default function ProductsScreen() {
           />
           <View style={styles.productInfo}>
             <Text style={styles.productName} numberOfLines={1}>{item.canonical_name}</Text>
-            <Text style={styles.productCategory} numberOfLines={1}>
-              {subcategoryName || categoryName || ''}
-            </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.text.tertiary} />
         </View>
       </Card>
     );
   }, [router]);
+
+  const renderSectionHeader = useCallback(({ section }: { section: Section }) => {
+    return (
+      <View>
+        {section.isFirstInCategory && (
+          <View style={styles.categoryHeader}>
+            <Ionicons name="leaf" size={14} color={colors.primary} />
+            <Text style={styles.categoryHeaderText}>{section.category}</Text>
+          </View>
+        )}
+        <View style={styles.subcategoryHeader}>
+          <Text style={styles.subcategoryHeaderText}>{section.title}</Text>
+          <Text style={styles.subcategoryCount}>{section.data.length}</Text>
+        </View>
+      </View>
+    );
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -78,7 +121,6 @@ export default function ProductsScreen() {
         placeholder="Buscar producto..."
       />
 
-      {/* Category filter chips */}
       <FlatList
         horizontal
         data={[{ id: undefined, canonical_name: 'Todos' }, ...categories]}
@@ -88,16 +130,10 @@ export default function ProductsScreen() {
         style={styles.chipList}
         renderItem={({ item }) => (
           <Pressable
-            style={[
-              styles.chip,
-              selectedCategory === item.id && styles.chipActive,
-            ]}
+            style={[styles.chip, selectedCategory === item.id && styles.chipActive]}
             onPress={() => setSelectedCategory(item.id)}
           >
-            <Text style={[
-              styles.chipText,
-              selectedCategory === item.id && styles.chipTextActive,
-            ]}>
+            <Text style={[styles.chipText, selectedCategory === item.id && styles.chipTextActive]}>
               {item.canonical_name}
             </Text>
           </Pressable>
@@ -107,11 +143,14 @@ export default function ProductsScreen() {
       {loading ? (
         <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 40 }} />
       ) : (
-        <FlatList
-          data={products}
+        <SectionList
+          sections={sections}
           keyExtractor={(item) => item.id}
           renderItem={renderProduct}
+          renderSectionHeader={renderSectionHeader}
           contentContainerStyle={styles.listContent}
+          stickySectionHeadersEnabled={false}
+          initialNumToRender={20}
           ListEmptyComponent={
             <Text style={styles.emptyText}>No se encontraron productos</Text>
           }
@@ -120,8 +159,6 @@ export default function ProductsScreen() {
     </View>
   );
 }
-
-import { Ionicons } from '@expo/vector-icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -160,9 +197,38 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 20,
   },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xs,
+  },
+  categoryHeaderText: {
+    fontSize: fontSize.lg,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  subcategoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xs,
+  },
+  subcategoryHeaderText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text.secondary,
+  },
+  subcategoryCount: {
+    fontSize: fontSize.xs,
+    color: colors.text.tertiary,
+  },
   productCard: {
     marginHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.xs,
   },
   productRow: {
     flexDirection: 'row',
@@ -170,8 +236,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   productImage: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     borderRadius: borderRadius.md,
     backgroundColor: colors.borderLight,
   },
@@ -183,10 +249,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     fontWeight: '600',
     color: colors.text.primary,
-  },
-  productCategory: {
-    fontSize: fontSize.sm,
-    color: colors.text.secondary,
   },
   emptyText: {
     textAlign: 'center',

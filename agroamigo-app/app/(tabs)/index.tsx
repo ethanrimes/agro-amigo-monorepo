@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, Pressable, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, Pressable, FlatList, ActivityIndicator, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
@@ -27,6 +27,7 @@ export default function HomeScreen() {
   const [categories, setCategories] = useState<any[]>([]);
   const [trending, setTrending] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMethodology, setShowMethodology] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -153,7 +154,122 @@ export default function HomeScreen() {
         </Card>
       ))}
 
-      <View style={{ height: 40 }} />
+      {/* Help */}
+      <Pressable
+        style={styles.helpButton}
+        onPress={() => setShowMethodology(true)}
+      >
+        <Ionicons name="help-circle-outline" size={20} color={colors.text.secondary} />
+        <Text style={styles.helpButtonText}>Ayuda y metodología</Text>
+      </Pressable>
+
+      <Modal
+        visible={showMethodology}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowMethodology(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Ayuda</Text>
+            <Pressable onPress={() => setShowMethodology(false)} hitSlop={12}>
+              <Ionicons name="close" size={24} color={colors.text.primary} />
+            </Pressable>
+          </View>
+          <ScrollView style={styles.modalBody} contentContainerStyle={{ paddingBottom: 40 }}>
+
+            {/* App Guide */}
+            <Text style={styles.helpSectionTitle}>Guía de la aplicación</Text>
+
+            <View style={styles.helpItem}>
+              <Ionicons name="home" size={20} color={colors.primary} />
+              <View style={styles.helpItemText}>
+                <Text style={styles.helpItemTitle}>Inicio</Text>
+                <Text style={styles.methodologyText}>Tu panel principal. Muestra las tendencias del día, tus productos favoritos y las categorías disponibles. Configura tu mercado preferido en Perfil para ver datos relevantes.</Text>
+              </View>
+            </View>
+
+            <View style={styles.helpItem}>
+              <Ionicons name="pricetag" size={20} color={colors.primary} />
+              <View style={styles.helpItemText}>
+                <Text style={styles.helpItemTitle}>Productos</Text>
+                <Text style={styles.methodologyText}>Explora más de 700 productos agrícolas. Cada producto muestra precios históricos, comparación entre mercados, volúmenes de abastecimiento y productos relacionados. Puedes agregar series al gráfico para comparar productos o mercados lado a lado.</Text>
+              </View>
+            </View>
+
+            <View style={styles.helpItem}>
+              <Ionicons name="storefront" size={20} color={colors.primary} />
+              <View style={styles.helpItemText}>
+                <Text style={styles.helpItemTitle}>Mercados</Text>
+                <Text style={styles.methodologyText}>Consulta los 43 mercados mayoristas y más de 500 mercados municipales. Ve todos los productos disponibles con precios actuales, comparación con la mediana nacional y origen geográfico de los alimentos.</Text>
+              </View>
+            </View>
+
+            <View style={styles.helpItem}>
+              <Ionicons name="flask" size={20} color={colors.primary} />
+              <View style={styles.helpItemText}>
+                <Text style={styles.helpItemTitle}>Insumos</Text>
+                <Text style={styles.methodologyText}>Precios de más de 2,000 insumos agropecuarios (fertilizantes, herbicidas, medicamentos, etc.) por departamento y municipio. Compara marcas comerciales y sigue la evolución de precios.</Text>
+              </View>
+            </View>
+
+            <View style={styles.helpItem}>
+              <Ionicons name="map" size={20} color={colors.primary} />
+              <View style={styles.helpItemText}>
+                <Text style={styles.helpItemTitle}>Mapa</Text>
+                <Text style={styles.methodologyText}>Visualiza precios y flujos de abastecimiento sobre el mapa de Colombia. Selecciona un producto para ver qué regiones tienen los mejores precios o de dónde provienen los alimentos.</Text>
+              </View>
+            </View>
+
+            {/* Divider */}
+            <View style={styles.helpDivider} />
+
+            {/* Methodology */}
+            <Text style={styles.helpSectionTitle}>Fuentes y metodología</Text>
+
+            <Text style={styles.methodologyHeading}>Fuente de datos</Text>
+            <Text style={styles.methodologyText}>
+              Todos los datos provienen del SIPSA (Sistema de Información de Precios y Abastecimiento del Sector Agropecuario), operado por el DANE de Colombia.
+            </Text>
+
+            <Text style={styles.methodologyHeading}>Precios mayoristas</Text>
+            <Text style={styles.methodologyText}>
+              Publicados diariamente en boletines PDF por mercado. Incluyen precios mínimo y máximo en dos rondas de negociación. Cubren 43 mercados en 23 ciudades desde junio de 2012. Los documentos escaneados se procesan mediante OCR con inteligencia artificial.
+            </Text>
+
+            <Text style={styles.methodologyHeading}>Abastecimiento</Text>
+            <Text style={styles.methodologyText}>
+              Registran los kilogramos de alimentos que ingresan diariamente a los mercados mayoristas, con departamento y municipio de origen. Disponibles desde 2013 para 18 mercados.
+            </Text>
+
+            <Text style={styles.methodologyHeading}>Insumos agropecuarios</Text>
+            <Text style={styles.methodologyText}>
+              Precios promedio mensuales a nivel de municipio y departamento. Incluyen marca comercial y código CPC. Disponibles desde 2013.
+            </Text>
+
+            <Text style={styles.methodologyHeading}>Leche y arroz</Text>
+            <Text style={styles.methodologyText}>
+              Precios mensuales de leche cruda en finca (por litro) y arroz en molino (por tonelada), por municipio. Desde 2013.
+            </Text>
+
+            <Text style={styles.methodologyHeading}>Procesamiento y normalización</Text>
+            <Text style={styles.methodologyText}>
+              Los datos se extraen automáticamente de los archivos del DANE, se normalizan para unificar variaciones en nombres de productos, mercados y presentaciones, y se almacenan con identificadores únicos para seguimiento consistente. Cada producto se clasifica por categoría, subcategoría y código CPC.
+            </Text>
+
+            <Text style={styles.methodologyHeading}>Frecuencia de actualización</Text>
+            <Text style={styles.methodologyText}>
+              Precios mayoristas: diaria. Abastecimiento: diaria (publicación mensual). Leche, arroz e insumos: mensual.
+            </Text>
+
+            <Text style={[styles.methodologyText, { marginTop: spacing.lg, fontStyle: 'italic', color: colors.text.secondary, opacity: 0.7 }]}>
+              Esta aplicación no es un producto oficial del DANE. Los datos se presentan tal como fueron publicados, con procesamiento automatizado para facilitar su consulta.
+            </Text>
+          </ScrollView>
+        </View>
+      </Modal>
+
+      <View style={{ height: 20 }} />
     </ScrollView>
   );
 }
@@ -266,5 +382,83 @@ const styles = StyleSheet.create({
   trendingRight: {
     alignItems: 'flex-end',
     gap: 4,
+  },
+  // Help
+  helpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.lg,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+  },
+  helpButtonText: {
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+  },
+  helpSectionTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '700',
+    color: colors.primary,
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  helpItem: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    alignItems: 'flex-start',
+  },
+  helpItemText: {
+    flex: 1,
+    gap: 4,
+  },
+  helpItemTitle: {
+    fontSize: fontSize.md,
+    fontWeight: '700',
+    color: colors.text.primary,
+  },
+  helpDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.border,
+    marginVertical: spacing.lg,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  modalTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '700',
+    color: colors.text.primary,
+  },
+  modalBody: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+  },
+  methodologyHeading: {
+    fontSize: fontSize.md,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xs,
+  },
+  methodologyText: {
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    lineHeight: 20,
   },
 });
