@@ -8,7 +8,8 @@ export async function getMarkets() {
       dim_city!inner(
         id, canonical_name, department_id,
         dim_department!inner(id, canonical_name)
-      )
+      ),
+      price_observations!inner(market_id)
     `)
     .order('canonical_name');
   if (error) throw error;
@@ -40,7 +41,16 @@ export async function getMarketProducts(marketId: string, limit = 50) {
     .select(`
       product_id,
       min_price, max_price, avg_price, price_date,
-      dim_product!inner(id, canonical_name)
+      presentation_id, units_id,
+      dim_product!inner(
+        id, canonical_name, subcategory_id,
+        dim_subcategory!inner(
+          id, canonical_name, category_id,
+          dim_category!inner(id, canonical_name)
+        )
+      ),
+      dim_presentation(id, canonical_name),
+      dim_units(id, canonical_name)
     `)
     .eq('market_id', marketId)
     .gte('price_date', weekAgo.toISOString().split('T')[0])
