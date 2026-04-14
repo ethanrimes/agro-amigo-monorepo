@@ -167,23 +167,49 @@ def ocr_extract_prices(
         with open(filepath, 'rb') as f:
             pdf_bytes = f.read()
 
-        # Send to Gemini Flash with the PDF
-        response = client.models.generate_content(
-            model="gemini-3.1-flash-lite-preview",
-            contents=[
-                types.Content(
-                    role='user',
-                    parts=[
-                        types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"),
-                        types.Part.from_text(text=GEMINI_PROMPT),
-                    ]
+        # Send to Gemini Flash with the PDF (with timeout)
+        import signal
+        import threading
+
+        result_holder = [None, None]  # [response, error]
+
+        def call_gemini():
+            try:
+                result_holder[0] = client.models.generate_content(
+                    model="gemini-3.1-flash-lite-preview",
+                    contents=[
+                        types.Content(
+                            role='user',
+                            parts=[
+                                types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"),
+                                types.Part.from_text(text=GEMINI_PROMPT),
+                            ]
+                        )
+                    ],
+                    config=types.GenerateContentConfig(
+                        temperature=0.0,
+                        max_output_tokens=32768,
+                    )
                 )
-            ],
-            config=types.GenerateContentConfig(
-                temperature=0.0,
-                max_output_tokens=32768,
-            )
-        )
+            except Exception as e:
+                result_holder[1] = e
+
+        t = threading.Thread(target=call_gemini)
+        t.start()
+        t.join(timeout=120)  # 2 minute timeout per PDF
+
+        if t.is_alive():
+            return 0, [ProcessingError(
+                error_type='ocr_timeout',
+                error_message="Gemini OCR timed out after 120 seconds",
+                source_path=storage_path, source_type='pdf',
+                download_entry_id=download_entry_id, extracted_pdf_id=extracted_pdf_id
+            )]
+
+        if result_holder[1]:
+            raise result_holder[1]
+
+        response = result_holder[0]
 
         # Parse response — try multiple ways to get the text
         response_text = ""
