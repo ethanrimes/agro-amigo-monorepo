@@ -169,7 +169,7 @@ def ocr_extract_prices(
 
         # Send to Gemini Flash with the PDF
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-3.1-flash-lite-preview",
             contents=[
                 types.Content(
                     role='user',
@@ -185,16 +185,25 @@ def ocr_extract_prices(
             )
         )
 
-        # Parse response
+        # Parse response — try multiple ways to get the text
         response_text = ""
-        if response.text:
-            response_text = response.text.strip()
-        elif response.candidates:
-            # Some models return content via candidates
+        try:
+            response_text = response.text or ""
+        except Exception:
+            pass
+        if not response_text and response.candidates:
             for part in response.candidates[0].content.parts:
                 if hasattr(part, 'text') and part.text:
                     response_text += part.text
-            response_text = response_text.strip()
+        response_text = response_text.strip()
+
+        if not response_text:
+            return 0, [ProcessingError(
+                error_type='ocr_failed',
+                error_message="Gemini returned empty response",
+                source_path=storage_path, source_type='pdf',
+                download_entry_id=download_entry_id, extracted_pdf_id=extracted_pdf_id
+            )]
 
         # Extract JSON from response (may be wrapped in ```json blocks)
         json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)
@@ -203,41 +212,71 @@ def ocr_extract_prices(
 
         data = json.loads(response_text)
 
-        city_str = data.get("city", "")
-        market_str = data.get("market", "")
-        date_str = data.get("date", "")
-
-        # Parse city/market
-        if city_str and not market_str:
-            city, market = extract_city_market(city_str)
+        # Handle both dict format {city, market, date, products: [...]}
+        # and flat array format [{producto, ...}, ...]
+        if isinstance(data, dict):
+            city_str = data.get("city", "")
+            market_str = data.get("market", "")
+            date_str = data.get("date", "")
+            product_list = data.get("products", [])
+        elif isinstance(data, list):
+            city_str = ""
+            market_str = ""
+            date_str = ""
+            product_list = data
         else:
-            city = city_str
-            market = market_str
+            product_list = []
+            city_str = market_str = date_str = ""
 
-        # Parse date
-        parsed_date = None
-        if date_str:
-            iso_date = parse_spanish_date(date_str)
-            if iso_date:
+        # Parse city/market from filename if not in JSON
+        if not city_str:
+            # Try to extract from storage_path filename
+            fname = (storage_path or filepath).split('/')[-1].replace('.pdf', '')
+            city_str, market_str = extract_city_market(fname)
+            # Try to extract date from filename too
+            import re as _re
+            date_match = _re.search(r'(\d{1,2})-(\d{1,2})-(\d{4})', fname)
+            if date_match:
+                d, m, y = date_match.groups()
                 try:
-                    parsed_date = datetime.strptime(iso_date, '%Y-%m-%d').date()
+                    parsed_date = date(int(y), int(m), int(d))
                 except ValueError:
-                    pass
+                    parsed_date = None
+            else:
+                parsed_date = None
+        else:
+            if city_str and not market_str:
+                city_str, market_str = extract_city_market(city_str)
+            parsed_date = None
+            if date_str:
+                iso_date = parse_spanish_date(date_str)
+                if iso_date:
+                    try:
+                        parsed_date = datetime.strptime(iso_date, '%Y-%m-%d').date()
+                    except ValueError:
+                        pass
+
+        # Normalize field names (handle both English and Spanish keys)
+        def get_field(item, *keys):
+            for k in keys:
+                if k in item:
+                    return item[k]
+            return ""
 
         # Convert products to ProcessedPrice records
-        for product in data.get("products", []):
-            category = product.get("category", "")
-            subcategory = product.get("subcategory", "")
-            product_name = product.get("product", "")
-            presentation = product.get("presentation", "")
-            units = product.get("units", "")
+        for product in product_list:
+            category = get_field(product, "category", "categoria", "grupo")
+            subcategory = get_field(product, "subcategory", "subcategoria")
+            product_name = get_field(product, "product", "producto", "Producto")
+            presentation = get_field(product, "presentation", "presentacion", "Presentación", "presentación")
+            units = get_field(product, "units", "unidades", "Unidades")
 
             if not product_name:
                 continue
 
-            # Round 1
-            min1 = parse_price(product.get("round1_min"))
-            max1 = parse_price(product.get("round1_max"))
+            # Round 1 — handle both English and Spanish field names
+            min1 = parse_price(get_field(product, "round1_min", "Ronda 1 Mínimo", "ronda_1_minimo", "ronda1_min", "min1"))
+            max1 = parse_price(get_field(product, "round1_max", "Ronda 1 Máximo", "ronda_1_maximo", "ronda1_max", "max1"))
             if min1 is not None or max1 is not None:
                 prices.append(ProcessedPrice(
                     category=category,
@@ -253,13 +292,13 @@ def ocr_extract_prices(
                     source_path=storage_path or filepath,
                     download_entry_id=download_entry_id,
                     extracted_pdf_id=extracted_pdf_id,
-                    city=city,
-                    market=market
+                    city=city_str,
+                    market=market_str
                 ))
 
             # Round 2
-            min2 = parse_price(product.get("round2_min"))
-            max2 = parse_price(product.get("round2_max"))
+            min2 = parse_price(get_field(product, "round2_min", "Ronda 2 Mínimo", "ronda_2_minimo", "ronda2_min", "min2"))
+            max2 = parse_price(get_field(product, "round2_max", "Ronda 2 Máximo", "ronda_2_maximo", "ronda2_max", "max2"))
             if min2 is not None and max2 is not None and (min2 > 0 or max2 > 0):
                 prices.append(ProcessedPrice(
                     category=category,
@@ -275,8 +314,8 @@ def ocr_extract_prices(
                     source_path=storage_path or filepath,
                     download_entry_id=download_entry_id,
                     extracted_pdf_id=extracted_pdf_id,
-                    city=city,
-                    market=market
+                    city=city_str,
+                    market=market_str
                 ))
 
     except json.JSONDecodeError as e:
