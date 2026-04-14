@@ -13,7 +13,6 @@ Usage:
 import os
 import re
 import sys
-import io
 import json
 import time
 import hashlib
@@ -25,13 +24,17 @@ import urllib.error
 from pathlib import Path
 from typing import Optional
 
-# Fix Windows console encoding — force UTF-8 output
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
-
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+
+def safe_print(*args, **kwargs):
+    """Print that handles encoding errors on Windows (cp1252 console)."""
+    try:
+        print(*args, **kwargs)
+    except UnicodeEncodeError:
+        text = ' '.join(str(a) for a in args)
+        print(text.encode('ascii', errors='replace').decode('ascii'), **kwargs)
 
 from backend.supabase_client import get_supabase_client, get_db_connection
 
@@ -479,7 +482,7 @@ def search_wikimedia(query: str, limit: int = 3) -> list[dict]:
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read())
     except Exception as e:
-        print(f"  [wikimedia] Search error for '{query}': {e}")
+        safe_print(f"  [wikimedia] Search error for '{query}': {e}")
         return []
 
     results = []
@@ -515,7 +518,7 @@ def download_image(url: str) -> Optional[bytes]:
                 pass
             return data
     except Exception as e:
-        print(f"  [download] Error: {e}")
+        safe_print(f"  [download] Error: {e}")
         return None
 
 
@@ -537,7 +540,7 @@ def search_openverse(query: str, limit: int = 1) -> list[dict]:
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read())
     except Exception as e:
-        print(f"  [openverse] Search error for '{query}': {e}")
+        safe_print(f"  [openverse] Search error for '{query}': {e}")
         return []
 
     results = []
@@ -613,7 +616,7 @@ def get_fruits360_folders() -> list[str]:
             data = json.loads(resp.read())
         _fruits360_folders = [item['name'] for item in data if item['type'] == 'dir']
     except Exception as e:
-        print(f"  [fruits360] Error loading folders: {e}")
+        safe_print(f"  [fruits360] Error loading folders: {e}")
         _fruits360_folders = []
 
     return _fruits360_folders
@@ -660,7 +663,7 @@ def get_fruits360_image(product_key: str) -> Optional[bytes]:
             time.sleep(GITHUB_API_DELAY)
             return download_image(image_url)
     except Exception as e:
-        print(f"  [fruits360] Error for {target_folder}: {e}")
+        safe_print(f"  [fruits360] Error for {target_folder}: {e}")
 
     return None
 
@@ -673,15 +676,15 @@ def ensure_bucket_exists(client):
     """Create the product-images bucket if it doesn't exist, make it public."""
     try:
         client.storage.get_bucket(IMAGE_BUCKET)
-        print(f"Bucket '{IMAGE_BUCKET}' already exists.")
+        safe_print(f"Bucket '{IMAGE_BUCKET}' already exists.")
     except Exception:
         try:
             client.storage.create_bucket(IMAGE_BUCKET, options={"public": True})
-            print(f"Created public bucket '{IMAGE_BUCKET}'.")
+            safe_print(f"Created public bucket '{IMAGE_BUCKET}'.")
         except Exception as e:
             if "already exists" not in str(e).lower():
                 raise
-            print(f"Bucket '{IMAGE_BUCKET}' already exists (caught on create).")
+            safe_print(f"Bucket '{IMAGE_BUCKET}' already exists (caught on create).")
 
 
 def upload_to_supabase(client, image_data: bytes, storage_path: str) -> bool:
@@ -697,7 +700,7 @@ def upload_to_supabase(client, image_data: bytes, storage_path: str) -> bool:
         error_str = str(e).lower()
         if 'duplicate' in error_str or 'already exists' in error_str or '409' in error_str:
             return True  # Already uploaded
-        print(f"  [upload] Error: {e}")
+        safe_print(f"  [upload] Error: {e}")
         return False
 
 
@@ -727,31 +730,31 @@ def find_image_for_product(product_key: str, search_term: str) -> Optional[bytes
     Returns image bytes or None.
     """
     # 1. Try fruits-360 first (best quality for produce)
-    print(f"  Trying fruits-360...")
+    safe_print(f"  Trying fruits-360...")
     img = get_fruits360_image(product_key)
     if img:
-        print(f"  Found in fruits-360!")
+        safe_print(f"  Found in fruits-360!")
         return img
     time.sleep(GITHUB_API_DELAY)
 
     # 2. Try Wikimedia Commons
-    print(f"  Trying Wikimedia Commons for '{search_term}'...")
+    safe_print(f"  Trying Wikimedia Commons for '{search_term}'...")
     time.sleep(WIKIMEDIA_DELAY)
     results = search_wikimedia(search_term)
     for r in results:
         img = download_image(r['thumb'])
         if img:
-            print(f"  Found on Wikimedia: {r['title']}")
+            safe_print(f"  Found on Wikimedia: {r['title']}")
             return img
 
     # 3. Try Openverse (rate limited)
-    print(f"  Trying Openverse for '{search_term}'...")
+    safe_print(f"  Trying Openverse for '{search_term}'...")
     time.sleep(OPENVERSE_DELAY)
     results = search_openverse(search_term)
     for r in results:
         img = download_image(r['thumb'])
         if img:
-            print(f"  Found on Openverse: {r['title']} (license: {r['license']})")
+            safe_print(f"  Found on Openverse: {r['title']} (license: {r['license']})")
             return img
 
     return None
@@ -846,9 +849,9 @@ def get_insumo_subgrupos(conn) -> list[dict]:
 def process_products(client, conn, dry_run: bool = False):
     """Fetch and upload images for all products."""
     products = get_unique_products(conn)
-    print(f"\n{'='*60}")
-    print(f"Processing {len(products)} unique product image groups")
-    print(f"{'='*60}\n")
+    safe_print(f"\n{'='*60}")
+    safe_print(f"Processing {len(products)} unique product image groups")
+    safe_print(f"{'='*60}\n")
 
     stats = {'found': 0, 'skipped': 0, 'failed': 0}
     manifest = {}
@@ -857,36 +860,36 @@ def process_products(client, conn, dry_run: bool = False):
         key = product['key']
         storage_path = f"{PRODUCTS_PREFIX}/{key}.jpg"
 
-        print(f"[{i+1}/{len(products)}] {product['base_name']} ({key})")
-        print(f"  Category: {product['category']} > {product['subcategory']}")
-        print(f"  Covers {len(product['products'])} product variants")
-        print(f"  Search: {product['search_term']}")
+        safe_print(f"[{i+1}/{len(products)}] {product['base_name']} ({key})")
+        safe_print(f"  Category: {product['category']} > {product['subcategory']}")
+        safe_print(f"  Covers {len(product['products'])} product variants")
+        safe_print(f"  Search: {product['search_term']}")
 
         # Check if already uploaded
         if not dry_run and image_exists(client, storage_path):
-            print(f"  Already uploaded, skipping.")
+            safe_print(f"  Already uploaded, skipping.")
             stats['skipped'] += 1
             manifest[key] = storage_path
             continue
 
         if dry_run:
-            print(f"  [DRY RUN] Would search and upload to {storage_path}")
+            safe_print(f"  [DRY RUN] Would search and upload to {storage_path}")
             stats['skipped'] += 1
             continue
 
         img_data = find_image_for_product(product['key'], product['search_term'])
         if img_data:
             if upload_to_supabase(client, img_data, storage_path):
-                print(f"  Uploaded to {storage_path} ({len(img_data)} bytes)")
+                safe_print(f"  Uploaded to {storage_path} ({len(img_data)} bytes)")
                 stats['found'] += 1
                 manifest[key] = storage_path
             else:
                 stats['failed'] += 1
         else:
-            print(f"  No image found!")
+            safe_print(f"  No image found!")
             stats['failed'] += 1
 
-        print()
+        safe_print()
 
     return stats, manifest
 
@@ -894,9 +897,9 @@ def process_products(client, conn, dry_run: bool = False):
 def process_insumos(client, conn, dry_run: bool = False):
     """Fetch and upload images for insumo subgrupos."""
     subgrupos = get_insumo_subgrupos(conn)
-    print(f"\n{'='*60}")
-    print(f"Processing {len(subgrupos)} insumo subgrupos")
-    print(f"{'='*60}\n")
+    safe_print(f"\n{'='*60}")
+    safe_print(f"Processing {len(subgrupos)} insumo subgrupos")
+    safe_print(f"{'='*60}\n")
 
     stats = {'found': 0, 'skipped': 0, 'failed': 0}
     manifest = {}
@@ -905,54 +908,54 @@ def process_insumos(client, conn, dry_run: bool = False):
         key = sg['key']
         storage_path = f"{INSUMOS_PREFIX}/{key}.jpg"
 
-        print(f"[{i+1}/{len(subgrupos)}] {sg['subgrupo']}")
-        print(f"  Grupo: {sg['grupo']}")
-        print(f"  Search: {sg['search_term']}")
+        safe_print(f"[{i+1}/{len(subgrupos)}] {sg['subgrupo']}")
+        safe_print(f"  Grupo: {sg['grupo']}")
+        safe_print(f"  Search: {sg['search_term']}")
 
         if not dry_run and image_exists(client, storage_path):
-            print(f"  Already uploaded, skipping.")
+            safe_print(f"  Already uploaded, skipping.")
             stats['skipped'] += 1
             manifest[key] = storage_path
             continue
 
         if dry_run:
-            print(f"  [DRY RUN] Would search and upload to {storage_path}")
+            safe_print(f"  [DRY RUN] Would search and upload to {storage_path}")
             stats['skipped'] += 1
             continue
 
         # For insumos, skip fruits-360, go straight to Wikimedia/Openverse
-        print(f"  Trying Wikimedia Commons...")
+        safe_print(f"  Trying Wikimedia Commons...")
         time.sleep(WIKIMEDIA_DELAY)
         img_data = None
         results = search_wikimedia(sg['search_term'])
         for r in results:
             img_data = download_image(r['thumb'])
             if img_data:
-                print(f"  Found on Wikimedia: {r['title']}")
+                safe_print(f"  Found on Wikimedia: {r['title']}")
                 break
 
         if not img_data:
-            print(f"  Trying Openverse...")
+            safe_print(f"  Trying Openverse...")
             time.sleep(OPENVERSE_DELAY)
             results = search_openverse(sg['search_term'])
             for r in results:
                 img_data = download_image(r['thumb'])
                 if img_data:
-                    print(f"  Found on Openverse: {r['title']}")
+                    safe_print(f"  Found on Openverse: {r['title']}")
                     break
 
         if img_data:
             if upload_to_supabase(client, img_data, storage_path):
-                print(f"  Uploaded to {storage_path} ({len(img_data)} bytes)")
+                safe_print(f"  Uploaded to {storage_path} ({len(img_data)} bytes)")
                 stats['found'] += 1
                 manifest[key] = storage_path
             else:
                 stats['failed'] += 1
         else:
-            print(f"  No image found!")
+            safe_print(f"  No image found!")
             stats['failed'] += 1
 
-        print()
+        safe_print()
 
     return stats, manifest
 
@@ -977,7 +980,7 @@ def save_manifest(product_manifest: dict, insumo_manifest: dict, supabase_url: s
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     with open(manifest_path, 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
-    print(f"\nManifest saved to {manifest_path}")
+    safe_print(f"\nManifest saved to {manifest_path}")
     return manifest
 
 
@@ -989,7 +992,7 @@ def main():
     args = parser.parse_args()
 
     # Initialize clients
-    print("Connecting to Supabase...")
+    safe_print("Connecting to Supabase...")
     client = get_supabase_client()
     conn = get_db_connection()
     supabase_url = os.getenv("SUPABASE_URL")
@@ -1003,11 +1006,11 @@ def main():
     try:
         if not args.insumos_only:
             p_stats, product_manifest = process_products(client, conn, args.dry_run)
-            print(f"\nProducts: {p_stats['found']} found, {p_stats['skipped']} skipped, {p_stats['failed']} failed")
+            safe_print(f"\nProducts: {p_stats['found']} found, {p_stats['skipped']} skipped, {p_stats['failed']} failed")
 
         if not args.products_only:
             i_stats, insumo_manifest = process_insumos(client, conn, args.dry_run)
-            print(f"\nInsumos: {i_stats['found']} found, {i_stats['skipped']} skipped, {i_stats['failed']} failed")
+            safe_print(f"\nInsumos: {i_stats['found']} found, {i_stats['skipped']} skipped, {i_stats['failed']} failed")
 
         if not args.dry_run:
             save_manifest(product_manifest, insumo_manifest, supabase_url)
@@ -1015,7 +1018,7 @@ def main():
     finally:
         conn.close()
 
-    print("\nDone!")
+    safe_print("\nDone!")
 
 
 if __name__ == '__main__':
