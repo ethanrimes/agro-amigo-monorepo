@@ -80,6 +80,50 @@ def is_scanned_pdf(filepath: str) -> bool:
         return False
 
 
+def needs_ocr_fallback(filepath: str) -> bool:
+    """
+    Check if a PDF needs OCR because pdfplumber can extract text but not table data.
+
+    Some PDFs have text streams that pdfplumber can read but the table extraction
+    returns empty cells. These need Gemini vision to parse the visual layout.
+    """
+    try:
+        import pdfplumber
+        with pdfplumber.open(filepath) as pdf:
+            if not pdf.pages:
+                return False
+
+            text = pdf.pages[0].extract_text() or ""
+            # Check for CID-encoded text (custom font encoding pdfplumber can't decode)
+            clean_text = text.replace('(cid:', '').strip()
+            if len(clean_text) < 100 or '(cid:' in text[:200]:
+                if len(text.strip()) < 100:
+                    return False  # Truly empty
+                # Text is CID-encoded — needs OCR
+                return True
+
+            tables = pdf.pages[0].extract_tables()
+            if not tables:
+                return True  # Has text but no tables at all
+
+            # Check if tables have actual readable data (not CID-encoded garbage)
+            for table in tables:
+                for row in table:
+                    if row:
+                        for cell in row:
+                            if cell and str(cell).strip():
+                                cell_str = str(cell).strip()
+                                # CID-encoded text is unreadable — treat as empty
+                                if '(cid:' in cell_str:
+                                    continue
+                                return False  # Found at least one real non-empty cell
+
+            # All table cells are empty or CID-encoded — needs OCR
+            return True
+    except Exception:
+        return False
+
+
 def ocr_extract_prices(
     filepath: str,
     storage_path: str = "",
@@ -125,9 +169,10 @@ def ocr_extract_prices(
 
         # Send to Gemini Flash with the PDF
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3-flash-preview",
             contents=[
                 types.Content(
+                    role='user',
                     parts=[
                         types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"),
                         types.Part.from_text(text=GEMINI_PROMPT),
@@ -136,12 +181,20 @@ def ocr_extract_prices(
             ],
             config=types.GenerateContentConfig(
                 temperature=0.0,
-                max_output_tokens=8192,
+                max_output_tokens=32768,
             )
         )
 
         # Parse response
-        response_text = response.text.strip()
+        response_text = ""
+        if response.text:
+            response_text = response.text.strip()
+        elif response.candidates:
+            # Some models return content via candidates
+            for part in response.candidates[0].content.parts:
+                if hasattr(part, 'text') and part.text:
+                    response_text += part.text
+            response_text = response_text.strip()
 
         # Extract JSON from response (may be wrapped in ```json blocks)
         json_match = re.search(r'```json\s*(.*?)\s*```', response_text, re.DOTALL)

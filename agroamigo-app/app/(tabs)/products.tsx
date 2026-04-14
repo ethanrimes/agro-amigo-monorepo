@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
 import { Card } from '../../src/components/Card';
 import { SearchBar } from '../../src/components/SearchBar';
 import { Sparkline } from '../../src/components/Sparkline';
 import { PriceChangeIndicator } from '../../src/components/PriceChangeIndicator';
+import { ProductImage } from '../../src/components/ProductImage';
 import { getProducts, getCategories, getSubcategories } from '../../src/api/products';
-import { getProductImageUrl } from '../../src/lib/images';
 import { formatCOP } from '../../src/lib/format';
 
 export default function ProductsScreen() {
@@ -53,8 +53,9 @@ export default function ProductsScreen() {
         onPress={() => router.push(`/product/${item.id}`)}
       >
         <View style={styles.productRow}>
-          <Image
-            source={{ uri: getProductImageUrl(item.canonical_name, categoryName) }}
+          <ProductImage
+            productName={item.canonical_name}
+            categoryName={categoryName}
             style={styles.productImage}
           />
           <View style={styles.productInfo}>

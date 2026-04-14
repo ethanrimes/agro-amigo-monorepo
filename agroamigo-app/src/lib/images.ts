@@ -1,8 +1,76 @@
 /**
- * Product image handling.
- * In the future, each product/insumo will have an image stored in Supabase storage.
- * For now, we use category-based placeholder images from Unsplash.
+ * Product and insumo image handling.
+ *
+ * Images are stored in the public Supabase `product-images` bucket:
+ *   products/{slug}.jpg   — one image per unique product type
+ *   insumos/{slug}.jpg    — one image per insumo subgrupo
+ *
+ * Falls back to category-level Unsplash placeholders when a specific
+ * image hasn't been uploaded yet.
  */
+
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const IMAGE_BUCKET = 'product-images';
+const BASE_URL = `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}`;
+
+// -----------------------------------------------------------------------
+// Slug helper — mirrors the Python slugify() in fetch_product_images.py
+// -----------------------------------------------------------------------
+
+function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // strip combining diacriticals
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '_')
+    .replace(/-+/g, '-')
+    .replace(/^[_-]+|[_-]+$/g, '');
+}
+
+/**
+ * Extract the base product key that maps to an image slug.
+ * Mirrors extract_base_product() from the Python script.
+ */
+function extractBaseProductKey(productName: string, categoryName?: string): string {
+  let name = productName
+    .replace(/[*+]+$/, '')
+    .normalize('NFC')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  if (categoryName === 'Carnes') {
+    if (name.includes(',')) {
+      name = name.split(',')[0].trim();
+    }
+    return slugify(name);
+  }
+
+  if (name.includes('huevo')) return 'huevo';
+
+  if (categoryName === 'Pescados') {
+    let fishName = name.split(',')[0].trim();
+    for (const w of ['entero', 'entera', 'fresco', 'fresca', 'congelado',
+      'congelada', 'importado', 'importada', 'precocido', 'seco', 'seca']) {
+      fishName = fishName.replace(new RegExp(`\\b${w}\\b`, 'g'), '').trim();
+    }
+    return slugify(fishName);
+  }
+
+  // Remove regional qualifiers for produce
+  const regional = ['bogotana', 'bogotano', 'pastusa', 'pastuso', 'valluna',
+    'valluno', 'huilense', 'antiqueño', 'santandereano', 'regional',
+    'importada', 'importado', 'nacional', 'ecuatoriano', 'llanero', 'llanera',
+    'aquitania', 'berlín', 'tenerife', 'ocañera', 'peruana'];
+  const parts = name.split(/\s+/).filter((p) => !regional.includes(p));
+  return slugify(parts.join(' '));
+}
+
+// -----------------------------------------------------------------------
+// Category-level fallback images (Unsplash)
+// -----------------------------------------------------------------------
 
 const CATEGORY_IMAGES: Record<string, string> = {
   'Frutas': 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=200&h=200&fit=crop',
@@ -16,14 +84,23 @@ const CATEGORY_IMAGES: Record<string, string> = {
 };
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=200&h=200&fit=crop';
-const INSUMO_IMAGE = 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop';
+const INSUMO_FALLBACK = 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop';
+
+// -----------------------------------------------------------------------
+// Public API
+// -----------------------------------------------------------------------
 
 /**
- * Get product image URL. Later this will check Supabase storage for product-specific images.
+ * Get product image URL.
+ * Tries product-specific image from Supabase first, falls back to category.
  */
 export function getProductImageUrl(productName?: string, categoryName?: string): string {
-  // TODO: Check Supabase storage for product-specific image
-  // const { data } = supabase.storage.from('product-images').getPublicUrl(`${productId}.jpg`);
+  if (productName) {
+    const slug = extractBaseProductKey(productName, categoryName);
+    if (slug && slug.length >= 2) {
+      return `${BASE_URL}/products/${slug}.jpg`;
+    }
+  }
   if (categoryName && CATEGORY_IMAGES[categoryName]) {
     return CATEGORY_IMAGES[categoryName];
   }
@@ -38,9 +115,33 @@ export function getCategoryImageUrl(categoryName: string): string {
 }
 
 /**
- * Get insumo image URL. Later this will check Supabase storage.
+ * Get insumo image URL.
+ * Uses subgrupo-level image from Supabase, falls back to generic.
  */
 export function getInsumoImageUrl(insumoName?: string, subgrupo?: string): string {
-  // TODO: Check Supabase storage for insumo-specific image
-  return INSUMO_IMAGE;
+  if (subgrupo) {
+    const slug = slugify(subgrupo);
+    if (slug && slug.length >= 2) {
+      return `${BASE_URL}/insumos/${slug}.jpg`;
+    }
+  }
+  return INSUMO_FALLBACK;
+}
+
+/**
+ * Get the fallback image URL if a product image fails to load.
+ * Use this as the onError source in Image components.
+ */
+export function getProductFallbackUrl(categoryName?: string): string {
+  if (categoryName && CATEGORY_IMAGES[categoryName]) {
+    return CATEGORY_IMAGES[categoryName];
+  }
+  return DEFAULT_IMAGE;
+}
+
+/**
+ * Get the fallback image URL for insumos if the subgrupo image fails.
+ */
+export function getInsumoFallbackUrl(): string {
+  return INSUMO_FALLBACK;
 }

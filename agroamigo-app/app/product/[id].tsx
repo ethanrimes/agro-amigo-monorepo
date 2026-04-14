@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, Pressable, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, ActivityIndicator, Dimensions } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Polyline, Line, Text as SvgText, Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
 import { Card } from '../../src/components/Card';
 import { PriceChangeIndicator } from '../../src/components/PriceChangeIndicator';
+import { ProductImage } from '../../src/components/ProductImage';
 import { getProductById, getProductPrices } from '../../src/api/products';
 import { getProductSupply } from '../../src/api/supply';
-import { getProductImageUrl } from '../../src/lib/images';
 import { formatCOP, formatCOPCompact, formatDateShort, formatKg, pctChange } from '../../src/lib/format';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -121,8 +121,9 @@ export default function ProductDetailScreen() {
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Image
-            source={{ uri: getProductImageUrl(product.canonical_name, categoryName) }}
+          <ProductImage
+            productName={product.canonical_name}
+            categoryName={categoryName}
             style={styles.headerImage}
           />
           <View style={styles.headerInfo}>

@@ -1,25 +1,192 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Alert } from 'react-native';
+import MapView, { Geojson, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
+import { getPricesByDepartment, getSupplyByDepartment, getDepartments, getMarketLocations } from '../../src/api/map';
+import { formatCOPCompact, formatKg } from '../../src/lib/format';
+import colombiaGeoJson from '../../src/data/colombia-departments.json';
 
-// Mapbox requires a native build with an access token.
-// For the Expo Go dev flow, we show a placeholder with planned functionality.
-// In production, this will use @rnmapbox/maps with a Mapbox token.
+// Colombia center coordinates
+const COLOMBIA_CENTER = { latitude: 4.5, longitude: -73.0 };
+const COLOMBIA_DELTA = { latitudeDelta: 12, longitudeDelta: 12 };
+
+// Color scales
+const PRICE_COLORS = ['#2D7D46', '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#F44336'];
+const SUPPLY_COLORS = ['#E3F2FD', '#90CAF9', '#42A5F5', '#1E88E5', '#1565C0', '#0D47A1', '#1A237E'];
+
+function interpolateColor(value: number, min: number, max: number, colorScale: string[]): string {
+  if (max === min) return colorScale[3];
+  const t = Math.max(0, Math.min(1, (value - min) / (max - min)));
+  const idx = Math.min(Math.floor(t * (colorScale.length - 1)), colorScale.length - 2);
+  return colorScale[idx + 1]; // simple step, no lerp needed
+}
+
+type Mode = 'price' | 'supply';
+
+interface MarketPoint {
+  id: string;
+  name: string;
+  city: string;
+  department: string;
+  lat: number | null;
+  lng: number | null;
+}
 
 export default function MapScreen() {
-  const [mode, setMode] = useState<'price' | 'supply'>('price');
+  const router = useRouter();
+  const [mode, setMode] = useState<Mode>('price');
+  const [loading, setLoading] = useState(true);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [priceData, setPriceData] = useState<any[]>([]);
+  const [supplyData, setSupplyData] = useState<any[]>([]);
+  const [markets, setMarkets] = useState<MarketPoint[]>([]);
+  const [selectedDept, setSelectedDept] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const [depts, prices, supply, mkts] = await Promise.all([
+        getDepartments(),
+        getPricesByDepartment(undefined, 30),
+        getSupplyByDepartment(undefined, 30),
+        getMarketLocations(),
+      ]);
+      setDepartments(depts || []);
+      setPriceData(prices || []);
+      setSupplyData(supply || []);
+      setMarkets((mkts || []).filter((m: any) => m.lat && m.lng));
+    } catch (err) {
+      console.error('Error loading map data:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Build dept_id -> divipola_code lookup
+  const deptIdToDivipola = useMemo(() => {
+    const map = new Map<string, string>();
+    const nameMap = new Map<string, string>();
+    for (const d of departments) {
+      if (d.divipola_code) map.set(d.id, d.divipola_code);
+      nameMap.set(d.id, d.canonical_name);
+    }
+    return { codeMap: map, nameMap };
+  }, [departments]);
+
+  // Build divipola_code -> value lookup for choropleth
+  const divipolaToValue = useMemo(() => {
+    const map = new Map<string, number>();
+    const dataset = mode === 'price' ? priceData : supplyData;
+    const valueKey = mode === 'price' ? 'avg_price' : 'total_kg';
+
+    for (const row of dataset) {
+      const code = deptIdToDivipola.codeMap.get(row.department_id);
+      if (code) {
+        map.set(code, (row as any)[valueKey] || 0);
+      }
+    }
+    return map;
+  }, [mode, priceData, supplyData, deptIdToDivipola]);
+
+  // Compute min/max for color scale
+  const { minVal, maxVal } = useMemo(() => {
+    const values = Array.from(divipolaToValue.values()).filter(v => v > 0);
+    if (values.length === 0) return { minVal: 0, maxVal: 1 };
+    return { minVal: Math.min(...values), maxVal: Math.max(...values) };
+  }, [divipolaToValue]);
+
+  // Build colored GeoJSON — set per-feature "fill" properties
+  const coloredGeoJson = useMemo(() => {
+    const colorScale = mode === 'price' ? PRICE_COLORS : SUPPLY_COLORS;
+
+    const features = (colombiaGeoJson as any).features.map((feature: any) => {
+      const code = feature.properties.DPTO;
+      const value = divipolaToValue.get(code);
+      const fillColor = value != null && value > 0
+        ? interpolateColor(value, minVal, maxVal, colorScale)
+        : '#E0E0E0'; // no data = grey
+
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          fill: fillColor,
+          'fill-opacity': '0.7',
+          stroke: '#FFFFFF',
+          'stroke-width': 1.5,
+        },
+      };
+    });
+
+    return { type: 'FeatureCollection' as const, features };
+  }, [divipolaToValue, minVal, maxVal, mode]);
+
+  const handleDeptPress = useCallback((event: any) => {
+    const feature = event?.feature || event?.nativeEvent?.feature;
+    if (!feature?.properties) return;
+
+    const code = feature.properties.DPTO;
+    const name = feature.properties.NOMBRE_DPT;
+    const value = divipolaToValue.get(code);
+
+    const formattedValue = mode === 'price'
+      ? formatCOPCompact(value ?? 0)
+      : formatKg(value ?? 0);
+
+    const label = mode === 'price' ? 'Precio promedio' : 'Abastecimiento';
+
+    setSelectedDept(code);
+    Alert.alert(
+      name,
+      `${label}: ${value ? formattedValue : 'Sin datos'}`,
+      [{ text: 'OK', onPress: () => setSelectedDept(null) }],
+    );
+  }, [divipolaToValue, mode]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Cargando mapa...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {/* Map placeholder */}
-      <View style={styles.mapPlaceholder}>
-        <Ionicons name="map" size={64} color={colors.primary + '40'} />
-        <Text style={styles.placeholderTitle}>Mapa de Colombia</Text>
-        <Text style={styles.placeholderSubtitle}>
-          El mapa interactivo con Mapbox estará disponible{'\n'}en la versión nativa (development build)
-        </Text>
-      </View>
+      <MapView
+        style={styles.map}
+        initialRegion={{ ...COLOMBIA_CENTER, ...COLOMBIA_DELTA }}
+        mapType="standard"
+        rotateEnabled={false}
+        pitchEnabled={false}
+      >
+        {/* Department choropleth polygons */}
+        <Geojson
+          geojson={coloredGeoJson as any}
+          tappable
+          onPress={handleDeptPress}
+        />
+
+        {/* Market markers */}
+        {markets.map((m) => (
+          m.lat && m.lng ? (
+            <Marker
+              key={m.id}
+              coordinate={{ latitude: m.lat, longitude: m.lng }}
+              title={m.name}
+              description={`${m.city}, ${m.department}`}
+              pinColor={colors.primary}
+              onCalloutPress={() => router.push(`/market/${m.id}`)}
+            />
+          ) : null
+        ))}
+      </MapView>
 
       {/* Control panel overlay */}
       <View style={styles.controlPanel}>
@@ -51,11 +218,10 @@ export default function MapScreen() {
             </Text>
           </Pressable>
         </View>
-
         <Text style={styles.controlLabel}>
           {mode === 'price'
-            ? 'Precios por departamento/mercado'
-            : 'Flujos de abastecimiento'
+            ? 'Precio promedio por departamento (30 días)'
+            : 'Volumen de abastecimiento por departamento (30 días)'
           }
         </Text>
       </View>
@@ -65,21 +231,23 @@ export default function MapScreen() {
         <View style={styles.legendRow}>
           {mode === 'price' ? (
             <>
-              <View style={[styles.legendDot, { backgroundColor: '#4CAF50' }]} />
-              <Text style={styles.legendText}>Bajo</Text>
-              <View style={[styles.legendDot, { backgroundColor: '#FFC107' }]} />
-              <Text style={styles.legendText}>Medio</Text>
-              <View style={[styles.legendDot, { backgroundColor: '#F44336' }]} />
-              <Text style={styles.legendText}>Alto</Text>
+              <View style={[styles.legendBar, { backgroundColor: PRICE_COLORS[0] }]} />
+              <Text style={styles.legendText}>{formatCOPCompact(minVal)}</Text>
+              <View style={[styles.legendBar, { backgroundColor: PRICE_COLORS[3] }]} />
+              <View style={[styles.legendBar, { backgroundColor: PRICE_COLORS[6] }]} />
+              <Text style={styles.legendText}>{formatCOPCompact(maxVal)}</Text>
             </>
           ) : (
             <>
-              <View style={[styles.legendDot, { backgroundColor: colors.accent.blue }]} />
-              <Text style={styles.legendText}>Bajo volumen</Text>
-              <View style={[styles.legendDot, { backgroundColor: colors.primary }]} />
-              <Text style={styles.legendText}>Alto volumen</Text>
+              <View style={[styles.legendBar, { backgroundColor: SUPPLY_COLORS[0] }]} />
+              <Text style={styles.legendText}>{formatKg(minVal)}</Text>
+              <View style={[styles.legendBar, { backgroundColor: SUPPLY_COLORS[3] }]} />
+              <View style={[styles.legendBar, { backgroundColor: SUPPLY_COLORS[6] }]} />
+              <Text style={styles.legendText}>{formatKg(maxVal)}</Text>
             </>
           )}
+          <View style={[styles.legendBar, { backgroundColor: '#E0E0E0' }]} />
+          <Text style={styles.legendText}>Sin datos</Text>
         </View>
         <Text style={styles.legendSource}>Fuente: SIPSA-DANE</Text>
       </View>
@@ -90,24 +258,20 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
-  mapPlaceholder: {
+  map: {
+    flex: 1,
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
     gap: spacing.md,
   },
-  placeholderTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: colors.text.primary,
-  },
-  placeholderSubtitle: {
-    fontSize: fontSize.sm,
+  loadingText: {
+    fontSize: fontSize.md,
     color: colors.text.secondary,
-    textAlign: 'center',
-    lineHeight: 20,
   },
   controlPanel: {
     position: 'absolute',
@@ -119,7 +283,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     shadowColor: colors.dark,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
     gap: spacing.sm,
@@ -164,7 +328,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     shadowColor: colors.dark,
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 5,
     gap: spacing.xs,
@@ -172,21 +336,24 @@ const styles = StyleSheet.create({
   legendRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.xs,
     justifyContent: 'center',
+    flexWrap: 'wrap',
   },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+  legendBar: {
+    width: 20,
+    height: 12,
+    borderRadius: 2,
   },
   legendText: {
     fontSize: fontSize.xs,
     color: colors.text.secondary,
+    marginRight: spacing.xs,
   },
   legendSource: {
     fontSize: fontSize.xs,
     color: colors.text.tertiary,
     textAlign: 'center',
+    marginTop: 2,
   },
 });

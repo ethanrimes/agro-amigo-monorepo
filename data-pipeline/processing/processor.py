@@ -30,7 +30,7 @@ from backend.database import DatabaseClient, ProcessedPrice, ProcessingError
 from processing.pdf_parser import PDFParser
 from processing.excel_parser import ExcelParser
 from processing.zip_handler import ZIPHandler, ExtractionResult
-from processing.ocr_fallback import is_scanned_pdf, ocr_extract_prices
+from processing.ocr_fallback import is_scanned_pdf, needs_ocr_fallback, ocr_extract_prices
 
 
 @dataclass
@@ -452,7 +452,7 @@ class DataProcessor:
                 return success, result.errors
 
             # If no prices and it's a scanned image, try OCR fallback
-            if is_scanned_pdf(temp_pdf):
+            if is_scanned_pdf(temp_pdf) or needs_ocr_fallback(temp_pdf):
                 print(f"    PDF: scanned image detected, trying Gemini OCR...")
                 ocr_prices, ocr_errors = ocr_extract_prices(
                     temp_pdf, storage_path,
