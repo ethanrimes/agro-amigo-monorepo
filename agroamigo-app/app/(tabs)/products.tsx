@@ -33,7 +33,7 @@ export default function ProductsScreen() {
       const data = await getProducts({
         categoryId: selectedCategory,
         search: search.length >= 2 ? search : undefined,
-        limit: 60,
+        limit: 600,
       });
       setProducts(data || []);
     } catch (err) {
