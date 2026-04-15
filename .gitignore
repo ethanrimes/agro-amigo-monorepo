@@ -11,5 +11,12 @@ scratch.md
 pastes
 data-pipeline/exports
 design
+
+# Node
+node_modules/
+.next/
+out/
+
+# App-specific
 agroamigo-app/.env
-agroamigo-app/node_modules/
+agroamigo-web/.env.local

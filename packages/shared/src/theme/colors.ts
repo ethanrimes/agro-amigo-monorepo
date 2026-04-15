@@ -1,0 +1,37 @@
+export const colors = {
+  primary: '#2D7D46',
+  primaryDark: '#1A5C32',
+  primaryLight: '#4CAF50',
+  secondary: '#8B6914',
+  secondaryLight: '#B8941F',
+  accent: {
+    orange: '#E8752A',
+    blue: '#2196F3',
+  },
+  background: '#F5F2EB',
+  surface: '#FFFFFF',
+  dark: '#1A2E1A',
+  darkSurface: '#243324',
+  text: {
+    primary: '#1A2E1A',
+    secondary: '#5A6B5A',
+    tertiary: '#8A978A',
+    inverse: '#FFFFFF',
+    accent: '#2D7D46',
+  },
+  border: '#E0DDD6',
+  borderLight: '#EEECE6',
+  price: {
+    up: '#E8752A',
+    down: '#2196F3',
+    neutral: '#8A978A',
+  },
+  chart: {
+    line1: '#2D7D46',
+    line2: '#E8752A',
+    line3: '#2196F3',
+    line4: '#8B6914',
+    fill: 'rgba(45, 125, 70, 0.1)',
+  },
+  shadow: 'rgba(26, 46, 26, 0.08)',
+} as const;
