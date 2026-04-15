@@ -1,0 +1,8 @@
+{
+  "name": "agro-amigo-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "agroamigo-web"
+  ]
+}
