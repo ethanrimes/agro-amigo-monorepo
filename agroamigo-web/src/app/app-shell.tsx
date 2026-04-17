@@ -6,36 +6,38 @@ import { usePathname } from 'next/navigation';
 import { IoSettingsOutline, IoArrowBack } from 'react-icons/io5';
 import { colors, spacing } from '@agroamigo/shared';
 import { BottomTabs } from '@/components/BottomTabs';
-
-const PAGE_TITLES: Record<string, string> = {
-  '/': 'AgroAmigo',
-  '/products': 'Productos',
-  '/markets': 'Mercados',
-  '/insumos': 'Insumos',
-  '/map': 'Mapa',
-  '/settings': 'Configuraci\u00f3n',
-};
+import { useLanguage } from '@/context/LanguageContext';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   const isDetail = pathname.startsWith('/product/') || pathname.startsWith('/market/') || pathname.startsWith('/insumo/');
   const isSettings = pathname === '/settings';
   const showBack = isDetail || isSettings;
 
+  const PAGE_TITLES: Record<string, string> = {
+    '/': t.nav_home,
+    '/products': t.nav_products,
+    '/markets': t.nav_markets,
+    '/insumos': t.nav_inputs,
+    '/map': t.nav_map,
+    '/settings': t.nav_settings,
+  };
+
   let title = PAGE_TITLES[pathname] || 'AgroAmigo';
-  if (pathname.startsWith('/product/')) title = 'Producto';
-  if (pathname.startsWith('/market/')) title = 'Mercado';
-  if (pathname.startsWith('/insumo/')) title = 'Insumo';
+  if (pathname.startsWith('/product/')) title = t.nav_product;
+  if (pathname.startsWith('/market/')) title = t.nav_market;
+  if (pathname.startsWith('/insumo/')) title = t.nav_input;
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
           {showBack && (
-            <Link href="javascript:void(0)" onClick={() => window.history.back()} style={{ color: colors.text.inverse, display: 'flex' }}>
+            <button onClick={() => window.history.back()} style={{ color: colors.text.inverse, display: 'flex', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
               <IoArrowBack size={22} />
-            </Link>
+            </button>
           )}
           <span>{title}</span>
         </div>

@@ -175,6 +175,7 @@ class DimensionResolver:
         Resolve a combined 'City, Market' string (e.g., 'Bogotá, D.C., Corabastos').
 
         Returns (city_id, market_id).
+        When the market name is empty, falls back to "Mercado municipal de <city>".
         """
         if not combined:
             return None, None
@@ -183,7 +184,51 @@ class DimensionResolver:
         city_id = self._resolve_city(city_name)
         market_id = self._resolve_market(market_name) if market_name else None
 
+        # Fallback: if no market resolved, use "Mercado municipal de <city>"
+        if city_id and not market_id:
+            city_canonical = self._get_city_canonical(city_id)
+            if city_canonical:
+                muni_name = f"Mercado municipal de {city_canonical}"
+                market_id = self._resolve_market(muni_name)
+                if not market_id:
+                    # Create the municipal market
+                    market_id = self._create_market(city_id, muni_name)
+
         return city_id, market_id
+
+    def _get_city_canonical(self, city_id: str) -> Optional[str]:
+        """Get the canonical name for a city by ID."""
+        self.cursor.execute(
+            "SELECT canonical_name FROM dim_city WHERE id = %s", (city_id,)
+        )
+        row = self.cursor.fetchone()
+        return row['canonical_name'] if row else None
+
+    def _create_market(self, city_id: str, market_name: str) -> Optional[str]:
+        """Create a new market entry."""
+        self.cursor.execute(
+            "INSERT INTO dim_market (canonical_name, city_id) VALUES (%s, %s) "
+            "ON CONFLICT (canonical_name) DO NOTHING RETURNING id",
+            (market_name, city_id)
+        )
+        row = self.cursor.fetchone()
+        if row:
+            mid = row['id']
+        else:
+            self.cursor.execute(
+                "SELECT id FROM dim_market WHERE canonical_name = %s", (market_name,)
+            )
+            r = self.cursor.fetchone()
+            mid = r['id'] if r else None
+        if mid:
+            self._market_cache[market_name] = mid
+            # Also create an alias
+            self.cursor.execute(
+                "INSERT INTO alias_market (raw_value, market_id) VALUES (%s, %s) "
+                "ON CONFLICT (raw_value) DO NOTHING",
+                (market_name, mid)
+            )
+        return mid
 
     def get_department_id(self, city_id: str) -> Optional[str]:
         """Get the department_id for a city."""

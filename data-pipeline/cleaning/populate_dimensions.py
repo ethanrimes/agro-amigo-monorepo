@@ -340,6 +340,20 @@ class DimensionPopulator:
                 self.market_alias[raw] = self.market_ids[canonical_market]
                 self._create_alias('alias_market', raw, 'market_id', self.market_ids[canonical_market])
 
+        # Step 4: Ensure every city has a "Mercado municipal de X" fallback market
+        # This is used when PDF data has a city but no market name
+        muni_created = 0
+        for canonical_city in sorted(city_to_raw):
+            city_id = self.city_ids.get(canonical_city)
+            if not city_id:
+                continue
+            muni_name = f"Mercado municipal de {canonical_city}"
+            if muni_name not in self.market_ids:
+                self._create_market(muni_name, city_id)
+                muni_created += 1
+        if muni_created > 0:
+            print(f"  Municipal market fallbacks created: {muni_created}")
+
         self._flush_aliases()
         print(f"  City aliases: {len(self.city_alias)}")
         print(f"  Market aliases: {len(self.market_alias)}")
@@ -708,7 +722,7 @@ class DimensionPopulator:
                     au.units_id,
                     c.department_id,
                     ac.city_id,
-                    am.market_id,
+                    COALESCE(am.market_id, muni.id) as market_id,
                     pp.source_type, pp.source_path,
                     pp.download_entry_id, pp.extracted_pdf_id, pp.id
                 FROM processed_prices pp
@@ -720,6 +734,9 @@ class DimensionPopulator:
                 LEFT JOIN alias_market am ON am.raw_value = pp.market AND pp.market != ''
                 LEFT JOIN alias_presentation apres ON apres.raw_value = pp.presentation AND pp.presentation != ''
                 LEFT JOIN alias_units au ON au.raw_value = pp.units AND pp.units != ''
+                LEFT JOIN dim_market muni ON muni.city_id = ac.city_id
+                    AND muni.canonical_name LIKE 'Mercado municipal de %%'
+                    AND am.market_id IS NULL
                 WHERE pp.price_date >= %s AND pp.price_date <= %s
             """, (current.isoformat(), month_end.isoformat()))
 

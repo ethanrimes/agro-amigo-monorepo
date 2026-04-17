@@ -7,12 +7,14 @@ import { colors, spacing, borderRadius, fontSize } from '@agroamigo/shared';
 import { getMarkets } from '@agroamigo/shared/api/markets';
 import { Card } from '@/components/Card';
 import { SearchBar } from '@/components/SearchBar';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface MarketItem { id: string; canonical_name: string; city_name: string; department_name: string; }
 interface Section { title: string; data: MarketItem[]; }
 
 export default function MarketsPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [sections, setSections] = useState<Section[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -47,31 +49,35 @@ export default function MarketsPage() {
 
   return (
     <div style={{ paddingTop: spacing.md, paddingBottom: 20 }}>
-      <SearchBar value={search} onChangeText={setSearch} placeholder="Buscar mercado o ciudad..." />
+      <SearchBar value={search} onChangeText={setSearch} placeholder={t.markets_search} />
       {filteredSections.length === 0 ? (
-        <p style={{ textAlign: 'center', marginTop: 40, fontSize: fontSize.md, color: colors.text.tertiary }}>No se encontraron mercados</p>
-      ) : filteredSections.map(section => (
-        <div key={section.title}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.sm}px` }}>
-            <IoLocation size={14} color={colors.primary} />
-            <span style={{ fontSize: fontSize.md, fontWeight: 700, color: colors.text.primary }}>{section.title}</span>
-          </div>
-          {section.data.map(item => (
-            <Card key={item.id} style={{ margin: `0 ${spacing.lg}px ${spacing.sm}px` }} onPress={() => router.push(`/market/${item.id}`)}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
-                <div style={{ width: 44, height: 44, borderRadius: borderRadius.md, backgroundColor: colors.primary + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <IoStorefront size={24} color={colors.primary} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: fontSize.md, fontWeight: 600, color: colors.text.primary, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.canonical_name}</span>
-                  <span style={{ fontSize: fontSize.sm, color: colors.text.secondary }}>{item.city_name}</span>
-                </div>
-                <IoChevronForward size={18} color={colors.text.tertiary} />
+        <p style={{ textAlign: 'center', marginTop: 40, fontSize: fontSize.md, color: colors.text.tertiary }}>{t.markets_not_found}</p>
+      ) : (
+        <>
+          {filteredSections.map(section => (
+            <div key={section.title} id={`dept-${section.title}`}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.sm}px` }}>
+                <IoLocation size={14} color={colors.primary} />
+                <span style={{ fontSize: fontSize.md, fontWeight: 700, color: colors.text.primary }}>{section.title}</span>
               </div>
-            </Card>
+              {section.data.map(item => (
+                <Card key={item.id} style={{ margin: `0 ${spacing.lg}px ${spacing.sm}px` }} onPress={() => router.push(`/market/${item.id}`)}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+                    <div style={{ width: 44, height: 44, borderRadius: borderRadius.md, backgroundColor: colors.primary + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <IoStorefront size={24} color={colors.primary} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontSize: fontSize.md, fontWeight: 600, color: colors.text.primary, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.canonical_name}</span>
+                      <span style={{ fontSize: fontSize.sm, color: colors.text.secondary }}>{item.city_name}</span>
+                    </div>
+                    <IoChevronForward size={18} color={colors.text.tertiary} />
+                  </div>
+                </Card>
+              ))}
+            </div>
           ))}
-        </div>
-      ))}
+        </>
+      )}
     </div>
   );
 }

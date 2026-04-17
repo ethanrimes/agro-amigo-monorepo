@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, SectionList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +6,7 @@ import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
 import { Card } from '../../src/components/Card';
 import { SearchBar } from '../../src/components/SearchBar';
 import { getMarkets } from '../../src/api/markets';
+import { useTranslation } from '../../src/lib/useTranslation';
 
 interface MarketItem {
   id: string;
@@ -21,6 +22,7 @@ interface Section {
 
 export default function MarketsScreen() {
   const router = useRouter();
+  const t = useTranslation();
   const [sections, setSections] = useState<Section[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -61,17 +63,18 @@ export default function MarketsScreen() {
     }
   }
 
-  const filteredSections = search.length >= 2
-    ? sections
-        .map(s => ({
-          ...s,
-          data: s.data.filter(m =>
-            m.canonical_name.toLowerCase().includes(search.toLowerCase()) ||
-            m.city_name.toLowerCase().includes(search.toLowerCase())
-          ),
-        }))
-        .filter(s => s.data.length > 0)
-    : sections;
+  const filteredSections = useMemo(() => {
+    if (search.length < 2) return sections;
+    return sections
+      .map(s => ({
+        ...s,
+        data: s.data.filter(m =>
+          m.canonical_name.toLowerCase().includes(search.toLowerCase()) ||
+          m.city_name.toLowerCase().includes(search.toLowerCase())
+        ),
+      }))
+      .filter(s => s.data.length > 0);
+  }, [sections, search]);
 
   const renderMarket = useCallback(({ item }: { item: MarketItem }) => (
     <Card
@@ -83,7 +86,7 @@ export default function MarketsScreen() {
           <Ionicons name="storefront" size={24} color={colors.primary} />
         </View>
         <View style={styles.marketInfo}>
-          <Text style={styles.marketName} numberOfLines={1}>{item.canonical_name}</Text>
+          <Text style={styles.marketName}>{item.canonical_name}</Text>
           <Text style={styles.marketCity}>{item.city_name}</Text>
         </View>
         <Ionicons name="chevron-forward" size={18} color={colors.text.tertiary} />
@@ -104,23 +107,25 @@ export default function MarketsScreen() {
       <SearchBar
         value={search}
         onChangeText={setSearch}
-        placeholder="Buscar mercado o ciudad..."
+        placeholder={t.markets_search}
       />
-      <SectionList
-        sections={filteredSections}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMarket}
-        renderSectionHeader={({ section }) => (
-          <View style={styles.sectionHeader}>
-            <Ionicons name="location" size={14} color={colors.primary} />
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-          </View>
-        )}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No se encontraron mercados</Text>
-        }
-      />
+      <View style={{ flex: 1 }}>
+        <SectionList
+          sections={filteredSections}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMarket}
+          renderSectionHeader={({ section }) => (
+            <View style={styles.sectionHeader}>
+              <Ionicons name="location" size={14} color={colors.primary} />
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+            </View>
+          )}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>{t.markets_not_found}</Text>
+          }
+        />
+      </View>
     </View>
   );
 }

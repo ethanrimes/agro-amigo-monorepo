@@ -8,6 +8,7 @@ import { getProducts, getCategories } from '@agroamigo/shared/api/products';
 import { Card } from '@/components/Card';
 import { SearchBar } from '@/components/SearchBar';
 import { ProductImage } from '@/components/ProductImage';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface Section { title: string; category: string; isFirstInCategory: boolean; data: any[]; }
 
@@ -39,6 +40,7 @@ export default function ProductsPage() {
 function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(searchParams.get('categoryId') || undefined);
@@ -61,9 +63,9 @@ function ProductsContent() {
 
   return (
     <div style={{ paddingTop: spacing.md, paddingBottom: 20 }}>
-      <SearchBar value={search} onChangeText={setSearch} placeholder="Buscar producto..." />
+      <SearchBar value={search} onChangeText={setSearch} placeholder={t.products_search} />
       <div className="chip-scroll">
-        {[{ id: undefined, canonical_name: 'Todos' }, ...categories].map(item => (
+        {[{ id: undefined, canonical_name: t.products_all }, ...categories].map(item => (
           <button key={item.id || 'all'} onClick={() => setSelectedCategory(item.id)}
             style={{
               padding: `${spacing.sm}px ${spacing.md}px`, borderRadius: borderRadius.full, whiteSpace: 'nowrap',
@@ -80,34 +82,36 @@ function ProductsContent() {
       {loading ? (
         <div className="loading-container"><div className="spinner" /></div>
       ) : sections.length === 0 ? (
-        <p style={{ textAlign: 'center', marginTop: 40, fontSize: fontSize.md, color: colors.text.tertiary }}>No se encontraron productos</p>
+        <p style={{ textAlign: 'center', marginTop: 40, fontSize: fontSize.md, color: colors.text.tertiary }}>{t.products_not_found}</p>
       ) : (
-        sections.map((section, si) => (
-          <div key={`${section.category}-${section.title}`}>
-            {section.isFirstInCategory && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.xs}px` }}>
-                <IoLeaf size={14} color={colors.primary} />
-                <span style={{ fontSize: fontSize.lg, fontWeight: 700, color: colors.primary }}>{section.category}</span>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: `${spacing.xs}px ${spacing.lg}px` }}>
-              <span style={{ fontSize: fontSize.sm, fontWeight: 600, color: colors.text.secondary }}>{section.title}</span>
-              <span style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{section.data.length}</span>
-            </div>
-            {section.data.map(item => (
-              <Card key={item.id} style={{ margin: `0 ${spacing.lg}px ${spacing.xs}px` }} onPress={() => router.push(`/product/${item.id}`)}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
-                  <ProductImage productName={item.canonical_name} categoryName={item.dim_subcategory?.dim_category?.canonical_name}
-                    style={{ width: 44, height: 44, borderRadius: borderRadius.md, backgroundColor: colors.borderLight }} />
-                  <div style={{ flex: 1 }}>
-                    <span style={{ fontSize: fontSize.md, fontWeight: 600, color: colors.text.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{item.canonical_name}</span>
-                  </div>
-                  <IoChevronForward size={18} color={colors.text.tertiary} />
+        <>
+          {sections.map((section, si) => (
+            <div key={`${section.category}-${section.title}`} id={section.isFirstInCategory ? `cat-${section.category}` : undefined}>
+              {section.isFirstInCategory && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.xs}px` }}>
+                  <IoLeaf size={14} color={colors.primary} />
+                  <span style={{ fontSize: fontSize.lg, fontWeight: 700, color: colors.primary }}>{section.category}</span>
                 </div>
-              </Card>
-            ))}
-          </div>
-        ))
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: `${spacing.xs}px ${spacing.lg}px` }}>
+                <span style={{ fontSize: fontSize.sm, fontWeight: 600, color: colors.text.secondary }}>{section.title}</span>
+                <span style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{section.data.length}</span>
+              </div>
+              {section.data.map(item => (
+                <Card key={item.id} style={{ margin: `0 ${spacing.lg}px ${spacing.xs}px` }} onPress={() => router.push(`/product/${item.id}`)}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+                    <ProductImage productName={item.canonical_name} categoryName={item.dim_subcategory?.dim_category?.canonical_name}
+                      style={{ width: 44, height: 44, borderRadius: borderRadius.md, backgroundColor: colors.borderLight }} />
+                    <div style={{ flex: 1 }}>
+                      <span style={{ fontSize: fontSize.md, fontWeight: 600, color: colors.text.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{item.canonical_name}</span>
+                    </div>
+                    <IoChevronForward size={18} color={colors.text.tertiary} />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ))}
+        </>
       )}
     </div>
   );

@@ -5,17 +5,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { IoHome, IoLeaf, IoStorefront, IoFlask, IoMap } from 'react-icons/io5';
 import { colors, fontSize } from '@agroamigo/shared';
-
-const TABS = [
-  { href: '/', label: 'Inicio', Icon: IoHome },
-  { href: '/products', label: 'Productos', Icon: IoLeaf },
-  { href: '/markets', label: 'Mercados', Icon: IoStorefront },
-  { href: '/insumos', label: 'Insumos', Icon: IoFlask },
-  { href: '/map', label: 'Mapa', Icon: IoMap },
-];
+import { useLanguage } from '@/context/LanguageContext';
 
 export function BottomTabs() {
   const pathname = usePathname();
+  const { t } = useLanguage();
+
+  const TABS = [
+    { href: '/', label: t.nav_home_tab, Icon: IoHome },
+    { href: '/products', label: t.nav_products, Icon: IoLeaf },
+    { href: '/markets', label: t.nav_markets, Icon: IoStorefront },
+    { href: '/insumos', label: t.nav_inputs, Icon: IoFlask },
+    { href: '/map', label: t.nav_map, Icon: IoMap },
+  ];
 
   function isActive(href: string) {
     if (href === '/') return pathname === '/';
