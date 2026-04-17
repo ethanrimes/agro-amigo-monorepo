@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { View, Text, SectionList, FlatList, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, SectionList, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize } from '../../src/theme';
@@ -7,6 +7,7 @@ import { Card } from '../../src/components/Card';
 import { SearchBar } from '../../src/components/SearchBar';
 import { ProductImage } from '../../src/components/ProductImage';
 import { getProducts, getCategories } from '../../src/api/products';
+import { useTranslation } from '../../src/lib/useTranslation';
 
 interface Section {
   title: string;
@@ -40,6 +41,7 @@ function buildSections(products: any[]): Section[] {
 
 export default function ProductsScreen() {
   const router = useRouter();
+  const t = useTranslation();
   const params = useLocalSearchParams<{ categoryId?: string }>();
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -88,7 +90,7 @@ export default function ProductsScreen() {
             style={styles.productImage}
           />
           <View style={styles.productInfo}>
-            <Text style={styles.productName} numberOfLines={1}>{item.canonical_name}</Text>
+            <Text style={styles.productName}>{item.canonical_name}</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.text.tertiary} />
         </View>
@@ -118,18 +120,13 @@ export default function ProductsScreen() {
       <SearchBar
         value={search}
         onChangeText={setSearch}
-        placeholder="Buscar producto..."
+        placeholder={t.products_search}
       />
 
-      <FlatList
-        horizontal
-        data={[{ id: undefined, canonical_name: 'Todos' }, ...categories]}
-        keyExtractor={(item) => item.id || 'all'}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipContainer}
-        style={styles.chipList}
-        renderItem={({ item }) => (
+      <View style={styles.chipWrap}>
+        {[{ id: undefined, canonical_name: t.products_all }, ...categories].map(item => (
           <Pressable
+            key={item.id || 'all'}
             style={[styles.chip, selectedCategory === item.id && styles.chipActive]}
             onPress={() => setSelectedCategory(item.id)}
           >
@@ -137,24 +134,26 @@ export default function ProductsScreen() {
               {item.canonical_name}
             </Text>
           </Pressable>
-        )}
-      />
+        ))}
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 40 }} />
       ) : (
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.id}
-          renderItem={renderProduct}
-          renderSectionHeader={renderSectionHeader}
-          contentContainerStyle={styles.listContent}
-          stickySectionHeadersEnabled={false}
-          initialNumToRender={20}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No se encontraron productos</Text>
-          }
-        />
+        <View style={{ flex: 1 }}>
+          <SectionList
+            sections={sections}
+            keyExtractor={(item) => item.id}
+            renderItem={renderProduct}
+            renderSectionHeader={renderSectionHeader as any}
+            contentContainerStyle={styles.listContent}
+            stickySectionHeadersEnabled={false}
+            initialNumToRender={20}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>{t.products_not_found}</Text>
+            }
+          />
+        </View>
       )}
     </View>
   );
@@ -166,13 +165,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     paddingTop: spacing.md,
   },
-  chipList: {
-    maxHeight: 44,
-    marginBottom: spacing.sm,
-  },
-  chipContainer: {
-    paddingHorizontal: spacing.lg,
+  chipWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.sm,
   },
   chip: {
     paddingHorizontal: spacing.md,

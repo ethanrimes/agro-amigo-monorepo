@@ -74,30 +74,43 @@ export async function getProductById(id: string) {
 
 export async function getProductPrices(productId: string, options?: {
   marketId?: string;
+  presentationId?: string;
+  unitsId?: string;
   days?: number;
   limit?: number;
 }) {
   const supabase = getSupabaseClient();
   const days = options?.days ?? 30;
-  const since = new Date();
-  since.setDate(since.getDate() - days);
 
   let query = supabase
     .from('price_observations')
     .select(`
       price_date, min_price, max_price, avg_price, market_id,
       presentation_id, units_id,
-      dim_market(id, canonical_name),
+      dim_market(id, canonical_name, dim_city(canonical_name)),
       dim_presentation(id, canonical_name),
       dim_units(id, canonical_name)
     `)
     .eq('product_id', productId)
-    .gte('price_date', since.toISOString().split('T')[0])
-    .order('price_date', { ascending: true })
-    .limit(options?.limit ?? 500);
+    .order('price_date', { ascending: false })
+    .limit(options?.limit ?? 1000);
+
+  if (days > 0) {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+    query = query.gte('price_date', since.toISOString().split('T')[0]);
+  }
 
   if (options?.marketId) {
     query = query.eq('market_id', options.marketId);
+  }
+
+  if (options?.presentationId) {
+    query = query.eq('presentation_id', options.presentationId);
+  }
+
+  if (options?.unitsId) {
+    query = query.eq('units_id', options.unitsId);
   }
 
   const { data, error } = await query;
@@ -115,7 +128,7 @@ export async function getProductPricesByMarket(productId: string, limit = 100) {
     .select(`
       price_date, min_price, max_price, avg_price,
       market_id, presentation_id, units_id,
-      dim_market(id, canonical_name),
+      dim_market(id, canonical_name, dim_city(canonical_name)),
       dim_presentation(id, canonical_name),
       dim_units(id, canonical_name)
     `)
@@ -151,7 +164,7 @@ export async function getWatchlistPrices(productIds: string[]) {
     .select(`
       product_id, price_date, min_price, max_price, avg_price,
       market_id, presentation_id, units_id,
-      dim_market(id, canonical_name),
+      dim_market(id, canonical_name, dim_city(canonical_name)),
       dim_presentation(id, canonical_name),
       dim_units(id, canonical_name),
       dim_product!inner(id, canonical_name)
@@ -178,11 +191,13 @@ export async function getTrendingProducts(limit = 10) {
       max_price,
       avg_price,
       price_date,
-      dim_product!inner(id, canonical_name, subcategory_id)
+      presentation_id,
+      dim_product!inner(id, canonical_name, subcategory_id),
+      dim_presentation(canonical_name)
     `)
     .gte('price_date', weekAgo.toISOString().split('T')[0])
     .order('price_date', { ascending: false })
-    .limit(200);
+    .limit(limit);
 
   if (error) throw error;
   return data;

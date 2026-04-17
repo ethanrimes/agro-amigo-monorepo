@@ -3,10 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import { colors } from '../src/theme';
 import { SettingsProvider } from '../src/context/SettingsContext';
 import { WatchlistProvider } from '../src/context/WatchlistContext';
+import { AuthProvider } from '../src/context/AuthContext';
 
 export default function RootLayout() {
   return (
     <SettingsProvider>
+    <AuthProvider>
     <WatchlistProvider>
       <StatusBar style="light" backgroundColor={colors.dark} />
       <Stack
@@ -18,24 +20,14 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="product/[id]"
-          options={{ title: 'Producto', headerBackTitle: 'Atrás' }}
-        />
-        <Stack.Screen
-          name="market/[id]"
-          options={{ title: 'Mercado', headerBackTitle: 'Atrás' }}
-        />
-        <Stack.Screen
-          name="insumo/[id]"
-          options={{ title: 'Insumo', headerBackTitle: 'Atrás' }}
-        />
-        <Stack.Screen
-          name="settings"
-          options={{ title: 'Configuración', headerBackTitle: 'Atrás' }}
-        />
+        <Stack.Screen name="product/[id]" options={{ headerBackTitle: '' }} />
+        <Stack.Screen name="market/[id]" options={{ headerBackTitle: '' }} />
+        <Stack.Screen name="insumo/[id]" options={{ headerBackTitle: '' }} />
+        <Stack.Screen name="settings" options={{ headerBackTitle: '' }} />
+        <Stack.Screen name="auth" options={{ headerBackTitle: '' }} />
       </Stack>
     </WatchlistProvider>
+    </AuthProvider>
     </SettingsProvider>
   );
 }

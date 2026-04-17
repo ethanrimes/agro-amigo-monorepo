@@ -20,3 +20,7 @@ out/
 # App-specific
 agroamigo-app/.env
 agroamigo-web/.env.local
+
+.mcp.json
+.playwright-mcp/
+"camp air tools"

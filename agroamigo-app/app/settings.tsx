@@ -3,11 +3,13 @@ import {
   View, Text, ScrollView, StyleSheet, Pressable, TextInput,
   ActivityIndicator, Alert, Platform,
 } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { colors, spacing, borderRadius, fontSize } from '../src/theme';
-import { useSettings, MarketLevel, DefaultMarket } from '../src/context/SettingsContext';
+import { useSettings, MarketLevel, DefaultMarket, Locale } from '../src/context/SettingsContext';
+import { useTranslation } from '../src/lib/useTranslation';
+import { useAuth } from '../src/context/AuthContext';
 import { getMarkets } from '../src/api/markets';
 import { supabase } from '../src/lib/supabase';
 
@@ -18,22 +20,18 @@ const FONT_STEPS = [
   { label: 'Muy grande', scale: 1.3 },
 ];
 
-const LEVEL_OPTIONS: { level: MarketLevel; label: string; icon: string }[] = [
-  { level: 'nacional', label: 'Promedio nacional', icon: 'globe-outline' },
-  { level: 'departamento', label: 'Departamento', icon: 'map-outline' },
-  { level: 'ciudad', label: 'Ciudad', icon: 'business-outline' },
-  { level: 'mercado', label: 'Mercado específico', icon: 'storefront-outline' },
-];
-
 interface PickerItem {
   id: string;
   name: string;
   subtitle?: string;
+  level: MarketLevel;
 }
 
 export default function SettingsScreen() {
-  const { settings, updateDefaultMarket, updateFontSizeScale } = useSettings();
-  const [selectedLevel, setSelectedLevel] = useState<MarketLevel>(settings.defaultMarket.level);
+  const router = useRouter();
+  const { settings, updateDefaultMarket, updateFontSizeScale, updateChartSettings, updateLocale, updateCommentsEnabled } = useSettings();
+  const t = useTranslation();
+  const { userId, profile, signOut: authSignOut } = useAuth();
   const [pickerItems, setPickerItems] = useState<PickerItem[]>([]);
   const [pickerSearch, setPickerSearch] = useState('');
   const [loadingPicker, setLoadingPicker] = useState(false);
@@ -41,44 +39,43 @@ export default function SettingsScreen() {
   const [selectedId, setSelectedId] = useState<string | undefined>(settings.defaultMarket.id);
   const [selectedName, setSelectedName] = useState(settings.defaultMarket.name);
 
-  // Load picker items when level changes
-  useEffect(() => {
-    if (selectedLevel === 'nacional') {
-      setPickerItems([]);
-      setSelectedId(undefined);
-      setSelectedName('Promedio nacional');
-      return;
-    }
-    loadPickerItems(selectedLevel);
-  }, [selectedLevel]);
+  const isNational = settings.defaultMarket.level === 'nacional';
 
-  async function loadPickerItems(level: MarketLevel) {
+  // One-shot load of every selectable location (depts + cities + markets)
+  // into a single searchable list. Each item carries its own level so we
+  // store the right shape when the user picks.
+  useEffect(() => { loadPickerItems(); }, []);
+
+  async function loadPickerItems() {
     setLoadingPicker(true);
     try {
-      if (level === 'departamento') {
-        const { data } = await supabase
-          .from('dim_department')
-          .select('id, canonical_name')
-          .order('canonical_name');
-        setPickerItems((data || []).map(d => ({ id: d.id, name: d.canonical_name })));
-      } else if (level === 'ciudad') {
-        const { data } = await supabase
-          .from('dim_city')
-          .select('id, canonical_name, dim_department(canonical_name)')
-          .order('canonical_name');
-        setPickerItems((data || []).map((c: any) => ({
+      const [depts, cities, markets] = await Promise.all([
+        supabase.from('dim_department').select('id, canonical_name').order('canonical_name'),
+        supabase.from('dim_city').select('id, canonical_name, dim_department(canonical_name)').order('canonical_name'),
+        getMarkets(),
+      ]);
+      const items: PickerItem[] = [];
+      for (const d of (depts.data || [])) {
+        items.push({ id: d.id, name: d.canonical_name, subtitle: 'Departamento', level: 'departamento' });
+      }
+      for (const c of (cities.data || []) as any[]) {
+        items.push({
           id: c.id,
           name: c.canonical_name,
-          subtitle: c.dim_department?.canonical_name,
-        })));
-      } else if (level === 'mercado') {
-        const data = await getMarkets();
-        setPickerItems((data || []).map((m: any) => ({
+          subtitle: ['Ciudad', c.dim_department?.canonical_name].filter(Boolean).join(' · '),
+          level: 'ciudad',
+        });
+      }
+      for (const m of (markets || []) as any[]) {
+        const where = [m.dim_city?.canonical_name, m.dim_city?.dim_department?.canonical_name].filter(Boolean).join(', ');
+        items.push({
           id: m.id,
           name: m.canonical_name,
-          subtitle: `${(m as any).dim_city?.canonical_name || ''}, ${(m as any).dim_city?.dim_department?.canonical_name || ''}`,
-        })));
+          subtitle: ['Mercado', where].filter(Boolean).join(' · '),
+          level: 'mercado',
+        });
       }
+      setPickerItems(items);
     } catch (err) {
       console.error('Error loading picker items:', err);
     } finally {
@@ -87,30 +84,23 @@ export default function SettingsScreen() {
   }
 
   const filteredItems = useMemo(() => {
-    if (!pickerSearch || pickerSearch.length < 2) return pickerItems;
+    if (!pickerSearch || pickerSearch.length < 2) return [];
     const q = pickerSearch.toLowerCase();
     return pickerItems.filter(
       i => i.name.toLowerCase().includes(q) || i.subtitle?.toLowerCase().includes(q)
     );
   }, [pickerItems, pickerSearch]);
 
-  function handleSelectLevel(level: MarketLevel) {
-    setSelectedLevel(level);
+  function selectNational() {
+    const market: DefaultMarket = { level: 'nacional', name: 'Promedio nacional' };
+    updateDefaultMarket(market);
+    setSelectedId(undefined);
+    setSelectedName(market.name);
     setPickerSearch('');
-    if (level === 'nacional') {
-      const market: DefaultMarket = { level: 'nacional', name: 'Promedio nacional' };
-      updateDefaultMarket(market);
-      setSelectedId(undefined);
-      setSelectedName(market.name);
-    }
   }
 
   function handleSelectItem(item: PickerItem) {
-    const market: DefaultMarket = {
-      level: selectedLevel,
-      id: item.id,
-      name: item.name,
-    };
+    const market: DefaultMarket = { level: item.level, id: item.id, name: item.name };
     updateDefaultMarket(market);
     setSelectedId(item.id);
     setSelectedName(item.name);
@@ -185,7 +175,6 @@ export default function SettingsScreen() {
           name: closest.canonical_name,
         };
         updateDefaultMarket(market);
-        setSelectedLevel('mercado');
         setSelectedId(closest.id);
         setSelectedName(closest.canonical_name);
         const cityName = (closest as any).dim_city?.canonical_name || '';
@@ -216,117 +205,83 @@ export default function SettingsScreen() {
         {/* Default Market Section */}
         <Text style={styles.sectionTitle}>Mercado predeterminado</Text>
         <Text style={styles.sectionDescription}>
-          Define qué precios se muestran en la pantalla de inicio. Puedes elegir un promedio nacional, departamental, por ciudad, o un mercado específico.
+          Elige el promedio nacional o busca un departamento, ciudad o mercado específico.
         </Text>
 
         {/* Location button */}
-        <Pressable
-          style={styles.locationButton}
-          onPress={handleUseLocation}
-          disabled={locating}
-        >
-          {locating ? (
-            <ActivityIndicator size="small" color={colors.text.inverse} />
-          ) : (
-            <Ionicons name="locate" size={18} color={colors.text.inverse} />
-          )}
-          <Text style={styles.locationButtonText}>
-            {locating ? 'Localizando...' : 'Usar mi ubicación'}
-          </Text>
+        <Pressable style={styles.locationButton} onPress={handleUseLocation} disabled={locating}>
+          {locating ? <ActivityIndicator size="small" color={colors.text.inverse} /> : <Ionicons name="locate" size={18} color={colors.text.inverse} />}
+          <Text style={styles.locationButtonText}>{locating ? 'Localizando...' : 'Usar mi ubicación'}</Text>
         </Pressable>
 
-        {/* Level selector */}
+        {/* Two primary tiles: national average + search */}
         <View style={styles.levelContainer}>
-          {LEVEL_OPTIONS.map((opt) => (
-            <Pressable
-              key={opt.level}
-              style={[styles.levelOption, selectedLevel === opt.level && styles.levelOptionActive]}
-              onPress={() => handleSelectLevel(opt.level)}
-            >
-              <Ionicons
-                name={opt.icon as any}
-                size={20}
-                color={selectedLevel === opt.level ? colors.text.inverse : colors.text.secondary}
-              />
-              <Text style={[
-                styles.levelOptionText,
-                selectedLevel === opt.level && styles.levelOptionTextActive,
-              ]}>
-                {opt.label}
-              </Text>
-            </Pressable>
-          ))}
+          <Pressable
+            style={[styles.levelOption, isNational && styles.levelOptionActive]}
+            onPress={selectNational}
+          >
+            <Ionicons name="globe-outline" size={20} color={isNational ? colors.text.inverse : colors.text.secondary} />
+            <Text style={[styles.levelOptionText, isNational && styles.levelOptionTextActive]}>Promedio nacional</Text>
+          </Pressable>
         </View>
 
         {/* Current selection */}
         <View style={styles.currentSelection}>
           <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
-          <Text style={styles.currentSelectionText}>
-            {selectedLevel === 'nacional'
-              ? 'Promedio nacional'
-              : selectedName || 'Selecciona una opción'}
-          </Text>
+          <Text style={styles.currentSelectionText}>{selectedName || 'Selecciona una opción'}</Text>
         </View>
 
-        {/* Picker (for non-national levels) */}
-        {selectedLevel !== 'nacional' && (
-          <View style={styles.pickerContainer}>
-            <View style={styles.pickerSearchRow}>
-              <Ionicons name="search" size={16} color={colors.text.tertiary} />
-              <TextInput
-                style={styles.pickerSearchInput}
-                value={pickerSearch}
-                onChangeText={setPickerSearch}
-                placeholder={`Buscar ${LEVEL_OPTIONS.find(o => o.level === selectedLevel)?.label.toLowerCase()}...`}
-                placeholderTextColor={colors.text.tertiary}
-              />
-              {pickerSearch.length > 0 && (
-                <Pressable onPress={() => setPickerSearch('')} hitSlop={8}>
-                  <Ionicons name="close-circle" size={16} color={colors.text.tertiary} />
-                </Pressable>
-              )}
-            </View>
+        {/* Unified search: typing shows matching depts/cities/markets */}
+        <View style={styles.pickerContainer}>
+          <View style={styles.pickerSearchRow}>
+            <Ionicons name="search" size={16} color={colors.text.tertiary} />
+            <TextInput
+              style={styles.pickerSearchInput}
+              value={pickerSearch}
+              onChangeText={setPickerSearch}
+              placeholder="Buscar departamento, ciudad o mercado..."
+              placeholderTextColor={colors.text.tertiary}
+            />
+            {pickerSearch.length > 0 && (
+              <Pressable onPress={() => setPickerSearch('')} hitSlop={8}>
+                <Ionicons name="close-circle" size={16} color={colors.text.tertiary} />
+              </Pressable>
+            )}
+          </View>
 
-            {loadingPicker ? (
-              <ActivityIndicator size="small" color={colors.primary} style={{ padding: spacing.lg }} />
-            ) : (
-              <ScrollView style={styles.pickerList} nestedScrollEnabled>
-                {filteredItems.slice(0, 50).map((item) => (
+          {loadingPicker ? (
+            <ActivityIndicator size="small" color={colors.primary} style={{ padding: spacing.lg }} />
+          ) : pickerSearch.length >= 2 ? (
+            <ScrollView style={styles.pickerList} nestedScrollEnabled keyboardShouldPersistTaps="handled">
+              {filteredItems.slice(0, 50).map((item) => {
+                const icon = item.level === 'departamento' ? 'map-outline'
+                  : item.level === 'ciudad' ? 'business-outline' : 'storefront-outline';
+                return (
                   <Pressable
-                    key={item.id}
+                    key={`${item.level}-${item.id}`}
                     style={[styles.pickerItem, selectedId === item.id && styles.pickerItemActive]}
                     onPress={() => handleSelectItem(item)}
                   >
+                    <Ionicons name={icon as any} size={16} color={colors.text.tertiary} style={{ marginRight: spacing.sm }} />
                     <View style={styles.pickerItemContent}>
-                      <Text style={[
-                        styles.pickerItemName,
-                        selectedId === item.id && styles.pickerItemNameActive,
-                      ]} numberOfLines={1}>
+                      <Text style={[styles.pickerItemName, selectedId === item.id && styles.pickerItemNameActive]}>
                         {item.name}
                       </Text>
-                      {item.subtitle && (
-                        <Text style={styles.pickerItemSubtitle} numberOfLines={1}>
-                          {item.subtitle}
-                        </Text>
-                      )}
+                      {item.subtitle && <Text style={styles.pickerItemSubtitle}>{item.subtitle}</Text>}
                     </View>
-                    {selectedId === item.id && (
-                      <Ionicons name="checkmark" size={18} color={colors.primary} />
-                    )}
+                    {selectedId === item.id && <Ionicons name="checkmark" size={18} color={colors.primary} />}
                   </Pressable>
-                ))}
-                {filteredItems.length === 0 && !loadingPicker && (
-                  <Text style={styles.pickerEmpty}>Sin resultados</Text>
-                )}
-                {filteredItems.length > 50 && (
-                  <Text style={styles.pickerHint}>
-                    Mostrando 50 de {filteredItems.length}. Usa la búsqueda para filtrar.
-                  </Text>
-                )}
-              </ScrollView>
-            )}
-          </View>
-        )}
+                );
+              })}
+              {filteredItems.length === 0 && <Text style={styles.pickerEmpty}>Sin resultados</Text>}
+              {filteredItems.length > 50 && (
+                <Text style={styles.pickerHint}>Mostrando 50 de {filteredItems.length}. Escribe más para filtrar.</Text>
+              )}
+            </ScrollView>
+          ) : (
+            <Text style={styles.pickerHint}>Escribe al menos 2 caracteres para buscar.</Text>
+          )}
+        </View>
 
         {/* Divider */}
         <View style={styles.divider} />
@@ -373,6 +328,92 @@ export default function SettingsScreen() {
             $2.500/kg
           </Text>
         </View>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Language */}
+        <Text style={styles.sectionTitle}>{t.settings_language}</Text>
+        <Text style={styles.sectionDescription}>{t.settings_language_desc}</Text>
+        <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg }}>
+          {([['es', 'Español'], ['en', 'English']] as [Locale, string][]).map(([lang, label]) => (
+            <Pressable key={lang} onPress={() => updateLocale(lang)}
+              style={[styles.levelOption, { flex: 1, justifyContent: 'center' }, settings.locale === lang && styles.levelOptionActive]}>
+              <Ionicons name="language-outline" size={18} color={settings.locale === lang ? colors.text.inverse : colors.text.secondary} />
+              <Text style={[styles.levelOptionText, settings.locale === lang && styles.levelOptionTextActive]}>{label}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Chart Settings */}
+        <Text style={styles.sectionTitle}>{t.settings_charts}</Text>
+        <Text style={styles.sectionDescription}>{t.settings_charts_desc}</Text>
+        <View style={{ gap: spacing.sm }}>
+          {([
+            { key: 'showAvgLine' as const, label: t.settings_chart_avg_line },
+            { key: 'showTrendLine' as const, label: t.settings_chart_trend_line },
+            { key: 'showMinMaxCallouts' as const, label: t.settings_chart_min_max_callouts },
+            { key: 'showInteractiveCallout' as const, label: t.settings_chart_interactive },
+          ]).map(opt => (
+            <Pressable key={opt.key} onPress={() => updateChartSettings({ [opt.key]: !settings.chart[opt.key] })}
+              style={[styles.toggleRow, settings.chart[opt.key] && styles.toggleRowActive]}>
+              <Text style={styles.toggleLabel}>{opt.label}</Text>
+              <View style={[styles.toggleTrack, settings.chart[opt.key] && styles.toggleTrackActive]}>
+                <View style={[styles.toggleThumb, settings.chart[opt.key] && styles.toggleThumbActive]} />
+              </View>
+            </Pressable>
+          ))}
+        </View>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Comments Toggle */}
+        <Text style={styles.sectionTitle}>{t.settings_comments}</Text>
+        <Text style={styles.sectionDescription}>{t.settings_comments_desc}</Text>
+        <Pressable onPress={() => updateCommentsEnabled(!settings.commentsEnabled)}
+          style={[styles.toggleRow, settings.commentsEnabled && styles.toggleRowActive]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+            <Ionicons name="chatbubble-outline" size={20} color={settings.commentsEnabled ? colors.primary : colors.text.secondary} />
+            <Text style={styles.toggleLabel}>{t.settings_comments_toggle}</Text>
+          </View>
+          <View style={[styles.toggleTrack, settings.commentsEnabled && styles.toggleTrackActive]}>
+            <View style={[styles.toggleThumb, settings.commentsEnabled && styles.toggleThumbActive]} />
+          </View>
+        </Pressable>
+
+        {/* Divider */}
+        <View style={styles.divider} />
+
+        {/* Account */}
+        <Text style={styles.sectionTitle}>{t.settings_account}</Text>
+        <Text style={styles.sectionDescription}>{t.settings_account_desc}</Text>
+        {userId && profile ? (
+          <View style={styles.previewCard}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md }}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.primary + '15', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name="person-outline" size={20} color={colors.primary} />
+              </View>
+              <View>
+                <Text style={{ fontSize: fontSize.md, fontWeight: '700', color: colors.text.primary }}>{profile.username}</Text>
+                <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{t.auth_member_since} {new Date(profile.created_at).toLocaleDateString()}</Text>
+              </View>
+            </View>
+            <Pressable onPress={async () => { await authSignOut(); }}
+              style={{ backgroundColor: colors.background, borderWidth: 1, borderColor: colors.borderLight, borderRadius: borderRadius.md, paddingVertical: spacing.sm, alignItems: 'center' }}>
+              <Text style={{ fontSize: fontSize.sm, color: colors.text.primary }}>{t.auth_sign_out}</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable onPress={() => router.push('/auth')}
+            style={[styles.locationButton, { backgroundColor: colors.primary }]}>
+            <Ionicons name="person-outline" size={20} color={colors.text.inverse} />
+            <Text style={styles.locationButtonText}>{t.settings_sign_in}</Text>
+          </Pressable>
+        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -585,5 +626,44 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.primary,
     fontFamily: 'monospace',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    backgroundColor: colors.surface,
+  },
+  toggleRowActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '08',
+  },
+  toggleLabel: {
+    fontSize: fontSize.md,
+    fontWeight: '500',
+    color: colors.text.primary,
+  },
+  toggleTrack: {
+    width: 40,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.borderLight,
+    padding: 2,
+  },
+  toggleTrackActive: {
+    backgroundColor: colors.primary,
+  },
+  toggleThumb: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#fff',
+  },
+  toggleThumbActive: {
+    transform: [{ translateX: 18 }],
   },
 });

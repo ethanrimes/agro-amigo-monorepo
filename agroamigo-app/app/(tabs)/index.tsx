@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet, Image, Pressable, FlatList, ActivityIndicator, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,10 +8,15 @@ import { SectionHeader } from '../../src/components/SectionHeader';
 import { Sparkline } from '../../src/components/Sparkline';
 import { PriceChangeIndicator } from '../../src/components/PriceChangeIndicator';
 import { getCategories, getTrendingProducts, getWatchlistPrices } from '../../src/api/products';
+import { getWatchlistInsumoPrices } from '../../src/api/insumos';
+import { getTopSuppliedProducts } from '../../src/api/supply';
+import { getMarketTopProducts } from '../../src/api/markets';
+import { getLatestComments } from '../../src/api/comments';
 import { getCategoryImageUrl } from '../../src/lib/images';
-import { formatCOP, formatCOPCompact, formatDateShort, formatPriceContext, pctChange } from '../../src/lib/format';
+import { formatCOP, formatCOPCompact, formatDateShort, formatPriceContext, formatKg, pctChange } from '../../src/lib/format';
 import { useSettings } from '../../src/context/SettingsContext';
 import { useWatchlist } from '../../src/context/WatchlistContext';
+import { useTranslation } from '../../src/lib/useTranslation';
 
 const CATEGORY_ICONS: Record<string, string> = {
   'Frutas': 'nutrition',
@@ -27,77 +32,148 @@ const CATEGORY_ICONS: Record<string, string> = {
 export default function HomeScreen() {
   const router = useRouter();
   const { settings } = useSettings();
+  const t = useTranslation();
   const { items: watchlistItems, remove: removeFromWatchlist } = useWatchlist();
   const [categories, setCategories] = useState<any[]>([]);
   const [trending, setTrending] = useState<any[]>([]);
+  const [topSupplied, setTopSupplied] = useState<any[]>([]);
+  const [marketTopSupplied, setMarketTopSupplied] = useState<{ id: string; name: string; kg: number; date: string | null }[]>([]);
+  const [trendingScope, setTrendingScope] = useState<'market' | 'national'>('national');
   const [watchlistPrices, setWatchlistPrices] = useState<Map<string, any>>(new Map());
+  const [insumoWatchlistPrices, setInsumoWatchlistPrices] = useState<Map<string, any>>(new Map());
+  const [latestComments, setLatestComments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMethodology, setShowMethodology] = useState(false);
   const [showMarketInfo, setShowMarketInfo] = useState(false);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [settings.defaultMarket.id, settings.defaultMarket.level]);
 
-  // Reload watchlist prices when watchlist items change
+  // Reload watchlist prices when watchlist items OR default market change
   useEffect(() => {
     loadWatchlistPrices();
-  }, [watchlistItems]);
+  }, [watchlistItems, settings.defaultMarket.id, settings.defaultMarket.level]);
 
   async function loadWatchlistPrices() {
     const productIds = watchlistItems.filter(i => i.type === 'product').map(i => i.id);
-    if (productIds.length === 0) {
-      setWatchlistPrices(new Map());
-      return;
+    const insumoIds = watchlistItems.filter(i => i.type === 'insumo').map(i => i.id);
+
+    const preferredMarketId = settings.defaultMarket.level === 'mercado' ? settings.defaultMarket.id : undefined;
+
+    // Clear the map first so switching markets shows the transition.
+    setWatchlistPrices(new Map());
+
+    if (productIds.length > 0) {
+      try {
+        // getWatchlistPrices applies the default-market filter and falls
+        // back to national data for any item missing at that market.
+        const data = await getWatchlistPrices(productIds, preferredMarketId);
+        const map = new Map<string, any>();
+        for (const obs of (data || [])) { if (!map.has(obs.product_id)) map.set(obs.product_id, obs); }
+        setWatchlistPrices(map);
+      } catch (err) { console.error(err); }
     }
-    try {
-      const data = await getWatchlistPrices(productIds);
-      // Get the latest observation per product
-      const map = new Map<string, any>();
-      for (const obs of (data || [])) {
-        if (!map.has(obs.product_id)) {
-          map.set(obs.product_id, obs);
-        }
-      }
-      setWatchlistPrices(map);
-    } catch (err) {
-      console.error('Error loading watchlist prices:', err);
-    }
+
+    if (insumoIds.length > 0) {
+      try {
+        const data = await getWatchlistInsumoPrices(insumoIds);
+        const map = new Map<string, any>();
+        for (const obs of (data || []) as any[]) { if (!map.has(obs.insumo_id)) map.set(obs.insumo_id, obs); }
+        setInsumoWatchlistPrices(map);
+      } catch (err) { console.error(err); }
+    } else { setInsumoWatchlistPrices(new Map()); }
   }
 
   async function loadData() {
-    try {
-      const [cats, trend] = await Promise.all([
-        getCategories(),
-        getTrendingProducts(200),
-      ]);
-      setCategories(cats || []);
+    // Clear stale lists up front so that switching mercado → nacional (or
+    // between two markets) visibly refreshes — without this, the old data
+    // keeps showing until every re-fetch resolves, masking the update.
+    setTrending([]);
+    setMarketTopSupplied([]);
 
-      // Aggregate trending by product — compute a simple price change
-      const productMap = new Map<string, { name: string; prices: number[]; productId: string }>();
+    const preferredMarketId = settings.defaultMarket.level === 'mercado' ? settings.defaultMarket.id : undefined;
+
+    // Each fetch is independent so a single slow/failed endpoint doesn't
+    // block the others from refreshing.
+    getCategories().then(c => setCategories(c || [])).catch(err => console.error('categories', err));
+    getTopSuppliedProducts(10).then(s => setTopSupplied(s || [])).catch(() => {});
+    getLatestComments(10).then(c => setLatestComments(c || [])).catch(() => {});
+
+    if (settings.defaultMarket.level === 'mercado' && settings.defaultMarket.id) {
+      getMarketTopProducts(settings.defaultMarket.id, 7, null, 8)
+        .then(rows => setMarketTopSupplied(rows.map((r: any) => ({
+          id: r.product_id,
+          name: r.product_name || t.market_product_fallback,
+          kg: r.total_kg,
+          date: r.newest_obs,
+        }))))
+        .catch(() => setMarketTopSupplied([]));
+    }
+
+    try {
+      // Try the default market first. If the mercado scope has too few
+      // observations to compute trends (<10 rows), fall back to national.
+      // National scope pulls the PostgREST max (1000 rows) so we have
+      // enough cross-market samples per (product, presentation).
+      const MARKET_LIMIT = 200;
+      const NATIONAL_LIMIT = 1000;
+      let trend = await getTrendingProducts(preferredMarketId ? MARKET_LIMIT : NATIONAL_LIMIT, preferredMarketId);
+      let trendScope: 'market' | 'national' = preferredMarketId ? 'market' : 'national';
+      if (preferredMarketId && (!trend || trend.length < 10)) {
+        trend = await getTrendingProducts(NATIONAL_LIMIT);
+        trendScope = 'national';
+      }
+      setTrendingScope(trendScope);
+
+      // Aggregation key: include market_id only when we're scoped to a
+      // single market (mercado level). For national scope, keying by
+      // (product, presentation) lets observations from different markets
+      // feed the same bucket so prices.length >= 2 actually matches.
+      const productMap = new Map<string, {
+        name: string; prices: number[]; productId: string;
+        presentation: string; market: string;
+      }>();
+      const scopedByMarket = trendScope === 'market';
       for (const obs of (trend || [])) {
-        const pid = obs.product_id;
-        const name = obs.dim_product?.canonical_name || 'Unknown';
-        const price = obs.avg_price || obs.max_price || obs.min_price || 0;
-        if (!productMap.has(pid)) {
-          productMap.set(pid, { name, prices: [], productId: pid });
+        const o = obs as any;
+        const key = scopedByMarket
+          ? `${o.product_id}|${o.presentation_id || ''}|${o.market_id || ''}`
+          : `${o.product_id}|${o.presentation_id || ''}`;
+        const name = o.dim_product?.canonical_name || 'Unknown';
+        const presentation = o.dim_presentation?.canonical_name || '';
+        // In national scope we aggregate across markets, so stash "(varios)"
+        // rather than pinning to one market's name.
+        const market = scopedByMarket
+          ? (o.dim_market?.canonical_name || '')
+          : t.product_national_avg;
+        const price = o.avg_price || o.max_price || o.min_price || 0;
+        if (!productMap.has(key)) {
+          productMap.set(key, { name, prices: [], productId: o.product_id, presentation, market });
         }
-        productMap.get(pid)!.prices.push(price);
+        productMap.get(key)!.prices.push(price);
       }
 
-      const trendingList = Array.from(productMap.values())
+      const all = Array.from(productMap.values())
         .filter(p => p.prices.length >= 2)
         .map(p => {
           const oldest = p.prices[p.prices.length - 1];
           const newest = p.prices[0];
-          return {
-            ...p,
-            change: pctChange(oldest, newest),
-            latestPrice: newest,
-          };
+          return { ...p, change: pctChange(oldest, newest), latestPrice: newest };
         })
-        .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
-        .slice(0, 15);
+        .sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+
+      // Keep only the single biggest-move entry per product — otherwise
+      // the same product fills the list multiple times with different
+      // markets/presentations.
+      const seen = new Set<string>();
+      const trendingList = [];
+      for (const p of all) {
+        if (seen.has(p.productId)) continue;
+        seen.add(p.productId);
+        trendingList.push(p);
+        if (trendingList.length >= 15) break;
+      }
 
       setTrending(trendingList);
     } catch (err) {
@@ -107,11 +183,14 @@ export default function HomeScreen() {
     }
   }
 
+  const topMoversUp = useMemo(() => trending.filter(t => t.change > 0).slice(0, 5), [trending]);
+  const topMoversDown = useMemo(() => trending.filter(t => t.change < 0).sort((a, b) => a.change - b.change).slice(0, 5), [trending]);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Cargando datos...</Text>
+        <Text style={styles.loadingText}>{t.home_loading}</Text>
       </View>
     );
   }
@@ -167,10 +246,10 @@ export default function HomeScreen() {
           <View style={styles.infoCard}>
             <View style={styles.infoHeader}>
               <Ionicons name="information-circle" size={22} color={colors.primary} />
-              <Text style={styles.infoTitle}>Mercado predeterminado</Text>
+              <Text style={styles.infoTitle}>{t.home_market_info_title}</Text>
             </View>
             <Text style={styles.infoBody}>
-              Los precios que ves en la pantalla de inicio provienen de tu mercado predeterminado: {<Text style={{ fontWeight: '700' }}>{settings.defaultMarket.name}</Text>}.
+              {t.home_market_info_text} {<Text style={{ fontWeight: '700' }}>{settings.defaultMarket.name}</Text>}.
             </Text>
             <Text style={styles.infoBody}>
               {settings.defaultMarket.level === 'nacional'
@@ -182,9 +261,8 @@ export default function HomeScreen() {
                 : 'Estás viendo precios de un mercado específico. Los datos corresponden directamente a las cotizaciones reportadas.'}
             </Text>
             <Text style={styles.infoBody}>
-              Puedes cambiar tu mercado en{' '}
-              <Text style={{ color: colors.primary, fontWeight: '600' }}>Configuración</Text>{' '}
-              (icono de engranaje en la esquina superior derecha).
+              {t.home_market_info_change}{' '}
+              <Text style={{ color: colors.primary, fontWeight: '600' }}>{t.nav_settings}</Text>.
             </Text>
             <View style={styles.infoLegend}>
               <View style={styles.infoLegendRow}>
@@ -197,7 +275,7 @@ export default function HomeScreen() {
               </View>
             </View>
             <Pressable style={styles.infoCloseBtn} onPress={() => setShowMarketInfo(false)}>
-              <Text style={styles.infoCloseText}>Entendido</Text>
+              <Text style={styles.infoCloseText}>{t.home_understood}</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -206,50 +284,44 @@ export default function HomeScreen() {
       {/* Watchlist */}
       {watchlistItems.length > 0 && (
         <>
-          <SectionHeader title="Seguimiento" />
+          <SectionHeader title={t.home_watchlist} />
           {watchlistItems.map((item) => {
-            const priceData = watchlistPrices.get(item.id);
-            const presentation = priceData?.dim_presentation?.canonical_name;
-            const units = priceData?.dim_units?.canonical_name;
-            const marketName = priceData?.dim_market?.canonical_name;
-            const ctx = formatPriceContext(presentation, units);
+            const isProduct = item.type === 'product';
+            const priceData = isProduct ? watchlistPrices.get(item.id) : insumoWatchlistPrices.get(item.id);
+            const ctx = isProduct
+              ? formatPriceContext(priceData?.dim_presentation?.canonical_name, priceData?.dim_units?.canonical_name)
+              : priceData?.presentation || '';
 
             return (
-              <Card
-                key={item.id}
-                style={styles.watchlistCard}
-                onPress={() =>
-                  router.push(item.type === 'product' ? `/product/${item.id}` : `/insumo/${item.id}`)
-                }
-              >
+              <Card key={item.id} style={styles.watchlistCard}
+                onPress={() => router.push(isProduct ? `/product/${item.id}` : `/insumo/${item.id}`)}>
                 <View style={styles.watchlistRow}>
+                  <View style={{ width: 32, height: 32, borderRadius: borderRadius.md, backgroundColor: (isProduct ? colors.primary : colors.secondary) + '15', alignItems: 'center', justifyContent: 'center', marginRight: spacing.md }}>
+                    <Ionicons name={isProduct ? 'pricetag' : 'flask'} size={16} color={isProduct ? colors.primary : colors.secondary} />
+                  </View>
                   <View style={styles.watchlistInfo}>
                     <Text style={styles.watchlistName} numberOfLines={1}>{item.name}</Text>
                     {priceData ? (
                       <>
-                        <Text style={styles.watchlistPrice}>
+                        <Text style={[styles.watchlistPrice, !isProduct && { color: colors.secondary }]}>
                           {formatCOP(priceData.avg_price || priceData.min_price)}
-                          {priceData.max_price && priceData.max_price !== priceData.min_price
-                            ? ` - ${formatCOP(priceData.max_price)}`
-                            : ''}
+                          {priceData.max_price && priceData.max_price !== priceData.min_price ? ` - ${formatCOP(priceData.max_price)}` : ''}
                         </Text>
                         <Text style={styles.watchlistMeta} numberOfLines={1}>
                           {[
                             formatDateShort(priceData.price_date),
-                            marketName,
+                            isProduct
+                              ? (priceData._from_default ? priceData?.dim_market?.canonical_name : t.product_national_avg)
+                              : (priceData?.dim_department as any)?.canonical_name,
                             ctx,
                           ].filter(Boolean).join(' · ')}
                         </Text>
                       </>
                     ) : (
-                      <Text style={styles.watchlistMeta}>Sin datos recientes</Text>
+                      <Text style={styles.watchlistMeta}>{t.home_no_recent_data}</Text>
                     )}
                   </View>
-                  <Pressable
-                    onPress={() => removeFromWatchlist(item.id)}
-                    hitSlop={12}
-                    style={styles.watchlistRemove}
-                  >
+                  <Pressable onPress={() => removeFromWatchlist(item.id)} hitSlop={12} style={styles.watchlistRemove}>
                     <Ionicons name="close-circle" size={20} color={colors.text.tertiary} />
                   </Pressable>
                 </View>
@@ -260,7 +332,7 @@ export default function HomeScreen() {
       )}
 
       {/* Categories */}
-      <SectionHeader title="Categorías" />
+      <SectionHeader title={t.home_categories} />
       <View style={styles.categoryGrid}>
         {categories.map((cat) => (
           <Pressable
@@ -286,26 +358,140 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      {/* Trending */}
-      <SectionHeader title="Tendencias de la semana" />
-      {trending.map((item) => (
-        <Card
-          key={item.productId}
-          style={styles.trendingCard}
-          onPress={() => router.push(`/product/${item.productId}`)}
-        >
-          <View style={styles.trendingRow}>
-            <View style={styles.trendingInfo}>
-              <Text style={styles.trendingName} numberOfLines={1}>{item.name}</Text>
-              <Text style={styles.trendingPrice}>{formatCOP(item.latestPrice)}</Text>
-            </View>
-            <View style={styles.trendingRight}>
-              <Sparkline data={[...item.prices].reverse()} width={50} height={20} />
-              <PriceChangeIndicator value={item.change} size="sm" />
-            </View>
-          </View>
-        </Card>
-      ))}
+      {/* Top Increases */}
+      {topMoversUp.length > 0 && (
+        <>
+          <SectionHeader title={`${t.home_top_increases}${trendingScope === 'market' ? ` — ${settings.defaultMarket.name}` : ` — ${t.product_national_avg}`}`} />
+          {topMoversUp.map((item: any) => (
+            <Card key={item.productId} style={styles.trendingCard} onPress={() => router.push(`/product/${item.productId}`)}>
+              <View style={styles.trendingRow}>
+                <View style={styles.trendingInfo}>
+                  <Text style={styles.trendingName} numberOfLines={1}>{item.name}</Text>
+                  {(item.presentation || item.market) && (
+                    <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }} numberOfLines={1}>
+                      {[item.presentation, item.market].filter(Boolean).join(' \u00b7 ')}
+                    </Text>
+                  )}
+                  <Text style={styles.trendingPrice}>{formatCOP(item.latestPrice)}</Text>
+                  <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{t.home_last_7_days}</Text>
+                </View>
+                <View style={styles.trendingRight}>
+                  <Sparkline data={[...item.prices].reverse()} width={50} height={20} />
+                  <PriceChangeIndicator value={item.change} size="sm" />
+                </View>
+              </View>
+            </Card>
+          ))}
+        </>
+      )}
+
+      {/* Top Decreases */}
+      {topMoversDown.length > 0 && (
+        <>
+          <SectionHeader title={`${t.home_top_decreases}${trendingScope === 'market' ? ` — ${settings.defaultMarket.name}` : ` — ${t.product_national_avg}`}`} />
+          {topMoversDown.map((item: any) => (
+            <Card key={item.productId} style={styles.trendingCard} onPress={() => router.push(`/product/${item.productId}`)}>
+              <View style={styles.trendingRow}>
+                <View style={styles.trendingInfo}>
+                  <Text style={styles.trendingName} numberOfLines={1}>{item.name}</Text>
+                  {(item.presentation || item.market) && (
+                    <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }} numberOfLines={1}>
+                      {[item.presentation, item.market].filter(Boolean).join(' \u00b7 ')}
+                    </Text>
+                  )}
+                  <Text style={styles.trendingPrice}>{formatCOP(item.latestPrice)}</Text>
+                  <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{t.home_last_7_days}</Text>
+                </View>
+                <View style={styles.trendingRight}>
+                  <Sparkline data={[...item.prices].reverse()} width={50} height={20} />
+                  <PriceChangeIndicator value={item.change} size="sm" />
+                </View>
+              </View>
+            </Card>
+          ))}
+        </>
+      )}
+
+      {/* Top Supply */}
+      {marketTopSupplied.length > 0 && (
+        <>
+          <SectionHeader title={`${t.home_top_supply} — ${settings.defaultMarket.name}`} />
+          {marketTopSupplied.map((item) => (
+            <Card key={item.id} style={styles.trendingCard} onPress={() => router.push(`/product/${item.id}`)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+                <View style={{ width: 32, height: 32, borderRadius: borderRadius.md, backgroundColor: colors.accent.blue + '15', alignItems: 'center', justifyContent: 'center' }}>
+                  <Ionicons name="cube" size={16} color={colors.accent.blue} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.trendingName}>{item.name}</Text>
+                  <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>
+                    {[t.home_last_week, item.date ? formatDateShort(item.date) : null].filter(Boolean).join(' \u00b7 ')}
+                  </Text>
+                </View>
+                <Text style={{ fontSize: fontSize.sm, fontWeight: '700', color: colors.accent.blue, fontFamily: 'monospace' }}>{formatKg(item.kg)}</Text>
+              </View>
+            </Card>
+          ))}
+        </>
+      )}
+
+      {/* National top-supplied — only shown when the user doesn't have a
+          specific market selected (otherwise the market-specific section
+          above covers it). */}
+      {marketTopSupplied.length === 0 && topSupplied.length > 0 && (
+        <>
+          <SectionHeader title={`${t.home_top_supply} — ${t.product_national_avg}`} />
+          {topSupplied.map((item: any) => (
+            <Card key={item.product_id} style={styles.trendingCard} onPress={() => router.push(`/product/${item.product_id}`)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
+                <View style={{ width: 32, height: 32, borderRadius: borderRadius.md, backgroundColor: colors.accent.blue + '15', alignItems: 'center', justifyContent: 'center' }}>
+                  <Ionicons name="cube" size={16} color={colors.accent.blue} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.trendingName} numberOfLines={1}>{item.name}</Text>
+                  <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>
+                    {[t.home_last_week, item.newest_obs ? formatDateShort(item.newest_obs) : null].filter(Boolean).join(' \u00b7 ')}
+                  </Text>
+                </View>
+                <Text style={{ fontSize: fontSize.sm, fontWeight: '700', color: colors.accent.blue, fontFamily: 'monospace' }}>{formatKg(item.total_kg)}</Text>
+              </View>
+            </Card>
+          ))}
+        </>
+      )}
+
+      {/* Latest Comments */}
+      {settings.commentsEnabled && latestComments.length > 0 && (
+        <>
+          <SectionHeader title={t.comments_latest} />
+          {latestComments.map((c: any) => {
+            const entityLabel = c.entity_name
+              ? `${t.comments_on} ${c.entity_name}`
+              : c.entity_type === 'product' ? t.comments_on_product
+              : c.entity_type === 'market' ? t.comments_on_market
+              : t.comments_on_insumo;
+            const href = `/${c.entity_type === 'insumo' ? 'insumo' : c.entity_type}/${c.entity_id}`;
+            const ts = new Date(c.created_at);
+            const dateStr = formatDateShort(c.created_at.split('T')[0]);
+            const timeStr = `${ts.getHours().toString().padStart(2, '0')}:${ts.getMinutes().toString().padStart(2, '0')}`;
+            return (
+              <Card key={c.id} style={styles.trendingCard} onPress={() => router.push(href as any)}>
+                <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+                  <Ionicons name="person-circle-outline" size={24} color={colors.text.tertiary} />
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexWrap: 'wrap' }}>
+                      <Text style={{ fontSize: fontSize.sm, fontWeight: '600', color: colors.text.primary }}>{(c.profiles as any)?.username || '?'}</Text>
+                      <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{entityLabel}</Text>
+                      <Text style={{ fontSize: fontSize.xs, color: colors.text.tertiary }}>{dateStr} {timeStr}</Text>
+                    </View>
+                    <Text style={{ fontSize: fontSize.sm, color: colors.text.secondary, marginTop: 2 }} numberOfLines={2}>{c.content}</Text>
+                  </View>
+                </View>
+              </Card>
+            );
+          })}
+        </>
+      )}
 
       {/* Help */}
       <Pressable
@@ -313,7 +499,7 @@ export default function HomeScreen() {
         onPress={() => setShowMethodology(true)}
       >
         <Ionicons name="help-circle-outline" size={20} color={colors.text.secondary} />
-        <Text style={styles.helpButtonText}>Ayuda y metodología</Text>
+        <Text style={styles.helpButtonText}>{t.home_help_methodology}</Text>
       </Pressable>
 
       <Modal
@@ -324,7 +510,7 @@ export default function HomeScreen() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Ayuda</Text>
+            <Text style={styles.modalTitle}>{t.home_help}</Text>
             <Pressable onPress={() => setShowMethodology(false)} hitSlop={12}>
               <Ionicons name="close" size={24} color={colors.text.primary} />
             </Pressable>
@@ -332,45 +518,45 @@ export default function HomeScreen() {
           <ScrollView style={styles.modalBody} contentContainerStyle={{ paddingBottom: 40 }}>
 
             {/* App Guide */}
-            <Text style={styles.helpSectionTitle}>Guía de la aplicación</Text>
+            <Text style={styles.helpSectionTitle}>{t.home_app_guide}</Text>
 
             <View style={styles.helpItem}>
               <Ionicons name="home" size={20} color={colors.primary} />
               <View style={styles.helpItemText}>
-                <Text style={styles.helpItemTitle}>Inicio</Text>
-                <Text style={styles.methodologyText}>Tu panel principal. Muestra las tendencias del día, tus productos favoritos y las categorías disponibles. Configura tu mercado preferido en Perfil para ver datos relevantes.</Text>
+                <Text style={styles.helpItemTitle}>{t.nav_home_tab}</Text>
+                <Text style={styles.methodologyText}>{t.home_help_home_text}</Text>
               </View>
             </View>
 
             <View style={styles.helpItem}>
               <Ionicons name="pricetag" size={20} color={colors.primary} />
               <View style={styles.helpItemText}>
-                <Text style={styles.helpItemTitle}>Productos</Text>
-                <Text style={styles.methodologyText}>Explora más de 700 productos agrícolas. Cada producto muestra precios históricos, comparación entre mercados, volúmenes de abastecimiento y productos relacionados. Puedes agregar series al gráfico para comparar productos o mercados lado a lado.</Text>
+                <Text style={styles.helpItemTitle}>{t.nav_products}</Text>
+                <Text style={styles.methodologyText}>{t.home_help_products_text}</Text>
               </View>
             </View>
 
             <View style={styles.helpItem}>
               <Ionicons name="storefront" size={20} color={colors.primary} />
               <View style={styles.helpItemText}>
-                <Text style={styles.helpItemTitle}>Mercados</Text>
-                <Text style={styles.methodologyText}>Consulta los 43 mercados mayoristas y más de 500 mercados municipales. Ve todos los productos disponibles con precios actuales, comparación con la mediana nacional y origen geográfico de los alimentos.</Text>
+                <Text style={styles.helpItemTitle}>{t.nav_markets}</Text>
+                <Text style={styles.methodologyText}>{t.home_help_markets_text}</Text>
               </View>
             </View>
 
             <View style={styles.helpItem}>
               <Ionicons name="flask" size={20} color={colors.primary} />
               <View style={styles.helpItemText}>
-                <Text style={styles.helpItemTitle}>Insumos</Text>
-                <Text style={styles.methodologyText}>Precios de más de 2,000 insumos agropecuarios (fertilizantes, herbicidas, medicamentos, etc.) por departamento y municipio. Compara marcas comerciales y sigue la evolución de precios.</Text>
+                <Text style={styles.helpItemTitle}>{t.nav_inputs}</Text>
+                <Text style={styles.methodologyText}>{t.home_help_inputs_text}</Text>
               </View>
             </View>
 
             <View style={styles.helpItem}>
               <Ionicons name="map" size={20} color={colors.primary} />
               <View style={styles.helpItemText}>
-                <Text style={styles.helpItemTitle}>Mapa</Text>
-                <Text style={styles.methodologyText}>Visualiza precios y flujos de abastecimiento sobre el mapa de Colombia. Selecciona un producto para ver qué regiones tienen los mejores precios o de dónde provienen los alimentos.</Text>
+                <Text style={styles.helpItemTitle}>{t.nav_map}</Text>
+                <Text style={styles.methodologyText}>{t.home_help_map_text}</Text>
               </View>
             </View>
 
@@ -378,11 +564,11 @@ export default function HomeScreen() {
             <View style={styles.helpDivider} />
 
             {/* Methodology */}
-            <Text style={styles.helpSectionTitle}>Fuentes y metodología</Text>
+            <Text style={styles.helpSectionTitle}>{t.home_sources_methodology}</Text>
 
             <Text style={styles.methodologyHeading}>Fuente de datos</Text>
             <Text style={styles.methodologyText}>
-              Todos los datos provienen del SIPSA (Sistema de Información de Precios y Abastecimiento del Sector Agropecuario), operado por el DANE de Colombia.
+              {t.home_sources_text}
             </Text>
 
             <Text style={styles.methodologyHeading}>Precios mayoristas</Text>
@@ -416,7 +602,7 @@ export default function HomeScreen() {
             </Text>
 
             <Text style={[styles.methodologyText, { marginTop: spacing.lg, fontStyle: 'italic', color: colors.text.secondary, opacity: 0.7 }]}>
-              Esta aplicación no es un producto oficial del DANE. Los datos se presentan tal como fueron publicados, con procesamiento automatizado para facilitar su consulta.
+              {t.home_disclaimer}
             </Text>
           </ScrollView>
         </View>

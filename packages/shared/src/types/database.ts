@@ -50,12 +50,24 @@ export interface DimMarket {
   sipsa_id?: number;
 }
 
+export interface DimCpc {
+  code: string;
+  title: string;
+  level: 'section' | 'division' | 'group' | 'class' | 'subclass' | 'product';
+  parent_code: string | null;
+  section_code: string | null;
+  division_code: string | null;
+  group_code: string | null;
+  class_code: string | null;
+}
+
 export interface DimInsumo {
   id: string;
   canonical_name: string;
   grupo?: string;
   subgrupo?: string;
   cpc_code?: string;
+  cpc_id?: string;
   grupo_id?: string;
   subgrupo_id?: string;
   sipsa_id?: number;

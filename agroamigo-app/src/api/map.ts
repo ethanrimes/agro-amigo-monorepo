@@ -1,91 +1,61 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * Get average price per department for a given product (or all products).
- * Used for the Price mode choropleth.
+ * Average price per department for a product+presentation (or all products
+ * coarsely). Server-side aggregated — no row-cap bias. The presentation is
+ * required when a product is given: mixing kg-vs-lb-vs-unit into one "avg"
+ * is garbage, so the RPC enforces it and raises if omitted.
  */
-export async function getPricesByDepartment(productId?: string, days = 30) {
-  const since = new Date();
-  since.setDate(since.getDate() - days);
-
-  let query = supabase
-    .from('price_observations')
-    .select('department_id, min_price, max_price, avg_price')
-    .gte('price_date', since.toISOString().split('T')[0]);
-
-  if (productId) {
-    query = query.eq('product_id', productId);
+export async function getPricesByDepartment(productId?: string, days = 30, presentationId?: string, unitsId?: string) {
+  if (productId && (!presentationId || !unitsId)) {
+    throw new Error('getPricesByDepartment: presentationId and unitsId are required when productId is provided');
   }
-
-  const { data, error } = await query.limit(5000);
+  // The product-required RPC has no nullable OR branch, so the planner always
+  // uses idx_price_obs_product_date. The generic signature falls back to the
+  // legacy RPC for the (rare) all-products case.
+  const { data, error } = productId
+    ? await supabase.rpc('get_prices_by_department_for_product', {
+        p_product_id: productId,
+        p_presentation_id: presentationId,
+        p_units_id: unitsId,
+        p_days: days,
+      })
+    : await supabase.rpc('get_prices_by_department', {
+        p_product_id: null,
+        p_days: days,
+        p_presentation_id: null,
+        p_units_id: null,
+      });
   if (error) throw error;
-
-  // Aggregate by department
-  const deptMap = new Map<string, { sum: number; count: number }>();
-  for (const row of data || []) {
-    const price = row.avg_price ?? row.max_price ?? row.min_price ?? 0;
-    if (price === 0) continue;
-    const existing = deptMap.get(row.department_id);
-    if (existing) {
-      existing.sum += price;
-      existing.count += 1;
-    } else {
-      deptMap.set(row.department_id, { sum: price, count: 1 });
-    }
-  }
-
-  return Array.from(deptMap.entries()).map(([deptId, { sum, count }]) => ({
-    department_id: deptId,
-    avg_price: sum / count,
-    observation_count: count,
+  return (data || []).map((r: any) => ({
+    department_id: r.department_id,
+    avg_price: Number(r.avg_price || 0),
+    observation_count: Number(r.observation_count || 0),
   }));
 }
 
 /**
- * Get total supply (kg) per department for a given product (or all products).
- * Used for the Supply mode choropleth.
+ * Total supply (kg) per destination department. Server-side GROUP BY —
+ * previously the client fetched 10K rows from 19M+ and aggregated in JS,
+ * which both timed out and silently skipped most data.
  */
 export async function getSupplyByDepartment(productId?: string, days = 30) {
-  const since = new Date();
-  since.setDate(since.getDate() - days);
-
-  let query = supabase
-    .from('supply_observations')
-    .select('city_id, quantity_kg')
-    .gte('observation_date', since.toISOString().split('T')[0]);
-
-  if (productId) {
-    query = query.eq('product_id', productId);
-  }
-
-  const { data, error } = await query.limit(10000);
+  // Product-required variant sidesteps the generic-plan hedge that made
+  // fresa time out (57014). The client never calls this without a product
+  // since the cross-product kg sum has no useful meaning.
+  const { data, error } = productId
+    ? await supabase.rpc('get_supply_by_department_for_product', {
+        p_product_id: productId,
+        p_days: days,
+      })
+    : await supabase.rpc('get_supply_by_department', {
+        p_product_id: null,
+        p_days: days,
+      });
   if (error) throw error;
-
-  // We need city -> department mapping. Get it from dim_city.
-  const cityIds = [...new Set((data || []).map(r => r.city_id))];
-  if (cityIds.length === 0) return [];
-
-  const { data: cities } = await supabase
-    .from('dim_city')
-    .select('id, department_id')
-    .in('id', cityIds);
-
-  const cityToDept = new Map<string, string>();
-  for (const c of cities || []) {
-    cityToDept.set(c.id, c.department_id);
-  }
-
-  // Aggregate by department
-  const deptMap = new Map<string, number>();
-  for (const row of data || []) {
-    const deptId = cityToDept.get(row.city_id);
-    if (!deptId) continue;
-    deptMap.set(deptId, (deptMap.get(deptId) || 0) + (row.quantity_kg || 0));
-  }
-
-  return Array.from(deptMap.entries()).map(([deptId, totalKg]) => ({
-    department_id: deptId,
-    total_kg: totalKg,
+  return (data || []).map((r: any) => ({
+    department_id: r.department_id,
+    total_kg: Number(r.total_kg || 0),
   }));
 }
 
@@ -104,6 +74,43 @@ export async function getDepartments() {
 /**
  * Get market locations by joining market -> city -> divipola_municipios for lat/lng.
  */
+/**
+ * Get market IDs that have recent data for a specific product.
+ */
+export async function getProductPresentationsForMap(productId: string, days = 30) {
+  // Server-side DISTINCT. Previously we pulled up to 1000 raw rows with two
+  // embedded joins and deduped client-side, which timed out for busy products.
+  const { data, error } = await supabase.rpc('get_product_presentations_for_map', {
+    p_product_id: productId,
+    p_days: days,
+  });
+  if (error) throw error;
+  return ((data || []) as any[]).map(r => {
+    const parts = [r.presentation_name, r.units_name].filter(Boolean);
+    return { presentation_id: r.presentation_id, units_id: r.units_id, label: parts.join(' \u00b7 ') };
+  });
+}
+
+export async function getMarketsWithProductData(productId: string, mode: 'price' | 'supply', days = 30, presentationId?: string, unitsId?: string) {
+  // Server-side DISTINCT via RPC — returns tens of rows instead of the
+  // 5000 raw rows we used to pull down and dedupe client-side.
+  if (mode === 'price') {
+    const { data, error } = await supabase.rpc('get_price_markets_for_product', {
+      p_product_id: productId,
+      p_days: days,
+      p_presentation_id: presentationId || null,
+      p_units_id: unitsId || null,
+    });
+    if (error) throw error;
+    return ((data || []) as any[]).map(r => (typeof r === 'string' ? r : r.get_price_markets_for_product)).filter(Boolean);
+  }
+  const { data, error } = await supabase.rpc('get_supply_markets_for_product', {
+    p_product_id: productId, p_days: days,
+  });
+  if (error) throw error;
+  return ((data || []) as any[]).map(r => (typeof r === 'string' ? r : r.get_supply_markets_for_product)).filter(Boolean);
+}
+
 export async function getMarketLocations() {
   const { data: markets, error: mErr } = await supabase
     .from('dim_market')

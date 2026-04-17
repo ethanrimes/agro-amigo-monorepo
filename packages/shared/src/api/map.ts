@@ -1,6 +1,6 @@
 import { getSupabaseClient } from '../lib/supabase';
 
-export async function getPricesByDepartment(productId?: string, days = 30) {
+export async function getPricesByDepartment(productId?: string, days = 30, presentationId?: string, unitsId?: string) {
   const supabase = getSupabaseClient();
   const since = new Date();
   since.setDate(since.getDate() - days);
@@ -12,6 +12,12 @@ export async function getPricesByDepartment(productId?: string, days = 30) {
 
   if (productId) {
     query = query.eq('product_id', productId);
+  }
+  if (presentationId) {
+    query = query.eq('presentation_id', presentationId);
+  }
+  if (unitsId) {
+    query = query.eq('units_id', unitsId);
   }
 
   const { data, error } = await query.limit(5000);
@@ -88,6 +94,56 @@ export async function getDepartments() {
     .order('canonical_name');
   if (error) throw error;
   return data;
+}
+
+export async function getProductPresentationsForMap(productId: string, days = 30) {
+  const supabase = getSupabaseClient();
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  const { data, error } = await supabase
+    .from('price_observations')
+    .select('presentation_id, units_id, dim_presentation(canonical_name), dim_units(canonical_name)')
+    .eq('product_id', productId)
+    .gte('price_date', since.toISOString().split('T')[0])
+    .limit(1000);
+  if (error) throw error;
+  const map = new Map<string, { presentation_id: string; units_id: string; label: string }>();
+  for (const row of (data || []) as any[]) {
+    const key = `${row.presentation_id}|${row.units_id}`;
+    if (!map.has(key)) {
+      const parts = [row.dim_presentation?.canonical_name, row.dim_units?.canonical_name].filter(Boolean);
+      map.set(key, { presentation_id: row.presentation_id, units_id: row.units_id, label: parts.join(' · ') });
+    }
+  }
+  return Array.from(map.values());
+}
+
+export async function getMarketsWithProductData(productId: string, mode: 'price' | 'supply', days = 30, presentationId?: string, unitsId?: string) {
+  const supabase = getSupabaseClient();
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+
+  if (mode === 'price') {
+    let q = supabase
+      .from('price_observations')
+      .select('market_id')
+      .eq('product_id', productId)
+      .gte('price_date', since.toISOString().split('T')[0]);
+    if (presentationId) q = q.eq('presentation_id', presentationId);
+    if (unitsId) q = q.eq('units_id', unitsId);
+    const { data, error } = await q.limit(5000);
+    if (error) throw error;
+    return [...new Set((data || []).map(r => r.market_id).filter(Boolean))];
+  } else {
+    const { data, error } = await supabase
+      .from('supply_observations')
+      .select('market_id')
+      .eq('product_id', productId)
+      .gte('observation_date', since.toISOString().split('T')[0])
+      .limit(5000);
+    if (error) throw error;
+    return [...new Set((data || []).map(r => r.market_id).filter(Boolean))];
+  }
 }
 
 export async function getMarketLocations() {
