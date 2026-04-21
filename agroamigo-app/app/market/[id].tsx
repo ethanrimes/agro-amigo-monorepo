@@ -11,6 +11,7 @@ import { MarketSupplyComparator } from '../../src/components/MarketSupplyCompara
 import { getMarketById, getMarketProducts, getMarkets, getMarketSupply, getMarketSupplySummary, getMarketTopProducts, getMarketTopProvenance, SupplySummary } from '../../src/api/markets';
 import { formatCOP, formatDateShort, formatPriceContext, formatKg } from '../../src/lib/format';
 import { useTranslation } from '../../src/lib/useTranslation';
+import { cachedCall } from '../../src/lib/cache';
 
 const SUPPLY_COLORS = [colors.primary, colors.accent.orange, colors.accent.blue, colors.secondary, colors.primaryLight, '#9C27B0', '#00BCD4', '#FF5722'];
 
@@ -34,6 +35,11 @@ export default function MarketDetailScreen() {
   const [topSuppliedProducts, setTopSuppliedProducts] = useState<{ product_id: string; product_name: string; total_kg: number }[]>([]);
   const [provenanceBars, setProvenanceBars] = useState<{ dept_name: string; total_kg: number }[]>([]);
   const [supplyLoading, setSupplyLoading] = useState(false);
+  // Lazy-load gates for heavy sections. Comparators in particular query
+  // cross-market supply and should stay idle until the user opens them.
+  const [supplyExpanded, setSupplyExpanded] = useState(false);
+  const [priceComparatorExpanded, setPriceComparatorExpanded] = useState(false);
+  const [supplyComparatorExpanded, setSupplyComparatorExpanded] = useState(false);
 
   // Stable ref so useMemo closures capture the same array across renders.
   const SUPPLY_TIME_RANGES = useMemo(() => [
@@ -47,22 +53,18 @@ export default function MarketDetailScreen() {
 
   async function loadMarket() {
     try {
-      // Note: getMarketSupply(..., 30) still runs for the comparator only;
-      // it's capped to 30 days so it stays fast even on Corabastos-sized
-      // markets. The main supply section below is driven by RPCs.
-      const [mkt, prods, sup, mkts] = await Promise.all([
-        getMarketById(id!),
-        getMarketProducts(id!, 200),
-        getMarketSupply(id!, 30).catch(() => []),
-        getMarkets().catch(() => []),
+      // Only load the market entity + top products eagerly so the page shell
+      // renders fast. Supply (for the comparator) and the global markets list
+      // are fetched on demand when the relevant section is expanded.
+      const [mkt, prods] = await Promise.all([
+        cachedCall(`market:${id}:entity`, () => getMarketById(id!)),
+        cachedCall(`market:${id}:products:200`, () => getMarketProducts(id!, 200)),
       ]);
       setMarket(mkt);
-      setSupply(sup || []);
-      setAllMarkets(mkts || []);
 
       // Deduplicate: keep most recent observation per product
       const productMap = new Map<string, any>();
-      for (const p of (prods || [])) {
+      for (const p of ((prods as any[]) || [])) {
         const pid = p.product_id;
         if (!productMap.has(pid) || p.price_date > productMap.get(pid).price_date) {
           productMap.set(pid, p);
@@ -75,6 +77,23 @@ export default function MarketDetailScreen() {
       setLoading(false);
     }
   }
+
+  // The comparator cards need the raw supply stream and the global markets
+  // catalogue. Load them lazily when either comparator is first opened.
+  useEffect(() => {
+    if (!id) return;
+    if (!priceComparatorExpanded && !supplyComparatorExpanded) return;
+    cachedCall(`markets:all`, () => getMarkets())
+      .then(m => setAllMarkets(((m as any[]) || [])))
+      .catch(() => {});
+  }, [id, priceComparatorExpanded, supplyComparatorExpanded]);
+
+  useEffect(() => {
+    if (!id || !supplyComparatorExpanded) return;
+    cachedCall(`market:${id}:supply:30`, () => getMarketSupply(id, 30))
+      .then(s => setSupply(((s as any[]) || [])))
+      .catch(() => {});
+  }, [id, supplyComparatorExpanded]);
 
   // Group products by category > subcategory
   const categoryGroups = useMemo(() => {
@@ -112,25 +131,26 @@ export default function MarketDetailScreen() {
   // Whenever the user changes the time tile or clicks a bar to cross-filter,
   // fire three tiny parallel RPCs. No raw rows are fetched for this section.
   useEffect(() => {
-    if (!id) return;
+    if (!id || !supplyExpanded) return;
     let cancelled = false;
     const tr = SUPPLY_TIME_RANGES[supplyTimeRange];
     const days = tr?.days ?? 30;
     setSupplyLoading(true);
+    const keyBase = `market:${id}:supply:${days}:${selectedSupplyProduct ?? ''}:${selectedSupplyProv ?? ''}`;
     Promise.all([
-      getMarketSupplySummary(id, days, selectedSupplyProduct, selectedSupplyProv).catch(() => null),
+      cachedCall(`${keyBase}:summary`, () => getMarketSupplySummary(id, days, selectedSupplyProduct, selectedSupplyProv)).catch(() => null),
       // Top-products bars: filter by selected provenance (so user can pick).
-      getMarketTopProducts(id, days, selectedSupplyProv, 10).catch(() => []),
+      cachedCall(`${keyBase}:topProducts`, () => getMarketTopProducts(id, days, selectedSupplyProv, 10)).catch(() => []),
       // Provenance bars: filter by selected product.
-      getMarketTopProvenance(id, days, selectedSupplyProduct, 15).catch(() => []),
+      cachedCall(`${keyBase}:topProv`, () => getMarketTopProvenance(id, days, selectedSupplyProduct, 15)).catch(() => []),
     ]).then(([summary, products, prov]) => {
       if (cancelled) return;
-      setSupplySummary(summary);
-      setTopSuppliedProducts(products);
-      setProvenanceBars(prov);
+      setSupplySummary(summary as SupplySummary | null);
+      setTopSuppliedProducts(products as { product_id: string; product_name: string; total_kg: number }[]);
+      setProvenanceBars(prov as { dept_name: string; total_kg: number }[]);
     }).finally(() => { if (!cancelled) setSupplyLoading(false); });
     return () => { cancelled = true; };
-  }, [id, supplyTimeRange, selectedSupplyProduct, selectedSupplyProv, SUPPLY_TIME_RANGES]);
+  }, [id, supplyExpanded, supplyTimeRange, selectedSupplyProduct, selectedSupplyProv, SUPPLY_TIME_RANGES]);
 
   const totalSupplyKg = supplySummary?.total_kg ?? 0;
   const dailyAvgSupplyKg = supplySummary?.daily_avg_kg ?? 0;
@@ -256,19 +276,27 @@ export default function MarketDetailScreen() {
 
         {/* Price Comparator */}
         <Card style={{ marginHorizontal: spacing.lg, marginTop: spacing.sm }}>
-          <MarketPriceComparator currentMarket={market} products={products} markets={allMarkets} />
+          <ExpandableSection
+            title={t.product_price_section + ' · Comparar'}
+            icon="analytics-outline"
+            initiallyExpanded={false}
+            onExpandChange={setPriceComparatorExpanded}
+          >
+            <MarketPriceComparator currentMarket={market} products={products} markets={allMarkets} />
+          </ExpandableSection>
         </Card>
 
-        {/* Supply section header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 }}>
-          <Ionicons name="cube-outline" size={18} color={colors.accent.blue} />
-          <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text.primary }}>{t.product_supply_section}</Text>
-        </View>
-
         {/* Supply summary: time tiles + cumulative/daily-avg blocks +
-            linked top-products and provenance bars. */}
-        <Card style={{ marginHorizontal: spacing.lg, marginTop: spacing.xs }}>
-          {supply.length === 0 ? (
+            linked top-products and provenance bars. Data is fetched only
+            once the section is expanded. */}
+        <Card style={{ marginHorizontal: spacing.lg, marginTop: spacing.sm }}>
+          <ExpandableSection
+            title={t.product_supply_section}
+            icon="cube-outline"
+            initiallyExpanded={false}
+            onExpandChange={setSupplyExpanded}
+          >
+          {!supplyLoading && supplyExpanded && !supplySummary && topSuppliedProducts.length === 0 ? (
             <Text style={styles.noDataText}>{t.product_no_supply_data}</Text>
           ) : (
             <>
@@ -391,11 +419,19 @@ export default function MarketDetailScreen() {
               )}
             </>
           )}
+          </ExpandableSection>
         </Card>
 
         {/* Supply Comparator */}
         <Card style={{ marginHorizontal: spacing.lg, marginTop: spacing.sm }}>
-          <MarketSupplyComparator currentMarket={market} supply={supply} products={products} markets={allMarkets} />
+          <ExpandableSection
+            title={t.product_supply_section + ' · Comparar'}
+            icon="bar-chart-outline"
+            initiallyExpanded={false}
+            onExpandChange={setSupplyComparatorExpanded}
+          >
+            <MarketSupplyComparator currentMarket={market} supply={supply} products={products} markets={allMarkets} />
+          </ExpandableSection>
         </Card>
 
         {/* Comments */}

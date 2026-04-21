@@ -8,6 +8,7 @@ import { getPricesByDepartment, getSupplyByDepartment, getDepartments, getMarket
 import { getProducts } from '../../src/api/products';
 import { formatCOPCompact, formatKg } from '../../src/lib/format';
 import { useTranslation } from '../../src/lib/useTranslation';
+import { cachedCall } from '../../src/lib/cache';
 import colombiaGeoJson from '../../src/data/colombia-departments.json';
 
 const COLOMBIA_CENTER = { latitude: 4.5, longitude: -73.0 };
@@ -45,20 +46,29 @@ export default function MapScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const [depts, mkts] = await Promise.all([getDepartments(), getMarketLocations()]);
-        setDepartments(depts || []);
-        setAllMarkets((mkts || []).filter((m: any) => m.lat && m.lng));
+        // Base map layers — cached across visits so panning away and back is
+        // instant on the second mount.
+        const [depts, mkts] = await Promise.all([
+          cachedCall(`map:departments`, () => getDepartments()),
+          cachedCall(`map:marketLocations`, () => getMarketLocations()),
+        ]);
+        setDepartments(((depts as any[]) || []));
+        setAllMarkets((((mkts as any[]) || [])).filter((m: any) => m.lat && m.lng));
       } catch (err) { console.error(err); }
     })();
   }, []);
 
-  // Load presentations when product changes
+  // Load presentations when product changes — deferred until a product is
+  // actually picked, and cached per-product.
   useEffect(() => {
     if (selectedProduct && mode === 'price') {
-      getProductPresentationsForMap(selectedProduct.id, 30).then(p => {
-        setPresentations(p || []);
-        setSelectedPresentation(p && p.length > 0 ? p[0] : null);
-      }).catch(() => { setPresentations([]); setSelectedPresentation(null); });
+      cachedCall(`map:presentations:${selectedProduct.id}:30`, () => getProductPresentationsForMap(selectedProduct.id, 30))
+        .then(p => {
+          const list = ((p as any[]) || []);
+          setPresentations(list);
+          setSelectedPresentation(list.length > 0 ? list[0] : null);
+        })
+        .catch(() => { setPresentations([]); setSelectedPresentation(null); });
     } else { setPresentations([]); setSelectedPresentation(null); }
   }, [selectedProduct, mode]);
 
@@ -81,13 +91,19 @@ export default function MapScreen() {
     if (mode === 'price' && !presId) return;
     setLoading(true);
     try {
+      const keySuffix = `${pid}:${mode}:30:${presId ?? ''}:${uId ?? ''}`;
       const [prices, supply] = await Promise.all([
-        mode === 'price' ? getPricesByDepartment(pid, 30, presId, uId) : Promise.resolve([]),
-        mode === 'supply' ? getSupplyByDepartment(pid, 30) : Promise.resolve([]),
+        mode === 'price'
+          ? cachedCall(`map:prices:${keySuffix}`, () => getPricesByDepartment(pid, 30, presId, uId))
+          : Promise.resolve([]),
+        mode === 'supply'
+          ? cachedCall(`map:supply:${keySuffix}`, () => getSupplyByDepartment(pid, 30))
+          : Promise.resolve([]),
       ]);
-      setPriceData(prices || []); setSupplyData(supply || []);
-      const ids = await getMarketsWithProductData(pid, mode, 30, presId, uId);
-      setActiveMarketIds(new Set(ids));
+      setPriceData(((prices as any[]) || []));
+      setSupplyData(((supply as any[]) || []));
+      const ids = await cachedCall(`map:activeMarkets:${keySuffix}`, () => getMarketsWithProductData(pid, mode, 30, presId, uId));
+      setActiveMarketIds(new Set(ids as string[]));
     } catch (err) { console.error('loadMapData failed:', err); }
     finally { setLoading(false); }
   }

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoCash, IoTrendingUp, IoSearch, IoCloseCircle, IoChevronDown } from 'react-icons/io5';
-import { colors, spacing, borderRadius, fontSize, formatCOPCompact, formatKg } from '@agroamigo/shared';
+import { colors, spacing, borderRadius, fontSize, formatCOPCompact, formatKg, cachedCall } from '@agroamigo/shared';
 import { getPricesByDepartment, getSupplyByDepartment, getDepartments, getMarketLocations, getMarketsWithProductData, getProductPresentationsForMap } from '@agroamigo/shared/api/map';
 import { getProducts } from '@agroamigo/shared/api/products';
 import { useLanguage } from '@/context/LanguageContext';
@@ -36,52 +36,65 @@ export default function MapPage() {
   const [presentations, setPresentations] = useState<any[]>([]);
   const [selectedPresentation, setSelectedPresentation] = useState<{ presentation_id: string; units_id: string; label: string } | null>(null);
 
-  // Load base data (departments + all market locations)
+  // Load base data (departments + all market locations). Cached so tabbing
+  // away and back is instant.
   useEffect(() => {
     (async () => {
       try {
-        const [depts, mkts] = await Promise.all([getDepartments(), getMarketLocations()]);
-        setDepartments(depts || []);
-        setAllMarkets((mkts || []).filter((m: any) => m.lat && m.lng));
+        const [depts, mkts] = await Promise.all([
+          cachedCall(`map:departments`, () => getDepartments()),
+          cachedCall(`map:marketLocations`, () => getMarketLocations()),
+        ]);
+        setDepartments(((depts as any[]) || []));
+        setAllMarkets((((mkts as any[]) || [])).filter((m: any) => m.lat && m.lng));
       } catch (err) { console.error(err); }
     })();
   }, []);
 
-  // Load presentations when product changes
+  // Presentations — deferred until a product is picked, cached per-product.
   useEffect(() => {
     if (selectedProduct && mode === 'price') {
-      getProductPresentationsForMap(selectedProduct.id, 30).then(p => {
-        setPresentations(p || []);
-        setSelectedPresentation(p && p.length > 0 ? p[0] : null);
-      }).catch(() => { setPresentations([]); setSelectedPresentation(null); });
+      cachedCall(`map:presentations:${selectedProduct.id}:30`, () => getProductPresentationsForMap(selectedProduct.id, 30))
+        .then(p => {
+          const list = ((p as any[]) || []);
+          setPresentations(list);
+          setSelectedPresentation(list.length > 0 ? list[0] : null);
+        })
+        .catch(() => { setPresentations([]); setSelectedPresentation(null); });
     } else {
       setPresentations([]);
       setSelectedPresentation(null);
     }
   }, [selectedProduct, mode]);
 
-  // Load price/supply data when product, mode, or presentation changes
+  // Price/supply choropleth data. Does nothing (no network) until a product
+  // is picked — avoids the cross-product aggregate that caused timeouts.
   useEffect(() => { loadMapData(); }, [selectedProduct, mode, selectedPresentation]);
 
   async function loadMapData() {
+    const pid = selectedProduct?.id;
+    const presId = selectedPresentation?.presentation_id;
+    const uId = selectedPresentation?.units_id;
+    if (!pid) {
+      setPriceData([]); setSupplyData([]); setActiveMarketIds(null); setLoading(false);
+      return;
+    }
+    if (mode === 'price' && !presId) return;
     setLoading(true);
     try {
-      const pid = selectedProduct?.id;
-      const presId = selectedPresentation?.presentation_id;
-      const uId = selectedPresentation?.units_id;
+      const keySuffix = `${pid}:${mode}:30:${presId ?? ''}:${uId ?? ''}`;
       const [prices, supply] = await Promise.all([
-        mode === 'price' ? getPricesByDepartment(pid, 30, presId, uId) : Promise.resolve([]),
-        mode === 'supply' ? getSupplyByDepartment(pid, 30) : Promise.resolve([]),
+        mode === 'price'
+          ? cachedCall(`map:prices:${keySuffix}`, () => getPricesByDepartment(pid, 30, presId, uId))
+          : Promise.resolve([]),
+        mode === 'supply'
+          ? cachedCall(`map:supply:${keySuffix}`, () => getSupplyByDepartment(pid, 30))
+          : Promise.resolve([]),
       ]);
-      setPriceData(prices || []);
-      setSupplyData(supply || []);
-
-      if (pid) {
-        const ids = await getMarketsWithProductData(pid, mode, 30, presId, uId);
-        setActiveMarketIds(new Set(ids));
-      } else {
-        setActiveMarketIds(null);
-      }
+      setPriceData(((prices as any[]) || []));
+      setSupplyData(((supply as any[]) || []));
+      const ids = await cachedCall(`map:activeMarkets:${keySuffix}`, () => getMarketsWithProductData(pid, mode, 30, presId, uId));
+      setActiveMarketIds(new Set(ids as string[]));
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }

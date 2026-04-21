@@ -1,6 +1,19 @@
 // Supabase initialization
 export { initSupabase, getSupabaseClient, getSupabaseUrl } from './lib/supabase';
 
+// Session cache
+export {
+  cacheGet,
+  cacheSet,
+  cacheDelete,
+  cacheInvalidatePrefix,
+  cacheClear,
+  cachedCall,
+  cacheKey,
+} from './lib/cache';
+export { useCachedQuery } from './lib/useCachedQuery';
+export type { UseCachedQueryOptions, UseCachedQueryResult } from './lib/useCachedQuery';
+
 // Formatters
 export {
   formatCOP,

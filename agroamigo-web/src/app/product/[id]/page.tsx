@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { IoStar, IoStarOutline, IoStorefrontOutline, IoNavigateOutline, IoPricetagsOutline, IoCubeOutline, IoArrowUp, IoArrowDown } from 'react-icons/io5';
-import { colors, spacing, borderRadius, fontSize, formatCOP, formatCOPCompact, formatDateShort, formatKg, formatPriceContext, pctChange } from '@agroamigo/shared';
+import { colors, spacing, borderRadius, fontSize, formatCOP, formatCOPCompact, formatDateShort, formatKg, formatPriceContext, pctChange, cachedCall } from '@agroamigo/shared';
 import { getProductById, getProductPrices, getProductPricesByMarket } from '@agroamigo/shared/api/products';
 import { getProductSupply } from '@agroamigo/shared/api/supply';
 import { Card } from '@/components/Card';
@@ -55,6 +55,10 @@ export default function ProductDetailPage() {
   const [showWeekTooltip, setShowWeekTooltip] = useState(false);
   const [loading, setLoading] = useState(true);
   const chartWidth = 440;
+  // Lazy-load gates. Heavy fetches fire only once the section is opened.
+  const [priceChartExpanded, setPriceChartExpanded] = useState(false);
+  const [supplyExpanded, setSupplyExpanded] = useState(false);
+  const [provenanceExpanded, setProvenanceExpanded] = useState(false);
 
   const TIME_RANGES = [
     { label: t.time_1w, days: 7 }, { label: t.time_1m, days: 30 }, { label: t.time_3m, days: 90 },
@@ -62,26 +66,30 @@ export default function ProductDetailPage() {
   ];
 
   useEffect(() => { loadProduct(); }, [id]);
-  useEffect(() => { if (id) loadPrices(); }, [id]);
-  useEffect(() => { if (id) loadSupply(); }, [id]);
+  // Price history (~5000 rows) — deferred until the chart is expanded.
+  useEffect(() => {
+    if (!id || !priceChartExpanded) return;
+    cachedCall(`product:${id}:prices:all`, () => getProductPrices(id, { days: 36500, limit: 5000 }))
+      .then(data => setPrices(((data as any[]) || [])))
+      .catch(err => console.error(err));
+  }, [id, priceChartExpanded]);
+  // Full supply stream is large — deferred until user opens supply or
+  // provenance section.
+  useEffect(() => {
+    if (!id || (!supplyExpanded && !provenanceExpanded)) return;
+    cachedCall(`product:${id}:supply:all`, () => getProductSupply(id, 36500))
+      .then(data => setSupply(((data as any[]) || [])))
+      .catch(err => console.error(err));
+  }, [id, supplyExpanded, provenanceExpanded]);
 
   async function loadProduct() {
     try {
-      const [prod, mktPrices] = await Promise.all([getProductById(id!), getProductPricesByMarket(id!)]);
-      setProduct(prod); setMarketPrices(mktPrices || []);
+      const [prod, mktPrices] = await Promise.all([
+        cachedCall(`product:${id}:entity`, () => getProductById(id!)),
+        cachedCall(`product:${id}:prices-by-market`, () => getProductPricesByMarket(id!)),
+      ]);
+      setProduct(prod); setMarketPrices(((mktPrices as any[]) || []));
     } catch (err) { console.error(err); } finally { setLoading(false); }
-  }
-  async function loadPrices() {
-    try {
-      const data = await getProductPrices(id!, { days: 36500, limit: 5000 });
-      setPrices(data || []);
-    } catch (err) { console.error(err); }
-  }
-  async function loadSupply() {
-    try {
-      const data = await getProductSupply(id!, 36500);
-      setSupply(data || []);
-    } catch (err) { console.error(err); }
   }
 
   // ═══ PRICE CASCADE: time range → market → presentation ═══
@@ -439,13 +447,15 @@ export default function ProductDetailPage() {
       </div>
 
       {/* ══ PRICE SECTION ══ */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.xs}px` }}>
-        <IoPricetagsOutline size={18} color={colors.primary} />
-        <span style={{ fontSize: fontSize.lg, fontWeight: 700, color: colors.text.primary }}>{t.product_price_section}</span>
-      </div>
 
       {/* Price Chart (with filters inside) */}
-      <Card style={{ margin: `${spacing.xs}px ${spacing.lg}px 0` }}>
+      <Card style={{ margin: `${spacing.lg}px ${spacing.lg}px 0` }}>
+        <ExpandableSection
+          title={t.product_price_section}
+          icon={<IoPricetagsOutline size={16} color={colors.primary} />}
+          initiallyExpanded={false}
+          onExpandChange={setPriceChartExpanded}
+        >
         <div style={{ display: 'flex', gap: spacing.xs, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
           {availablePriceRanges.map(tr => <button key={tr.label} onClick={() => setTimeRange(tr.index)} style={chipStyle(tr.index === timeRange)}>{tr.label}</button>)}
         </div>
@@ -483,7 +493,8 @@ export default function ProductDetailPage() {
             </div>
             {selectedPresLabel && <div style={{ textAlign: 'center', marginTop: spacing.xs, fontSize: fontSize.xs, color: colors.text.tertiary }}>{selectedPresLabel}</div>}
           </div>
-        ) : <p style={{ textAlign: 'center', padding: `${spacing.xxl}px 0`, color: colors.text.tertiary, fontSize: fontSize.sm }}>{t.product_no_price_data}</p>}
+        ) : priceChartExpanded ? <p style={{ textAlign: 'center', padding: `${spacing.xxl}px 0`, color: colors.text.tertiary, fontSize: fontSize.sm }}>{t.product_no_price_data}</p> : null}
+        </ExpandableSection>
       </Card>
 
       {/* Prices by Market */}
@@ -540,12 +551,14 @@ export default function ProductDetailPage() {
       )}
 
       {/* ══ SUPPLY SECTION ══ */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.xs}px` }}>
-        <IoCubeOutline size={18} color={colors.accent.blue} />
-        <span style={{ fontSize: fontSize.lg, fontWeight: 700, color: colors.text.primary }}>{t.product_supply_section}</span>
-      </div>
 
-      <Card style={{ margin: `${spacing.xs}px ${spacing.lg}px 0` }}>
+      <Card style={{ margin: `${spacing.lg}px ${spacing.lg}px 0` }}>
+        <ExpandableSection
+          title={t.product_supply_section}
+          icon={<IoCubeOutline size={16} color={colors.accent.blue} />}
+          initiallyExpanded={false}
+          onExpandChange={setSupplyExpanded}
+        >
         {/* Filters: time period + market */}
         <div style={{ display: 'flex', gap: spacing.xs, marginBottom: spacing.sm, flexWrap: 'wrap' }}>
           {availableSupplyRanges.map(tr => <button key={`sup-${tr.label}`} onClick={() => setSupplyTimeRange(tr.index)} style={chipStyle(tr.index === supplyTimeRange, colors.accent.blue)}>{tr.label}</button>)}
@@ -578,13 +591,14 @@ export default function ProductDetailPage() {
               formatValue={formatKg}
             />
           </div>
-        ) : filteredSupply.length === 0 ? <p style={{ textAlign: 'center', color: colors.text.tertiary, fontSize: fontSize.sm }}>{t.product_no_supply_data}</p> : null}
+        ) : supplyExpanded && filteredSupply.length === 0 ? <p style={{ textAlign: 'center', color: colors.text.tertiary, fontSize: fontSize.sm }}>{t.product_no_supply_data}</p> : null}
+        </ExpandableSection>
       </Card>
 
       {/* Provenance */}
-      {provenanceBars.length > 0 && (
+      {(provenanceExpanded ? provenanceBars.length > 0 : true) && (
         <Card style={{ margin: `${spacing.sm}px ${spacing.lg}px 0` }}>
-          <ExpandableSection title={t.product_provenance} icon={<IoNavigateOutline size={16} color={colors.text.secondary} />} badge={provenanceBars.length} subtitle={t.product_provenance_subtitle} initiallyExpanded>
+          <ExpandableSection title={t.product_provenance} icon={<IoNavigateOutline size={16} color={colors.text.secondary} />} badge={provenanceExpanded ? provenanceBars.length : undefined} subtitle={t.product_provenance_subtitle} initiallyExpanded={false} onExpandChange={setProvenanceExpanded}>
             {/* Provenance filters (separate from supply filters) */}
             <div style={{ display: 'flex', gap: spacing.xs, marginBottom: spacing.xs, flexWrap: 'wrap' }}>
               {availableSupplyRanges.map(tr => <button key={`prov-${tr.label}`} onClick={() => setProvTimeRange(tr.index)} style={chipStyle(tr.index === provTimeRange, colors.secondary)}>{tr.label}</button>)}
