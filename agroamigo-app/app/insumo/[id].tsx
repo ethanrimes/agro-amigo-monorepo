@@ -11,6 +11,7 @@ import { formatCOP, formatCOPCompact, formatDateShort } from '../../src/lib/form
 import { useWatchlist } from '../../src/context/WatchlistContext';
 import { useTranslation } from '../../src/lib/useTranslation';
 import { CommentsSection } from '../../src/components/CommentsSection';
+import { cachedCall } from '../../src/lib/cache';
 
 type PriceSeries = 'department' | 'municipality';
 
@@ -45,37 +46,51 @@ export default function InsumoDetailScreen() {
   const [cpcArticulo, setCpcArticulo] = useState<string[]>([]);
   const [cpcPresentation, setCpcPresentation] = useState<string[]>([]);
 
-  useEffect(() => { loadInsumo(); }, [id]);
+  // Lazy-load gates for heavy data blocks.
+  const [priceChartExpanded, setPriceChartExpanded] = useState(false);
+  const [cpcDetailExpanded, setCpcDetailExpanded] = useState(false);
 
-  async function loadInsumo() {
+  useEffect(() => { loadInsumoEntity(); }, [id]);
+
+  async function loadInsumoEntity() {
     try {
-      const [ins, dept, muni] = await Promise.all([
-        getInsumoById(id!),
-        getInsumoPricesByDepartment(id!, 2000),
-        getInsumoPricesByMunicipality(id!, undefined, 2000),
-      ]);
+      const ins = await cachedCall(`insumo:${id}:entity`, () => getInsumoById(id!));
       setInsumo(ins);
-      setDeptPrices(dept || []);
-      setMuniPrices(muni || []);
-      if ((!dept || dept.length === 0) && muni && muni.length > 0) setSeries('municipality');
-
-      if (ins?.cpc_id) {
-        const [cpcData, title] = await Promise.all([
-          getCpcLatestPrices(ins.cpc_id),
-          getCpcTitle(ins.cpc_id),
-        ]);
-        setCpcPrices(cpcData || []);
-        if (title) setCpcTitle(title);
-      } else if (ins?.subgrupo_id) {
-        // No CPC code on this insumo — fall back to comparing across the
-        // whole subgrupo so the user still gets the articulo/casa/price table.
-        try {
-          const subgrupoData = await getSubgrupoLatestPrices(ins.subgrupo_id);
-          setCpcPrices(subgrupoData || []);
-        } catch (e) { /* RPC may not be deployed yet; leave comparison empty */ }
-      }
     } catch (err) { console.error(err); } finally { setLoading(false); }
   }
+
+  // Price history (dept + muni series) is fetched only when the price chart
+  // section is first expanded. Cached so re-expanding is free.
+  useEffect(() => {
+    if (!id || !priceChartExpanded) return;
+    Promise.all([
+      cachedCall(`insumo:${id}:prices:dept:2000`, () => getInsumoPricesByDepartment(id, 2000)).catch(() => []),
+      cachedCall(`insumo:${id}:prices:muni:2000`, () => getInsumoPricesByMunicipality(id, undefined, 2000)).catch(() => []),
+    ]).then(([dept, muni]) => {
+      setDeptPrices(((dept as any[]) || []));
+      setMuniPrices(((muni as any[]) || []));
+      if ((!dept || (dept as any[]).length === 0) && muni && (muni as any[]).length > 0) setSeries('municipality');
+    });
+  }, [id, priceChartExpanded]);
+
+  // CPC / subgrupo comparison table. Potentially large — defer until the
+  // user opens the CPC detail section.
+  useEffect(() => {
+    if (!id || !cpcDetailExpanded || !insumo) return;
+    if (insumo.cpc_id) {
+      Promise.all([
+        cachedCall(`cpc:${insumo.cpc_id}:latestPrices`, () => getCpcLatestPrices(insumo.cpc_id)).catch(() => []),
+        cachedCall(`cpc:${insumo.cpc_id}:title`, () => getCpcTitle(insumo.cpc_id)).catch(() => ''),
+      ]).then(([cpcData, title]) => {
+        setCpcPrices(((cpcData as any[]) || []));
+        if (title) setCpcTitle(title as string);
+      });
+    } else if (insumo.subgrupo_id) {
+      cachedCall(`subgrupo:${insumo.subgrupo_id}:latestPrices`, () => getSubgrupoLatestPrices(insumo.subgrupo_id))
+        .then(d => setCpcPrices(((d as any[]) || [])))
+        .catch(() => {});
+    }
+  }, [id, cpcDetailExpanded, insumo]);
 
   const hasDept = deptPrices.length > 0;
   const hasMuni = muniPrices.length > 0;
@@ -315,8 +330,12 @@ export default function InsumoDetailScreen() {
 
         {/* Price history chart */}
         <Card style={styles.chartCard}>
-          <Text style={styles.sectionTitle}>{t.input_price_history}</Text>
-
+          <ExpandableSection
+            title={t.input_price_history}
+            icon="analytics-outline"
+            initiallyExpanded={false}
+            onExpandChange={setPriceChartExpanded}
+          >
           <View style={styles.chipRowInline}>
             <Chip label={`Departamento (${deptLocationCount})`} active={series === 'department'} onPress={() => { setSeries('department'); setChartDept(null); setChartPresentation(null); }} />
             <Chip label={`Municipio (${muniLocationCount})`} active={series === 'municipality'} onPress={() => { setSeries('municipality'); setChartDept(null); setChartPresentation(null); }} />
@@ -351,20 +370,23 @@ export default function InsumoDetailScreen() {
             <View style={{ alignItems: 'center', marginTop: spacing.sm }}>
               <LineChart data={chartData} width={340} height={180} color={colors.secondary} formatValue={formatCOPCompact} minPointSpacing={6} />
             </View>
-          ) : (
+          ) : priceChartExpanded ? (
             <Text style={styles.noDataText}>{t.input_no_data}</Text>
-          )}
+          ) : null}
+          </ExpandableSection>
         </Card>
 
-        {/* CPC-wide price detail (falls back to full subgrupo when no CPC) */}
-        {cpcPrices.length > 0 && (
+        {/* CPC-wide price detail (falls back to full subgrupo when no CPC).
+            The data is fetched only when the section is first expanded. */}
+        {(insumo.cpc_id || insumo.subgrupo_id) && (
           <Card style={styles.chartCard}>
             <ExpandableSection
               title={insumo.cpc_id ? `Precios CPC ${insumo.cpc_id}` : `Precios ${insumo.subgrupo || 'subgrupo'}`}
               subtitle={insumo.cpc_id ? (cpcTitle || undefined) : undefined}
               icon="list-outline"
-              badge={cpcFilteredRows.length}
-              initiallyExpanded
+              badge={cpcPrices.length > 0 ? cpcFilteredRows.length : undefined}
+              initiallyExpanded={false}
+              onExpandChange={setCpcDetailExpanded}
             >
               {/* Sort */}
               <View style={styles.chipRowInline}>

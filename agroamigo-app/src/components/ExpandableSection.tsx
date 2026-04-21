@@ -14,6 +14,8 @@ interface ExpandableSectionProps {
   children: React.ReactNode;
   icon?: keyof typeof Ionicons.glyphMap;
   badge?: string | number;
+  /** Fires on each toggle. Parents can use this to lazy-load section data. */
+  onExpandChange?: (expanded: boolean) => void;
 }
 
 export function ExpandableSection({
@@ -23,12 +25,20 @@ export function ExpandableSection({
   children,
   icon,
   badge,
+  onExpandChange,
 }: ExpandableSectionProps) {
   const [expanded, setExpanded] = useState(initiallyExpanded);
 
+  React.useEffect(() => {
+    if (initiallyExpanded) onExpandChange?.(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function toggle() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded(!expanded);
+    const next = !expanded;
+    setExpanded(next);
+    onExpandChange?.(next);
   }
 
   return (

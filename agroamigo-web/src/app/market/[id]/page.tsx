@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { IoStorefront, IoLocation, IoLeaf, IoPricetagsOutline, IoCubeOutline } from 'react-icons/io5';
-import { colors, spacing, borderRadius, fontSize, formatCOP, formatDateShort, formatPriceContext, formatKg } from '@agroamigo/shared';
+import { colors, spacing, borderRadius, fontSize, formatCOP, formatDateShort, formatPriceContext, formatKg, cachedCall } from '@agroamigo/shared';
 import { getMarketById, getMarketProducts, getMarketSupply, getMarkets } from '@agroamigo/shared/api/markets';
 import { Card } from '@/components/Card';
 import { ExpandableSection } from '@/components/ExpandableSection';
@@ -21,28 +21,45 @@ export default function MarketDetailPage() {
   const [supply, setSupply] = useState<any[]>([]);
   const [markets, setMarkets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Lazy-load gates.
+  const [supplyExpanded, setSupplyExpanded] = useState(false);
+  const [priceComparatorExpanded, setPriceComparatorExpanded] = useState(false);
+  const [supplyComparatorExpanded, setSupplyComparatorExpanded] = useState(false);
 
   useEffect(() => { loadMarket(); }, [id]);
 
   async function loadMarket() {
     try {
-      const [mkt, prods, sup, allMarkets] = await Promise.all([
-        getMarketById(id!),
-        getMarketProducts(id!, 200),
-        getMarketSupply(id!, 30).catch(() => []),
-        getMarkets().catch(() => []),
+      const [mkt, prods] = await Promise.all([
+        cachedCall(`market:${id}:entity`, () => getMarketById(id!)),
+        cachedCall(`market:${id}:products:200`, () => getMarketProducts(id!, 200)),
       ]);
       setMarket(mkt);
       const productMap = new Map<string, any>();
-      for (const p of (prods || [])) {
+      for (const p of (((prods as any[]) || []))) {
         const pid = p.product_id;
         if (!productMap.has(pid) || p.price_date > productMap.get(pid).price_date) productMap.set(pid, p);
       }
       setProducts(Array.from(productMap.values()));
-      setSupply(sup || []);
-      setMarkets(allMarkets || []);
     } catch (err) { console.error(err); } finally { setLoading(false); }
   }
+
+  // Supply stream — fetched only when the supply section or the supply
+  // comparator is expanded.
+  useEffect(() => {
+    if (!id || (!supplyExpanded && !supplyComparatorExpanded)) return;
+    cachedCall(`market:${id}:supply:30`, () => getMarketSupply(id, 30))
+      .then(s => setSupply(((s as any[]) || [])))
+      .catch(() => {});
+  }, [id, supplyExpanded, supplyComparatorExpanded]);
+
+  // Global markets catalogue — needed by both comparators only.
+  useEffect(() => {
+    if (!id || (!priceComparatorExpanded && !supplyComparatorExpanded)) return;
+    cachedCall(`markets:all`, () => getMarkets())
+      .then(m => setMarkets(((m as any[]) || [])))
+      .catch(() => {});
+  }, [id, priceComparatorExpanded, supplyComparatorExpanded]);
 
   const categoryGroups = useMemo(() => {
     const catMap = new Map<string, { subcategories: Map<string, any[]> }>();
@@ -167,19 +184,28 @@ export default function MarketDetailPage() {
       </Card>
 
       <Card style={{ margin: `${spacing.sm}px ${spacing.lg}px 0` }}>
-        <MarketPriceComparator currentMarket={market} products={products} markets={markets} />
+        <ExpandableSection
+          title={t.product_price_section + ' · Comparar'}
+          icon={<IoPricetagsOutline size={16} color={colors.primary} />}
+          initiallyExpanded={false}
+          onExpandChange={setPriceComparatorExpanded}
+        >
+          <MarketPriceComparator currentMarket={market} products={products} markets={markets} />
+        </ExpandableSection>
       </Card>
 
       {/* ── SUPPLY SECTION ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, padding: `${spacing.lg}px ${spacing.lg}px ${spacing.xs}px` }}>
-        <IoCubeOutline size={18} color={colors.accent.blue} />
-        <span style={{ fontSize: fontSize.lg, fontWeight: 700, color: colors.text.primary }}>{t.product_supply_section}</span>
-      </div>
 
-      <Card style={{ margin: `${spacing.xs}px ${spacing.lg}px 0` }}>
-        {supply.length === 0 ? (
+      <Card style={{ margin: `${spacing.lg}px ${spacing.lg}px 0` }}>
+        <ExpandableSection
+          title={t.product_supply_section}
+          icon={<IoCubeOutline size={16} color={colors.accent.blue} />}
+          initiallyExpanded={false}
+          onExpandChange={setSupplyExpanded}
+        >
+        {supplyExpanded && supply.length === 0 ? (
           <p style={{ textAlign: 'center', padding: `${spacing.xl}px 0`, color: colors.text.tertiary, fontSize: fontSize.sm }}>{t.product_no_supply_data}</p>
-        ) : (
+        ) : supply.length === 0 ? null : (
           <>
             {supplyDateRange && (
               <div style={{ fontSize: fontSize.xs, color: colors.text.tertiary, marginBottom: spacing.sm }}>
@@ -207,10 +233,18 @@ export default function MarketDetailPage() {
             )}
           </>
         )}
+        </ExpandableSection>
       </Card>
 
       <Card style={{ margin: `${spacing.sm}px ${spacing.lg}px 0` }}>
-        <MarketSupplyComparator currentMarket={market} supply={supply} products={products} markets={markets} />
+        <ExpandableSection
+          title={t.product_supply_section + ' · Comparar'}
+          icon={<IoCubeOutline size={16} color={colors.accent.blue} />}
+          initiallyExpanded={false}
+          onExpandChange={setSupplyComparatorExpanded}
+        >
+          <MarketSupplyComparator currentMarket={market} supply={supply} products={products} markets={markets} />
+        </ExpandableSection>
       </Card>
 
       {/* ── COMMENTS SECTION ── */}

@@ -15,6 +15,7 @@ import { formatCOP, formatCOPCompact, formatDateShort, formatKg, formatPriceCont
 import { useWatchlist } from '../../src/context/WatchlistContext';
 import { useSettings } from '../../src/context/SettingsContext';
 import { useTranslation } from '../../src/lib/useTranslation';
+import { cachedCall } from '../../src/lib/cache';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CHART_WIDTH = SCREEN_WIDTH - 64;
@@ -54,6 +55,9 @@ export default function ProductDetailScreen() {
   const [mktSortAsc, setMktSortAsc] = useState(false);
   const [showWeekTooltip, setShowWeekTooltip] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Lazy-load gates — heavy fetches fire only once the user expands the section.
+  const [priceChartExpanded, setPriceChartExpanded] = useState(false);
+  const [supplyExpanded, setSupplyExpanded] = useState(false);
 
   const TIME_RANGES = [
     { label: t.time_1w, days: 7 }, { label: t.time_1m, days: 30 }, { label: t.time_3m, days: 90 },
@@ -61,41 +65,47 @@ export default function ProductDetailScreen() {
   ];
 
   useEffect(() => { loadProduct(); }, [id]);
-  useEffect(() => { if (id) loadPrices(); }, [id]);
-
-  // Supply: server-side aggregated RPCs. Re-fires on time tile or
-  // cross-filter change — payload is tiny so latency is snappy.
+  // Price history is heavy (~5000 rows) — fetch only after the user expands
+  // the price chart section. Cached so collapse/re-expand is free.
   useEffect(() => {
-    if (!id) return;
+    if (!id || !priceChartExpanded) return;
+    cachedCall(`product:${id}:prices:all`, () => getProductPrices(id, { days: 36500, limit: 5000 }))
+      .then(data => setPrices((data as any[]) || []))
+      .catch(err => console.error(err));
+  }, [id, priceChartExpanded]);
+
+  // Supply RPCs: server-side aggregated. Deferred until the supply section
+  // is opened; re-fires on time tile / cross-filter change within that
+  // section. Each call is routed through the session cache.
+  useEffect(() => {
+    if (!id || !supplyExpanded) return;
     let cancelled = false;
     const tr = TIME_RANGES[supplyTimeRange];
     const days = tr?.days ?? 30;
+    const keyBase = `product:${id}:supply:${days}:${supplyMarketId ?? ''}:${supplyProvFilter ?? ''}`;
     Promise.all([
-      getProductSupplySummary(id, days, supplyMarketId, supplyProvFilter).catch(() => null),
-      getProductSupplyByDate(id, days, supplyMarketId, supplyProvFilter).catch(() => []),
-      getProductTopDestinations(id, days, supplyProvFilter, 15).catch(() => []),
-      getProductTopOrigins(id, days, supplyMarketId, 15).catch(() => []),
+      cachedCall(`${keyBase}:summary`, () => getProductSupplySummary(id, days, supplyMarketId, supplyProvFilter)).catch(() => null),
+      cachedCall(`${keyBase}:byDate`, () => getProductSupplyByDate(id, days, supplyMarketId, supplyProvFilter)).catch(() => []),
+      cachedCall(`${keyBase}:dests`, () => getProductTopDestinations(id, days, supplyProvFilter, 15)).catch(() => []),
+      cachedCall(`${keyBase}:origins`, () => getProductTopOrigins(id, days, supplyMarketId, 15)).catch(() => []),
     ]).then(([summary, byDate, dests, origins]) => {
       if (cancelled) return;
-      setSupplySummary(summary);
-      setSupplyByDate(byDate);
-      setTopDestinationMarkets(dests);
-      setTopOriginDepts(origins);
+      setSupplySummary(summary as SupplySummary | null);
+      setSupplyByDate(byDate as { date: string; kg: number }[]);
+      setTopDestinationMarkets(dests as { market_id: string; market_name: string; total_kg: number }[]);
+      setTopOriginDepts(origins as { dept_name: string; total_kg: number }[]);
     });
     return () => { cancelled = true; };
-  }, [id, supplyTimeRange, supplyMarketId, supplyProvFilter]);
+  }, [id, supplyExpanded, supplyTimeRange, supplyMarketId, supplyProvFilter]);
 
   async function loadProduct() {
     try {
-      const [prod, mktPrices] = await Promise.all([getProductById(id!), getProductPricesByMarket(id!)]);
-      setProduct(prod); setMarketPrices(mktPrices || []);
+      const [prod, mktPrices] = await Promise.all([
+        cachedCall(`product:${id}:entity`, () => getProductById(id!)),
+        cachedCall(`product:${id}:prices-by-market`, () => getProductPricesByMarket(id!)),
+      ]);
+      setProduct(prod); setMarketPrices(((mktPrices as any[]) || []));
     } catch (err) { console.error(err); } finally { setLoading(false); }
-  }
-  async function loadPrices() {
-    try {
-      const data = await getProductPrices(id!, { days: 36500, limit: 5000 });
-      setPrices(data || []);
-    } catch (err) { console.error(err); }
   }
 
   // ═══ PRICE CASCADE: time range → market → presentation ═══
@@ -326,12 +336,13 @@ export default function ProductDetailScreen() {
         </View>
 
         {/* ── PRICE SECTION ── */}
-        <View style={styles.sectionHeader}>
-          <Ionicons name="pricetags-outline" size={18} color={colors.primary} />
-          <Text style={styles.sectionHeaderText}>{t.product_price_section}</Text>
-        </View>
-
         <Card style={styles.card}>
+          <ExpandableSection
+            title={t.product_price_section}
+            icon="pricetags-outline"
+            initiallyExpanded={false}
+            onExpandChange={setPriceChartExpanded}
+          >
           {/* Time range */}
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginBottom: spacing.sm }}>
             {availablePriceRanges.map(tr => (
@@ -383,6 +394,7 @@ export default function ProductDetailScreen() {
               {selectedPresLabel ? <Text style={{ textAlign: 'center', marginTop: spacing.xs, fontSize: fontSize.xs, color: colors.text.tertiary }}>{selectedPresLabel}</Text> : null}
             </View>
           ) : <Text style={styles.noDataText}>{t.product_no_price_data}</Text>}
+          </ExpandableSection>
         </Card>
 
         {/* Prices by Market */}
@@ -435,12 +447,13 @@ export default function ProductDetailScreen() {
         )}
 
         {/* ── SUPPLY SECTION ── */}
-        <View style={styles.sectionHeader}>
-          <Ionicons name="cube-outline" size={18} color={colors.accent.blue} />
-          <Text style={styles.sectionHeaderText}>{t.product_supply_section}</Text>
-        </View>
-
         <Card style={styles.card}>
+          <ExpandableSection
+            title={t.product_supply_section}
+            icon="cube-outline"
+            initiallyExpanded={false}
+            onExpandChange={setSupplyExpanded}
+          >
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs, marginBottom: spacing.sm }}>
             {availableSupplyRanges.map(tr => (
               <Pressable key={`sup-${tr.label}`} style={chipStyle(tr.index === supplyTimeRange, colors.accent.blue)} onPress={() => setSupplyTimeRange(tr.index)}>
@@ -541,6 +554,7 @@ export default function ProductDetailScreen() {
               </View>
             </>
           )}
+          </ExpandableSection>
         </Card>
 
         {/* Comments */}

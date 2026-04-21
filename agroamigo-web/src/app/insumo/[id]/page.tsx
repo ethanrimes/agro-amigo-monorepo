@@ -3,8 +3,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { IoFlask, IoStar, IoStarOutline, IoListOutline, IoArrowUp, IoArrowDown } from 'react-icons/io5';
-import { colors, spacing, borderRadius, fontSize, formatCOP, formatCOPCompact, formatDateShort } from '@agroamigo/shared';
+import { colors, spacing, borderRadius, fontSize, formatCOP, formatCOPCompact, formatDateShort, cachedCall } from '@agroamigo/shared';
 import { getInsumoById, getInsumoPricesByDepartment, getInsumoPricesByMunicipality, getCpcLatestPrices, getCpcTitle } from '@agroamigo/shared/api/insumos';
+import { IoAnalyticsOutline } from 'react-icons/io5';
 
 type PriceSeries = 'department' | 'municipality';
 import { Card } from '@/components/Card';
@@ -58,32 +59,43 @@ export default function InsumoDetailPage() {
   const [cpcPresentation, setCpcPresentation] = useState<string[]>([]);
 
   const chartWidth = 440;
+  // Lazy-load gates for heavy sections.
+  const [priceChartExpanded, setPriceChartExpanded] = useState(false);
+  const [cpcDetailExpanded, setCpcDetailExpanded] = useState(false);
 
-  useEffect(() => { loadInsumo(); }, [id]);
+  useEffect(() => { loadInsumoEntity(); }, [id]);
 
-  async function loadInsumo() {
+  async function loadInsumoEntity() {
     try {
-      const [ins, dept, muni] = await Promise.all([
-        getInsumoById(id!),
-        getInsumoPricesByDepartment(id!, 2000),
-        getInsumoPricesByMunicipality(id!, undefined, 2000),
-      ]);
+      const ins = await cachedCall(`insumo:${id}:entity`, () => getInsumoById(id!));
       setInsumo(ins);
-      setDeptPrices(dept || []);
-      setMuniPrices(muni || []);
-      if ((!dept || dept.length === 0) && muni && muni.length > 0) setSeries('municipality');
-
-      // Fetch CPC title and CPC-wide prices
-      if (ins?.cpc_id) {
-        const [cpcData, title] = await Promise.all([
-          getCpcLatestPrices(ins.cpc_id),
-          getCpcTitle(ins.cpc_id),
-        ]);
-        setCpcPrices(cpcData || []);
-        if (title) setCpcTitle(title);
-      }
     } catch (err) { console.error(err); } finally { setLoading(false); }
   }
+
+  // Dept + muni price series fetched only when the chart is expanded.
+  useEffect(() => {
+    if (!id || !priceChartExpanded) return;
+    Promise.all([
+      cachedCall(`insumo:${id}:prices:dept:2000`, () => getInsumoPricesByDepartment(id, 2000)).catch(() => []),
+      cachedCall(`insumo:${id}:prices:muni:2000`, () => getInsumoPricesByMunicipality(id, undefined, 2000)).catch(() => []),
+    ]).then(([dept, muni]) => {
+      setDeptPrices(((dept as any[]) || []));
+      setMuniPrices(((muni as any[]) || []));
+      if ((!dept || (dept as any[]).length === 0) && muni && (muni as any[]).length > 0) setSeries('municipality');
+    });
+  }, [id, priceChartExpanded]);
+
+  // CPC detail fetched only when its section is expanded.
+  useEffect(() => {
+    if (!id || !cpcDetailExpanded || !insumo?.cpc_id) return;
+    Promise.all([
+      cachedCall(`cpc:${insumo.cpc_id}:latestPrices`, () => getCpcLatestPrices(insumo.cpc_id)).catch(() => []),
+      cachedCall(`cpc:${insumo.cpc_id}:title`, () => getCpcTitle(insumo.cpc_id)).catch(() => ''),
+    ]).then(([cpcData, title]) => {
+      setCpcPrices(((cpcData as any[]) || []));
+      if (title) setCpcTitle(title as string);
+    });
+  }, [id, cpcDetailExpanded, insumo]);
 
   const hasDept = deptPrices.length > 0;
   const hasMuni = muniPrices.length > 0;
@@ -216,10 +228,12 @@ export default function InsumoDetailPage() {
 
       {/* Price history chart */}
       <Card style={{ margin: `${spacing.sm}px ${spacing.lg}px 0` }}>
-        <div style={{ fontSize: fontSize.md, fontWeight: 700, color: colors.text.primary, marginBottom: spacing.sm }}>
-          {t.input_price_history}
-        </div>
-
+        <ExpandableSection
+          title={t.input_price_history}
+          icon={<IoAnalyticsOutline size={16} color={colors.secondary} />}
+          initiallyExpanded={false}
+          onExpandChange={setPriceChartExpanded}
+        >
         {/* Series toggle */}
         <div style={{ display: 'flex', gap: spacing.sm, marginBottom: spacing.sm }}>
           <button onClick={chipClick(() => { setSeries('department'); setChartDept(null); setChartPresentation(null); })}
@@ -265,22 +279,24 @@ export default function InsumoDetailPage() {
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <LineChart data={chartData} width={chartWidth} height={200} color={colors.secondary} formatValue={formatCOPCompact} />
           </div>
-        ) : (
+        ) : priceChartExpanded ? (
           <p style={{ textAlign: 'center', padding: `${spacing.xl}px 0`, color: colors.text.tertiary, fontSize: fontSize.sm }}>
             {t.input_no_data}
           </p>
-        )}
+        ) : null}
+        </ExpandableSection>
       </Card>
 
-      {/* CPC-wide price detail */}
-      {cpcPrices.length > 0 && (
+      {/* CPC-wide price detail (data fetched on expand) */}
+      {insumo.cpc_id && (
         <Card style={{ margin: `${spacing.md}px ${spacing.lg}px 0` }}>
           <ExpandableSection
             title={`Precios CPC ${insumo.cpc_id}`}
             subtitle={cpcTitle || undefined}
             icon={<IoListOutline size={16} color={colors.text.secondary} />}
-            badge={cpcFilteredRows.length}
-            initiallyExpanded
+            badge={cpcPrices.length > 0 ? cpcFilteredRows.length : undefined}
+            initiallyExpanded={false}
+            onExpandChange={setCpcDetailExpanded}
           >
             {/* Sort toggle */}
             <div style={{ display: 'flex', gap: spacing.sm, marginBottom: spacing.sm, alignItems: 'center' }}>
