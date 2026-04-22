@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "agroamigo-web"
+    "agroamigo-web",
+    "agroamigo-web-pro"
   ]
 }
