@@ -88,6 +88,58 @@ export async function getMarketSupply(marketId: string, days = 30) {
   return data;
 }
 
+// ── Server-side aggregated market supply RPCs ──
+
+export async function getMarketSupplySummary(
+  marketId: string, days: number, productId?: string | null, provDept?: string | null,
+) {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('get_market_supply_summary', {
+    p_market_id: marketId, p_days: days, p_product_id: productId || null, p_prov_dept: provDept || null,
+  });
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) return null;
+  return {
+    total_kg: Number(row.total_kg || 0),
+    daily_avg_kg: Number(row.daily_avg_kg || 0),
+    num_days: Number(row.num_days || 0),
+    oldest_obs: row.oldest_obs ?? null,
+    newest_obs: row.newest_obs ?? null,
+  };
+}
+
+export async function getMarketTopProducts(
+  marketId: string, days: number, provDept?: string | null, limit = 10,
+) {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('get_market_top_products', {
+    p_market_id: marketId, p_days: days, p_prov_dept: provDept || null, p_limit: limit,
+  });
+  if (error) throw error;
+  return ((data as any[]) || []).map((r: any) => ({
+    product_id: r.product_id,
+    product_name: r.product_name,
+    total_kg: Number(r.total_kg || 0),
+    newest_obs: r.newest_obs ?? null,
+  }));
+}
+
+export async function getMarketTopProvenance(
+  marketId: string, days: number, productId?: string | null, limit = 15,
+) {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc('get_market_top_provenance', {
+    p_market_id: marketId, p_days: days, p_product_id: productId || null, p_limit: limit,
+  });
+  if (error) throw error;
+  return ((data as any[]) || []).map((r: any) => ({
+    dept_name: r.dept_name,
+    total_kg: Number(r.total_kg || 0),
+    newest_obs: r.newest_obs ?? null,
+  }));
+}
+
 export async function getNationalPriceAverages(productIds: string[]) {
   if (productIds.length === 0) return [];
   const supabase = getSupabaseClient();
