@@ -21,6 +21,7 @@ if _parent_dir not in sys.path:
 
 from config import REQUEST_DELAY, REQUEST_TIMEOUT, MAX_RETRIES, DATA_PIPELINE_ROOT
 from backend.database import DatabaseClient, DownloadEntry
+from scraping.freshness import check_url_freshness, cleanup_stale_entry
 
 # Local directory for large abastecimiento files (not uploaded to Supabase storage)
 ABAST_LOCAL_DIR = DATA_PIPELINE_ROOT / "exports" / "abastecimiento"
@@ -92,11 +93,15 @@ class AbastecimientoScraper:
         for url in urls:
             filename = url.split('/')[-1]
 
-            existing = self.database.get_download_entry_by_link(url)
-            if existing:
-                print(f"  [SKIP] Already downloaded: {filename}")
+            freshness = check_url_freshness(self.database, self.session, url)
+            if freshness.status == "fresh":
+                print(f"  [SKIP] Up to date: {filename}")
                 skipped += 1
                 continue
+            if freshness.status == "stale" and freshness.existing_entry:
+                print(f"  [REFRESH] Server copy newer than {freshness.existing_entry.get('download_date')}: {filename}")
+                if not self.dry_run:
+                    cleanup_stale_entry(freshness.existing_entry, ["supply_observations"])
 
             if self.dry_run:
                 print(f"  [DRY-RUN] Would download: {filename}")
