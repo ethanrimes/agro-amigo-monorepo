@@ -738,6 +738,7 @@ class DimensionPopulator:
                     AND muni.canonical_name LIKE 'Mercado municipal de %%'
                     AND am.market_id IS NULL
                 WHERE pp.price_date >= %s AND pp.price_date <= %s
+                ON CONFLICT (processed_price_id) DO NOTHING
             """, (current.isoformat(), month_end.isoformat()))
 
             batch_count = self.cursor.rowcount
@@ -784,6 +785,16 @@ class DimensionPopulator:
         if self.dry_run:
             self.city_ids[name] = f"dry-run-{name}"
             return
+        # If a row with this divipola_code already exists, reuse it instead of inserting.
+        # The dim_city_divipola_code_uq unique index would otherwise reject the insert.
+        if divipola_code:
+            self.cursor.execute(
+                "SELECT id FROM dim_city WHERE divipola_code = %s", (divipola_code,)
+            )
+            existing = self.cursor.fetchone()
+            if existing:
+                self.city_ids[name] = existing['id']
+                return
         self.cursor.execute(
             "INSERT INTO dim_city (canonical_name, department_id, divipola_code) VALUES (%s, %s, %s) "
             "ON CONFLICT (canonical_name) DO NOTHING RETURNING id",

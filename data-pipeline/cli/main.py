@@ -790,9 +790,12 @@ def cmd_process_insumos(args):
     cursor.execute("SET statement_timeout = '300s'")
 
     # Simple caches for insumo and casa comercial dimensions
-    insumo_cache = {}   # (product_name, grupo, subgrupo) -> insumo_id
+    insumo_cache = {}   # product_name -> insumo_id
     casa_cache = {}     # casa_name -> casa_comercial_id
     dept_cache = {}     # dept_name -> department_id
+    grupo_cache = {}    # grupo_name -> grupo_id
+    subgrupo_cache = {} # subgrupo_name -> subgrupo_id
+    city_cache = {}     # muni_code -> city_id
 
     parser = InsumosParser()
     grand_total = 0
@@ -813,13 +816,13 @@ def cmd_process_insumos(args):
             rows = parser.parse_department(local_path)
             file_inserted = _insert_dept_insumos(
                 cursor, conn, rows, storage_path, entry_id,
-                insumo_cache, casa_cache, dept_cache
+                insumo_cache, casa_cache, dept_cache, grupo_cache, subgrupo_cache
             )
         else:
             rows = parser.parse_municipality(local_path)
             file_inserted = _insert_mun_insumos(
                 cursor, conn, rows, storage_path, entry_id,
-                insumo_cache, dept_cache
+                insumo_cache, dept_cache, grupo_cache, subgrupo_cache, city_cache
             )
 
         conn.commit()
@@ -833,37 +836,170 @@ def cmd_process_insumos(args):
     return 0
 
 
-def _resolve_insumo(cursor, name, grupo, subgrupo, cpc_code, cache):
-    """Resolve or create an insumo dimension entry."""
-    key = (name, grupo, subgrupo)
-    if key in cache:
-        return cache[key]
+def _resolve_grupo(cursor, name, cache):
+    """Resolve raw grupo string -> dim_insumo_grupo.id, creating dim/alias if missing."""
+    if not name:
+        return None
+    if name in cache:
+        return cache[name]
 
-    # Check alias
+    cursor.execute("SELECT grupo_id FROM alias_insumo_grupo WHERE raw_value = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        cache[name] = row['grupo_id']
+        return row['grupo_id']
+
+    cursor.execute("SELECT id FROM dim_insumo_grupo WHERE canonical_name = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        gid = row['id']
+    else:
+        cursor.execute(
+            "INSERT INTO dim_insumo_grupo (canonical_name) VALUES (%s) "
+            "ON CONFLICT (canonical_name) DO NOTHING RETURNING id", (name,)
+        )
+        r = cursor.fetchone()
+        if r:
+            gid = r['id']
+        else:
+            cursor.execute("SELECT id FROM dim_insumo_grupo WHERE canonical_name = %s", (name,))
+            gid = cursor.fetchone()['id']
+
+    cursor.execute(
+        "INSERT INTO alias_insumo_grupo (raw_value, grupo_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        (name, gid)
+    )
+    cache[name] = gid
+    return gid
+
+
+def _resolve_subgrupo(cursor, name, grupo_id, cache):
+    """Resolve raw subgrupo string -> dim_insumo_subgrupo.id, creating dim/alias if missing."""
+    if not name:
+        return None
+    if name in cache:
+        return cache[name]
+
+    cursor.execute("SELECT subgrupo_id FROM alias_insumo_subgrupo WHERE raw_value = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        cache[name] = row['subgrupo_id']
+        return row['subgrupo_id']
+
+    cursor.execute("SELECT id FROM dim_insumo_subgrupo WHERE canonical_name = %s", (name,))
+    row = cursor.fetchone()
+    if row:
+        sgid = row['id']
+    else:
+        cursor.execute(
+            "INSERT INTO dim_insumo_subgrupo (canonical_name, grupo_id) VALUES (%s, %s) "
+            "ON CONFLICT (canonical_name) DO NOTHING RETURNING id",
+            (name, grupo_id),
+        )
+        r = cursor.fetchone()
+        if r:
+            sgid = r['id']
+        else:
+            cursor.execute("SELECT id FROM dim_insumo_subgrupo WHERE canonical_name = %s", (name,))
+            sgid = cursor.fetchone()['id']
+
+    cursor.execute(
+        "INSERT INTO alias_insumo_subgrupo (raw_value, subgrupo_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+        (name, sgid),
+    )
+    cache[name] = sgid
+    return sgid
+
+
+def _resolve_city_by_muni(cursor, muni_code, dept_id, cache):
+    """Resolve a city by 5-digit DIVIPOLA muni_code, populating dim_city from divipola if missing."""
+    if not muni_code:
+        return None
+    if muni_code in cache:
+        return cache[muni_code]
+
+    cursor.execute("SELECT id FROM dim_city WHERE divipola_code = %s", (muni_code,))
+    row = cursor.fetchone()
+    if row:
+        cache[muni_code] = row['id']
+        return row['id']
+
+    # Lookup name from divipola_municipios and create dim_city
+    cursor.execute(
+        "SELECT nombre_municipio FROM divipola_municipios WHERE codigo_municipio = %s",
+        (muni_code,),
+    )
+    row = cursor.fetchone()
+    if not row:
+        cache[muni_code] = None
+        return None
+    name = row['nombre_municipio']
+
+    # dim_city has UNIQUE on canonical_name but not divipola_code, so try plain name first;
+    # if a row with that name already exists for a different muni, suffix with the dept code.
+    candidate_names = [name, f"{name} ({muni_code[:2]})"]
+    cid = None
+    for cand in candidate_names:
+        try:
+            cursor.execute(
+                "INSERT INTO dim_city (canonical_name, department_id, divipola_code) "
+                "VALUES (%s, %s, %s) ON CONFLICT (canonical_name) DO NOTHING RETURNING id",
+                (cand, dept_id, muni_code),
+            )
+            r = cursor.fetchone()
+        except Exception:
+            r = None
+        if r:
+            cid = r['id']
+            break
+    if cid is None:
+        # Either canonical_name collision with a different divipola, or insert raced — final lookup
+        cursor.execute("SELECT id FROM dim_city WHERE divipola_code = %s", (muni_code,))
+        row2 = cursor.fetchone()
+        cid = row2['id'] if row2 else None
+    cache[muni_code] = cid
+    return cid
+
+
+def _resolve_insumo(cursor, name, grupo_id, subgrupo_id, cpc_code, cache):
+    """Resolve or create an insumo dimension entry. Updates grupo_id/subgrupo_id if missing."""
+    if name in cache:
+        return cache[name]
+
     cursor.execute("SELECT insumo_id FROM alias_insumo WHERE raw_value = %s", (name,))
     row = cursor.fetchone()
     if row:
-        cache[key] = row['insumo_id']
+        # Backfill grupo/subgrupo on dim_insumo if it's missing
+        if grupo_id and subgrupo_id:
+            cursor.execute(
+                "UPDATE dim_insumo SET grupo_id = COALESCE(grupo_id, %s), "
+                "subgrupo_id = COALESCE(subgrupo_id, %s) WHERE id = %s",
+                (grupo_id, subgrupo_id, row['insumo_id']),
+            )
+        cache[name] = row['insumo_id']
         return row['insumo_id']
 
-    # Check dim directly
     cursor.execute("SELECT id FROM dim_insumo WHERE canonical_name = %s", (name,))
     row = cursor.fetchone()
     if row:
-        cache[key] = row['id']
-        # Create alias
+        cache[name] = row['id']
+        if grupo_id and subgrupo_id:
+            cursor.execute(
+                "UPDATE dim_insumo SET grupo_id = COALESCE(grupo_id, %s), "
+                "subgrupo_id = COALESCE(subgrupo_id, %s) WHERE id = %s",
+                (grupo_id, subgrupo_id, row['id']),
+            )
         cursor.execute(
             "INSERT INTO alias_insumo (raw_value, insumo_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
             (name, row['id'])
         )
         return row['id']
 
-    # Create new
     cpc_clean = cpc_code.strip().strip("'") if cpc_code else None
     cursor.execute(
-        "INSERT INTO dim_insumo (canonical_name, grupo, subgrupo, cpc_code) VALUES (%s, %s, %s, %s) "
-        "ON CONFLICT (canonical_name) DO NOTHING RETURNING id",
-        (name, grupo, subgrupo, cpc_clean)
+        "INSERT INTO dim_insumo (canonical_name, grupo_id, subgrupo_id, cpc_code) "
+        "VALUES (%s, %s, %s, %s) ON CONFLICT (canonical_name) DO NOTHING RETURNING id",
+        (name, grupo_id, subgrupo_id, cpc_clean)
     )
     r = cursor.fetchone()
     if r:
@@ -876,7 +1012,7 @@ def _resolve_insumo(cursor, name, grupo, subgrupo, cpc_code, cache):
         "INSERT INTO alias_insumo (raw_value, insumo_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
         (name, insumo_id)
     )
-    cache[(name, grupo, subgrupo)] = insumo_id
+    cache[name] = insumo_id
     return insumo_id
 
 
@@ -940,22 +1076,27 @@ def _resolve_dept(cursor, dept_name, dept_code, cache):
     return dept_id
 
 
-def _insert_mun_insumos(cursor, conn, rows, storage_path, entry_id, insumo_cache, dept_cache):
+def _insert_mun_insumos(cursor, conn, rows, storage_path, entry_id,
+                        insumo_cache, dept_cache, grupo_cache, subgrupo_cache, city_cache):
     """Insert municipality-level insumo rows."""
     batch = []
     batch_size = 2000
     total = 0
 
     for row in rows:
-        insumo_id = _resolve_insumo(cursor, row.product_name, row.grupo, row.subgrupo, '', insumo_cache)
+        grupo_id = _resolve_grupo(cursor, row.grupo, grupo_cache)
+        subgrupo_id = _resolve_subgrupo(cursor, row.subgrupo, grupo_id, subgrupo_cache)
+        insumo_id = _resolve_insumo(cursor, row.product_name, grupo_id, subgrupo_id, '', insumo_cache)
         dept_id = _resolve_dept(cursor, row.dept_name, row.dept_code, dept_cache)
+        city_id = _resolve_city_by_muni(cursor, row.muni_code, dept_id, city_cache)
         if not insumo_id or not dept_id:
             continue
 
         batch.append((
-            row.price_date.isoformat(), dept_id, None,
+            row.price_date.isoformat(), dept_id, city_id,
             row.dept_code, row.muni_code,
-            insumo_id, row.presentation, row.avg_price,
+            insumo_id, grupo_id, subgrupo_id,
+            row.presentation, row.avg_price,
             storage_path, entry_id
         ))
 
@@ -978,7 +1119,8 @@ def _insert_mun_batch(cursor, batch):
     cols = (
         'price_date', 'department_id', 'city_id',
         'dept_code', 'muni_code',
-        'insumo_id', 'presentation', 'avg_price',
+        'insumo_id', 'grupo_id', 'subgrupo_id',
+        'presentation', 'avg_price',
         'source_path', 'download_entry_id'
     )
     placeholders = ','.join(['%s'] * len(cols))
@@ -990,14 +1132,17 @@ def _insert_mun_batch(cursor, batch):
     cursor.execute(sql, flat)
 
 
-def _insert_dept_insumos(cursor, conn, rows, storage_path, entry_id, insumo_cache, casa_cache, dept_cache):
+def _insert_dept_insumos(cursor, conn, rows, storage_path, entry_id,
+                         insumo_cache, casa_cache, dept_cache, grupo_cache, subgrupo_cache):
     """Insert department-level insumo rows."""
     batch = []
     batch_size = 2000
     total = 0
 
     for row in rows:
-        insumo_id = _resolve_insumo(cursor, row.product_name, row.grupo, row.subgrupo, row.cpc_code, insumo_cache)
+        grupo_id = _resolve_grupo(cursor, row.grupo, grupo_cache)
+        subgrupo_id = _resolve_subgrupo(cursor, row.subgrupo, grupo_id, subgrupo_cache)
+        insumo_id = _resolve_insumo(cursor, row.product_name, grupo_id, subgrupo_id, row.cpc_code, insumo_cache)
         dept_id = _resolve_dept(cursor, row.dept_name, row.dept_code, dept_cache)
         casa_id = _resolve_casa_comercial(cursor, row.casa_comercial, casa_cache)
         if not insumo_id or not dept_id:
@@ -1007,7 +1152,8 @@ def _insert_dept_insumos(cursor, conn, rows, storage_path, entry_id, insumo_cach
 
         batch.append((
             row.price_date.isoformat(), dept_id, row.dept_code,
-            insumo_id, row.articulo, casa_id, row.registro_ica,
+            insumo_id, grupo_id, subgrupo_id,
+            row.articulo, casa_id, row.registro_ica,
             cpc_clean, row.presentation, row.avg_price,
             storage_path, entry_id
         ))
@@ -1030,7 +1176,8 @@ def _insert_dept_insumos(cursor, conn, rows, storage_path, entry_id, insumo_cach
 def _insert_dept_batch(cursor, batch):
     cols = (
         'price_date', 'department_id', 'dept_code',
-        'insumo_id', 'articulo', 'casa_comercial_id', 'registro_ica',
+        'insumo_id', 'grupo_id', 'subgrupo_id',
+        'articulo', 'casa_comercial_id', 'registro_ica',
         'cpc_code', 'presentation', 'avg_price',
         'source_path', 'download_entry_id'
     )

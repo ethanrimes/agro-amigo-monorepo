@@ -19,6 +19,7 @@ if _parent_dir not in sys.path:
 from config import REQUEST_DELAY, REQUEST_TIMEOUT, MAX_RETRIES
 from backend.storage import StorageClient
 from backend.database import DatabaseClient, DownloadEntry
+from scraping.freshness import check_url_freshness, cleanup_stale_entry
 
 HISTORICAL_URLS = [
     "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/series-historicas/series-historicas-precios-mayoristas-arroz-sub-molinos-2013-2020.xlsx",
@@ -74,11 +75,21 @@ class RiceScraper:
 
         for url in urls:
             filename = url.split('/')[-1]
-            existing = self.database.get_download_entry_by_link(url)
-            if existing:
-                print(f"  [SKIP] Already downloaded: {filename}")
+            freshness = check_url_freshness(self.database, self.session, url)
+            if freshness.status == "fresh":
+                print(f"  [SKIP] Up to date: {filename}")
                 skipped += 1
                 continue
+            if freshness.status == "stale" and freshness.existing_entry:
+                print(f"  [REFRESH] Server copy newer than {freshness.existing_entry.get('download_date')}: {filename}")
+                if not self.dry_run:
+                    cleanup_stale_entry(freshness.existing_entry, ["processed_prices"],
+                                        also_clear_observations=True)
+                    # Storage object will be overwritten by upload below; clear it first to avoid 409
+                    try:
+                        self.storage.delete_file(freshness.existing_entry.get("storage_path") or "")
+                    except Exception:
+                        pass
             if self.dry_run:
                 print(f"  [DRY-RUN] Would download: {filename}")
                 downloaded += 1
