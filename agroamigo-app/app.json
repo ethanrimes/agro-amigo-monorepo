@@ -15,7 +15,8 @@
       "backgroundColor": "#1A2E1A"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ethankallett.agroamigo.react"
     },
     "android": {
       "adaptiveIcon": {
