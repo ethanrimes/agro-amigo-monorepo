@@ -547,7 +547,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.xs),
       child: AppCard(
-        padding: const EdgeInsets.all(AppSpacing.sm),
+        padding: AppSpacing.sm,
         onTap: pid == null
             ? null
             : () => Navigator.of(context).push(
