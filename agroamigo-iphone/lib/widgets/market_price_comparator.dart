@@ -59,8 +59,9 @@ class _MarketPriceComparatorState extends State<MarketPriceComparator> {
         for (final p in raw) {
           final key = p['product_id'] as String;
           if (!map.containsKey(key) ||
-              (p['price_date'] as String? ?? '') >
-                  (map[key]!['price_date'] as String? ?? '')) {
+              ((p['price_date'] as String? ?? '').compareTo(
+                      (map[key]!['price_date'] as String? ?? '')) >
+                  0)) {
             map[key] = p;
           }
         }
@@ -339,7 +340,7 @@ class _MarketPriceComparatorState extends State<MarketPriceComparator> {
                     color: AppColors.primary,
                     letterSpacing: 0.5)),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Container(height: 1, color: AppColors.borderLight),
           for (final sub in group.subcategories) ...[
             if (group.subcategories.length > 1)
               Padding(
@@ -697,7 +698,7 @@ class _MarketPickerSheetState extends State<_MarketPickerSheet> {
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Container(height: 1, color: AppColors.borderLight),
           Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
@@ -723,7 +724,7 @@ class _MarketPickerSheetState extends State<_MarketPickerSheet> {
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Container(height: 1, color: AppColors.borderLight),
           Flexible(
             child: ListView(
               shrinkWrap: true,

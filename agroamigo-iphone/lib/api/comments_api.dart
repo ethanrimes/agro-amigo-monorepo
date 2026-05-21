@@ -52,7 +52,7 @@ Future<List<Map<String, dynamic>>> getLatestComments({int limit = 20}) async {
     final data = await SupabaseService.client
         .from(table)
         .select('id, canonical_name')
-        .in_('id', ids);
+        .inFilter('id', ids);
     for (final d in data) {
       nameMap['$t:${d['id']}'] = d['canonical_name'] as String? ?? '';
     }

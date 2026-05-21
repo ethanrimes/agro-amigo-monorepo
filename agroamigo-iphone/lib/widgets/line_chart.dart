@@ -280,7 +280,7 @@ class _AppLineChartState extends State<AppLineChart> {
                 reservedSize: 50,
                 interval: (maxY - minY) / 2,
                 getTitlesWidget: (value, meta) => SideTitleWidget(
-                  axisSide: meta.axisSide,
+                  meta: meta,
                   child: Text(fmt(value),
                       style: const TextStyle(
                           fontSize: 9, color: AppColors.textTertiary)),
@@ -297,7 +297,7 @@ class _AppLineChartState extends State<AppLineChart> {
                     return const SizedBox.shrink();
                   }
                   return SideTitleWidget(
-                    axisSide: meta.axisSide,
+                    meta: meta,
                     child: Text(fmtXDate(value),
                         style: const TextStyle(
                             fontSize: 9, color: AppColors.textTertiary)),

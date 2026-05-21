@@ -104,7 +104,7 @@ Future<List<Map<String, dynamic>>> getLatestPrices(List<String> productIds,
   return SupabaseService.client
       .from('price_observations')
       .select('product_id, price_date, min_price, max_price, avg_price')
-      .in_('product_id', productIds)
+      .inFilter('product_id', productIds)
       .order('price_date', ascending: false)
       .limit(limit * productIds.length);
 }
@@ -136,7 +136,7 @@ Future<List<Map<String, dynamic>>> getWatchlistPrices(
     final mkt = await SupabaseService.client
         .from('price_observations')
         .select(selectStr)
-        .in_('product_id', productIds)
+        .inFilter('product_id', productIds)
         .gte('price_date', twoWeeksAgo)
         .eq('market_id', marketId)
         .order('price_date', ascending: false)
@@ -153,7 +153,7 @@ Future<List<Map<String, dynamic>>> getWatchlistPrices(
       final nat = await SupabaseService.client
           .from('price_observations')
           .select(selectStr)
-          .in_('product_id', missing)
+          .inFilter('product_id', missing)
           .gte('price_date', twoWeeksAgo)
           .order('price_date', ascending: false)
           .limit(missing.length * 5);
@@ -169,7 +169,7 @@ Future<List<Map<String, dynamic>>> getWatchlistPrices(
   final data = await SupabaseService.client
       .from('price_observations')
       .select(selectStr)
-      .in_('product_id', productIds)
+      .inFilter('product_id', productIds)
       .gte('price_date', twoWeeksAgo)
       .order('price_date', ascending: false)
       .limit(productIds.length * 5);

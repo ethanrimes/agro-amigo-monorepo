@@ -110,11 +110,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         AppCache.instance.cachedCall<List<dynamic>>(
           'product:$id:prices-by-market',
-          () async => (await getProductPricesByMarket(id, 100)) ?? const <dynamic>[],
+          () async => (await getProductPricesByMarket(id, limit: 100)),
         ),
         AppCache.instance.cachedCall<dynamic>(
           'product:$id:image-attr',
-          () async => await getImageAttribution('product', id),
+          () async {
+            final a = await getImageAttribution('product', id);
+            if (a == null) return null;
+            return <String, dynamic>{
+              'author': a.author,
+              'source_name': a.sourceName,
+              'license': a.license,
+            };
+          },
         ),
       ]);
       if (!mounted) return;
@@ -168,7 +176,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             .cachedCall<dynamic>(
               '$keyBase:summary',
               () => getProductSupplySummary(
-                  id, days, _supplyMarketId, _supplyProvFilter),
+                  id, days, marketId: _supplyMarketId, provDept: _supplyProvFilter),
             )
             .catchError((_) => null),
         AppCache.instance
@@ -176,24 +184,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               '$keyBase:byDate',
               () async =>
                   (await getProductSupplyByDate(
-                          id, days, _supplyMarketId, _supplyProvFilter)) ??
-                      const <dynamic>[],
+                          id, days, marketId: _supplyMarketId, provDept: _supplyProvFilter)),
             )
             .catchError((_) => const <dynamic>[]),
         AppCache.instance
             .cachedCall<List<dynamic>>(
               '$keyBase:dests',
               () async =>
-                  (await getProductTopDestinations(id, days, _supplyProvFilter, 15)) ??
-                      const <dynamic>[],
+                  (await getProductTopDestinations(id, days, provDept: _supplyProvFilter, limit: 15)),
             )
             .catchError((_) => const <dynamic>[]),
         AppCache.instance
             .cachedCall<List<dynamic>>(
               '$keyBase:origins',
               () async =>
-                  (await getProductTopOrigins(id, days, _supplyMarketId, 15)) ??
-                      const <dynamic>[],
+                  (await getProductTopOrigins(id, days, marketId: _supplyMarketId, limit: 15)),
             )
             .catchError((_) => const <dynamic>[]),
       ]);
@@ -269,7 +274,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (tr.days == 0) return _prices;
     final since =
         DateTime.now().subtract(Duration(days: tr.days)).toIso8601String().substring(0, 10);
-    return _prices.where((p) => (p['price_date'] as String) >= since).toList();
+    return _prices.where((p) => (p['price_date'] as String).compareTo(since) >= 0).toList();
   }
 
   List<Map<String, String>> get _availableMarkets {
@@ -420,13 +425,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             (a['price_date'] as String).compareTo(b['price_date'] as String) > 0
                 ? a
                 : b);
-        geoSource = _fmtMarket(latestObs['dim_market']);
-        displayMin = ((latestObs['min_price'] as num?) ??
-                (latestObs['avg_price'] as num?) ??
+        geoSource = _fmtMarket(latestObs!['dim_market']);
+        displayMin = ((latestObs!['min_price'] as num?) ??
+                (latestObs!['avg_price'] as num?) ??
                 0)
             .toDouble();
-        displayMax = ((latestObs['max_price'] as num?) ??
-                (latestObs['avg_price'] as num?) ??
+        displayMax = ((latestObs!['max_price'] as num?) ??
+                (latestObs!['avg_price'] as num?) ??
                 0)
             .toDouble();
       }
@@ -458,7 +463,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     double? weekChange;
     if (latestObs != null) {
-      final latestDate = DateTime.parse('${latestObs['price_date']}T00:00:00');
+      final latestDate = DateTime.parse('${latestObs!['price_date']}T00:00:00');
       final weekAgo = latestDate.subtract(const Duration(days: 7));
       final weekAgoStr = weekAgo.toIso8601String().substring(0, 10);
       final cands = (dm.level == MarketLevel.mercado && dm.id != null)
@@ -699,7 +704,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     () => _showWeekTooltip = !_showWeekTooltip),
                                 child: PriceChangeIndicator(
                                   value: hi.weekChange,
-                                  size: PriceChangeIndicatorSize.md,
+                                  size: IndicatorSize.md,
                                 ),
                               ),
                             ],
@@ -911,24 +916,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         // Chart + stats
         if (chartRows.isNotEmpty) ...[
           if (chartRows.length > 1)
-            AppLineChart(
-              points: chartRows
-                  .map((d) => LineChartPoint(
+            LayoutBuilder(builder: (ctx, c) => AppLineChart(
+              data: chartRows
+                  .map((d) => AppLineChartPoint(
                         date: d['date'] as String,
                         value: (d['avg'] as num).toDouble(),
                         min: (d['min'] as num).toDouble(),
                         max: (d['max'] as num).toDouble(),
                       ))
                   .toList(),
+              width: c.maxWidth,
               height: 200,
               color: AppColors.primary,
               showBands: true,
               formatValue: formatCOPCompact,
-              showAvgLine: sp.settings.chart.showAvgLine,
-              showTrendLine: sp.settings.chart.showTrendLine,
-              showMinMaxCallouts: sp.settings.chart.showMinMaxCallouts,
-              showInteractiveCallout: sp.settings.chart.showInteractiveCallout,
-            ),
+            )),
           const SizedBox(height: AppSpacing.sm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1285,17 +1287,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
         // Supply chart (line) by date
         if (_supplyByDate.length > 1)
-          AppLineChart(
-            points: _supplyByDate
-                .map((d) => LineChartPoint(
+          LayoutBuilder(builder: (ctx, c) => AppLineChart(
+            data: _supplyByDate
+                .map((d) => AppLineChartPoint(
                       date: d['date'] as String,
                       value: ((d['kg'] as num?) ?? 0).toDouble(),
                     ))
                 .toList(),
+            width: c.maxWidth,
             height: 200,
             color: AppColors.accentBlue,
             formatValue: formatKg,
-          )
+          ))
         else if (_supplyByDate.isEmpty &&
             _topDestinations.isEmpty &&
             _topOrigins.isEmpty)

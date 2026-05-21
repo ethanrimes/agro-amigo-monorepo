@@ -54,7 +54,7 @@ Future<List<Map<String, dynamic>>> getMarketProducts(String marketId,
       .limit(limit);
 }
 
-Future<SupplySummary?> getMarketSupplySummary(
+Future<Map<String, dynamic>?> getMarketSupplySummary(
   String marketId,
   int days, {
   String? productId,
@@ -69,7 +69,7 @@ Future<SupplySummary?> getMarketSupplySummary(
   });
   final row = (raw is List) ? (raw.isEmpty ? null : raw[0]) : raw;
   if (row == null) return null;
-  return SupplySummary.fromMap(row as Map<String, dynamic>);
+  return Map<String, dynamic>.from(row as Map);
 }
 
 Future<List<Map<String, dynamic>>> getMarketTopProducts(

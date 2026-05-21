@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadItems() async {
     setState(() => _loadingItems = true);
     try {
-      final markets = await MarketsApi.getMarkets();
+      final markets = await getMarkets();
       final items = <_PickerItem>[];
       final seenDepts = <String>{};
       final seenCities = <String>{};

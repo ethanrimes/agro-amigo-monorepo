@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (productIds.isNotEmpty) {
       try {
         final data =
-            await getWatchlistPrices(productIds, preferredMarketId);
+            await getWatchlistPrices(productIds, marketId: preferredMarketId);
         final map = <String, Map<String, dynamic>>{};
         for (final obs in data) {
           final pid = obs['product_id'] as String?;
@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print('categories: $e');
     });
 
-    getTopSuppliedProducts(10).then((s) {
+    getTopSuppliedProducts(limit: 10).then((s) {
       if (mounted) {
         setState(() => _topSupplied = List<Map<String, dynamic>>.from(s));
       }
@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (settings.defaultMarket.level == MarketLevel.mercado &&
         settings.defaultMarket.id != null) {
-      getMarketTopProducts(settings.defaultMarket.id!, 7, null, 8).then((rows) {
+      getMarketTopProducts(settings.defaultMarket.id!, 7, limit: 8).then((rows) {
         if (!mounted) return;
         setState(() {
           _marketTopSupplied = rows
@@ -234,12 +234,12 @@ class _HomeScreenState extends State<HomeScreen> {
       const marketLimit = 200;
       const nationalLimit = 1000;
       var trend = await getTrendingProducts(
-        preferredMarketId != null ? marketLimit : nationalLimit,
-        preferredMarketId,
+        limit: preferredMarketId != null ? marketLimit : nationalLimit,
+        marketId: preferredMarketId,
       );
       var trendScope = preferredMarketId != null ? 'market' : 'national';
       if (preferredMarketId != null && trend.length < 10) {
-        trend = await getTrendingProducts(nationalLimit, null);
+        trend = await getTrendingProducts(limit: nationalLimit);
         trendScope = 'national';
       }
 
@@ -509,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(width: AppSpacing.sm),
-                      PriceChangeIndicator(value: item.change, size: 'sm'),
+                      PriceChangeIndicator(value: item.change, size: IndicatorSize.sm),
                     ],
                   ),
                 ),
@@ -856,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 20,
                 ),
                 const SizedBox(height: 4),
-                PriceChangeIndicator(value: item.change, size: 'sm'),
+                PriceChangeIndicator(value: item.change, size: IndicatorSize.sm),
               ],
             ),
           ],

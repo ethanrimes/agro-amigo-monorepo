@@ -6,15 +6,20 @@ import 'package:agroamigo_iphone/services/images.dart';
 /// Loads the product-specific Supabase image and falls back to the
 /// category-level Unsplash placeholder on error.
 class ProductImage extends StatefulWidget {
-  const ProductImage({
+  ProductImage({
     super.key,
     this.productName,
     this.categoryName,
     this.width,
     this.height,
+    double? size,
     this.fit = BoxFit.cover,
     this.borderRadius,
-  });
+    double? radius,
+  })  : width = width ?? size,
+        height = height ?? size,
+        borderRadius = borderRadius ??
+            (radius != null ? BorderRadius.circular(radius) : null);
 
   final String? productName;
   final String? categoryName;

@@ -73,7 +73,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> _loadSubcategories(String categoryId) async {
     try {
-      final subs = await getSubcategories(categoryId);
+      final subs = await getSubcategories(categoryId: categoryId);
       if (!mounted) return;
       setState(() => _subcategories = subs ?? const []);
     } catch (_) {

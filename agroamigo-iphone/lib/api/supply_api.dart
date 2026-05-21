@@ -1,7 +1,7 @@
 import 'package:agroamigo_iphone/services/supabase_client.dart';
 import 'package:agroamigo_iphone/api/_types.dart';
 
-Future<SupplySummary?> getProductSupplySummary(
+Future<Map<String, dynamic>?> getProductSupplySummary(
   String productId,
   int days, {
   String? marketId,
@@ -16,7 +16,7 @@ Future<SupplySummary?> getProductSupplySummary(
   });
   final row = (raw is List) ? (raw.isEmpty ? null : raw[0]) : raw;
   if (row == null) return null;
-  return SupplySummary.fromMap(row as Map<String, dynamic>);
+  return Map<String, dynamic>.from(row as Map);
 }
 
 Future<List<Map<String, dynamic>>> getProductTopDestinations(

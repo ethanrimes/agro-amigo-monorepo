@@ -6,7 +6,7 @@ import 'package:agroamigo_iphone/theme/theme.dart';
 class AppSearchBar extends StatelessWidget {
   const AppSearchBar({
     super.key,
-    required this.value,
+    this.value = '',
     required this.onChanged,
     this.placeholder = 'Buscar...',
     this.controller,
