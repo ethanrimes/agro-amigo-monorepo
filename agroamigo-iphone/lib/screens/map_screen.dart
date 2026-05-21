@@ -123,11 +123,11 @@ class _MapScreenState extends State<MapScreen> {
       final results = await Future.wait([
         AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
           'map:departments',
-          () => MapApi.getDepartments(),
+          () => getDepartments(),
         ),
         AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
           'map:marketLocations',
-          () => MapApi.getMarketLocations(),
+          () => getMarketLocations(),
         ),
         _loadGeoJsonPolygons(),
       ]);
@@ -217,22 +217,23 @@ class _MapScreenState extends State<MapScreen> {
       final priceFuture = _mode == _Mode.price
           ? AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
               'map:prices:$keySuffix',
-              () => MapApi.getPricesByDepartment(pid, 30, presId, uId),
+              () => getPricesByDepartment(productId: pid, days: 30, presentationId: presId, unitsId: uId),
             )
           : Future.value(<Map<String, dynamic>>[]);
 
       final supplyFuture = _mode == _Mode.supply
           ? AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
               'map:supply:$keySuffix',
-              () => MapApi.getSupplyByDepartment(pid, 30),
+              () => getSupplyByDepartment(productId: pid, days: 30),
             )
           : Future.value(<Map<String, dynamic>>[]);
 
       final results = await Future.wait([priceFuture, supplyFuture]);
       final ids = await AppCache.instance.cachedCall<List<String>>(
         'map:activeMarkets:$keySuffix',
-        () => MapApi.getMarketsWithProductData(
-            pid, _mode == _Mode.price ? 'price' : 'supply', 30, presId, uId),
+        () => getMarketsWithProductData(
+            pid, _mode == _Mode.price ? 'price' : 'supply',
+            days: 30, presentationId: presId, unitsId: uId),
       );
 
       if (!mounted) return;
@@ -260,7 +261,7 @@ class _MapScreenState extends State<MapScreen> {
     try {
       final list = await AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
         'map:presentations:$pid:30',
-        () => MapApi.getProductPresentationsForMap(pid, 30),
+        () => getProductPresentationsForMap(pid, days: 30),
       );
       if (!mounted) return;
       setState(() {
@@ -286,7 +287,7 @@ class _MapScreenState extends State<MapScreen> {
       }
       if (mounted) setState(() => _searchLoading = true);
       try {
-        final data = await ProductsApi.getProducts(search: value, limit: 20);
+        final data = await getProducts(search: value, limit: 20);
         if (!mounted) return;
         setState(() => _productResults = data);
       } catch (_) {

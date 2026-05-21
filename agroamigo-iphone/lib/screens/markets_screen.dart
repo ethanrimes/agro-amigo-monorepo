@@ -5,8 +5,8 @@ import '../api/markets_api.dart';
 import '../services/cache.dart';
 import '../state/settings_provider.dart';
 import '../theme/theme.dart';
-import '../widgets/app_card.dart';
-import '../widgets/app_search_bar.dart';
+import '../widgets/card.dart';
+import '../widgets/search_bar.dart';
 import 'market_detail_screen.dart';
 
 /// Port of `agroamigo-app/app/(tabs)/markets.tsx`.

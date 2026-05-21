@@ -68,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _loading = true);
     try {
       if (_mode == _AuthMode.signUp) {
-        await AuthApi.signUp(email, password, username);
+        await signUp(email, password, username);
         await _showAlert(t.auth_sign_up, t.auth_signup_success);
         if (mounted) {
           setState(() {
@@ -77,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
           });
         }
       } else {
-        await AuthApi.signIn(email, password);
+        await signIn(email, password);
         if (mounted) {
           await context.read<AuthProvider>().refreshProfile();
           if (mounted) Navigator.of(context).pop();

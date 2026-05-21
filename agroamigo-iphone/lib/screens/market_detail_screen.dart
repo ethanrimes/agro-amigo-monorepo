@@ -6,7 +6,7 @@ import '../services/cache.dart';
 import '../services/format.dart';
 import '../state/settings_provider.dart';
 import '../theme/theme.dart';
-import '../widgets/app_card.dart';
+import '../widgets/card.dart';
 import '../widgets/comments_section.dart';
 import '../widgets/expandable_section.dart';
 import '../widgets/market_supply_comparator.dart';
@@ -120,7 +120,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
       );
       final s = await AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
         'market:$_id:supply:30',
-        () => getMarketSupply(_id, 30),
+        () => getMarketSupply(_id, days: 30),
       );
       if (!mounted) return;
       setState(() {
@@ -155,8 +155,8 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
               () => getMarketSupplySummary(
                 _id,
                 days,
-                _selectedSupplyProduct,
-                _selectedSupplyProv,
+                productId: _selectedSupplyProduct,
+                provDept: _selectedSupplyProv,
               ),
             )
             .catchError((_) => null),
@@ -164,14 +164,14 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
             .cachedCall<List<Map<String, dynamic>>>(
               '$keyBase:topProducts',
               () => getMarketTopProducts(
-                  _id, days, _selectedSupplyProv, 10),
+                  _id, days, provDept: _selectedSupplyProv, limit: 10),
             )
             .catchError((_) => <Map<String, dynamic>>[]),
         AppCache.instance
             .cachedCall<List<Map<String, dynamic>>>(
               '$keyBase:topProv',
               () => getMarketTopProvenance(
-                  _id, days, _selectedSupplyProduct, 15),
+                  _id, days, productId: _selectedSupplyProduct, limit: 15),
             )
             .catchError((_) => <Map<String, dynamic>>[]),
       ]);

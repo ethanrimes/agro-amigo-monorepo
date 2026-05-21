@@ -357,7 +357,7 @@ class _MarketSupplyComparatorState extends State<MarketSupplyComparator> {
                     color: AppColors.accentBlue,
                     letterSpacing: 0.5)),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Container(height: 1, color: AppColors.borderLight),
           for (final sub in group.subcategories) ...[
             if (group.subcategories.length > 1)
               Padding(
@@ -671,7 +671,7 @@ class _SupplyPickerSheetState extends State<_SupplyPickerSheet> {
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Container(height: 1, color: AppColors.borderLight),
           Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
@@ -696,7 +696,7 @@ class _SupplyPickerSheetState extends State<_SupplyPickerSheet> {
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.borderLight),
+          Container(height: 1, color: AppColors.borderLight),
           Flexible(
             child: ListView(
               shrinkWrap: true,

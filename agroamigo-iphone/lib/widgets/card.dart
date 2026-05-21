@@ -4,13 +4,14 @@ import 'package:agroamigo_iphone/theme/theme.dart';
 /// Port of `Card.tsx`.
 /// Pressable variant: wraps in CupertinoButton with opacity/scale feedback.
 class AppCard extends StatelessWidget {
-  const AppCard({
+  AppCard({
     super.key,
     required this.child,
-    this.onPressed,
+    VoidCallback? onPressed,
+    VoidCallback? onTap,
     this.padding = AppSpacing.lg,
     this.style,
-  });
+  }) : onPressed = onPressed ?? onTap;
 
   final Widget child;
   final VoidCallback? onPressed;

@@ -148,7 +148,7 @@ Future<List<Map<String, dynamic>>> getMarketLocations() async {
   final municipios = await SupabaseService.client
       .from('divipola_municipios')
       .select('codigo_municipio, latitud, longitud')
-      .in_('codigo_municipio', divCodes);
+      .inFilter('codigo_municipio', divCodes);
 
   final coordMap = <String, Map<String, double>>{};
   for (final m in municipios) {
