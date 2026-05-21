@@ -1,5 +1,12 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # Translation keys deliberately mirror the React Native snake_case names.
+    non_constant_identifier_names: ignore
+    # Allow joined CHANGELOG-style messages in print calls during early dev.
+    avoid_print: ignore
+
 linter:
   rules:
     avoid_print: false
