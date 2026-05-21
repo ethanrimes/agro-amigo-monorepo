@@ -1,0 +1,93 @@
+name: agroamigo-iphone-build
+
+on:
+  push:
+    paths:
+      - 'agroamigo-iphone/**'
+      - '.github/workflows/agroamigo-iphone-build.yml'
+  pull_request:
+    paths:
+      - 'agroamigo-iphone/**'
+      - '.github/workflows/agroamigo-iphone-build.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: agroamigo-iphone-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: iOS build (Flutter, Xcode 26)
+    runs-on: macos-15
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: agroamigo-iphone
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show available Xcode versions
+        run: ls /Applications | grep -i Xcode || true
+        working-directory: .
+
+      - name: Select Xcode (prefer 26, fall back to latest)
+        run: |
+          if [ -d "/Applications/Xcode_26.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_26.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+          else
+            sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)/Contents/Developer"
+          fi
+          xcodebuild -version
+        working-directory: .
+
+      - name: Set up Flutter (stable)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Bootstrap missing iOS scaffold
+        run: |
+          flutter create \
+            --project-name agroamigo_iphone \
+            --org com.agroamigo \
+            --platforms=ios \
+            --no-overwrite \
+            .
+
+      - name: Configure iOS deployment target (iOS 14)
+        run: |
+          if [ -f ios/Podfile ]; then
+            sed -i '' "s/# platform :ios, .*/platform :ios, '14.0'/" ios/Podfile || true
+            grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '14.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
+          fi
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Flutter analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Flutter build iOS (release, no codesign)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          flutter build ios --release --no-codesign \
+            --dart-define=SUPABASE_URL="${SUPABASE_URL:-https://placeholder.supabase.co}" \
+            --dart-define=SUPABASE_KEY="${SUPABASE_KEY:-placeholder-anon-key}"
+
+      - name: Upload build artifact (Runner.app)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Runner-app
+          path: agroamigo-iphone/build/ios/iphoneos/Runner.app
+          if-no-files-found: ignore
