@@ -217,15 +217,40 @@ jobs:
           </plist>
           EOF
 
-      - name: Build signed IPA
+      - name: Build Flutter (release, no codesign)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          flutter build ipa --release \
-            --export-options-plist=ios/ExportOptions.plist \
+          flutter build ios --release --no-codesign \
             --dart-define=SUPABASE_URL="${SUPABASE_URL:-https://placeholder.supabase.co}" \
             --dart-define=SUPABASE_KEY="${SUPABASE_KEY:-placeholder-anon-key}"
+
+      - name: Archive with manual signing
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="${TEAM_ID}" \
+            PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
+            PROVISIONING_PROFILE_SPECIFIER="${PROVISION_NAME}" \
+            archive
+
+      - name: Export signed IPA
+        run: |
+          set -euo pipefail
+          mkdir -p build/ios/ipa
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist ios/ExportOptions.plist
+          cp "$RUNNER_TEMP/export/"*.ipa build/ios/ipa/
 
       - name: Locate IPA
         id: ipa
