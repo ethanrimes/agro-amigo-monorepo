@@ -266,8 +266,45 @@ jobs:
           echo "Profile bundle ID matches: $BUNDLE_ID"
         working-directory: .
 
+      - name: Inject DEVELOPMENT_TEAM into Runner.xcodeproj
+        run: |
+          set -euxo pipefail
+          PBX=ios/Runner.xcodeproj/project.pbxproj
+          # Append DEVELOPMENT_TEAM after every PRODUCT_BUNDLE_IDENTIFIER line so
+          # every Runner configuration (Debug/Release/Profile) inherits the team.
+          # Pods are unaffected because they live in a separate pbxproj.
+          python3 - "$PBX" "$TEAM_ID" <<'PY'
+          import sys, re, pathlib
+          path = pathlib.Path(sys.argv[1])
+          team = sys.argv[2]
+          src = path.read_text()
+          if 'DEVELOPMENT_TEAM' in src:
+              print('DEVELOPMENT_TEAM already present, skipping')
+              sys.exit(0)
+          new = re.sub(
+              r'(PRODUCT_BUNDLE_IDENTIFIER = [^;]+;)',
+              r'\1\n\t\t\t\tDEVELOPMENT_TEAM = ' + team + ';',
+              src,
+          )
+          path.write_text(new)
+          print('Injected DEVELOPMENT_TEAM into', path)
+          PY
+
+      - name: Inject PROVISIONING_PROFILE_SPECIFIER into Release.xcconfig
+        run: |
+          set -euxo pipefail
+          # Putting the profile specifier in Flutter's Release.xcconfig applies
+          # it only to the Runner target. Pods don't include this xcconfig.
+          if ! grep -E -q '^[[:space:]]*PROVISIONING_PROFILE_SPECIFIER[[:space:]]*=' ios/Flutter/Release.xcconfig; then
+            echo "PROVISIONING_PROFILE_SPECIFIER = $PROVISION_NAME" >> ios/Flutter/Release.xcconfig
+          fi
+          echo "--- Release.xcconfig ---"
+          cat ios/Flutter/Release.xcconfig
+
       - name: Write ExportOptions.plist
         run: |
+          # Use the profile UUID (not name) as the value — UUID is more
+          # deterministic and is the form Apple recommends.
           cat > ios/ExportOptions.plist <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -280,47 +317,30 @@ jobs:
             <key>uploadSymbols</key><true/>
             <key>provisioningProfiles</key>
             <dict>
-              <key>${BUNDLE_ID}</key><string>${PROVISION_NAME}</string>
+              <key>${BUNDLE_ID}</key><string>${PROVISION_UUID}</string>
             </dict>
           </dict>
           </plist>
           EOF
+          plutil -p ios/ExportOptions.plist
 
-      - name: Build Flutter (release, no codesign)
+      - name: Build signed IPA (flutter build ipa)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          flutter build ios --release --no-codesign \
+          set -euxo pipefail
+          # `flutter build ipa` runs xcodebuild archive + exportArchive in a
+          # single command and handles framework signing correctly. This is
+          # what the known-good Flutter+iOS+TestFlight pipelines do; calling
+          # xcodebuild directly was propagating Manual signing settings to
+          # Pods and tripping up exportArchive on Flutter plugin frameworks.
+          flutter build ipa --release \
+            --export-options-plist=ios/ExportOptions.plist \
+            --build-number=${{ github.run_number }} \
             --dart-define=SUPABASE_URL="${SUPABASE_URL:-https://placeholder.supabase.co}" \
             --dart-define=SUPABASE_KEY="${SUPABASE_KEY:-placeholder-anon-key}"
-
-      - name: Archive with manual signing
-        run: |
-          set -euo pipefail
-          xcodebuild \
-            -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            DEVELOPMENT_TEAM="${TEAM_ID}" \
-            PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
-            PROVISIONING_PROFILE_SPECIFIER="${PROVISION_NAME}" \
-            archive
-
-      - name: Export signed IPA
-        run: |
-          set -euo pipefail
-          mkdir -p build/ios/ipa
-          xcodebuild -exportArchive \
-            -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
-            -exportPath "$RUNNER_TEMP/export" \
-            -exportOptionsPlist ios/ExportOptions.plist
-          cp "$RUNNER_TEMP/export/"*.ipa build/ios/ipa/
+          ls -la build/ios/ipa/
 
       - name: Locate IPA
         id: ipa
