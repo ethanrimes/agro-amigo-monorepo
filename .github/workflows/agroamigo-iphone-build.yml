@@ -290,13 +290,22 @@ jobs:
           print('Injected DEVELOPMENT_TEAM into', path)
           PY
 
-      - name: Inject PROVISIONING_PROFILE_SPECIFIER into Release.xcconfig
+      - name: Inject manual signing into Release.xcconfig
         run: |
           set -euxo pipefail
-          # Putting the profile specifier in Flutter's Release.xcconfig applies
-          # it only to the Runner target. Pods don't include this xcconfig.
-          if ! grep -E -q '^[[:space:]]*PROVISIONING_PROFILE_SPECIFIER[[:space:]]*=' ios/Flutter/Release.xcconfig; then
-            echo "PROVISIONING_PROFILE_SPECIFIER = $PROVISION_NAME" >> ios/Flutter/Release.xcconfig
+          # Settings appended to Flutter's Release.xcconfig apply ONLY to the
+          # Runner target. Pods don't include this xcconfig. CODE_SIGN_STYLE
+          # must be set to Manual or flutter_tools auto-detects DEVELOPMENT_TEAM
+          # and tells xcodebuild to do automatic signing (which picks "iOS
+          # Development" instead of "Apple Distribution" and fails the build).
+          if ! grep -E -q '^[[:space:]]*CODE_SIGN_STYLE[[:space:]]*=' ios/Flutter/Release.xcconfig; then
+            {
+              echo ""
+              echo "// Manual signing for App Store distribution (CI)"
+              echo "CODE_SIGN_STYLE = Manual"
+              echo "CODE_SIGN_IDENTITY = Apple Distribution"
+              echo "PROVISIONING_PROFILE_SPECIFIER = $PROVISION_NAME"
+            } >> ios/Flutter/Release.xcconfig
           fi
           echo "--- Release.xcconfig ---"
           cat ios/Flutter/Release.xcconfig
