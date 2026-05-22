@@ -80,26 +80,37 @@ jobs:
 
       - name: Strip code signing from Pods targets
         run: |
-          cat >> ios/Podfile <<'PODEOF'
-
-          # CI: prevent leaked PROVISIONING_PROFILE_SPECIFIER from breaking Pods targets
-          post_install do |installer|
-            installer.pods_project.targets.each do |target|
-              target.build_configurations.each do |config|
-                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-                config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
-                config.build_settings['CODE_SIGN_IDENTITY'] = ''
-                config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''
-                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''
-                config.build_settings['DEVELOPMENT_TEAM'] = ''
-              end
-            end
-          end
-          PODEOF
+          # Flutter's Podfile already defines a post_install hook calling
+          # flutter_additional_ios_build_settings(target). Inject our extra
+          # build setting overrides right after that line so they apply to
+          # every Pods target.
+          python3 - <<'PY'
+          import re, pathlib
+          p = pathlib.Path('ios/Podfile')
+          src = p.read_text()
+          inject = (
+              "    target.build_configurations.each do |config|\n"
+              "      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'\n"
+              "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'\n"
+              "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'\n"
+              "      config.build_settings['CODE_SIGN_IDENTITY'] = ''\n"
+              "      config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''\n"
+              "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''\n"
+              "      config.build_settings['DEVELOPMENT_TEAM'] = ''\n"
+              "    end\n"
+          )
+          # Insert immediately after the flutter_additional_ios_build_settings line
+          new = re.sub(
+              r'(flutter_additional_ios_build_settings\(target\)\s*\n)',
+              r'\1' + inject,
+              src,
+              count=1,
+          )
+          if new == src:
+              raise SystemExit('Failed to inject Pods codesign override (pattern not found)')
+          p.write_text(new)
+          PY
           cat ios/Podfile
-
-      - name: Flutter pub get
         run: flutter pub get
 
       - name: Flutter analyze
@@ -186,23 +197,31 @@ jobs:
 
       - name: Strip code signing from Pods targets
         run: |
-          cat >> ios/Podfile <<'PODEOF'
-
-          # CI: prevent leaked PROVISIONING_PROFILE_SPECIFIER from breaking Pods targets
-          post_install do |installer|
-            installer.pods_project.targets.each do |target|
-              target.build_configurations.each do |config|
-                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
-                config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
-                config.build_settings['CODE_SIGN_IDENTITY'] = ''
-                config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''
-                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''
-                config.build_settings['DEVELOPMENT_TEAM'] = ''
-              end
-            end
-          end
-          PODEOF
+          python3 - <<'PY'
+          import re, pathlib
+          p = pathlib.Path('ios/Podfile')
+          src = p.read_text()
+          inject = (
+              "    target.build_configurations.each do |config|\n"
+              "      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'\n"
+              "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'\n"
+              "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'\n"
+              "      config.build_settings['CODE_SIGN_IDENTITY'] = ''\n"
+              "      config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''\n"
+              "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''\n"
+              "      config.build_settings['DEVELOPMENT_TEAM'] = ''\n"
+              "    end\n"
+          )
+          new = re.sub(
+              r'(flutter_additional_ios_build_settings\(target\)\s*\n)',
+              r'\1' + inject,
+              src,
+              count=1,
+          )
+          if new == src:
+              raise SystemExit('Failed to inject Pods codesign override (pattern not found)')
+          p.write_text(new)
+          PY
           cat ios/Podfile
 
       - name: Patch Runner bundle identifier
