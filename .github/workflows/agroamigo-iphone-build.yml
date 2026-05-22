@@ -111,6 +111,8 @@ jobs:
           p.write_text(new)
           PY
           cat ios/Podfile
+
+      - name: Flutter pub get
         run: flutter pub get
 
       - name: Flutter analyze
