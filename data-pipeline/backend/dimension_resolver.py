@@ -197,12 +197,23 @@ class DimensionResolver:
         return city_id, market_id
 
     def _get_city_canonical(self, city_id: str) -> Optional[str]:
-        """Get the canonical name for a city by ID."""
-        self.cursor.execute(
-            "SELECT canonical_name FROM dim_city WHERE id = %s", (city_id,)
-        )
-        row = self.cursor.fetchone()
-        return row['canonical_name'] if row else None
+        """Get the canonical name for a city by ID. Caches in _city_canonical_cache."""
+        cache = getattr(self, '_city_canonical_cache', None)
+        if cache is None:
+            cache = {}
+            self._city_canonical_cache = cache
+        if city_id in cache:
+            return cache[city_id]
+        # Use a fresh short-lived cursor so a single query failure cannot
+        # leave the long-running resolver cursor in a hung state.
+        with self.conn.cursor() as cur:
+            cur.execute(
+                "SELECT canonical_name FROM dim_city WHERE id = %s", (city_id,)
+            )
+            row = cur.fetchone()
+        name = row['canonical_name'] if row else None
+        cache[city_id] = name
+        return name
 
     def _create_market(self, city_id: str, market_name: str) -> Optional[str]:
         """Create a new market entry."""

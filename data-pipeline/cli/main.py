@@ -580,101 +580,176 @@ def cmd_process_abastecimiento(args):
         ).ilike('storage_path', 'local:%abastecimiento%').execute()
 
     entries = response.data or []
-    print(f"Found {len(entries)} unprocessed abastecimiento entries")
+    print(f"Found {len(entries)} unprocessed abastecimiento entries", flush=True)
 
     if not entries:
         return 0
 
-    # Use a single DB connection for both resolver and inserts
-    conn = get_db_connection(new_connection=True)
-    resolver = DimensionResolver(conn=conn)
-    cursor = conn.cursor()
-    cursor.execute("SET statement_timeout = '300s'")
-
     grand_total_inserted = 0
     grand_total_skipped = 0
+
+    # Shared in-memory dim caches that survive per-entry reconnects.
+    shared_caches: dict = {}
 
     for entry in entries:
         entry_id = entry['id']
         storage_path = entry['storage_path']
-        print(f"\n[Processing] {entry['row_name']}")
+        print(f"\n[Processing] {entry['row_name']}", flush=True)
 
         # Get local file path (strip 'local:' prefix)
         local_path = storage_path.replace('local:', '')
         if not os.path.exists(local_path):
-            print(f"  [ERROR] Local file not found: {local_path}")
+            print(f"  [ERROR] Local file not found: {local_path}", flush=True)
             continue
 
+        # Parse FIRST (multi-minute pure-Python work) before opening the DB
+        # connection — otherwise the Supabase session pooler may kill the
+        # idle connection during parse and the worker hangs on the first query.
         parser = AbastecimientoParser()
         supply_rows, cpc_map = parser.parse(local_path)
 
         if not supply_rows:
-            print(f"  No supply rows parsed")
+            print(f"  No supply rows parsed", flush=True)
             db.update_download_entry_status(entry_id, True)
             continue
 
-        batch = []
-        batch_size = 2000
+        # Open a fresh DB connection per file so we never reuse one that was
+        # held idle through a long parse. The processing block is wrapped in
+        # a retry loop because the Supabase session pooler intermittently
+        # drops response packets — with aggressive TCP keepalives those show
+        # up as psycopg2.OperationalError after ~15s and a reconnect recovers.
+        import psycopg2 as _psy
+
+        max_attempts = 5
+        attempt = 0
         file_inserted = 0
         file_skipped = 0
+        conn = None
+        cursor = None
+        resolver = None
 
-        for row in supply_rows:
-            # Resolve category
-            cat_id = resolver.resolve_category(row.group)
-            if not cat_id:
-                file_skipped += 1
-                continue
+        while attempt < max_attempts:
+            attempt += 1
+            try:
+                # Clean up any prior partial inserts from a failed attempt.
+                if attempt > 1:
+                    try:
+                        conn = get_db_connection(new_connection=True)
+                        cc = conn.cursor()
+                        cc.execute(
+                            "DELETE FROM supply_observations WHERE download_entry_id = %s",
+                            (entry_id,)
+                        )
+                        conn.commit()
+                        cc.close()
+                        conn.close()
+                    except Exception as cleanup_err:
+                        print(f"  [WARN] cleanup before retry failed: {cleanup_err}", flush=True)
+                    print(f"  [retry {attempt}/{max_attempts}] re-processing file", flush=True)
 
-            # Resolve product (use CPC from row or from CPC map)
-            cpc = row.cpc_code or cpc_map.get(row.alimento, '')
-            prod_id = resolver.resolve_product(row.alimento, cat_id, cpc_code=cpc)
-            if not prod_id:
-                file_skipped += 1
-                continue
+                conn = get_db_connection(new_connection=True)
+                # Avoid long-running transactions through the Supabase session
+                # pooler — observed to cause ClientRead hangs after many
+                # small queries in a single txn. Per-statement commit is fine
+                # since the per-file retry block re-runs cleanly on failure.
+                conn.autocommit = True
+                resolver = DimensionResolver(conn=conn)
+                # Restore caches from prior entries to avoid re-resolving the same names.
+                for attr in ('_city_cache', '_market_cache', '_category_cache',
+                             '_product_cache', '_department_cache', '_city_dept_cache'):
+                    if attr in shared_caches:
+                        setattr(resolver, attr, dict(shared_caches[attr]))
+                cursor = conn.cursor()
+                cursor.execute("SET statement_timeout = '300s'")
 
-            # Resolve city + market
-            city_id, market_id = resolver.resolve_city_market(row.city_market)
-            if not city_id:
-                file_skipped += 1
-                continue
-
-            cpc_clean = cpc.strip().strip("'") if cpc else None
-
-            batch.append((
-                row.observation_date.isoformat(),
-                city_id, market_id,
-                row.provenance_dept_code or None,
-                row.provenance_muni_code or None,
-                row.provenance_dept_name or None,
-                row.provenance_muni_name or None,
-                cat_id, prod_id, cpc_clean,
-                row.quantity_kg,
-                storage_path, entry_id
-            ))
-
-            if len(batch) >= batch_size:
-                _insert_supply_batch(cursor, batch)
-                file_inserted += len(batch)
                 batch = []
-                conn.commit()
-                if file_inserted % 50000 == 0:
-                    print(f"    Progress: {file_inserted} inserted...")
+                batch_size = 2000
+                file_inserted = 0
+                file_skipped = 0
 
-        # Flush remaining
-        if batch:
-            _insert_supply_batch(cursor, batch)
-            file_inserted += len(batch)
-            conn.commit()
+                for row in supply_rows:
+                    # Resolve category
+                    cat_id = resolver.resolve_category(row.group)
+                    if not cat_id:
+                        file_skipped += 1
+                        continue
+
+                    # Resolve product (use CPC from row or from CPC map)
+                    cpc = row.cpc_code or cpc_map.get(row.alimento, '')
+                    prod_id = resolver.resolve_product(row.alimento, cat_id, cpc_code=cpc)
+                    if not prod_id:
+                        file_skipped += 1
+                        continue
+
+                    # Resolve city + market
+                    city_id, market_id = resolver.resolve_city_market(row.city_market)
+                    if not city_id:
+                        file_skipped += 1
+                        continue
+
+                    cpc_clean = cpc.strip().strip("'") if cpc else None
+
+                    batch.append((
+                        row.observation_date.isoformat(),
+                        city_id, market_id,
+                        row.provenance_dept_code or None,
+                        row.provenance_muni_code or None,
+                        row.provenance_dept_name or None,
+                        row.provenance_muni_name or None,
+                        cat_id, prod_id, cpc_clean,
+                        row.quantity_kg,
+                        storage_path, entry_id
+                    ))
+
+                    if len(batch) >= batch_size:
+                        _insert_supply_batch(cursor, batch)
+                        file_inserted += len(batch)
+                        batch = []
+                        # autocommit is on, no explicit commit needed
+                        if file_inserted % 50000 == 0:
+                            print(f"    Progress: {file_inserted} inserted...", flush=True)
+
+                # Flush remaining
+                if batch:
+                    _insert_supply_batch(cursor, batch)
+                    file_inserted += len(batch)
+
+                # Snapshot resolver caches so the next entry's fresh resolver can reuse them.
+                for attr in ('_city_cache', '_market_cache', '_category_cache',
+                             '_product_cache', '_department_cache', '_city_dept_cache'):
+                    shared_caches[attr] = getattr(resolver, attr, {})
+
+                break  # success — exit retry loop
+
+            except (_psy.OperationalError, _psy.InterfaceError) as e:
+                print(f"  [ERROR] DB connection died (attempt {attempt}): {e}", flush=True)
+                try:
+                    if cursor is not None: cursor.close()
+                except Exception: pass
+                try:
+                    if conn is not None: conn.close()
+                except Exception: pass
+                if attempt >= max_attempts:
+                    print(f"  [FATAL] exhausted retries for {entry_id}, skipping file", flush=True)
+                    file_inserted = -1  # sentinel
+                    break
+
+        if file_inserted < 0:
+            continue  # skip mark-as-processed; will retry on next run
 
         # Mark entry as processed
         db.update_download_entry_status(entry_id, True)
-        print(f"  Inserted: {file_inserted}, Skipped: {file_skipped}")
+        print(f"  Inserted: {file_inserted}, Skipped: {file_skipped}", flush=True)
         grand_total_inserted += file_inserted
         grand_total_skipped += file_skipped
 
-    cursor.close()
-    resolver.close()
-    print(f"\nGrand Total: {grand_total_inserted} inserted, {grand_total_skipped} skipped")
+        try:
+            if cursor is not None: cursor.close()
+            if resolver is not None: resolver.close()
+            if conn is not None: conn.close()
+        except Exception: pass
+
+    print(f"\nGrand Total: {grand_total_inserted} inserted, {grand_total_skipped} skipped", flush=True)
     return 0
 
 
@@ -780,22 +855,18 @@ def cmd_process_insumos(args):
         ).ilike('storage_path', 'local:%insumos%').execute()
 
     entries = response.data or []
-    print(f"Found {len(entries)} unprocessed insumos entries")
+    print(f"Found {len(entries)} unprocessed insumos entries", flush=True)
 
     if not entries:
         return 0
 
-    conn = get_db_connection(new_connection=True)
-    cursor = conn.cursor()
-    cursor.execute("SET statement_timeout = '300s'")
-
-    # Simple caches for insumo and casa comercial dimensions
-    insumo_cache = {}   # product_name -> insumo_id
-    casa_cache = {}     # casa_name -> casa_comercial_id
-    dept_cache = {}     # dept_name -> department_id
-    grupo_cache = {}    # grupo_name -> grupo_id
-    subgrupo_cache = {} # subgrupo_name -> subgrupo_id
-    city_cache = {}     # muni_code -> city_id
+    # Caches shared across files (per-file conn is opened post-parse)
+    insumo_cache = {}
+    casa_cache = {}
+    dept_cache = {}
+    grupo_cache = {}
+    subgrupo_cache = {}
+    city_cache = {}
 
     parser = InsumosParser()
     grand_total = 0
@@ -804,35 +875,76 @@ def cmd_process_insumos(args):
         entry_id = entry['id']
         storage_path = entry['storage_path']
         local_path = storage_path.replace('local:', '')
-        print(f"\n[Processing] {entry['row_name']}")
+        print(f"\n[Processing] {entry['row_name']}", flush=True)
 
         if not os.path.exists(local_path):
-            print(f"  [ERROR] Local file not found: {local_path}")
+            print(f"  [ERROR] Local file not found: {local_path}", flush=True)
             continue
 
         is_dept = 'Dep' in entry['row_name'] or 'Dep' in local_path
 
+        # Parse BEFORE opening DB conn so the pooler doesn't kill an idle session.
         if is_dept:
             rows = parser.parse_department(local_path)
-            file_inserted = _insert_dept_insumos(
-                cursor, conn, rows, storage_path, entry_id,
-                insumo_cache, casa_cache, dept_cache, grupo_cache, subgrupo_cache
-            )
         else:
             rows = parser.parse_municipality(local_path)
-            file_inserted = _insert_mun_insumos(
-                cursor, conn, rows, storage_path, entry_id,
-                insumo_cache, dept_cache, grupo_cache, subgrupo_cache, city_cache
-            )
 
-        conn.commit()
+        import psycopg2 as _psy
+        attempt = 0
+        max_attempts = 5
+        file_inserted = 0
+        while attempt < max_attempts:
+            attempt += 1
+            try:
+                if attempt > 1:
+                    print(f"  [retry {attempt}/{max_attempts}] re-processing", flush=True)
+                    try:
+                        conn = get_db_connection(new_connection=True)
+                        conn.autocommit = True
+                        cc = conn.cursor()
+                        if is_dept:
+                            cc.execute("DELETE FROM insumo_prices_department WHERE download_entry_id = %s", (entry_id,))
+                        else:
+                            cc.execute("DELETE FROM insumo_prices_municipality WHERE download_entry_id = %s", (entry_id,))
+                        cc.close()
+                        conn.close()
+                    except Exception as ce:
+                        print(f"  [WARN] retry cleanup failed: {ce}", flush=True)
+
+                conn = get_db_connection(new_connection=True)
+                conn.autocommit = True  # avoid long transactions through pooler
+                cursor = conn.cursor()
+                cursor.execute("SET statement_timeout = '300s'")
+
+                if is_dept:
+                    file_inserted = _insert_dept_insumos(
+                        cursor, conn, rows, storage_path, entry_id,
+                        insumo_cache, casa_cache, dept_cache, grupo_cache, subgrupo_cache
+                    )
+                else:
+                    file_inserted = _insert_mun_insumos(
+                        cursor, conn, rows, storage_path, entry_id,
+                        insumo_cache, dept_cache, grupo_cache, subgrupo_cache, city_cache
+                    )
+
+                cursor.close()
+                conn.close()
+                break  # success
+            except (_psy.OperationalError, _psy.InterfaceError) as e:
+                print(f"  [ERROR] DB connection died (attempt {attempt}): {e}", flush=True)
+                if attempt >= max_attempts:
+                    print(f"  [FATAL] exhausted retries for {entry_id}, skipping file", flush=True)
+                    file_inserted = -1
+                    break
+
+        if file_inserted < 0:
+            continue
+
         db.update_download_entry_status(entry_id, True)
-        print(f"  Inserted: {file_inserted}")
+        print(f"  Inserted: {file_inserted}", flush=True)
         grand_total += file_inserted
 
-    cursor.close()
-    conn.close()
-    print(f"\nGrand Total: {grand_total} insumo prices inserted")
+    print(f"\nGrand Total: {grand_total} insumo prices inserted", flush=True)
     return 0
 
 
@@ -1121,15 +1233,9 @@ def _insert_mun_batch(cursor, batch):
         'dept_code', 'muni_code',
         'insumo_id', 'grupo_id', 'subgrupo_id',
         'presentation', 'avg_price',
-        'source_path', 'download_entry_id'
+        'source_path', 'download_entry_id',
     )
-    placeholders = ','.join(['%s'] * len(cols))
-    values_template = f"({placeholders})"
-    sql = f"INSERT INTO insumo_prices_municipality ({','.join(cols)}) VALUES {','.join([values_template] * len(batch))}"
-    flat = []
-    for row in batch:
-        flat.extend(row)
-    cursor.execute(sql, flat)
+    _copy_batch(cursor, 'insumo_prices_municipality', cols, batch)
 
 
 def _insert_dept_insumos(cursor, conn, rows, storage_path, entry_id,
@@ -1179,37 +1285,58 @@ def _insert_dept_batch(cursor, batch):
         'insumo_id', 'grupo_id', 'subgrupo_id',
         'articulo', 'casa_comercial_id', 'registro_ica',
         'cpc_code', 'presentation', 'avg_price',
-        'source_path', 'download_entry_id'
+        'source_path', 'download_entry_id',
     )
-    placeholders = ','.join(['%s'] * len(cols))
-    values_template = f"({placeholders})"
-    sql = f"INSERT INTO insumo_prices_department ({','.join(cols)}) VALUES {','.join([values_template] * len(batch))}"
-    flat = []
+    _copy_batch(cursor, 'insumo_prices_department', cols, batch)
+
+
+def _copy_batch(cursor, table: str, cols: tuple, batch: list) -> None:
+    """Bulk-load a batch via COPY ... FROM STDIN (CSV format).
+
+    Much faster than multi-row INSERT through a remote pooler — one round
+    trip per batch and minimal server-side parsing. Used for the high-volume
+    supply_observations / insumo_prices_* tables.
+    """
+    import io
+    from datetime import date, datetime
+    from decimal import Decimal
+
+    buf = io.StringIO()
     for row in batch:
-        flat.extend(row)
-    cursor.execute(sql, flat)
+        out_fields = []
+        for v in row:
+            if v is None:
+                out_fields.append('')
+                continue
+            if isinstance(v, (date, datetime)):
+                out_fields.append(v.isoformat())
+                continue
+            if isinstance(v, Decimal):
+                out_fields.append(str(v))
+                continue
+            s = str(v)
+            # CSV escape: wrap in quotes and double-up any internal quotes when
+            # field contains delimiter / quote / newline.
+            if any(ch in s for ch in (',', '"', '\n', '\r')):
+                s = '"' + s.replace('"', '""') + '"'
+            out_fields.append(s)
+        buf.write(','.join(out_fields))
+        buf.write('\n')
+    buf.seek(0)
+    sql = f"COPY {table} ({','.join(cols)}) FROM STDIN WITH (FORMAT csv, NULL '')"
+    cursor.copy_expert(sql, buf)
 
 
 def _insert_supply_batch(cursor, batch):
-    """Bulk insert supply observations."""
+    """Bulk insert supply observations via COPY (was multi-row INSERT, ~50x slower)."""
     cols = (
         'observation_date', 'city_id', 'market_id',
         'provenance_dept_code', 'provenance_muni_code',
         'provenance_dept_name', 'provenance_muni_name',
         'category_id', 'product_id', 'cpc_code',
-        'quantity_kg', 'source_path', 'download_entry_id'
+        'quantity_kg', 'source_path', 'download_entry_id',
     )
-    placeholders = ','.join(['%s'] * len(cols))
-    values_template = f"({placeholders})"
-
-    sql = f"""
-        INSERT INTO supply_observations ({','.join(cols)})
-        VALUES {','.join([values_template] * len(batch))}
-    """
-    flat = []
-    for row in batch:
-        flat.extend(row)
-    cursor.execute(sql, flat)
+    _copy_batch(cursor, 'supply_observations', cols, batch)
 
 
 def parse_date_arg(args):

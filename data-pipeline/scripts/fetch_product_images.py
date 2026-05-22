@@ -807,7 +807,10 @@ def get_unique_products(conn) -> list[dict]:
         FROM dim_product p
         JOIN dim_subcategory sc ON p.subcategory_id = sc.id
         JOIN dim_category c ON sc.category_id = c.id
-        WHERE sc.canonical_name NOT LIKE 'General%%'
+        -- Allow 'General (...)' subcategories — they still have valid base names
+        -- that resolve to good images. After populate-dimensions reclassifies
+        -- a product to a real subcategory the slugified base name doesn't change,
+        -- so the uploaded image will still serve.
         ORDER BY c.canonical_name, sc.canonical_name, p.canonical_name
     """)
     rows = cur.fetchall()
