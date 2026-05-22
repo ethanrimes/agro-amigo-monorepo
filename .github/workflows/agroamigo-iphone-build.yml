@@ -197,8 +197,12 @@ jobs:
           fi
           sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" ios/Runner.xcodeproj/project.pbxproj || true
 
-      - name: Strip code signing from Pods targets
+      - name: Configure Pods code signing (identity, no profile)
         run: |
+          # For App Store distribution, Pods frameworks must be signed in the
+          # archive (with the Apple Distribution identity, no profile). If they
+          # come out unsigned, exportArchive tries to sign them and fails with
+          # "framework does not support provisioning profiles".
           python3 - <<'PY'
           import re, pathlib
           p = pathlib.Path('ios/Podfile')
@@ -206,12 +210,13 @@ jobs:
           inject = (
               "    target.build_configurations.each do |config|\n"
               "      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'\n"
-              "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'\n"
-              "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'\n"
-              "      config.build_settings['CODE_SIGN_IDENTITY'] = ''\n"
-              "      config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''\n"
+              "      config.build_settings['CODE_SIGN_STYLE'] = 'Manual'\n"
+              "      config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'\n"
+              "      config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = 'Apple Distribution'\n"
               "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''\n"
-              "      config.build_settings['DEVELOPMENT_TEAM'] = ''\n"
+              "      config.build_settings['PROVISIONING_PROFILE'] = ''\n"
+              "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'\n"
+              "      config.build_settings['CODE_SIGNING_REQUIRED'] = 'YES'\n"
               "    end\n"
           )
           new = re.sub(
@@ -281,11 +286,27 @@ jobs:
           set -euo pipefail
           mkdir -p ~/.appstoreconnect/private_keys
           echo -n "$API_KEY_B64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
-          # Persist for later steps
+          # Persist for altool upload step
           echo "API_KEY_ID=$API_KEY_ID" >> "$GITHUB_ENV"
           echo "API_ISSUER=$API_ISSUER" >> "$GITHUB_ENV"
-          echo "API_KEY_PATH=$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8" >> "$GITHUB_ENV"
         working-directory: .
+
+      - name: Attach provisioning profile to Runner via Release.xcconfig
+        run: |
+          # Adding PROVISIONING_PROFILE_SPECIFIER to Release.xcconfig applies it
+          # ONLY to the Runner target. Putting it on the xcodebuild command line
+          # would propagate to Pods (frameworks) and break export.
+          cat >> ios/Flutter/Release.xcconfig <<EOF
+
+          // Manual signing for App Store distribution (CI)
+          CODE_SIGN_STYLE = Manual
+          CODE_SIGN_IDENTITY = Apple Distribution
+          DEVELOPMENT_TEAM = ${TEAM_ID}
+          PROVISIONING_PROFILE_SPECIFIER = ${PROVISION_NAME}
+          PRODUCT_BUNDLE_IDENTIFIER = ${BUNDLE_ID}
+          EOF
+          echo "--- Release.xcconfig ---"
+          cat ios/Flutter/Release.xcconfig
 
       - name: Write ExportOptions.plist
         run: |
@@ -296,10 +317,14 @@ jobs:
           <dict>
             <key>method</key><string>app-store-connect</string>
             <key>teamID</key><string>${TEAM_ID}</string>
-            <key>signingStyle</key><string>automatic</string>
+            <key>signingStyle</key><string>manual</string>
             <key>signingCertificate</key><string>Apple Distribution</string>
             <key>stripSwiftSymbols</key><true/>
             <key>uploadSymbols</key><true/>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${BUNDLE_ID}</key><string>${PROVISION_NAME}</string>
+            </dict>
           </dict>
           </plist>
           EOF
@@ -316,6 +341,9 @@ jobs:
       - name: Archive with manual signing
         run: |
           set -euo pipefail
+          # Signing settings live in Release.xcconfig (Runner) and the Podfile
+          # post_install hook (Pods). Passing them on the xcodebuild CLI here
+          # would propagate to Pods and break frameworks.
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
             -scheme Runner \
@@ -323,11 +351,6 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            DEVELOPMENT_TEAM="${TEAM_ID}" \
-            PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
-            PROVISIONING_PROFILE_SPECIFIER="${PROVISION_NAME}" \
             archive
 
       - name: Export signed IPA
@@ -337,11 +360,7 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
-            -exportOptionsPlist ios/ExportOptions.plist \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$API_KEY_PATH" \
-            -authenticationKeyID "$API_KEY_ID" \
-            -authenticationKeyIssuerID "$API_ISSUER"
+            -exportOptionsPlist ios/ExportOptions.plist
           cp "$RUNNER_TEMP/export/"*.ipa build/ios/ipa/
 
       - name: Locate IPA
