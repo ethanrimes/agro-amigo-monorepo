@@ -272,6 +272,21 @@ jobs:
           echo "Installed profile: $NAME ($UUID)"
         working-directory: .
 
+      - name: Write App Store Connect API key
+        env:
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          API_KEY_B64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo -n "$API_KEY_B64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+          # Persist for later steps
+          echo "API_KEY_ID=$API_KEY_ID" >> "$GITHUB_ENV"
+          echo "API_ISSUER=$API_ISSUER" >> "$GITHUB_ENV"
+          echo "API_KEY_PATH=$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8" >> "$GITHUB_ENV"
+        working-directory: .
+
       - name: Write ExportOptions.plist
         run: |
           cat > ios/ExportOptions.plist <<EOF
@@ -281,14 +296,10 @@ jobs:
           <dict>
             <key>method</key><string>app-store-connect</string>
             <key>teamID</key><string>${TEAM_ID}</string>
-            <key>signingStyle</key><string>manual</string>
+            <key>signingStyle</key><string>automatic</string>
             <key>signingCertificate</key><string>Apple Distribution</string>
             <key>stripSwiftSymbols</key><true/>
             <key>uploadSymbols</key><true/>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>${BUNDLE_ID}</key><string>${PROVISION_NAME}</string>
-            </dict>
           </dict>
           </plist>
           EOF
@@ -326,7 +337,11 @@ jobs:
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/AgroAmigoNative.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
-            -exportOptionsPlist ios/ExportOptions.plist
+            -exportOptionsPlist ios/ExportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$API_KEY_PATH" \
+            -authenticationKeyID "$API_KEY_ID" \
+            -authenticationKeyIssuerID "$API_ISSUER"
           cp "$RUNNER_TEMP/export/"*.ipa build/ios/ipa/
 
       - name: Locate IPA
@@ -337,14 +352,8 @@ jobs:
           echo "Found IPA: $IPA"
 
       - name: Upload to TestFlight
-        env:
-          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          API_ISSUER: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          API_KEY_B64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
         run: |
           set -euo pipefail
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo -n "$API_KEY_B64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           xcrun altool --upload-app \
             -f "${{ steps.ipa.outputs.ipa_path }}" \
             -t ios \
