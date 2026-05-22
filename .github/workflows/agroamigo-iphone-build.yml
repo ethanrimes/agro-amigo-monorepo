@@ -202,9 +202,11 @@ jobs:
           # For App Store distribution, Pods frameworks must be signed in the
           # archive (with the Apple Distribution identity, no profile). If they
           # come out unsigned, exportArchive tries to sign them and fails with
-          # "framework does not support provisioning profiles".
+          # "framework does not support provisioning profiles". The *_privacy
+          # resource-bundle targets also need DEVELOPMENT_TEAM set.
           python3 - <<'PY'
-          import re, pathlib
+          import os, re, pathlib
+          team_id = os.environ['TEAM_ID']
           p = pathlib.Path('ios/Podfile')
           src = p.read_text()
           inject = (
@@ -213,6 +215,7 @@ jobs:
               "      config.build_settings['CODE_SIGN_STYLE'] = 'Manual'\n"
               "      config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'\n"
               "      config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = 'Apple Distribution'\n"
+              f"      config.build_settings['DEVELOPMENT_TEAM'] = '{team_id}'\n"
               "      config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''\n"
               "      config.build_settings['PROVISIONING_PROFILE'] = ''\n"
               "      config.build_settings['CODE_SIGNING_ALLOWED'] = 'YES'\n"
