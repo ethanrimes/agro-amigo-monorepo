@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'services/supabase_client.dart';
 import 'state/settings_provider.dart';
@@ -11,7 +12,15 @@ import 'app_shell.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseService.initialize();
-  runApp(const AgroAmigoApp());
+
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          'https://4ce88aa19f1c4492c540187458500196@o4511277462388736.ingest.us.sentry.io/4511431449509888';
+      options.sendDefaultPii = true;
+    },
+    appRunner: () => runApp(const AgroAmigoApp()),
+  );
 }
 
 class AgroAmigoApp extends StatelessWidget {

@@ -28,7 +28,15 @@
       "package": "com.agroamigo.app"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "independent-60",
+          "project": "agroamigo-reactnative",
+          "url": "https://sentry.io/"
+        }
+      ]
     ]
   }
 }
