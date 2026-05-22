@@ -89,6 +89,7 @@ jobs:
 
       - name: Build (unsigned)
         run: |
+          set -o pipefail
           xcodebuild \
             -workspace "${{ steps.ios.outputs.workspace }}" \
             -scheme "${{ steps.ios.outputs.scheme }}" \
@@ -98,7 +99,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            build | xcpretty || exit ${PIPESTATUS[0]}
+            build
         working-directory: agroamigo-app/ios
 
   # ─────────────────────────────────────────────────────────────────────
@@ -234,6 +235,7 @@ jobs:
 
       - name: Archive
         run: |
+          set -o pipefail
           xcodebuild \
             -workspace "${{ steps.ios.outputs.workspace }}" \
             -scheme "${{ steps.ios.outputs.scheme }}" \
@@ -245,7 +247,7 @@ jobs:
             DEVELOPMENT_TEAM="${TEAM_ID}" \
             PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
             PROVISIONING_PROFILE_SPECIFIER="${PROVISION_NAME}" \
-            archive | xcpretty || exit ${PIPESTATUS[0]}
+            archive
         working-directory: agroamigo-app/ios
 
       - name: Export IPA
