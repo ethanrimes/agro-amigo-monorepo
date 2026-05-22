@@ -47,11 +47,15 @@ jobs:
           xcodebuild -version
         working-directory: .
 
-      - name: Set up Flutter (stable)
+      - name: Set up Flutter (3.35.x stable, Xcode 26 compatible)
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.35.5'
           channel: stable
           cache: true
+
+      - name: Disable Flutter SwiftPM (avoid Xcode 26 plugin signing conflicts)
+        run: flutter config --no-enable-swift-package-manager
 
       - name: Flutter doctor
         run: flutter doctor -v
@@ -65,12 +69,15 @@ jobs:
             --no-overwrite \
             .
 
-      - name: Configure iOS deployment target (iOS 14)
+      - name: Configure iOS deployment target (iOS 15)
         run: |
           if [ -f ios/Podfile ]; then
-            sed -i '' "s/# platform :ios, .*/platform :ios, '14.0'/" ios/Podfile || true
-            grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '14.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
+            sed -i '' "s/# platform :ios, .*/platform :ios, '15.0'/" ios/Podfile || true
+            sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.0'/" ios/Podfile || true
+            grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '15.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
           fi
+          # Also bump pbxproj
+          sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" ios/Runner.xcodeproj/project.pbxproj || true
 
       - name: Flutter pub get
         run: flutter pub get
@@ -129,11 +136,15 @@ jobs:
           xcodebuild -version
         working-directory: .
 
-      - name: Set up Flutter (stable)
+      - name: Set up Flutter (3.35.x stable, Xcode 26 compatible)
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.35.5'
           channel: stable
           cache: true
+
+      - name: Disable Flutter SwiftPM (avoid Xcode 26 plugin signing conflicts)
+        run: flutter config --no-enable-swift-package-manager
 
       - name: Bootstrap missing iOS scaffold
         run: |
@@ -144,12 +155,14 @@ jobs:
             --no-overwrite \
             .
 
-      - name: Configure iOS deployment target (iOS 14)
+      - name: Configure iOS deployment target (iOS 15)
         run: |
           if [ -f ios/Podfile ]; then
-            sed -i '' "s/# platform :ios, .*/platform :ios, '14.0'/" ios/Podfile || true
-            grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '14.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
+            sed -i '' "s/# platform :ios, .*/platform :ios, '15.0'/" ios/Podfile || true
+            sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.0'/" ios/Podfile || true
+            grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '15.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
           fi
+          sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" ios/Runner.xcodeproj/project.pbxproj || true
 
       - name: Patch Runner bundle identifier
         run: |
