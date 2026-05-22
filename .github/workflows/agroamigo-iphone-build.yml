@@ -76,8 +76,28 @@ jobs:
             sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.0'/" ios/Podfile || true
             grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '15.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
           fi
-          # Also bump pbxproj
           sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" ios/Runner.xcodeproj/project.pbxproj || true
+
+      - name: Strip code signing from Pods targets
+        run: |
+          cat >> ios/Podfile <<'PODEOF'
+
+          # CI: prevent leaked PROVISIONING_PROFILE_SPECIFIER from breaking Pods targets
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              target.build_configurations.each do |config|
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+                config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+                config.build_settings['CODE_SIGN_IDENTITY'] = ''
+                config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''
+                config.build_settings['DEVELOPMENT_TEAM'] = ''
+              end
+            end
+          end
+          PODEOF
+          cat ios/Podfile
 
       - name: Flutter pub get
         run: flutter pub get
@@ -163,6 +183,27 @@ jobs:
             grep -q "^platform :ios" ios/Podfile || (echo "platform :ios, '15.0'" | cat - ios/Podfile > /tmp/podfile && mv /tmp/podfile ios/Podfile)
           fi
           sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" ios/Runner.xcodeproj/project.pbxproj || true
+
+      - name: Strip code signing from Pods targets
+        run: |
+          cat >> ios/Podfile <<'PODEOF'
+
+          # CI: prevent leaked PROVISIONING_PROFILE_SPECIFIER from breaking Pods targets
+          post_install do |installer|
+            installer.pods_project.targets.each do |target|
+              target.build_configurations.each do |config|
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+                config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+                config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
+                config.build_settings['CODE_SIGN_IDENTITY'] = ''
+                config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ''
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ''
+                config.build_settings['DEVELOPMENT_TEAM'] = ''
+              end
+            end
+          end
+          PODEOF
+          cat ios/Podfile
 
       - name: Patch Runner bundle identifier
         run: |
