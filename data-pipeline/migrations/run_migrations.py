@@ -54,7 +54,7 @@ def run_migration(cursor, migration_path: Path) -> bool:
     print(f"  Running: {migration_name}")
 
     try:
-        with open(migration_path, 'r') as f:
+        with open(migration_path, 'r', encoding='utf-8') as f:
             sql = f.read()
 
         cursor.execute(sql)

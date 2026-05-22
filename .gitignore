@@ -25,3 +25,10 @@ agroamigo-web/.env.local
 .playwright-mcp/
 "camp air tools"
 .claude/
+
+# Playwright artifacts
+**/playwright-report/
+**/test-results/
+
+# Pipeline scratch/tmp
+data-pipeline/tmp/
