@@ -66,25 +66,12 @@ class _InsumosScreenState extends State<InsumosScreen> {
   bool _loading = true;
   final Set<String> _openSubgrupos = <String>{};
 
-  // Infinite scroll: render N sections at a time and grow as the user scrolls.
-  static const int _pageSize = 8;
-  int _visibleSectionCount = _pageSize;
-  final ScrollController _scrollCtrl = ScrollController();
-
   @override
   void initState() {
     super.initState();
     _selectedGrupo = widget.grupoId;
     _selectedSubgrupo = widget.subgrupoId;
-    _scrollCtrl.addListener(_onScroll);
     _bootstrap();
-  }
-
-  @override
-  void dispose() {
-    _scrollCtrl.removeListener(_onScroll);
-    _scrollCtrl.dispose();
-    super.dispose();
   }
 
   Future<void> _bootstrap() async {
@@ -120,27 +107,11 @@ class _InsumosScreenState extends State<InsumosScreen> {
       if (!mounted) return;
       setState(() {
         _insumos = data;
-        _visibleSectionCount = _pageSize;
       });
     } catch (_) {
       // Swallow — caller already shows empty state on no data.
     } finally {
       if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  void _onScroll() {
-    if (!_scrollCtrl.hasClients) return;
-    final pos = _scrollCtrl.position;
-    if (pos.pixels > pos.maxScrollExtent - 400) {
-      final locale = context.read<SettingsProvider>().settings.locale;
-      final total = _buildSections(locale).length;
-      if (_visibleSectionCount < total) {
-        setState(() {
-          _visibleSectionCount =
-              (_visibleSectionCount + _pageSize).clamp(0, total);
-        });
-      }
     }
   }
 
@@ -286,7 +257,6 @@ class _InsumosScreenState extends State<InsumosScreen> {
     final t = settings.t;
     final locale = settings.settings.locale;
     final sections = _buildSections(locale);
-    final visible = sections.take(_visibleSectionCount).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -341,21 +311,12 @@ class _InsumosScreenState extends State<InsumosScreen> {
                       ),
                     )
                   : CustomScrollView(
-                      controller: _scrollCtrl,
                       slivers: [
                         SliverList.builder(
-                          itemCount: visible.length,
+                          itemCount: sections.length,
                           itemBuilder: (context, index) =>
-                              _buildSection(context, visible[index], sections),
+                              _buildSection(context, sections[index], sections),
                         ),
-                        if (_visibleSectionCount < sections.length)
-                          const SliverToBoxAdapter(
-                            child: Padding(
-                              padding: EdgeInsets.all(AppSpacing.lg),
-                              child:
-                                  Center(child: CupertinoActivityIndicator()),
-                            ),
-                          ),
                         const SliverToBoxAdapter(child: SizedBox(height: 24)),
                       ],
                     ),

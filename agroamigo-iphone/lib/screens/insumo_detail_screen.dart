@@ -711,12 +711,13 @@ class _InsumoDetailScreenState extends State<InsumoDetailScreen> {
     final source = attr.sourceName;
     final license = attr.license ?? '';
     if (author.isEmpty && source.isEmpty) return const SizedBox.shrink();
+    final t = context.read<SettingsProvider>().t;
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
       child: Text(
         [
-          if (author.isNotEmpty) 'Foto: $author',
+          if (author.isNotEmpty) '${t.attribution_photo_by}: $author',
           if (source.isNotEmpty) source,
           if (license.isNotEmpty) license,
         ].join(' · '),

@@ -8,8 +8,29 @@ enum MarketLevel { nacional, departamento, ciudad, mercado }
 class DefaultMarket {
   final MarketLevel level;
   final String? id;
+  /// Stored only as a hint for the canonical/specific case (e.g. "Corabastos").
+  /// Display rendering must use [displayName] so locale changes take effect and
+  /// legacy stored Spanish placeholders ("Promedio nacional") don't leak.
   final String name;
   const DefaultMarket({required this.level, this.id, required this.name});
+
+  /// Locale-aware label. Falls back to the translation when the level is
+  /// [MarketLevel.nacional] or when no specific entity has been picked yet.
+  String displayName(Translations t) {
+    if (level == MarketLevel.nacional || id == null) {
+      switch (level) {
+        case MarketLevel.nacional:
+          return t.settings_national_avg;
+        case MarketLevel.departamento:
+          return t.settings_department;
+        case MarketLevel.ciudad:
+          return t.settings_city;
+        case MarketLevel.mercado:
+          return t.settings_specific_market;
+      }
+    }
+    return name;
+  }
 
   Map<String, dynamic> toJson() => {
         'level': level.name,
@@ -21,7 +42,7 @@ class DefaultMarket {
             (l) => l.name == j['level'],
             orElse: () => MarketLevel.nacional),
         id: j['id'] as String?,
-        name: j['name'] as String? ?? 'Promedio nacional',
+        name: j['name'] as String? ?? '',
       );
 }
 
@@ -72,7 +93,7 @@ class AppSettings {
 
   const AppSettings({
     this.defaultMarket =
-        const DefaultMarket(level: MarketLevel.nacional, name: 'Promedio nacional'),
+        const DefaultMarket(level: MarketLevel.nacional, name: ''),
     this.fontSizeScale = 1,
     this.chart = const ChartSettings(),
     this.locale = AppLocale.es,
@@ -105,7 +126,7 @@ class AppSettings {
   static AppSettings fromJson(Map<String, dynamic> j) => AppSettings(
         defaultMarket: j['defaultMarket'] != null
             ? DefaultMarket.fromJson(j['defaultMarket'] as Map<String, dynamic>)
-            : const DefaultMarket(level: MarketLevel.nacional, name: 'Promedio nacional'),
+            : const DefaultMarket(level: MarketLevel.nacional, name: ''),
         fontSizeScale: (j['fontSizeScale'] as num?)?.toDouble() ?? 1,
         chart: j['chart'] != null
             ? ChartSettings.fromJson(j['chart'] as Map<String, dynamic>)

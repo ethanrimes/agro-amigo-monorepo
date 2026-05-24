@@ -941,6 +941,7 @@ class _MapScreenState extends State<MapScreen> {
   // ---------------------------------------------------------------------------
 
   void _showMarketCallout(Map<String, dynamic> market) {
+    final t = context.read<SettingsProvider>().t;
     final name = market['name']?.toString() ?? '';
     final city = market['city']?.toString() ?? '';
     final dept = market['department']?.toString() ?? '';
@@ -961,13 +962,13 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               );
             },
-            child: const Text('Ver detalles'),
+            child: Text(t.map_view_details),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           isDefaultAction: true,
           onPressed: () => Navigator.of(ctx).pop(),
-          child: const Text('Cerrar'),
+          child: Text(t.common_close),
         ),
       ),
     );
