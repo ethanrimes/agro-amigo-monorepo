@@ -5,7 +5,7 @@ import 'package:agroamigo_iphone/services/supabase_client.dart';
 Future<List<Map<String, dynamic>>> getInsumoGrupos() async {
   return SupabaseService.client
       .from('dim_insumo_grupo')
-      .select('id, canonical_name')
+      .select('id, canonical_name, name_en')
       .order('canonical_name');
 }
 
@@ -13,7 +13,7 @@ Future<List<Map<String, dynamic>>> getInsumoSubgrupos(
     {String? grupoId}) async {
   var query = SupabaseService.client
       .from('dim_insumo_subgrupo')
-      .select('id, canonical_name, grupo_id');
+      .select('id, canonical_name, name_en, grupo_id');
   if (grupoId != null) query = query.eq('grupo_id', grupoId);
   return query.order('canonical_name');
 }
@@ -25,7 +25,8 @@ Future<List<Map<String, dynamic>>> getInsumos({
   int limit = 50,
 }) async {
   const select =
-      'id, canonical_name, grupo, subgrupo, cpc_code, cpc_id, grupo_id, subgrupo_id';
+      'id, canonical_name, grupo, subgrupo, cpc_code, cpc_id, grupo_id, subgrupo_id, '
+      'dim_insumo_grupo(id, name_en), dim_insumo_subgrupo(id, name_en)';
 
   var q = SupabaseService.client.from('dim_insumo').select(select);
   if (search != null) q = q.ilike('canonical_name', '%$search%');
@@ -64,7 +65,8 @@ Future<Map<String, dynamic>> getInsumoById(String id) async {
   return SupabaseService.client
       .from('dim_insumo')
       .select(
-          'id, canonical_name, grupo, subgrupo, cpc_code, cpc_id, grupo_id, subgrupo_id')
+          'id, canonical_name, grupo, subgrupo, cpc_code, cpc_id, grupo_id, subgrupo_id, '
+          'dim_insumo_grupo(id, name_en), dim_insumo_subgrupo(id, name_en)')
       .eq('id', id)
       .single();
 }

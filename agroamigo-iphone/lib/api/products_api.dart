@@ -3,7 +3,7 @@ import 'package:agroamigo_iphone/services/supabase_client.dart';
 Future<List<Map<String, dynamic>>> getCategories() async {
   return SupabaseService.client
       .from('dim_category')
-      .select('id, canonical_name, sipsa_id')
+      .select('id, canonical_name, name_en, sipsa_id')
       .order('canonical_name');
 }
 
@@ -11,7 +11,7 @@ Future<List<Map<String, dynamic>>> getSubcategories(
     {String? categoryId}) async {
   var query = SupabaseService.client
       .from('dim_subcategory')
-      .select('id, canonical_name, category_id');
+      .select('id, canonical_name, name_en, category_id');
   if (categoryId != null) query = query.eq('category_id', categoryId);
   return query.order('canonical_name');
 }
@@ -25,8 +25,8 @@ Future<List<Map<String, dynamic>>> getProducts({
   var query = SupabaseService.client.from('dim_product').select('''
     id, canonical_name, subcategory_id, cpc_code, sipsa_id,
     dim_subcategory!inner(
-      id, canonical_name, category_id,
-      dim_category!inner(id, canonical_name)
+      id, canonical_name, name_en, category_id,
+      dim_category!inner(id, canonical_name, name_en)
     )
   ''');
   if (search != null) query = query.ilike('canonical_name', '%$search%');
@@ -43,8 +43,8 @@ Future<Map<String, dynamic>> getProductById(String id) async {
       .select('''
         id, canonical_name, subcategory_id, cpc_code, sipsa_id,
         dim_subcategory(
-          id, canonical_name, category_id,
-          dim_category(id, canonical_name)
+          id, canonical_name, name_en, category_id,
+          dim_category(id, canonical_name, name_en)
         )
       ''')
       .eq('id', id)

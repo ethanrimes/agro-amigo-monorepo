@@ -12,6 +12,8 @@ import 'package:agroamigo_iphone/services/images.dart';
 import 'package:agroamigo_iphone/state/settings_provider.dart';
 import 'package:agroamigo_iphone/state/watchlist_provider.dart';
 import 'package:agroamigo_iphone/theme/theme.dart';
+import 'package:agroamigo_iphone/translations/dim_name.dart';
+import 'package:agroamigo_iphone/translations/translations.dart';
 import 'package:agroamigo_iphone/widgets/card.dart';
 import 'package:agroamigo_iphone/widgets/price_change_indicator.dart';
 import 'package:agroamigo_iphone/widgets/section_header.dart';
@@ -393,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
           SliverToBoxAdapter(child: SectionHeader(title: t.home_categories)),
-          SliverToBoxAdapter(child: _buildCategoryGrid(scale)),
+          SliverToBoxAdapter(child: _buildCategoryGrid(scale, settings.locale)),
           if (topMoversUp.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: SectionHeader(
@@ -707,7 +709,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return parts.join(' · ');
   }
 
-  Widget _buildCategoryGrid(double scale) {
+  Widget _buildCategoryGrid(double scale, AppLocale locale) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: LayoutBuilder(
@@ -763,7 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  cat['canonical_name'] as String? ?? '',
+                                  dimDisplayName(cat as Map?, locale),
                                   textAlign: TextAlign.center,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
