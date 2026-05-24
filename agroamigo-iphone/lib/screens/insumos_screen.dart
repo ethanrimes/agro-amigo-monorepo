@@ -133,7 +133,8 @@ class _InsumosScreenState extends State<InsumosScreen> {
     if (!_scrollCtrl.hasClients) return;
     final pos = _scrollCtrl.position;
     if (pos.pixels > pos.maxScrollExtent - 400) {
-      final total = _buildSections().length;
+      final locale = context.read<SettingsProvider>().settings.locale;
+      final total = _buildSections(locale).length;
       if (_visibleSectionCount < total) {
         setState(() {
           _visibleSectionCount =
