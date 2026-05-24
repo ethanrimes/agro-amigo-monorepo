@@ -32,3 +32,4 @@ agroamigo-web/.env.local
 
 # Pipeline scratch/tmp
 data-pipeline/tmp/
+data-pipeline/backups/

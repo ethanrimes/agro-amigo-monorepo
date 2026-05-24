@@ -175,23 +175,36 @@ class DimensionResolver:
         Resolve a combined 'City, Market' string (e.g., 'Bogotá, D.C., Corabastos').
 
         Returns (city_id, market_id).
-        When the market name is empty, falls back to "Mercado municipal de <city>".
+
+        - Non-empty market name that matches dim_market.canonical_name (directly or
+          via alias) → use that entry.
+        - Non-empty market name with no match → create a new dim_market row under
+          the city. Previously these silently fell through to "Mercado municipal
+          de <city>" which bucketed real markets like Plaza Samper Mendoza into
+          the wrong entity.
+        - Empty market name → fall back to "Mercado municipal de <city>"; create
+          that municipal entry if missing.
         """
         if not combined:
             return None, None
 
         city_name, market_name = self._split_city_market(combined)
         city_id = self._resolve_city(city_name)
-        market_id = self._resolve_market(market_name) if market_name else None
 
-        # Fallback: if no market resolved, use "Mercado municipal de <city>"
+        if market_name:
+            market_id = self._resolve_market(market_name)
+            if city_id and not market_id:
+                market_id = self._create_market(city_id, market_name)
+        else:
+            market_id = None
+
+        # No source-side market name → municipal fallback.
         if city_id and not market_id:
             city_canonical = self._get_city_canonical(city_id)
             if city_canonical:
                 muni_name = f"Mercado municipal de {city_canonical}"
                 market_id = self._resolve_market(muni_name)
                 if not market_id:
-                    # Create the municipal market
                     market_id = self._create_market(city_id, muni_name)
 
         return city_id, market_id
@@ -305,9 +318,19 @@ class DimensionResolver:
             return self._market_cache[market_name]
 
         market_id = self._lookup_alias('alias_market', 'market_id', market_name)
-        if not market_id:
-            normalized = _normalize(market_name)
+        normalized = _normalize(market_name)
+        if not market_id and normalized != market_name:
             market_id = self._lookup_alias('alias_market', 'market_id', normalized)
+        # alias_market is empty in the current DB, so without this fallback every
+        # abastecimiento row falls through to "Mercado municipal de <city>". Mirror
+        # _resolve_city, which already has the same dim-table fallback.
+        if not market_id:
+            market_id = self._lookup_dim('dim_market', normalized)
+        # Backfill the alias so subsequent ingests + other callers hit the cheap path.
+        if market_id:
+            self._create_alias('alias_market', market_name, 'market_id', market_id)
+            if normalized != market_name:
+                self._create_alias('alias_market', normalized, 'market_id', market_id)
 
         self._market_cache[market_name] = market_id
         return market_id
