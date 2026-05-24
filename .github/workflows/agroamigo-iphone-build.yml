@@ -157,6 +157,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Compute version (MAJOR.MINOR from pubspec + run_number as PATCH)
+        id: ver
+        run: |
+          set -euo pipefail
+          BASE=$(grep -E '^version:' pubspec.yaml | awk '{print $2}' | cut -d+ -f1)
+          MAJOR_MINOR=$(echo "$BASE" | awk -F. '{print $1"."$2}')
+          VERSION="${MAJOR_MINOR}.${{ github.run_number }}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Deploying version: $VERSION (build ${{ github.run_number }})"
+
       - name: Select Xcode (prefer 26, fall back to latest)
         run: |
           if [ -d "/Applications/Xcode_26.app" ]; then
@@ -346,6 +356,7 @@ jobs:
           # Pods and tripping up exportArchive on Flutter plugin frameworks.
           flutter build ipa --release \
             --export-options-plist=ios/ExportOptions.plist \
+            --build-name=${{ steps.ver.outputs.version }} \
             --build-number=${{ github.run_number }} \
             --dart-define=SUPABASE_URL="${SUPABASE_URL:-https://placeholder.supabase.co}" \
             --dart-define=SUPABASE_KEY="${SUPABASE_KEY:-placeholder-anon-key}"
