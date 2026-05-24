@@ -814,7 +814,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 2, bottom: AppSpacing.sm),
                     child: Text(
-                      'Toca para ver procedencia.',
+                      t.supply_hint_market_provenance,
                       style: TextStyle(
                         fontSize: AppFontSize.xs * scale,
                         color: AppColors.textTertiary,
@@ -857,7 +857,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 2, bottom: AppSpacing.sm),
                     child: Text(
-                      'Toca para ver solo este origen.',
+                      t.supply_hint_origin_only,
                       style: TextStyle(
                         fontSize: AppFontSize.xs * scale,
                         color: AppColors.textTertiary,

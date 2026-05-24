@@ -374,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final topMoversDownTrim = topMoversDown.take(5).toList();
 
     final scopeSuffix = _trendingScope == 'market'
-        ? ' — ${settings.defaultMarket.name}'
+        ? ' — ${settings.defaultMarket.displayName(t)}'
         : ' — ${t.product_national_avg}';
 
     return Container(
@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
         slivers: [
           CupertinoSliverRefreshControl(onRefresh: _refresh),
           SliverToBoxAdapter(child: _buildTicker(t, scale)),
-          SliverToBoxAdapter(child: _buildMarketBanner(settings, scale)),
+          SliverToBoxAdapter(child: _buildMarketBanner(settings, t, scale)),
           if (wl.items.isNotEmpty) ...[
             SliverToBoxAdapter(child: SectionHeader(title: t.home_watchlist)),
             SliverList(
@@ -425,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverToBoxAdapter(
               child: SectionHeader(
                   title:
-                      '${t.home_top_supply} — ${settings.defaultMarket.name}'),
+                      '${t.home_top_supply} — ${settings.defaultMarket.displayName(t)}'),
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -522,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMarketBanner(AppSettings settings, double scale) {
+  Widget _buildMarketBanner(AppSettings settings, dynamic t, double scale) {
     final isNational = settings.defaultMarket.level == MarketLevel.nacional;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -548,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  settings.defaultMarket.name,
+                  settings.defaultMarket.displayName(t),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -1138,12 +1138,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showMarketInfo(AppSettings settings, double scale) {
     final t = context.read<SettingsProvider>().t;
     final levelBlurb = settings.defaultMarket.level == MarketLevel.nacional
-        ? 'Actualmente estás viendo promedios nacionales. Los precios reflejan el comportamiento general del mercado colombiano.'
+        ? t.home_market_info_blurb_nacional
         : settings.defaultMarket.level == MarketLevel.departamento
-            ? 'Estás viendo precios promedio del departamento seleccionado.'
+            ? t.home_market_info_blurb_departamento
             : settings.defaultMarket.level == MarketLevel.ciudad
-                ? 'Estás viendo precios promedio de la ciudad seleccionada.'
-                : 'Estás viendo precios de un mercado específico. Los datos corresponden directamente a las cotizaciones reportadas.';
+                ? t.home_market_info_blurb_ciudad
+                : t.home_market_info_blurb_mercado;
 
     showCupertinoDialog(
       context: context,
@@ -1175,7 +1175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   TextSpan(text: '${t.home_market_info_text} '),
                   TextSpan(
-                    text: settings.defaultMarket.name,
+                    text: settings.defaultMarket.displayName(t),
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const TextSpan(text: '.'),
@@ -1229,11 +1229,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _legendRow(AppColors.primary,
-                      'Precio del mercado seleccionado', scale),
+                      t.home_market_legend_selected, scale),
                   const SizedBox(height: AppSpacing.sm),
                   _legendRow(
                       AppColors.accentBlue,
-                      'Promedio nacional (cuando no hay datos locales)',
+                      t.home_market_legend_fallback,
                       scale),
                 ],
               ),

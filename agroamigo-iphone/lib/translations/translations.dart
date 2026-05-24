@@ -27,6 +27,7 @@ class Translations {
   final String settings_no_results;
   final String settings_showing_n_of;
   final String settings_search_placeholder;
+  final String settings_search_min_chars;
   final String settings_font_size;
   final String settings_font_size_desc;
   final String settings_font_small;
@@ -69,7 +70,21 @@ class Translations {
   final String home_market_info_title;
   final String home_market_info_text;
   final String home_market_info_change;
+  final String home_market_info_blurb_nacional;
+  final String home_market_info_blurb_departamento;
+  final String home_market_info_blurb_ciudad;
+  final String home_market_info_blurb_mercado;
+  final String home_market_legend_selected;
+  final String home_market_legend_fallback;
   final String home_understood;
+  final String common_view_all;
+  final String common_close;
+  final String map_view_details;
+  final String supply_hint_market_provenance;
+  final String supply_hint_origin_only;
+  final String supply_hint_product_destinations;
+  final String supply_hint_origin_markets;
+  final String attribution_photo_by;
   final String home_help;
   final String home_app_guide;
   final String home_help_home_text;
@@ -244,6 +259,7 @@ class Translations {
     required this.settings_no_results,
     required this.settings_showing_n_of,
     required this.settings_search_placeholder,
+    required this.settings_search_min_chars,
     required this.settings_font_size,
     required this.settings_font_size_desc,
     required this.settings_font_small,
@@ -282,7 +298,21 @@ class Translations {
     required this.home_market_info_title,
     required this.home_market_info_text,
     required this.home_market_info_change,
+    required this.home_market_info_blurb_nacional,
+    required this.home_market_info_blurb_departamento,
+    required this.home_market_info_blurb_ciudad,
+    required this.home_market_info_blurb_mercado,
+    required this.home_market_legend_selected,
+    required this.home_market_legend_fallback,
     required this.home_understood,
+    required this.common_view_all,
+    required this.common_close,
+    required this.map_view_details,
+    required this.supply_hint_market_provenance,
+    required this.supply_hint_origin_only,
+    required this.supply_hint_product_destinations,
+    required this.supply_hint_origin_markets,
+    required this.attribution_photo_by,
     required this.home_help,
     required this.home_app_guide,
     required this.home_help_home_text,
@@ -433,6 +463,7 @@ const Translations es = Translations(
   settings_no_results: 'Sin resultados',
   settings_showing_n_of: 'Mostrando 50 de',
   settings_search_placeholder: 'Buscar',
+  settings_search_min_chars: 'Escribe al menos 2 caracteres para buscar.',
   settings_font_size: 'Tamaño de texto',
   settings_font_size_desc: 'Ajusta el tamaño de la tipografía.',
   settings_font_small: 'Pequeño',
@@ -471,7 +502,21 @@ const Translations es = Translations(
   home_market_info_title: 'Mercado predeterminado',
   home_market_info_text: 'Los precios que ves en la pantalla de inicio provienen de tu mercado predeterminado:',
   home_market_info_change: 'Puedes cambiar tu mercado en',
+  home_market_info_blurb_nacional: 'Actualmente estás viendo promedios nacionales. Los precios reflejan el comportamiento general del mercado colombiano.',
+  home_market_info_blurb_departamento: 'Estás viendo precios promedio del departamento seleccionado.',
+  home_market_info_blurb_ciudad: 'Estás viendo precios promedio de la ciudad seleccionada.',
+  home_market_info_blurb_mercado: 'Estás viendo precios de un mercado específico. Los datos corresponden directamente a las cotizaciones reportadas.',
+  home_market_legend_selected: 'Precio del mercado seleccionado',
+  home_market_legend_fallback: 'Promedio nacional (cuando no hay datos locales)',
   home_understood: 'Entendido',
+  common_view_all: 'Ver todo',
+  common_close: 'Cerrar',
+  map_view_details: 'Ver detalles',
+  supply_hint_market_provenance: 'Toca para ver procedencia.',
+  supply_hint_origin_only: 'Toca para ver solo este origen.',
+  supply_hint_product_destinations: 'Toca para ver la procedencia de ese mercado.',
+  supply_hint_origin_markets: 'Toca para ver los mercados que reciben de ese origen.',
+  attribution_photo_by: 'Foto',
   home_help: 'Ayuda',
   home_app_guide: 'Guía de la aplicación',
   home_help_home_text: 'Tu panel principal con seguimiento, categorías y movimientos del mercado.',
@@ -621,6 +666,7 @@ const Translations en = Translations(
   settings_no_results: 'No results',
   settings_showing_n_of: 'Showing 50 of',
   settings_search_placeholder: 'Search',
+  settings_search_min_chars: 'Type at least 2 characters to search.',
   settings_font_size: 'Text size',
   settings_font_size_desc: 'Adjust the font size.',
   settings_font_small: 'Small',
@@ -659,7 +705,21 @@ const Translations en = Translations(
   home_market_info_title: 'Default market',
   home_market_info_text: 'The prices on the home screen come from your default market:',
   home_market_info_change: 'You can change your market in',
+  home_market_info_blurb_nacional: 'You are currently viewing national averages. The prices reflect the general behavior of the Colombian market.',
+  home_market_info_blurb_departamento: 'You are viewing average prices for the selected department.',
+  home_market_info_blurb_ciudad: 'You are viewing average prices for the selected city.',
+  home_market_info_blurb_mercado: 'You are viewing prices from a specific market. The data corresponds directly to the reported quotations.',
+  home_market_legend_selected: 'Price from the selected market',
+  home_market_legend_fallback: 'National average (when no local data is available)',
   home_understood: 'Got it',
+  common_view_all: 'See all',
+  common_close: 'Close',
+  map_view_details: 'View details',
+  supply_hint_market_provenance: 'Tap to see provenance.',
+  supply_hint_origin_only: 'Tap to filter to this origin.',
+  supply_hint_product_destinations: 'Tap to see provenance for that market.',
+  supply_hint_origin_markets: 'Tap to see the markets that receive from that origin.',
+  attribution_photo_by: 'Photo',
   home_help: 'Help',
   home_app_guide: 'App guide',
   home_help_home_text: 'Your main dashboard with watchlist, categories, and market movements.',

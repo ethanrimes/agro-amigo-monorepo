@@ -52,6 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadItems() async {
+    final t = context.read<SettingsProvider>().t;
     setState(() => _loadingItems = true);
     try {
       final markets = await getMarkets();
@@ -72,7 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             items.add(_PickerItem(
               id: id,
               name: dept['canonical_name']?.toString() ?? '',
-              subtitle: 'Departamento',
+              subtitle: t.settings_department,
               level: MarketLevel.departamento,
             ));
           }
@@ -84,7 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               id: id,
               name: city['canonical_name']?.toString() ?? '',
               subtitle: [
-                'Ciudad',
+                t.settings_city,
                 dept?['canonical_name']?.toString(),
               ].where((e) => e != null && e.isNotEmpty).join(' · '),
               level: MarketLevel.ciudad,
@@ -167,18 +168,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             groupValue: dm.level,
             onValueChanged: (lvl) {
               if (lvl == null) return;
-              if (lvl == MarketLevel.nacional) {
-                context.read<SettingsProvider>().updateDefaultMarket(
-                      const DefaultMarket(
-                          level: MarketLevel.nacional,
-                          name: 'Promedio nacional'),
-                    );
-              } else {
-                // Keep id null until user picks something at that level.
-                context.read<SettingsProvider>().updateDefaultMarket(
-                      DefaultMarket(level: lvl, name: _levelLabel(t, lvl)),
-                    );
-              }
+              // Store an empty name; rendering uses DefaultMarket.displayName(t)
+              // so the label always tracks the active locale.
+              context.read<SettingsProvider>().updateDefaultMarket(
+                    DefaultMarket(level: lvl, name: ''),
+                  );
               _searchCtrl.clear();
             },
             children: {
@@ -203,7 +197,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    dm.name.isNotEmpty ? dm.name : t.settings_select_option,
+                    dm.level == MarketLevel.nacional || dm.id != null
+                        ? dm.displayName(t)
+                        : t.settings_select_option,
                     style: TextStyle(
                       fontSize: AppFontSize.sm * scale,
                       fontWeight: FontWeight.w600,
@@ -286,7 +282,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Text(
-                'Escribe al menos 2 caracteres para buscar.',
+                t.settings_search_min_chars,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: AppFontSize.xs * scale,

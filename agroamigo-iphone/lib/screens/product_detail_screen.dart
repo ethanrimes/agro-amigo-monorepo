@@ -1315,8 +1315,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (_topDestinations.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           const _SupplySubHeader(text: 'Mercados de destino'),
-          const _SupplyHint(
-              text: 'Toca para ver la procedencia de ese mercado.'),
+          _SupplyHint(text: t.supply_hint_product_destinations),
           ..._topDestinations.asMap().entries.map((e) {
             final i = e.key;
             final d = e.value;
@@ -1347,8 +1346,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (_topOrigins.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           _SupplySubHeader(text: t.product_provenance),
-          const _SupplyHint(
-              text: 'Toca para ver los mercados que reciben de ese origen.'),
+          _SupplyHint(text: t.supply_hint_origin_markets),
           ..._topOrigins.asMap().entries.map((e) {
             final i = e.key;
             final d = e.value;
