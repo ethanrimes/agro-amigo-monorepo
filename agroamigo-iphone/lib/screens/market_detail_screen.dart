@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../api/markets_api.dart';
 import '../services/cache.dart';
@@ -101,7 +102,16 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
         _products = byProduct.values.toList();
         _loading = false;
       });
-    } catch (_) {
+    } catch (e, st) {
+      await Sentry.captureException(
+        e,
+        stackTrace: st,
+        withScope: (scope) {
+          scope.setTag('screen', 'market_detail');
+          scope.setTag('op', 'load');
+          scope.setContexts('market', {'id': _id});
+        },
+      );
       if (!mounted) return;
       setState(() => _loading = false);
     }
@@ -129,7 +139,17 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
         _allMarkets = m;
         _supply = s;
       });
-    } catch (_) {/* swallow */}
+    } catch (e, st) {
+      await Sentry.captureException(
+        e,
+        stackTrace: st,
+        withScope: (scope) {
+          scope.setTag('screen', 'market_detail');
+          scope.setTag('op', 'loadComparatorData');
+          scope.setContexts('market', {'id': _id});
+        },
+      );
+    }
   }
 
   List<_TimeRange> _supplyRanges(SettingsProvider sp) => [
@@ -149,33 +169,60 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
     final keyBase =
         'market:$_id:supply:$days:${_selectedSupplyProduct ?? ''}:${_selectedSupplyProv ?? ''}';
     setState(() => _supplyLoading = true);
+    Future<T> reportRpc<T>(String rpc, Future<T> Function() fn, T fallback) {
+      return fn().catchError((Object e, StackTrace st) async {
+        await Sentry.captureException(
+          e,
+          stackTrace: st,
+          withScope: (scope) {
+            scope.setTag('screen', 'market_detail');
+            scope.setTag('op', 'loadSupply');
+            scope.setTag('rpc', rpc);
+            scope.setContexts('market', {
+              'id': _id,
+              'days': days,
+              'product_filter': _selectedSupplyProduct,
+              'prov_filter': _selectedSupplyProv,
+            });
+          },
+        );
+        return fallback;
+      });
+    }
+
     try {
       final results = await Future.wait([
-        AppCache.instance
-            .cachedCall<Map<String, dynamic>?>(
-              '$keyBase:summary',
-              () => getMarketSupplySummary(
-                _id,
-                days,
-                productId: _selectedSupplyProduct,
-                provDept: _selectedSupplyProv,
-              ),
-            )
-            .catchError((_) => null),
-        AppCache.instance
-            .cachedCall<List<Map<String, dynamic>>>(
-              '$keyBase:topProducts',
-              () => getMarketTopProducts(
-                  _id, days, provDept: _selectedSupplyProv, limit: 10),
-            )
-            .catchError((_) => <Map<String, dynamic>>[]),
-        AppCache.instance
-            .cachedCall<List<Map<String, dynamic>>>(
-              '$keyBase:topProv',
-              () => getMarketTopProvenance(
-                  _id, days, productId: _selectedSupplyProduct, limit: 15),
-            )
-            .catchError((_) => <Map<String, dynamic>>[]),
+        reportRpc<Map<String, dynamic>?>(
+          'get_market_supply_summary',
+          () => AppCache.instance.cachedCall<Map<String, dynamic>?>(
+            '$keyBase:summary',
+            () => getMarketSupplySummary(
+              _id,
+              days,
+              productId: _selectedSupplyProduct,
+              provDept: _selectedSupplyProv,
+            ),
+          ),
+          null,
+        ),
+        reportRpc<List<Map<String, dynamic>>>(
+          'get_market_top_products',
+          () => AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
+            '$keyBase:topProducts',
+            () => getMarketTopProducts(
+                _id, days, provDept: _selectedSupplyProv, limit: 10),
+          ),
+          <Map<String, dynamic>>[],
+        ),
+        reportRpc<List<Map<String, dynamic>>>(
+          'get_market_top_provenance',
+          () => AppCache.instance.cachedCall<List<Map<String, dynamic>>>(
+            '$keyBase:topProv',
+            () => getMarketTopProvenance(
+                _id, days, productId: _selectedSupplyProduct, limit: 15),
+          ),
+          <Map<String, dynamic>>[],
+        ),
       ]);
       if (!mounted) return;
       setState(() {
@@ -184,7 +231,16 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
         _provenanceBars = results[2] as List<Map<String, dynamic>>;
         _supplyLoading = false;
       });
-    } catch (_) {
+    } catch (e, st) {
+      await Sentry.captureException(
+        e,
+        stackTrace: st,
+        withScope: (scope) {
+          scope.setTag('screen', 'market_detail');
+          scope.setTag('op', 'loadSupply.outer');
+          scope.setContexts('market', {'id': _id, 'days': days});
+        },
+      );
       if (!mounted) return;
       setState(() => _supplyLoading = false);
     }
