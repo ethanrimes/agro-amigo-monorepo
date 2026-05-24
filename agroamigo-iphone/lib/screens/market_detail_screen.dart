@@ -6,6 +6,8 @@ import '../services/cache.dart';
 import '../services/format.dart';
 import '../state/settings_provider.dart';
 import '../theme/theme.dart';
+import '../translations/dim_name.dart';
+import '../translations/translations.dart';
 import '../widgets/card.dart';
 import '../widgets/comments_section.dart';
 import '../widgets/expandable_section.dart';
@@ -189,15 +191,14 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
   }
 
   // ── Derived state ─────────────────────────────────────────────────────
-  List<_CategoryGroup> get _categoryGroups {
+  List<_CategoryGroup> _buildCategoryGroups(AppLocale locale) {
     final catMap = <String, Map<String, List<Map<String, dynamic>>>>{};
     for (final p in _products) {
       final dimProduct = p['dim_product'] as Map<String, dynamic>?;
       final sub = dimProduct?['dim_subcategory'] as Map<String, dynamic>?;
-      final catName = (sub?['dim_category'] as Map<String, dynamic>?)
-              ?['canonical_name'] as String? ??
-          'Otro';
-      final subName = sub?['canonical_name'] as String? ?? 'General';
+      final cat = sub?['dim_category'] as Map<String, dynamic>?;
+      final catName = dimDisplayName(cat, locale, fallback: 'Otro');
+      final subName = dimDisplayName(sub, locale, fallback: 'General');
       catMap.putIfAbsent(catName, () => {});
       catMap[catName]!.putIfAbsent(subName, () => []).add(p);
     }
@@ -226,6 +227,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
     final sp = context.watch<SettingsProvider>();
     final t = sp.t;
     final scale = sp.settings.fontSizeScale;
+    final locale = sp.settings.locale;
 
     if (_loading) {
       return const CupertinoPageScaffold(
@@ -285,7 +287,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
 
             // Stats row
             SliverToBoxAdapter(
-              child: _buildStatsRow(t, scale),
+              child: _buildStatsRow(t, scale, locale),
             ),
 
             // Prices section header
@@ -316,7 +318,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
 
             // Products grouped by category
             SliverToBoxAdapter(
-              child: _buildProductsCard(t, scale),
+              child: _buildProductsCard(t, scale, locale),
             ),
 
             // Supply section
@@ -411,7 +413,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
     );
   }
 
-  Widget _buildStatsRow(t, double scale) {
+  Widget _buildStatsRow(t, double scale, AppLocale locale) {
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg, vertical: AppSpacing.md),
@@ -426,7 +428,7 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: _StatBox(
-                value: '${_categoryGroups.length}',
+                value: '${_buildCategoryGroups(locale).length}',
                 label: t.market_categories,
                 scale: scale),
           ),
@@ -435,9 +437,9 @@ class _MarketDetailScreenState extends State<MarketDetailScreen> {
     );
   }
 
-  Widget _buildProductsCard(t, double scale) {
+  Widget _buildProductsCard(t, double scale, AppLocale locale) {
     final shared = _sharedDate;
-    final groups = _categoryGroups;
+    final groups = _buildCategoryGroups(locale);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: AppCard(

@@ -5,6 +5,8 @@ import '../api/products_api.dart';
 import '../services/cache.dart';
 import '../state/settings_provider.dart';
 import '../theme/theme.dart';
+import '../translations/dim_name.dart';
+import '../translations/translations.dart';
 import '../widgets/card.dart';
 import '../widgets/product_image.dart';
 import '../widgets/search_bar.dart';
@@ -151,15 +153,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
     _loadProducts(reset: true);
   }
 
-  String? _categoryName(dynamic product) {
+  String? _categoryName(dynamic product, AppLocale locale) {
     final sub = product is Map ? product['dim_subcategory'] : null;
     final cat = sub is Map ? sub['dim_category'] : null;
-    return cat is Map ? cat['canonical_name'] as String? : null;
+    final name = dimDisplayName(cat as Map?, locale);
+    return name.isEmpty ? null : name;
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = context.watch<SettingsProvider>().t;
+    final settings = context.watch<SettingsProvider>();
+    final t = settings.t;
+    final locale = settings.settings.locale;
 
     return Container(
       color: AppColors.background,
@@ -178,9 +183,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
               onChanged: _onSearchChanged,
             ),
           ),
-          _buildCategoryChips(t.products_all),
+          _buildCategoryChips(t.products_all, locale),
           if (_selectedCategoryId != null && _subcategories.isNotEmpty)
-            _buildSubcategoryChips(t.products_all),
+            _buildSubcategoryChips(t.products_all, locale),
           Expanded(
             child: _loading
                 ? const Center(
@@ -189,14 +194,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       child: CupertinoActivityIndicator(radius: 14),
                     ),
                   )
-                : _buildList(t),
+                : _buildList(t, locale),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCategoryChips(String allLabel) {
+  Widget _buildCategoryChips(String allLabel, AppLocale locale) {
     return SizedBox(
       height: 38,
       child: ListView.separated(
@@ -215,7 +220,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           final c = _categories[i - 1] as Map;
           final id = c['id'] as String?;
           return _Chip(
-            label: (c['canonical_name'] as String?) ?? '',
+            label: dimDisplayName(c, locale),
             active: _selectedCategoryId == id,
             onTap: () => _selectCategory(id),
           );
@@ -224,7 +229,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget _buildSubcategoryChips(String allLabel) {
+  Widget _buildSubcategoryChips(String allLabel, AppLocale locale) {
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.xs),
       child: SizedBox(
@@ -246,7 +251,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             final s = _subcategories[i - 1] as Map;
             final id = s['id'] as String?;
             return _Chip(
-              label: (s['canonical_name'] as String?) ?? '',
+              label: dimDisplayName(s, locale),
               active: _selectedSubcategoryId == id,
               small: true,
               onTap: () => _selectSubcategory(id),
@@ -257,7 +262,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget _buildList(dynamic t) {
+  Widget _buildList(dynamic t, AppLocale locale) {
     if (_products.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: 40),
@@ -288,7 +293,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   child: Center(child: CupertinoActivityIndicator()),
                 );
               }
-              return _buildProductRow(_products[index]);
+              return _buildProductRow(_products[index], locale);
             },
           ),
         ),
@@ -296,9 +301,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
-  Widget _buildProductRow(dynamic p) {
+  Widget _buildProductRow(dynamic p, AppLocale locale) {
     final name = (p['canonical_name'] as String?) ?? '';
-    final categoryName = _categoryName(p);
+    final categoryName = _categoryName(p, locale);
     final id = p['id'] as String?;
     return Padding(
       padding: const EdgeInsets.fromLTRB(

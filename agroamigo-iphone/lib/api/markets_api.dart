@@ -41,8 +41,8 @@ Future<List<Map<String, dynamic>>> getMarketProducts(String marketId,
         dim_product!inner(
           id, canonical_name, subcategory_id,
           dim_subcategory!inner(
-            id, canonical_name, category_id,
-            dim_category!inner(id, canonical_name)
+            id, canonical_name, name_en, category_id,
+            dim_category!inner(id, canonical_name, name_en)
           )
         ),
         dim_presentation(id, canonical_name),

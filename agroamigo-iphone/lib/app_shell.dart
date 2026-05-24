@@ -28,28 +28,29 @@ class _AppShellState extends State<AppShell> {
         backgroundColor: AppColors.dark,
         activeColor: AppColors.primaryLight,
         inactiveColor: AppColors.textTertiary,
+        height: 60,
         border: const Border(
           top: BorderSide(color: AppColors.darkSurface, width: 0.5),
         ),
         items: [
           BottomNavigationBarItem(
-            icon: const Icon(CupertinoIcons.home),
+            icon: _tabIcon(CupertinoIcons.home),
             label: t.nav_home_tab,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(CupertinoIcons.leaf_arrow_circlepath),
+            icon: _tabIcon(CupertinoIcons.leaf_arrow_circlepath),
             label: t.nav_products,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(CupertinoIcons.cart),
+            icon: _tabIcon(CupertinoIcons.cart),
             label: t.nav_markets,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(CupertinoIcons.lab_flask),
+            icon: _tabIcon(CupertinoIcons.lab_flask),
             label: t.nav_inputs,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(CupertinoIcons.map),
+            icon: _tabIcon(CupertinoIcons.map),
             label: t.nav_map,
           ),
         ],
@@ -74,6 +75,13 @@ class _AppShellState extends State<AppShell> {
           },
         );
       },
+    );
+  }
+
+  Widget _tabIcon(IconData icon) {
+    return Transform.translate(
+      offset: const Offset(0, 6),
+      child: Icon(icon),
     );
   }
 

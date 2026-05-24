@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../api/insumos_api.dart' as insumos_api;
 import '../state/settings_provider.dart';
 import '../theme/theme.dart';
+import '../translations/dim_name.dart';
+import '../translations/translations.dart';
 import '../widgets/card.dart';
 import 'insumo_detail_screen.dart';
 
@@ -172,7 +174,7 @@ class _InsumosScreenState extends State<InsumosScreen> {
     });
   }
 
-  List<_Section> _buildSections() {
+  List<_Section> _buildSections(AppLocale locale) {
     final cpcMap = <String, String>{};
     for (final c in _cpcEntries) {
       final code = (c['code'] ?? '').toString();
@@ -180,12 +182,30 @@ class _InsumosScreenState extends State<InsumosScreen> {
       if (code.isNotEmpty) cpcMap[code] = title;
     }
 
+    String grupoLabel(Map ins) {
+      final dim = ins['dim_insumo_grupo'];
+      if (dim is Map && locale == AppLocale.en) {
+        final en = dim['name_en'];
+        if (en is String && en.isNotEmpty) return en;
+      }
+      return (ins['grupo'] ?? 'Otro').toString();
+    }
+
+    String subgrupoLabel(Map ins) {
+      final dim = ins['dim_insumo_subgrupo'];
+      if (dim is Map && locale == AppLocale.en) {
+        final en = dim['name_en'];
+        if (en is String && en.isNotEmpty) return en;
+      }
+      return (ins['subgrupo'] ?? 'General').toString();
+    }
+
     // grupo -> subgrupo -> cpc -> items
     final grupoMap = <String, Map<String, Object>>{};
     for (final ins in _insumos) {
-      final grupoName = (ins['grupo'] ?? 'Otro').toString();
+      final grupoName = grupoLabel(ins);
       final grupoId = (ins['grupo_id'] ?? 'other').toString();
-      final subgrupoName = (ins['subgrupo'] ?? 'General').toString();
+      final subgrupoName = subgrupoLabel(ins);
       final subgrupoId = (ins['subgrupo_id'] ?? 'general').toString();
       final cpcCode = (ins['cpc_id'] ?? '_none').toString();
 
@@ -261,8 +281,10 @@ class _InsumosScreenState extends State<InsumosScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.watch<SettingsProvider>().t;
-    final sections = _buildSections();
+    final settings = context.watch<SettingsProvider>();
+    final t = settings.t;
+    final locale = settings.settings.locale;
+    final sections = _buildSections(locale);
     final visible = sections.take(_visibleSectionCount).toList();
 
     return Column(
@@ -284,7 +306,7 @@ class _InsumosScreenState extends State<InsumosScreen> {
             _ChipData(id: null, label: t.inputs_all),
             ..._grupos.map((g) => _ChipData(
                 id: (g['id'] ?? '').toString(),
-                label: (g['canonical_name'] ?? '').toString())),
+                label: dimDisplayName(g, locale))),
           ],
           selectedId: _selectedGrupo,
           onTap: _onGrupoTap,
@@ -295,7 +317,7 @@ class _InsumosScreenState extends State<InsumosScreen> {
             chips: _subgrupos
                 .map((s) => _ChipData(
                     id: (s['id'] ?? '').toString(),
-                    label: (s['canonical_name'] ?? '').toString()))
+                    label: dimDisplayName(s, locale)))
                 .toList(),
             selectedId: _selectedSubgrupo,
             onTap: _onSubgrupoTap,
