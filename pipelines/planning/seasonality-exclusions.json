@@ -1,0 +1,25 @@
+{
+  "reason": "Conflicting duplicate source prices; entire market-year excluded",
+  "excluded": [
+    [
+      "arveja-enlatada",
+      "sipsa-medellin-central-mayorista-de-antioquia",
+      2021
+    ],
+    [
+      "arveja-enlatada",
+      "sipsa-medellin-plaza-minorista-jose-maria-villa",
+      2021
+    ],
+    [
+      "frijol-enlatado",
+      "sipsa-medellin-central-mayorista-de-antioquia",
+      2021
+    ],
+    [
+      "maiz-enlatado",
+      "sipsa-medellin-central-mayorista-de-antioquia",
+      2021
+    ]
+  ]
+}

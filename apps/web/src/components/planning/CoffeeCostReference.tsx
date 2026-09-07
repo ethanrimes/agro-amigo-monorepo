@@ -1,0 +1,6 @@
+'use client';
+import {useData} from '@/components/marketplace/useData';
+import {money} from '@/lib/market-types';
+import type {Evidence} from '@/lib/planning-types';
+import {EvidenceLink} from './EvidenceLink';
+export function CoffeeCostReference(){const {data,error}=useData<Evidence>('/api/evidence/coffee-cost-benchmark');if(!data)return error?<p className="inline-note">No se pudo consultar el costo medio cafetero.</p>:<p role="status">Consultando referencia de costos del café…</p>;const cost=Number(data.metadata.cost_per_125kg);return <div className="cost-reference"><span className="source-badge">Referencia nacional · febrero 2026</span><h3>Un punto de comparación para tus costos</h3><p>FEPCafé publicó un costo medio de <strong>{money(cost)} por carga de 125 kg</strong> de pergamino seco, equivalente a {money(cost/125)}/kg.</p><p>Es un promedio nacional del período publicado. Tu rendimiento, mano de obra y gastos pueden ser distintos; completa el presupuesto con tus condiciones. No se resta automáticamente de una oferta de hoy.</p><EvidenceLink id={data.id} page={6}>Ver costo y componentes en el informe</EvidenceLink><EvidenceLink id={data.id} page={10}>Consultar la metodología de FEPCafé</EvidenceLink></div>;}
