@@ -172,7 +172,7 @@ The active Flutter iOS client was moved from `agroamigo-iphone` to `apps/ios`, i
 
 ## Shared visual design
 
-`apps/web/src/app/globals.css` provides component layout and responsive behavior; `field-theme.css` defines the shared colors, photographic headers, crop cards, alert treatments and mobile refinements. All three clients load this same product interface. The iOS deployment target is iOS 18, matching the supported PDF viewer browser baseline. PDF text uses explicit stream readers for older WebKit versions without asynchronous stream iteration.
+`apps/web/src/app/globals.css` provides component layout and responsive behavior; `field-theme.css` defines the shared colors, photographic headers, crop cards, alert treatments and mobile refinements. All three clients load this same product interface. The iOS deployment target is iOS 18, matching the supported PDF viewer browser baseline. The Flutter client passes its measured bottom inset to the trusted page as `--agro-safe-bottom`, reapplied after navigation and viewport changes; CSS falls back to browser safe-area values. This covers embedded WKWebView layouts that report a zero CSS inset. PDF text uses explicit stream readers for older WebKit versions without asynchronous stream iteration.
 
 Typography uses standard platform fonts without downloaded display fonts. Solid fills, visible borders, larger labels and simple corners keep the interface familiar. The five mobile destinations share equal grid columns and the same parent-route selection rules as desktop navigation. Short pages fill the dynamic viewport; landscape phones retain mobile navigation.
 

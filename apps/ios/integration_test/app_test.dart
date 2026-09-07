@@ -52,6 +52,9 @@ void main() {
       await until(
         'getComputedStyle(document.querySelector(".mobile-nav")).position === "fixed"',
       );
+      await until(
+        'parseFloat(getComputedStyle(document.querySelector(".mobile-nav")).paddingBottom) >= ${view.padding.bottom / view.devicePixelRatio - 1}',
+      );
       final metrics = await web.runJavaScriptReturningResult('''JSON.stringify({
         viewport: [innerWidth, innerHeight],
         nav: document.querySelector('.mobile-nav').getBoundingClientRect().toJSON(),
