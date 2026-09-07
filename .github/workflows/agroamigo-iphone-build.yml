@@ -63,14 +63,6 @@ jobs:
       - name: Flutter build iOS (release, no codesign)
         run: flutter build ios --release --no-codesign
 
-      - name: Upload build artifact (Runner.app)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: Runner-app
-          path: apps/ios/build/ios/iphoneos/Runner.app
-          if-no-files-found: ignore
-
   # ─────────────────────────────────────────────────────────────────────
   # main only: signed IPA + TestFlight upload
   # ─────────────────────────────────────────────────────────────────────
@@ -303,12 +295,12 @@ jobs:
             --apiIssuer "$API_ISSUER"
 
       - name: Upload IPA artifact
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: agroamigo-native-ipa
           path: apps/ios/build/ios/ipa/*.ipa
           if-no-files-found: warn
+          retention-days: 1
 
       - name: Cleanup keychain
         if: always()

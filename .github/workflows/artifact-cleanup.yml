@@ -1,0 +1,34 @@
+name: Clean old build artifacts
+
+on:
+  workflow_run:
+    workflows: [agroamigo-iphone-build, Web and Android checks]
+    types: [completed]
+  schedule:
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: artifact-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # Always use trusted main-branch code, including after a PR workflow.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Check artifact retention rules
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+      - name: Keep only the latest successful release artifacts
+        run: python3 .github/scripts/prune_artifacts.py --apply
+        env:
+          GH_TOKEN: ${{ github.token }}
