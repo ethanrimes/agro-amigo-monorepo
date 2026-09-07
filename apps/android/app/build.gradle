@@ -1,0 +1,15 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'co.agroamigo.demo'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'co.agroamigo.demo'
+        minSdk 29
+        targetSdk 35
+        versionCode 1
+        versionName '1.0-demo'
+    }
+    buildFeatures { buildConfig true }
+    buildTypes { release { minifyEnabled false } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}

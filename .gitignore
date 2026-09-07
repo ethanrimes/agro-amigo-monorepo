@@ -1,35 +1,31 @@
-data-pipeline/.env
-data-pipeline/failed_pdfs/
+# Local credentials and environment
 .env
 **/.env
 **/.env.local
 **/.env.*.local
-__pycache__/
-*.pyc
-.venv/
-scratch.md
-pastes
-data-pipeline/exports
-design
-
-# Node
+.azure-local/
+.mcp.json
+.claude/
+# Dependencies, builds, generated assets and verification output
 node_modules/
 .next/
-out/
-
-# App-specific
-agroamigo-app/.env
-agroamigo-web/.env.local
-
-.mcp.json
-.playwright-mcp/
-"camp air tools"
-.claude/
-
-# Playwright artifacts
+.venv/
+__pycache__/
+*.pyc
+*.tsbuildinfo
 **/playwright-report/
 **/test-results/
-
-# Pipeline scratch/tmp
-data-pipeline/tmp/
-data-pipeline/backups/
+artifacts/
+output/
+tmp/
+pipelines/**/cache/
+apps/web/public/pdfjs/
+apps/web/public/downloads/
+apps/android/.gradle/
+apps/android/**/build/
+apps/android/local.properties
+# Editor scratch
+.DS_Store
+scratch.md
+pastes
+apps/web/public/release.json

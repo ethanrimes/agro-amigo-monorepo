@@ -1,0 +1,429 @@
+[
+  {
+    "id": "papa-2023-2",
+    "source": "cost-20231018_Ficha_papa_2023.pdf",
+    "page": 2,
+    "region": "Región Almeidas (Cundinamarca)",
+    "total": 27739208.0,
+    "yield_kg_ha": 34100.0,
+    "municipalities": [
+      "25183",
+      "25426",
+      "25436",
+      "25736",
+      "25772",
+      "25807",
+      "25873"
+    ]
+  },
+  {
+    "id": "papa-2023-3",
+    "source": "cost-20231018_Ficha_papa_2023.pdf",
+    "page": 3,
+    "region": "Región Ubaté (Cundinamarca)",
+    "total": 26296683.0,
+    "yield_kg_ha": 19200.0,
+    "municipalities": [
+      "25154",
+      "25224",
+      "25288",
+      "25317",
+      "25407",
+      "25745",
+      "25779",
+      "25781",
+      "25793",
+      "25843"
+    ]
+  },
+  {
+    "id": "papa-2023-4",
+    "source": "cost-20231018_Ficha_papa_2023.pdf",
+    "page": 4,
+    "region": "Región Occidente (Boyacá)",
+    "total": 29303515.0,
+    "yield_kg_ha": 45900.0,
+    "municipalities": [
+      "15104",
+      "15109",
+      "15131",
+      "15176",
+      "15442",
+      "15531",
+      "15632",
+      "15676"
+    ]
+  },
+  {
+    "id": "papa-2023-5",
+    "source": "cost-20231018_Ficha_papa_2023.pdf",
+    "page": 5,
+    "region": "Región Centro Boyacá (Boyacá)",
+    "total": 22497260.0,
+    "yield_kg_ha": 23000.0,
+    "municipalities": [
+      "15001",
+      "15104",
+      "15187",
+      "15204",
+      "15224",
+      "15232",
+      "15476",
+      "15500",
+      "15646",
+      "15740",
+      "15762",
+      "15763",
+      "15764",
+      "15814",
+      "15837",
+      "15861"
+    ]
+  },
+  {
+    "id": "papa-2023-6",
+    "source": "cost-20231018_Ficha_papa_2023.pdf",
+    "page": 6,
+    "region": "Región Túquerres/Centro-Occidente (Nariño)",
+    "total": 36781522.0,
+    "yield_kg_ha": 41300.0,
+    "municipalities": [
+      "52036",
+      "52320",
+      "52354",
+      "52385",
+      "52418",
+      "52435",
+      "52480",
+      "52506",
+      "52565",
+      "52678",
+      "52699",
+      "52720",
+      "52838"
+    ]
+  },
+  {
+    "id": "papa-2023-7",
+    "source": "cost-20231018_Ficha_papa_2023.pdf",
+    "page": 7,
+    "region": "Región Oriente (Antioquia)",
+    "total": 31251560.0,
+    "yield_kg_ha": 20700.0,
+    "municipalities": []
+  },
+  {
+    "id": "frijol-2023-9",
+    "source": "cost-20231009_BolCostos_Frijol.pdf",
+    "page": 9,
+    "region": "Región occidente (Norte de Santander)",
+    "total": 12144190.4,
+    "yield_kg_ha": 2130.0,
+    "municipalities": [
+      "54003",
+      "54128",
+      "54206",
+      "54245",
+      "54344",
+      "54385",
+      "54398",
+      "54498",
+      "54670",
+      "54800"
+    ]
+  },
+  {
+    "id": "frijol-2023-11",
+    "source": "cost-20231009_BolCostos_Frijol.pdf",
+    "page": 11,
+    "region": "región oriente (Cundinamarca)",
+    "total": 11935005.2,
+    "yield_kg_ha": 1550.0,
+    "municipalities": [
+      "25181",
+      "25281",
+      "25335",
+      "25339",
+      "25594",
+      "25841",
+      "25845"
+    ]
+  },
+  {
+    "id": "frijol-2023-13",
+    "source": "cost-20231009_BolCostos_Frijol.pdf",
+    "page": 13,
+    "region": "región occidente (Huila)",
+    "total": 8231655.0,
+    "yield_kg_ha": 1500.0,
+    "municipalities": [
+      "41378",
+      "41396",
+      "41483",
+      "41518",
+      "41797"
+    ]
+  },
+  {
+    "id": "frijol-2023-15",
+    "source": "cost-20231009_BolCostos_Frijol.pdf",
+    "page": 15,
+    "region": "región Ibagué (Tolima)",
+    "total": 6125062.5,
+    "yield_kg_ha": 1200.0,
+    "municipalities": [
+      "73001",
+      "73043",
+      "73124",
+      "73200",
+      "73275",
+      "73624",
+      "73678",
+      "73854"
+    ]
+  },
+  {
+    "id": "frijol-2023-17",
+    "source": "cost-20231009_BolCostos_Frijol.pdf",
+    "page": 17,
+    "region": "región oriente (Antioquia)",
+    "total": 16354317.8,
+    "yield_kg_ha": 2200.0,
+    "municipalities": [
+      "05002",
+      "05021",
+      "05055",
+      "05148",
+      "05197",
+      "05206",
+      "05313",
+      "05318",
+      "05321",
+      "05376",
+      "05400",
+      "05440",
+      "05483",
+      "05541",
+      "05607",
+      "05615",
+      "05649",
+      "05652",
+      "05660",
+      "05697",
+      "05756",
+      "52254",
+      "52399",
+      "52480"
+    ]
+  },
+  {
+    "id": "tomate-2023-8",
+    "source": "cost-20231019_BolCostos_Tomate.pdf",
+    "page": 8,
+    "region": "Región Oriente (Cundinamarca)",
+    "total": 122871530.0,
+    "yield_kg_ha": 144320.0,
+    "municipalities": [
+      "25151",
+      "25181",
+      "25279",
+      "25281",
+      "25335",
+      "25594",
+      "25841",
+      "25845"
+    ]
+  },
+  {
+    "id": "tomate-2023-10",
+    "source": "cost-20231019_BolCostos_Tomate.pdf",
+    "page": 10,
+    "region": "Región Norte (Huila)",
+    "total": 54710884.0,
+    "yield_kg_ha": 139200.0,
+    "municipalities": [
+      "41001",
+      "41016",
+      "41020",
+      "41078",
+      "41132",
+      "41206",
+      "41349",
+      "41357",
+      "41615",
+      "41676",
+      "41799",
+      "41801"
+    ]
+  },
+  {
+    "id": "tomate-2023-13",
+    "source": "cost-20231019_BolCostos_Tomate.pdf",
+    "page": 13,
+    "region": "Región Ibagué (Tolima)",
+    "total": 62987409.5,
+    "yield_kg_ha": 154200.0,
+    "municipalities": [
+      "73001",
+      "73043",
+      "73124",
+      "73624"
+    ]
+  },
+  {
+    "id": "tomate-2023-16",
+    "source": "cost-20231019_BolCostos_Tomate.pdf",
+    "page": 16,
+    "region": "región occidente (Norte de Santander)",
+    "total": 65825121.9,
+    "yield_kg_ha": 127110.0,
+    "municipalities": [
+      "54003",
+      "54128",
+      "54206",
+      "54245",
+      "54344",
+      "54398",
+      "54498",
+      "54670",
+      "54800"
+    ]
+  },
+  {
+    "id": "tomate-2023-19",
+    "source": "cost-20231019_BolCostos_Tomate.pdf",
+    "page": 19,
+    "region": "región oriente (Antioquia)",
+    "total": 177164254.3,
+    "yield_kg_ha": 137750.0,
+    "municipalities": [
+      "05021",
+      "05055",
+      "05148",
+      "05197",
+      "05206",
+      "05313",
+      "05318",
+      "05321",
+      "05376",
+      "05440",
+      "05541",
+      "05607",
+      "05615",
+      "05667",
+      "05697",
+      "05756"
+    ]
+  },
+  {
+    "id": "yuca-2023-7",
+    "source": "cost-20231222_Boletin_YUCA_Dic-2023_DG.pdf",
+    "page": 7,
+    "region": "región Centro (Magdalena)",
+    "total": 3898076.0,
+    "yield_kg_ha": 12300.0,
+    "municipalities": [
+      "47058",
+      "47170",
+      "47460",
+      "47555",
+      "47660",
+      "47798"
+    ]
+  },
+  {
+    "id": "yuca-2023-8",
+    "source": "cost-20231222_Boletin_YUCA_Dic-2023_DG.pdf",
+    "page": 8,
+    "region": "región Ariari (Meta)",
+    "total": 5703322.0,
+    "yield_kg_ha": 9800.0,
+    "municipalities": [
+      "50251",
+      "50287",
+      "50313",
+      "50400",
+      "50577",
+      "50683",
+      "50689"
+    ]
+  },
+  {
+    "id": "yuca-2023-10",
+    "source": "cost-20231222_Boletin_YUCA_Dic-2023_DG.pdf",
+    "page": 10,
+    "region": "Región Sabanas (Sucre)",
+    "total": 3851518.0,
+    "yield_kg_ha": 15600.0,
+    "municipalities": [
+      "70001",
+      "70110",
+      "70215",
+      "70233",
+      "70235",
+      "70523",
+      "70670",
+      "70702",
+      "70717",
+      "70742",
+      "70771"
+    ]
+  },
+  {
+    "id": "cebolla-de-bulbo-2023-8",
+    "source": "cost-20231009_BolCostos_Cebolla.pdf",
+    "page": 8,
+    "region": "Región Guavio (Cundinamarca)",
+    "total": 38441057.5,
+    "yield_kg_ha": 48800.0,
+    "municipalities": [
+      "25326",
+      "25377"
+    ]
+  },
+  {
+    "id": "cebolla-de-bulbo-2023-10",
+    "source": "cost-20231009_BolCostos_Cebolla.pdf",
+    "page": 10,
+    "region": "Región centro (Boyacá)",
+    "total": 43236123.5,
+    "yield_kg_ha": 49500.0,
+    "municipalities": [
+      "15001",
+      "15104",
+      "15187",
+      "15224",
+      "15232",
+      "15476",
+      "15646",
+      "15740",
+      "15762",
+      "15764",
+      "15814",
+      "15837",
+      "15861"
+    ]
+  },
+  {
+    "id": "platano-2024-25",
+    "source": "cost-01_FicCostPlat_20250310.pdf",
+    "page": 25,
+    "region": "región Ariari en el Meta",
+    "total": 20305559.0,
+    "yield_kg_ha": 28000.0,
+    "municipalities": [
+      "50251",
+      "50270",
+      "50313",
+      "50325",
+      "50330",
+      "50370",
+      "50400",
+      "50450",
+      "50577",
+      "50590",
+      "50683",
+      "50711"
+    ]
+  }
+]

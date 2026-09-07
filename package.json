@@ -2,8 +2,17 @@
   "name": "agro-amigo-monorepo",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "agroamigo-web",
-    "agroamigo-web-pro"
-  ]
+    "apps/web"
+  ],
+  "overrides": {
+    "postcss": "$postcss"
+  },
+  "devDependencies": {
+    "postcss": "^8.5.28"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace agroamigo-web --",
+    "build": "npm run build --workspace agroamigo-web",
+    "test:e2e": "npm run test:e2e --workspace agroamigo-web"
+  }
 }

@@ -1,0 +1,14 @@
+{
+  "window_start_exclusive": "2025-09-06",
+  "window_end_inclusive": "2026-09-06",
+  "products": 357,
+  "markets": 154,
+  "wholesale_observations": 50656,
+  "coffee_days": 365,
+  "coffee_branches": 16,
+  "coffee_factors": 13,
+  "exchange_rates": 234,
+  "oldest": "2025-09-30",
+  "newest_wholesale": "2026-07-31",
+  "newest_coffee": "2026-09-06"
+}
