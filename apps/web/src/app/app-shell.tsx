@@ -4,173 +4,130 @@ import { usePathname } from "next/navigation";
 import {
   IoLeafOutline,
   IoHomeOutline,
-  IoSearchOutline,
-  IoCafeOutline,
-  IoHeartOutline,
-  IoArrowForward,
-  IoLocationOutline,
-  IoChevronDown,
-  IoHelpCircleOutline,
+  IoBasketOutline,
   IoStorefrontOutline,
+  IoFlaskOutline,
+  IoHeartOutline,
+  IoHelpCircleOutline,
+  IoLocationOutline,
 } from "react-icons/io5";
-import { usePreferences } from "@/components/marketplace/Preferences";
 const links = [
   { href: "/", label: "Inicio", icon: IoHomeOutline },
-  { href: "/farm", label: "Mi finca", mobile: "Mi finca", icon: IoLeafOutline },
-  {
-    href: "/products",
-    label: "Consultar precios",
-    mobile: "Precios",
-    icon: IoSearchOutline,
-  },
-  { href: "/coffee", label: "Mi café", mobile: "Café", icon: IoCafeOutline },
-  {
-    href: "/saved",
-    label: "Mis productos",
-    mobile: "Guardados",
-    icon: IoHeartOutline,
-  },
+  { href: "/products", label: "Productos", icon: IoBasketOutline },
+  { href: "/markets", label: "Mercados", icon: IoStorefrontOutline },
+  { href: "/insumos", label: "Insumos", icon: IoFlaskOutline },
+  { href: "/farm", label: "Mi finca", icon: IoLeafOutline },
 ];
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const { role, region, setRegion } = usePreferences();
-  const isSelected = (href: string) =>
+  const selected = (href: string) =>
     href === "/"
       ? path === "/"
-      : path === href || path.startsWith(href + "/") ||
-        (href === "/farm" && ["/plan", "/offers", "/insumos"].includes(path)) ||
-        (href === "/products" && (path.startsWith("/product/") || path === "/daily"));
+      : path === href ||
+        path.startsWith(href + "/") ||
+        (href === "/products" &&
+          (path.startsWith("/product/") ||
+            ["/coffee", "/daily", "/saved"].includes(path))) ||
+        (href === "/markets" && path.startsWith("/market/")) ||
+        (href === "/insumos" && path.startsWith("/insumo/")) ||
+        (href === "/farm" && ["/plan", "/offers"].includes(path));
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
         Ir al contenido
       </a>
       <aside className="sidebar">
-        <Link href="/" className="brand" aria-label="AgroAmigo, inicio">
+        <Link className="brand" href="/" aria-label="AgroAmigo, inicio">
           <span className="brand-mark">
             <IoLeafOutline />
           </span>
           agro<span>amigo</span>
-          <i />
         </Link>
-        <div className="sidebar-caption">TU COMPAÑERO EN EL CAMPO</div>
+        <div className="sidebar-caption">EL CAMPO, A TU ALCANCE</div>
         <nav aria-label="Navegación principal">
           {links.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className={"nav-link " + (isSelected(href) ? "active" : "")}
-              aria-current={isSelected(href) ? (path === href ? "page" : "location") : undefined}
+              className={"nav-link " + (selected(href) ? "active" : "")}
+              aria-current={
+                selected(href)
+                  ? path === href
+                    ? "page"
+                    : "location"
+                  : undefined
+              }
             >
               <Icon />
               {label}
-              {href === "/coffee" && <span className="nav-new">NUEVO</span>}
             </Link>
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="field-note">
-            <span className="little-sun">✳</span>
-            <h3>
-              La información también
-              <br />
-              da frutos.
-            </h3>
-            <p>
-              Conoce tus precios.
-              <br />
-              Negocia con confianza.
-            </p>
-            <Link href="/sources">
-              Conoce nuestras fuentes <IoArrowForward />
-            </Link>
-          </div>
+          <Link className="help-link" href="/saved">
+            <IoHeartOutline />
+            Mis guardados
+          </Link>
           <Link className="help-link" href="/sources">
-            <IoHelpCircleOutline /> Fuentes y ayuda
+            <IoHelpCircleOutline />
+            Fuentes y ayuda
           </Link>
           <div className="made-in">
-            <span className="colombia-flag" /> Hecho para el campo colombiano
+            <span className="colombia-flag" />
+            Hecho para Colombia
           </div>
         </div>
       </aside>
       <div className="main-shell">
         <header className="topbar">
           <Link href="/" className="mobile-brand">
-            <IoLeafOutline /> agroamigo<span>.</span>
+            <IoLeafOutline /> agroamigo
           </Link>
-          <span className="topbar-message">Del campo, para el campo.</span>
+          <span className="topbar-message">
+            <IoLocationOutline /> Colombia · Información para el campo
+          </span>
           <div className="topbar-actions">
-            <label className="location-select">
-              <IoLocationOutline />
-              <span className="sr-only">Departamento</span>
-              <select
-                aria-label="Departamento"
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-              >
-                <option value="">Toda Colombia</option>
-                <option>Amazonas</option>
-                <option>Antioquia</option>
-                <option>Arauca</option>
-                <option>Atlántico</option>
-                <option>Bogotá, D.C.</option>
-                <option>Bolívar</option>
-                <option>Boyacá</option>
-                <option>Caldas</option>
-                <option>Caquetá</option>
-                <option>Casanare</option>
-                <option>Cauca</option>
-                <option>Cesar</option>
-                <option>Chocó</option>
-                <option>Córdoba</option>
-                <option>Cundinamarca</option>
-                <option>Guainía</option>
-                <option>Guaviare</option>
-                <option>Huila</option>
-                <option>La Guajira</option>
-                <option>Magdalena</option>
-                <option>Meta</option>
-                <option>Nariño</option>
-                <option>Norte de Santander</option>
-                <option>Putumayo</option>
-                <option>Quindío</option>
-                <option>Risaralda</option>
-                <option>San Andrés y Providencia</option>
-                <option>Santander</option>
-                <option>Sucre</option>
-                <option>Tolima</option>
-                <option>Valle del Cauca</option>
-                <option>Vaupés</option>
-                <option>Vichada</option>
-              </select>
-              <IoChevronDown />
-            </label>
-            <span className="topbar-divider" />
-            <span className="profile-icon">
-              {role === "farmer" ? <IoLeafOutline /> : <IoStorefrontOutline />}
-            </span>
+            <Link
+              href="/saved"
+              className="topbar-icon"
+              aria-label="Mis guardados"
+            >
+              <IoHeartOutline />
+            </Link>
+            <Link
+              href="/sources"
+              className="topbar-icon"
+              aria-label="Fuentes y ayuda"
+            >
+              <IoHelpCircleOutline />
+            </Link>
           </div>
         </header>
-        <main id="main-content" className="app-content" data-section={path.split("/")[1] || "home"}>
+        <main
+          id="main-content"
+          className="app-content"
+          data-section={path.split("/")[1] || "home"}
+        >
           {children}
         </main>
         <footer className="site-footer">
-          <span>AgroAmigo · Juntos, el campo crece.</span>
-          <Link href="/sources">
-            Datos abiertos. Decisiones informadas. <IoArrowForward />
-          </Link>
+          <span>AgroAmigo · Del campo, para el campo.</span>
+          <Link href="/sources">Fuentes y ayuda</Link>
+          <Link href="/credits">Créditos de imágenes</Link>
         </footer>
       </div>
       <nav className="mobile-nav" aria-label="Navegación móvil">
-        {links.map(({ href, label, mobile, icon: Icon }) => (
+        {links.map(({ href, label, icon: Icon }) => (
           <Link
             href={href}
             key={href}
-            className={isSelected(href) ? "active" : ""}
-            aria-current={isSelected(href) ? (path === href ? "page" : "location") : undefined}
+            className={selected(href) ? "active" : ""}
+            aria-current={
+              selected(href) ? (path === href ? "page" : "location") : undefined
+            }
           >
             <Icon />
-            <span>{mobile || label}</span>
+            <span>{label}</span>
           </Link>
         ))}
       </nav>

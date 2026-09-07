@@ -6,8 +6,6 @@ import {
   IoSwapHorizontalOutline,
   IoCheckmarkCircleOutline,
 } from "react-icons/io5";
-import { usePreferences } from "@/components/marketplace/Preferences";
-import { RoleSwitch } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { offerResult, bogotaToday } from "@/lib/planning-math";
 import { money, number, dateLabel } from "@/lib/market-types";
@@ -29,8 +27,6 @@ function blank(id: string): Offer {
   };
 }
 export default function OffersPage() {
-  const { role } = usePreferences(),
-    buyer = role === "buyer";
   const [offers, setOffers] = useState<Offer[]>([blank("1"), blank("2")]),
     [product, setProduct] = useState(""),
     [available, setAvailable] = useState("100"),
@@ -94,35 +90,32 @@ export default function OffersPage() {
     return r
       ? {
           ...r,
-          total: buyer ? r.gross - r.deduction + r.costs : r.net,
-          perKg: buyer
-            ? (r.gross - r.deduction + r.costs) / +o.acceptedKg
-            : r.netKg,
+          total: r.net,
+          perKg: r.netKg,
+          purchase: r.gross - r.deduction + r.costs,
+          purchaseKg: (r.gross - r.deduction + r.costs) / +o.acceptedKg,
         }
       : null;
   });
   const eligible = computed
     .map((r, i) => ({ r, i }))
     .filter((x) => x.r && !x.r.expired);
-  eligible.sort((a, b) =>
-    buyer ? a.r!.perKg - b.r!.perKg : b.r!.perKg - a.r!.perKg,
-  );
+  eligible.sort((a, b) => b.r!.perKg - a.r!.perKg);
   const best = eligible.length >= 2 ? eligible[0].i : -1;
+  const lowest =
+    eligible.length >= 2
+      ? [...eligible].sort((a, b) => a.r!.purchaseKg - b.r!.purchaseKg)[0].i
+      : -1;
   return (
     <>
       <div className="page-heading">
         <div>
           <span className="eyebrow">COMPARA CON TODAS LAS CUENTAS</span>
-          <h1>
-            {buyer ? "¿Qué proveedor me conviene?" : "¿Qué oferta me deja más?"}
-          </h1>
+          <h1>Compara tus ofertas</h1>
           <p>
-            {buyer
-              ? "Compara el costo por kilo recibido y las condiciones de cada proveedor."
-              : "Compara el dinero que recibirías después de los gastos de vender."}
+            Compara el valor al vender y al comprar, con los gastos a tu cargo.
           </p>
         </div>
-        <RoleSwitch />
       </div>
       <section className="panel offer-common">
         <span className="source-badge">
@@ -139,9 +132,7 @@ export default function OffersPage() {
             />
           </label>
           <label className="form-field">
-            {buyer
-              ? "Cantidad que necesitas (kg)"
-              : "Cantidad disponible para vender (kg)"}
+            Cantidad total que comparas (kg)
             <input
               type="number"
               min="1"
@@ -192,11 +183,16 @@ export default function OffersPage() {
               {best === i && (
                 <span className="offer-best-label">
                   <IoCheckmarkCircleOutline />
-                  {buyer ? "Menor costo por kilo" : "Mayor pago neto por kilo"}
+                  Mayor pago neto al vender
+                </span>
+              )}
+              {lowest === i && (
+                <span className="offer-best-label purchase-label">
+                  Menor costo al comprar
                 </span>
               )}
               <label className="form-field">
-                {buyer ? "Nombre del proveedor" : "Nombre del comprador"}
+                Nombre de quien cotiza
                 <input
                   aria-label={"Nombre oferta " + (i + 1)}
                   maxLength={80}
@@ -304,15 +300,14 @@ export default function OffersPage() {
               </details>
               {r ? (
                 <div className={"offer-result " + (r.expired ? "expired" : "")}>
-                  <span>
-                    {buyer
-                      ? "Costo total de compra"
-                      : "Recibirías después de gastos"}
-                  </span>
-                  <strong>{money(r.total)}</strong>
-                  <b>
-                    {money(r.perKg)} / kg {buyer ? "recibido" : "aceptado"}
-                  </b>
+                  <span>Al vender · recibirías después de gastos</span>
+                  <strong data-result="sale">{money(r.total)}</strong>
+                  <b>{money(r.perKg)} / kg aceptado</b>
+                  <div className="purchase-result">
+                    <span>Al comprar · costo con gastos</span>
+                    <strong data-result="purchase">{money(r.purchase)}</strong>
+                    <b>{money(r.purchaseKg)} / kg recibido</b>
+                  </div>
                   <p>
                     {r.paymentDays === 0
                       ? "Pago al entregar"
@@ -320,9 +315,8 @@ export default function OffersPage() {
                   </p>
                   {r.remainingKg > 0 && (
                     <p className="inline-warning">
-                      Quedan {number(r.remainingKg)} kg{" "}
-                      {buyer ? "por conseguir" : "sin vender"}. Este total cubre
-                      solo {number(+o.acceptedKg)} kg.
+                      Quedan {number(r.remainingKg)} kg fuera de esta oferta.
+                      Este total cubre solo {number(+o.acceptedKg)} kg.
                     </p>
                   )}
                   {r.expired ? (
@@ -341,8 +335,9 @@ export default function OffersPage() {
                     <summary>Ver el cálculo</summary>
                     <p>
                       {money(r.gross)} por el producto − {money(r.deduction)} de
-                      descuento {buyer ? "+" : "−"} {money(r.costs)} de gastos ={" "}
-                      {money(r.total)}.
+                      descuento − {money(r.costs)} de gastos = {money(r.total)}{" "}
+                      al vender. Al comprar, esos gastos se suman:{" "}
+                      {money(r.purchase)}.
                     </p>
                   </details>
                 </div>
@@ -368,15 +363,16 @@ export default function OffersPage() {
       <section className="panel offer-explanation">
         <h3>El plazo y la cantidad también importan</h3>
         <p>
-          Se destaca el {buyer ? "menor costo" : "mayor pago neto"} por kilo
-          entre ofertas no vencidas. El dinero de una venta menor no equivale a
-          vender toda la cosecha. El plazo se muestra por separado: no se asigna
-          un costo de financiación ni se predice si pagarán.
+          Se destacan el mayor pago neto al vender y el menor costo al comprar
+          por kilo entre ofertas no vencidas. El dinero de una venta menor no
+          equivale a vender toda la cosecha. El plazo se muestra por separado:
+          no se asigna un costo de financiación ni se predice si pagarán.
         </p>
         <p>
-          {buyer
-            ? "El costo incluye producto menos descuentos, más gastos a tu cargo."
-            : "El neto de la venta descuenta gastos de comercialización. Para calcular la utilidad también debes restar los costos de producir."}
+          Usa el resultado que corresponde a tu operación. El neto de venta
+          descuenta los gastos; el costo de compra los suma. En ambos casos
+          ingresa solo gastos a tu cargo. La utilidad de producir requiere
+          además restar los costos del cultivo.
         </p>
         <div className="form-actions">
           <EvidenceLink id="planning-method">Comprobar la fórmula</EvidenceLink>

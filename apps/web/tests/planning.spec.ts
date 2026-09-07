@@ -6,15 +6,25 @@ import {
   weatherSignals,
 } from "../src/lib/planning-math";
 
-test("PDF text and page rendering work without stream async iterators on older iOS", async ({ page }) => {
+test("PDF text and page rendering work without stream async iterators on older iOS", async ({
+  page,
+}) => {
   await page.addInitScript(() => {
-    delete (ReadableStream.prototype as unknown as Record<symbol, unknown>)[Symbol.asyncIterator];
+    delete (ReadableStream.prototype as unknown as Record<symbol, unknown>)[
+      Symbol.asyncIterator
+    ];
   });
   await page.goto("/evidence/coffee-cost-benchmark?page=6");
-  await expect(page.locator('canvas[data-rendered="true"]')).toHaveAttribute("aria-label", "Página 6 del PDF");
+  await expect(page.locator('canvas[data-rendered="true"]')).toHaveAttribute(
+    "aria-label",
+    "Página 6 del PDF",
+  );
   await expect(page.locator(".pdf-text")).toContainText("1,550,805");
   await page.getByRole("button", { name: "Siguiente →" }).click();
-  await expect(page.locator('canvas[data-rendered="true"]')).toHaveAttribute("aria-label", "Página 7 del PDF");
+  await expect(page.locator('canvas[data-rendered="true"]')).toHaveAttribute(
+    "aria-label",
+    "Página 7 del PDF",
+  );
 });
 const money = (n: number) =>
   new Intl.NumberFormat("es-CO", {
@@ -50,6 +60,7 @@ test("profile saves, local crop references and weather have working evidence", a
   await page
     .getByRole("button", { name: "Explorar ejemplo en Pitalito" })
     .click();
+  await page.getByRole("tab", { name: "Clima y labores", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Tu plan para esta semana" }),
   ).toBeVisible();
@@ -68,6 +79,7 @@ test("profile saves, local crop references and weather have working evidence", a
     fullPage: true,
   });
   await page.reload();
+  await page.getByRole("tab", { name: "Clima y labores", exact: true }).click();
   await expect(page.locator(".task-toggle").first()).toHaveAttribute(
     "aria-pressed",
     "true",
@@ -127,7 +139,7 @@ test("budget computes costs, commission and scenarios and preserves evidence", a
     .click();
   await expect(page.locator(".saved-scenarios")).toContainText(money(1940000));
   const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("agroamigo-scenarios-v1") || "[]"),
+    JSON.parse(localStorage.getItem("agroamigo-scenarios-legacy-farm") || "[]"),
   );
   expect(saved[0].sourceDocuments[0]).toMatch(/^[a-f0-9]{64}$/);
   await page.screenshot({
@@ -174,7 +186,9 @@ test("seasonal references use five complete years and crop cost templates link t
   await page
     .getByRole("link", { name: "Ver tabla original de costos" })
     .click();
-  await expect(page).toHaveURL(/page=13/);
+  await expect(page).toHaveURL(/\/plan\?tab=budget$/);
+  await expect(page.locator("dialog")).toBeVisible();
+  await expect(page.getByLabel("Página del documento")).toHaveValue("13");
   await expect(page.locator("canvas[data-rendered=true]")).toBeVisible({
     timeout: 35000,
   });
@@ -183,7 +197,7 @@ test("offers handle partial quantities, units, discounts, deadlines and buyer co
   page,
 }, info) => {
   await page.goto("/offers");
-  await page.getByLabel("Cantidad disponible para vender (kg)").fill("250");
+  await page.getByLabel("Cantidad total que comparas (kg)").fill("250");
   await page.getByLabel("Unidad de las cotizaciones").selectOption("125");
   await page.getByLabel("Precio oferta 1", { exact: true }).fill("2000000");
   await page.getByLabel("Kilos oferta 1", { exact: true }).fill("250");
@@ -191,21 +205,20 @@ test("offers handle partial quantities, units, discounts, deadlines and buyer co
   await page.getByLabel("Transporte oferta 1", { exact: true }).fill("100000");
   await page.getByLabel("Precio oferta 2", { exact: true }).fill("2100000");
   await page.getByLabel("Kilos oferta 2", { exact: true }).fill("125");
-  await expect(page.locator(".offer-result strong").first()).toHaveText(
-    money(3700000),
-  );
+  await expect(
+    page.locator(".offer-result [data-result=sale]").first(),
+  ).toHaveText(money(3700000));
   await expect(page.locator(".best-offer h2")).toHaveText("Oferta 2");
   await expect(page.locator(".offer-result").nth(1)).toContainText(
-    "125 kg sin vender",
+    "125 kg fuera de esta oferta",
   );
   await page
     .getByLabel("Vigencia oferta 2", { exact: true })
     .fill("2020-01-01");
   await expect(page.locator(".best-offer")).toHaveCount(0);
-  await page.getByRole("button", { name: "Soy comprador" }).click();
-  await expect(page.locator(".offer-result strong").first()).toHaveText(
-    money(3900000),
-  );
+  await expect(
+    page.locator(".offer-result [data-result=purchase]").first(),
+  ).toHaveText(money(3900000));
   await page.screenshot({
     path: resolve(
       __dirname,
@@ -229,7 +242,12 @@ test("price evidence renders PDF pages and preserves byte integrity", async ({
   request,
 }, info) => {
   await page.goto("/product/tomate-chonto");
-  await page.locator(".market-row .evidence-link").first().click();
+  await page
+    .getByRole("link", {
+      name: "Comprobar precios en el documento",
+      exact: true,
+    })
+    .click();
   await expect(page.locator("canvas[data-rendered=true]")).toBeVisible({
     timeout: 35000,
   });
@@ -251,7 +269,10 @@ test("price evidence renders PDF pages and preserves byte integrity", async ({
       () => document.documentElement.scrollWidth > innerWidth,
     ),
   ).toBe(false);
-  const id = page.url().split("/evidence/")[1].split("?")[0];
+  const download = await page
+    .locator("dialog a[download]")
+    .getAttribute("href");
+  const id = download!.split("/api/evidence/")[1].split("/")[0];
   const meta = await (await request.get("/api/evidence/" + id)).json();
   const bytes = await (
     await request.get("/api/evidence/" + meta.id + "/content")
@@ -269,12 +290,25 @@ test("daily quotes and input prices retain their frequency, units and source", a
     .getByLabel("Plaza del boletín")
     .selectOption("Montería, Mercado del Sur");
   await expect(page.locator(".input-card")).toHaveCount(1);
-  await expect(page.locator(".input-price")).toContainText(money(6250));
+  const daily = await (await request.get("/api/planning/daily")).json();
+  const quote = daily.find(
+    (q: { product_name: string; market_name: string }) =>
+      q.product_name === "Habichuela" &&
+      q.market_name === "Montería, Mercado del Sur",
+  );
+  expect(quote.price).toBeGreaterThan(0);
+  await expect(page.locator(".input-price")).toContainText(money(quote.price));
   await page.goto("/insumos?department=Huila");
   await page.getByLabel("Buscar insumo", { exact: true }).fill("urea");
-  await expect(page.locator(".input-card").first()).toBeVisible();
-  await page.locator(".input-card .evidence-link").first().click();
-  await expect(page.locator(".evidence-records")).toContainText("Hoja");
+  await page.getByLabel("Buscar insumo", { exact: true }).press("Escape");
+  await expect(page.locator(".input-catalog-card").first()).toBeVisible();
+  await page.locator(".input-catalog-card").first().click();
+  await page
+    .getByRole("link", { name: "Comprobar precio", exact: true })
+    .click();
+  await expect(page.locator(".evidence-records")).toContainText(
+    "Ubicación del dato",
+  );
   expect(
     (await request.get("/api/planning/weather?lat=85&lon=10")).status(),
   ).toBe(400);
@@ -290,7 +324,8 @@ test("unavailable weather is actionable and never supplies invented forecasts", 
       body: JSON.stringify({ error: "No pudimos consultar el clima." }),
     }),
   );
-  await page.goto("/farm");
+  await page.goto("/farm/legacy-farm");
+  await page.getByRole("tab", { name: "Clima y labores", exact: true }).click();
   await expect(page.locator("main [role=alert]")).toBeVisible();
   await expect(page.locator(".weather-day")).toHaveCount(0);
 });

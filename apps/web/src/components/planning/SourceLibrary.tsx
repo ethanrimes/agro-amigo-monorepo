@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { SearchBox } from "@/components/ui/SearchBox";
+import { useEvidence } from "./EvidenceProvider";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { fold } from "@/lib/planning-math";
@@ -14,6 +16,7 @@ type Document = {
   media_type: string;
 };
 export function SourceLibrary() {
+  const open = useEvidence();
   const { data, loading, error, retry } = useData<Document[]>(
       "/api/planning/library",
     ),
@@ -30,15 +33,18 @@ export function SourceLibrary() {
         Originales y métodos conservados en Azure. Los enlaces junto a cada dato
         llevan a su página o registro.
       </p>
-      <label className="form-field">
-        Buscar en los documentos
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ej. costos, Cenicafé, 2025…"
-        />
-      </label>
+      <SearchBox
+        label="Buscar en los documentos"
+        placeholder="Costos, Cenicafé, 2025…"
+        value={query}
+        onChange={setQuery}
+        options={(data || []).map((d) => ({
+          id: d.id,
+          label: d.title,
+          detail: d.publisher + " · " + d.reference_period,
+        }))}
+        onSelect={(d) => open({ id: d.id, query: "" })}
+      />
       {loading ? (
         <p role="status">Consultando biblioteca…</p>
       ) : error ? (

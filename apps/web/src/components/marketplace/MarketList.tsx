@@ -1,7 +1,7 @@
 "use client";
+import Link from "next/link";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { useMemo, useState } from "react";
-import { usePreferences } from "./Preferences";
 import { dateLabel, money, type MarketPrice } from "@/lib/market-types";
 export function MarketList({
   markets,
@@ -10,7 +10,6 @@ export function MarketList({
   markets: MarketPrice[];
   coffee?: boolean;
 }) {
-  const { role } = usePreferences();
   const [order, setOrder] = useState("recommended");
   const [showAll, setShowAll] = useState(false);
   const sorted = useMemo(
@@ -18,11 +17,9 @@ export function MarketList({
       [...markets].sort((a, b) => {
         const d = b.date.localeCompare(a.date);
         if (d) return d;
-        return order === "low" || (order === "recommended" && role === "buyer")
-          ? a.price - b.price
-          : b.price - a.price;
+        return order === "low" ? a.price - b.price : b.price - a.price;
       }),
-    [markets, order, role],
+    [markets, order],
   );
   return (
     <section className="market-section">
@@ -41,11 +38,7 @@ export function MarketList({
         <label>
           Ordenar
           <select value={order} onChange={(e) => setOrder(e.target.value)}>
-            <option value="recommended">
-              {role === "buyer"
-                ? "Menor precio primero"
-                : "Mayor precio primero"}
-            </option>
+            <option value="recommended">Mayor precio primero</option>
             <option value="high">Mayor precio primero</option>
             <option value="low">Menor precio primero</option>
           </select>
@@ -60,7 +53,9 @@ export function MarketList({
           <article className="market-row" key={m.id}>
             <span className="market-number">{i + 1}</span>
             <div className="market-info">
-              <h3>{m.name}</h3>
+              <h3>
+                <Link href={"/market/" + m.id}>{m.name}</Link>
+              </h3>
               <p>
                 {m.region} · {dateLabel(m.date, true)}
               </p>
@@ -69,7 +64,18 @@ export function MarketList({
             <div className="market-value">
               <strong>{money(m.price)}</strong>
               <small> / {coffee ? "carga" : "kg"}</small>
-              <EvidenceLink id={m.document_id} page={Number(m.source_locator?.match(/PDF p\. (\d+)/)?.[1]) || (coffee ? 2 : 1)}>Ver fuente</EvidenceLink>
+              <EvidenceLink
+                id={m.document_id}
+                product={m.product_id}
+                market={m.id}
+                month={m.date}
+                page={
+                  Number(m.source_locator?.match(/PDF p\. (\d+)/)?.[1]) ||
+                  (coffee ? 2 : 1)
+                }
+              >
+                Ver fuente
+              </EvidenceLink>
             </div>
           </article>
         ))

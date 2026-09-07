@@ -14,9 +14,9 @@ test("home has working prices, readable mobile layout, and no application errors
   await page.goto("/");
   await expect(page.locator(".product-card")).toHaveCount(4);
   await expect(
-    page.getByRole("heading", { name: "Tu cosecha vale. Conoce su precio." }),
+    page.getByRole("heading", { name: "El campo, a tu alcance." }),
   ).toBeVisible();
-  await expect(page.locator(".home-coffee-price")).toContainText(
+  await expect(page.locator(".product-card").first()).toContainText(
     "/ carga de 125 kg",
   );
   const overflow = await page.evaluate(
@@ -39,8 +39,11 @@ test("search, category filters, department, and saved products work", async ({
   await page.goto("/products");
   await expect(page.locator(".product-card").first()).toBeVisible();
   await page
-    .getByRole("textbox", { name: "Buscar producto", exact: true })
+    .getByRole("combobox", { name: "Buscar producto", exact: true })
     .fill("aguacate");
+  await page
+    .getByRole("combobox", { name: "Buscar producto", exact: true })
+    .press("Escape");
   await expect(page.locator(".product-card").first()).toContainText(
     /Aguacate/i,
   );
@@ -67,19 +70,31 @@ test("search, category filters, department, and saved products work", async ({
   await page.getByRole("button", { name: "Frutas", exact: true }).click();
   await expect(page.locator(".product-category").first()).toHaveText("Frutas");
 });
-test("buyer mode persists and changes comparison and budget calculations", async ({
+test("one shared experience ignores the retired role and shows selling and buying totals", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Soy comprador" }).click();
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "agroamigo-preferences-v2",
+      JSON.stringify({ role: "buyer", saved: [] }),
+    ),
+  );
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: /Soy comprador|Soy productor/ }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", {
-      name: "Compra informado. Crece con el campo.",
+      name: "El campo, a tu alcance.",
     }),
   ).toBeVisible();
-  await page.locator(".product-name").first().click();
+  await page
+    .locator(".product-name")
+    .filter({ hasText: "Aguacate Hass" })
+    .click();
   await expect(
-    page.getByRole("heading", { name: "Calcula tu compra" }),
+    page.getByRole("heading", { name: "Calcula el valor con transporte" }),
   ).toBeVisible();
   await page.getByLabel("Cantidad en kilos").fill("100");
   await page.getByLabel("Transporte total (COP)").fill("50000");
@@ -88,12 +103,15 @@ test("buyer mode persists and changes comparison and budget calculations", async
     await page.request.get("/api/products/" + page.url().split("/").at(-1))
   ).json();
   const price = data.markets.find((m: any) => m.id === selected).price;
-  await expect(page.locator(".calculation-result strong")).toHaveText(
-    money(price * 100 + 50000),
-  );
+  await expect(
+    page.locator(".calculation-result [data-result=purchase]"),
+  ).toHaveText(money(price * 100 + 50000));
+  await expect(
+    page.locator(".calculation-result [data-result=sale]"),
+  ).toHaveText(money(price * 100 - 50000));
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Calcula tu compra" }),
+    page.getByRole("heading", { name: "Calcula el valor con transporte" }),
   ).toBeVisible();
   const text = await page.locator(".market-value strong").allTextContents();
   expect(text.length).toBeGreaterThan(0);
@@ -159,10 +177,10 @@ test("legacy routes have a useful destination and source explanations are availa
   page,
 }) => {
   await page.goto("/markets");
-  await expect(page).toHaveURL(/\/products$/);
+  await expect(page.locator(".market-card").first()).toBeVisible();
   await page.goto("/insumos");
   await expect(
-    page.getByRole("heading", { name: "¿Cómo están los insumos?" }),
+    page.getByRole("heading", { name: "Insumos agrícolas" }),
   ).toBeVisible();
   await page.goto("/sources");
   await page

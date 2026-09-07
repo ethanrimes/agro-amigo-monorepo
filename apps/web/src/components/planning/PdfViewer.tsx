@@ -20,7 +20,9 @@ export function PdfViewer({
     [text, setText] = useState("");
   useEffect(() => {
     let live = true;
-    let task: ReturnType<typeof import("pdfjs-dist/legacy/build/pdf.mjs").getDocument> | null = null;
+    let task: ReturnType<
+      typeof import("pdfjs-dist/legacy/build/pdf.mjs").getDocument
+    > | null = null;
     import("pdfjs-dist/legacy/build/pdf.mjs")
       .then((lib) => {
         if (!live) return;
@@ -106,11 +108,7 @@ export function PdfViewer({
         reader.releaseLock();
       }
       if (active) {
-        setText(
-          items
-            .map((item) => ("str" in item ? item.str : ""))
-            .join(" "),
-        );
+        setText(items.map((item) => ("str" in item ? item.str : "")).join(" "));
         setLoading(false);
         setError("");
       }
@@ -183,12 +181,34 @@ export function PdfViewer({
           {error}
         </p>
       )}
-      <div className="pdf-paper" ref={host}>
-        <canvas
-          ref={canvas}
-          aria-label={"Página " + page + " del PDF"}
-          data-rendered={!loading && !error ? "true" : "false"}
-        />
+      <div className="pdf-body">
+        {pdf && (
+          <nav className="pdf-pages" aria-label="Miniaturas de páginas">
+            {Array.from(
+              { length: Math.min(5, pdf.numPages) },
+              (_, i) => Math.max(1, Math.min(page - 2, pdf.numPages - 4)) + i,
+            ).map((n) => (
+              <button
+                type="button"
+                key={n}
+                className={page === n ? "selected" : ""}
+                aria-label={"Ir a página " + n}
+                aria-current={page === n ? "page" : undefined}
+                onClick={() => setPage(n)}
+              >
+                <PdfThumbnail pdf={pdf} page={n} />
+                <span>Página {n}</span>
+              </button>
+            ))}
+          </nav>
+        )}
+        <div className="pdf-paper" ref={host}>
+          <canvas
+            ref={canvas}
+            aria-label={"Página " + page + " del PDF"}
+            data-rendered={!loading && !error ? "true" : "false"}
+          />
+        </div>
       </div>
       {text && (
         <details className="source-explanation">
@@ -198,4 +218,30 @@ export function PdfViewer({
       )}
     </section>
   );
+}
+
+function PdfThumbnail({ pdf, page }: { pdf: PDFDocumentProxy; page: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    let active = true,
+      task: RenderTask | undefined;
+    void pdf
+      .getPage(page)
+      .then((p) => {
+        if (!active || !ref.current) return;
+        const base = p.getViewport({ scale: 1 }),
+          viewport = p.getViewport({ scale: 96 / base.width }),
+          canvas = ref.current;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        task = p.render({ canvas, viewport });
+        return task.promise;
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+      task?.cancel();
+    };
+  }, [pdf, page]);
+  return <canvas ref={ref} aria-hidden="true" />;
 }

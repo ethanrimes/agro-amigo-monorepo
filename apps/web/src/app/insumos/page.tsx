@@ -1,141 +1,187 @@
 "use client";
-import { Suspense, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
 import { usePreferences } from "@/components/marketplace/Preferences";
-import { ErrorState } from "@/components/marketplace/Shared";
-import { EvidenceLink } from "@/components/planning/EvidenceLink";
+import { ErrorState, LoadingCards } from "@/components/marketplace/Shared";
+import { SearchBox } from "@/components/ui/SearchBox";
+import { MapButton } from "@/components/explore/ColombiaMap";
+import { photoFor } from "@/lib/images";
 import { fold } from "@/lib/planning-math";
-import { money, dateLabel, number } from "@/lib/market-types";
-import type { InputPrice, Municipality } from "@/lib/planning-types";
+import { money, dateLabel } from "@/lib/market-types";
+import type { InputPrice } from "@/lib/planning-types";
 function Inputs() {
   const q = useSearchParams(),
+    router = useRouter(),
     { region } = usePreferences();
   const [department, setDepartment] = useState(q.get("department") || region),
     [query, setQuery] = useState(""),
-    [more, setMore] = useState(false);
-  const places = useData<Municipality[]>("/api/planning/municipalities"),
-    data = useData<InputPrice[]>(
-      "/api/planning/inputs?department=" + encodeURIComponent(department),
-    );
-  const filtered = useMemo(
-    () =>
-      data.data?.filter((r) =>
-        fold(r.name + " " + r.category).includes(fold(query)),
-      ) || [],
-    [data.data, query],
+    [category, setCategory] = useState("Todos"),
+    [limit, setLimit] = useState(24);
+  const { data, loading, error, retry } = useData<InputPrice[]>(
+    "/api/planning/inputs",
+  );
+  const departments = [
+    ...new Set((data || []).map((i) => i.department)),
+  ].sort();
+  const available = (data || []).filter(
+    (i) =>
+      (!department || fold(i.department) === fold(department)) &&
+      (category === "Todos" || i.category === category),
+  );
+  const grouped = new Map<string, InputPrice>();
+  for (const i of [...available].sort(
+    (a, b) => b.observed_on.localeCompare(a.observed_on) || a.price - b.price,
+  ))
+    if (!grouped.has(i.id)) grouped.set(i.id, i);
+  const unique = [...grouped.values()].sort(
+    (a, b) =>
+      Number(!/urea|cal agricola|15-15-15|abono organico/.test(fold(a.name))) -
+        Number(
+          !/urea|cal agricola|15-15-15|abono organico/.test(fold(b.name)),
+        ) || a.name.localeCompare(b.name),
+  );
+  const rows = unique.filter((i) =>
+    fold(i.name + " " + i.presentation).includes(fold(query)),
   );
   return (
     <>
-      <Link className="back-link" href="/plan?tab=budget">
-        ← Volver a mis cuentas
-      </Link>
-      <div className="page-heading">
+      <div className="catalog-heading">
         <div>
-          <span className="eyebrow">ACTUALIZA TU PRESUPUESTO</span>
-          <h1>¿Cómo están los insumos?</h1>
-          <p>
-            Precios de referencia por presentación y departamento. Confirma tu
-            cotización antes de comprar.
-          </p>
+          <span className="eyebrow">PARA CUIDAR TU CULTIVO</span>
+          <h1>Insumos agrícolas</h1>
+          <p>Compara referencias por presentación y departamento.</p>
         </div>
+        <MapButton kind="input" />
       </div>
-      <section className="panel">
-        <div className="form-grid">
-          <label className="form-field">
-            Departamento de consulta
-            <select
-              value={department}
-              onChange={(e) => {
-                setDepartment(e.target.value);
-                setMore(false);
-              }}
-            >
-              <option value="">Toda Colombia</option>
-              {[...new Set(places.data?.map((m) => m.department) || [])]
-                .sort()
-                .map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-            </select>
-          </label>
-          <label className="form-field">
-            Buscar insumo
-            <input
-              type="search"
-              placeholder="Urea, cal, fertilizante…"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setMore(false);
-              }}
-            />
-          </label>
-        </div>
-        <p className="privacy-note">
-          DANE SIPSA-I · Fertilizantes, enmiendas y bioinsumos. La presencia de
-          un producto en la fuente no recomienda usarlo ni establece una dosis.
-        </p>
-        <EvidenceLink id="input-index" page={2}>
-          Consultar el boletín de variación de costos
-        </EvidenceLink>
-      </section>
-      {data.loading ? (
-        <p role="status">Consultando precios de insumos…</p>
-      ) : data.error ? (
-        <ErrorState message={data.error} retry={data.retry} />
+      <div className="catalog-controls">
+        <SearchBox
+          label="Buscar insumo"
+          placeholder="Urea, cal, abono orgánico…"
+          value={query}
+          onChange={(v) => {
+            setQuery(v);
+            setLimit(24);
+          }}
+          options={unique.map((i) => ({
+            id: i.id,
+            label: i.name,
+            detail: i.presentation,
+          }))}
+          onSelect={(i) =>
+            router.push(
+              "/insumo/" +
+                i.id +
+                "?department=" +
+                encodeURIComponent(department),
+            )
+          }
+        />
+        <label className="region-field">
+          <span>Departamento</span>
+          <select
+            value={department}
+            onChange={(e) => {
+              setDepartment(e.target.value);
+              setLimit(24);
+            }}
+          >
+            <option value="">Toda Colombia</option>
+            {department && !departments.includes(department) && (
+              <option>{department}</option>
+            )}
+            {departments.map((d) => (
+              <option key={d}>{d}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div className="category-filters">
+        {["Todos", "Fertilizantes y enmiendas", "Bioinsumos"].map((c) => (
+          <button
+            key={c}
+            aria-pressed={category === c}
+            className={category === c ? "active" : ""}
+            onClick={() => {
+              setCategory(c);
+              setLimit(24);
+            }}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+      {loading ? (
+        <LoadingCards />
+      ) : error ? (
+        <ErrorState message={error} retry={retry} />
       ) : (
         <>
-          <p>{number(filtered.length)} referencias encontradas</p>
-          <div className="input-grid">
-            {filtered.slice(0, more ? undefined : 18).map((r) => (
-              <article className="panel input-card" key={r.id + r.department}>
-                <span className="eyebrow">{r.category}</span>
-                <h3>{r.name}</h3>
-                <p>
-                  {r.presentation} · {r.department}
-                </p>
-                <strong className="input-price">{money(r.price)}</strong>
-                <small>
-                  Promedio departamental · {dateLabel(r.observed_on)}
-                </small>
-                {r.previous_price && (
-                  <p className="input-change">
-                    {r.price >= r.previous_price ? "Subió" : "Bajó"}{" "}
-                    {number(Math.abs(r.price / r.previous_price - 1) * 100)} %
-                    frente al mes anterior.
-                  </p>
-                )}
-                <EvidenceLink
-                  id={r.document_id}
-                  input={r.id}
-                  department={r.department}
-                >
-                  Ver precio y fila original
-                </EvidenceLink>
-              </article>
-            ))}
+          <div className="results-label">
+            <span>{rows.length} insumos y presentaciones</span>
+            <Link href="/plan?tab=budget">Ir a mi presupuesto →</Link>
           </div>
-          {!filtered.length && (
+          <div className="input-grid">
+            {rows.slice(0, limit).map((i) => {
+              const p = photoFor(
+                i.name,
+                i.category + " " + i.presentation,
+                "input",
+              );
+              return (
+                <Link
+                  href={
+                    "/insumo/" +
+                    i.id +
+                    "?department=" +
+                    encodeURIComponent(department || i.department)
+                  }
+                  className="input-catalog-card"
+                  key={i.id}
+                >
+                  <div className="input-photo">
+                    <img src={p.src} alt={p.alt} loading="lazy" />
+                    <small>Imagen ilustrativa</small>
+                  </div>
+                  <div>
+                    <span className="eyebrow">{i.category}</span>
+                    <h2>{i.name}</h2>
+                    <p>{i.presentation}</p>
+                    <strong className="input-price">{money(i.price)}</strong>
+                    <small>
+                      {i.department} · {dateLabel(i.observed_on, true)}
+                    </small>
+                    <span className="input-card-action">
+                      Ver precios y cobertura →
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          {!rows.length && (
             <div className="empty-state">
-              <h3>No encontramos esa referencia</h3>
-              <p>
-                Prueba otro nombre o departamento. No todos los insumos tienen
-                cobertura en cada zona.
-              </p>
+              <h2>No encontramos ese insumo</h2>
+              <p>Prueba otro nombre o departamento.</p>
             </div>
           )}
-          {filtered.length > 18 && (
-            <button
-              className="button secondary show-more"
-              onClick={() => setMore(!more)}
-            >
-              {more ? "Mostrar menos" : "Ver todas las referencias"}
-            </button>
+          {rows.length > limit && (
+            <div className="load-more">
+              <button
+                className="button secondary"
+                onClick={() => setLimit((n) => n + 24)}
+              >
+                Ver más insumos
+              </button>
+            </div>
           )}
         </>
       )}
+      <p className="notice">
+        DANE SIPSA-I · Promedios departamentales. Consulta la presentación y
+        confirma tu cotización antes de comprar.
+      </p>
     </>
   );
 }

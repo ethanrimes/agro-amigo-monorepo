@@ -4,197 +4,134 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   IoArrowForward,
-  IoSearchOutline,
-  IoCafeOutline,
-  IoShieldCheckmarkOutline,
-  IoLocationOutline,
-  IoCalendarOutline,
   IoLeafOutline,
+  IoBasketOutline,
+  IoStorefrontOutline,
+  IoFlaskOutline,
 } from "react-icons/io5";
-import { usePreferences } from "@/components/marketplace/Preferences";
 import {
-  RoleSwitch,
   ProductCard,
-  SectionTitle,
   ErrorState,
   LoadingCards,
-  Change,
+  SectionTitle,
 } from "@/components/marketplace/Shared";
 import { useData } from "@/components/marketplace/useData";
-import {
-  dateLabel,
-  money,
-  type Catalog,
-  type Coffee,
-} from "@/lib/market-types";
-import { HomeActions } from "@/components/planning/HomeActions";
+import { SearchBox } from "@/components/ui/SearchBox";
+import { useFarm } from "@/components/planning/FarmContext";
+import { photoFor } from "@/lib/images";
+import type { Catalog } from "@/lib/market-types";
 export default function Home() {
-  const { role, region } = usePreferences();
-  const router = useRouter();
+  const { farm } = useFarm(),
+    router = useRouter();
   const [search, setSearch] = useState("");
-  const catalog = useData<Catalog>(
-    "/api/catalog?region=" + encodeURIComponent(region),
-  );
-  const coffee = useData<Coffee>("/api/coffee");
+  const catalog = useData<Catalog>("/api/catalog");
+  const sections = [
+    {
+      href: "/products",
+      label: "Productos",
+      detail: "Precios y abastecimiento",
+      photo: "/images/produce.jpg",
+      icon: IoBasketOutline,
+    },
+    {
+      href: "/markets",
+      label: "Mercados",
+      detail: "Encuentra dónde comparar",
+      photo: photoFor("Paloquemao", "", "market").src,
+      icon: IoStorefrontOutline,
+    },
+    {
+      href: "/insumos",
+      label: "Insumos",
+      detail: "Lo que necesita tu cultivo",
+      photo: photoFor("Fertilizante", "", "input").src,
+      icon: IoFlaskOutline,
+    },
+  ];
   return (
     <>
       <div className="welcome-row">
-        <div>
-          <span className="eyebrow">BIENVENIDO A AGROAMIGO</span>
-          <p>Un buen día empieza con buena información.</p>
-        </div>
-        <RoleSwitch />
+        <span className="eyebrow">BIENVENIDO A AGROAMIGO</span>
       </div>
-      <section className="hero">
+      <section className="home-hero">
         <img
-          className="hero-photo"
           src="/images/farm.jpg"
-          alt="Cultivos y campos verdes al amanecer"
+          alt="Paisaje agrícola, imagen ilustrativa"
           fetchPriority="high"
         />
-        <div className="hero-shade" />
-        <div className="hero-content">
-          <span className="hero-kicker">
-            <span /> MÁS CERCA DEL CAMPO
-          </span>
-          <h1>
-            {role === "farmer" ? (
-              <>
-                Tu cosecha vale.
-                <br />
-                Conoce su precio.
-              </>
-            ) : (
-              <>
-                Compra informado.
-                <br />
-                Crece con el campo.
-              </>
-            )}
-          </h1>
-          <p>
-            {role === "farmer"
-              ? "Consulta precios, compara mercados y lleva el valor de tu trabajo a la próxima negociación."
-              : "Compara precios de referencia y calcula tus compras de productos del campo colombiano."}
-          </p>
-          <form
-            className="hero-search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              router.push("/products?q=" + encodeURIComponent(search));
-            }}
-          >
-            <IoSearchOutline />
-            <input
-              aria-label="Buscar un producto"
-              placeholder="¿Qué producto buscas?"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button aria-label="Buscar producto" type="submit">
-              <IoArrowForward />
-            </button>
-          </form>
-          <span className="hero-examples">
-            Por ejemplo: café, aguacate, papa o plátano
-          </span>
+        <div className="home-hero-copy">
+          <span>INFORMACIÓN PARA TU DÍA A DÍA</span>
+          <h1>El campo, a tu alcance.</h1>
+          <p>Productos, mercados e insumos. Datos claros para decidir mejor.</p>
         </div>
-        <span className="hero-location">
-          <IoLocationOutline /> La fuerza de nuestra tierra
-        </span>
       </section>
-      <div className="trust-strip">
-        <span>
-          <IoShieldCheckmarkOutline /> Fuentes oficiales de Colombia
-        </span>
-        <span>
-          <IoCalendarOutline /> Precios recientes e historia estacional
-        </span>
-        <span>
-          <IoLeafOutline /> Sin registro, a tu alcance
-        </span>
+      <div className="home-search">
+        <SearchBox
+          label="Buscar un producto"
+          placeholder="¿Qué producto buscas? Café, papa, aguacate…"
+          value={search}
+          onChange={setSearch}
+          options={(catalog.data?.products || []).map((p) => ({
+            id: p.id,
+            label: p.name,
+            detail: p.category,
+          }))}
+          onSelect={(p) => router.push("/product/" + p.id)}
+          onSubmit={() =>
+            router.push("/products?q=" + encodeURIComponent(search))
+          }
+        />
       </div>
-      <HomeActions />
-      <section className="home-coffee">
-        <div className="coffee-symbol">
-          <IoCafeOutline />
+      <div className="home-sections">
+        {sections.map(({ href, label, detail, photo, icon: Icon }) => (
+          <Link key={href} href={href} className="home-section">
+            <img src={photo} alt="" />
+            <div>
+              <Icon />
+              <h2>{label}</h2>
+              <p>{detail}</p>
+              <span>
+                Explorar <IoArrowForward />
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+      <Link href="/farm" className="farm-invitation">
+        <span className="farm-invitation-icon">
+          <IoLeafOutline />
+        </span>
+        <div>
+          <h2>
+            {farm.municipalityId ? farm.name : "Tu finca, tus decisiones"}
+          </h2>
+          <p>Organiza la semana. Explora cultivos y haz tus cuentas.</p>
         </div>
-        <div className="home-coffee-intro">
-          <span className="eyebrow">HABLEMOS DE CAFÉ</span>
-          <h2>El precio de tu café, claro.</h2>
-          <p>Referencia FNC · Pergamino seco · Factor 94</p>
-        </div>
-        {coffee.data ? (
-          <div className="home-coffee-price">
-            <strong>
-              {money(coffee.data.price)} <small>/ carga de 125 kg</small>
-            </strong>
-            <span>Referencia del {dateLabel(coffee.data.date, true)}</span>
-          </div>
-        ) : (
-          <span className="muted">
-            {coffee.loading
-              ? "Consultando la referencia…"
-              : "Consulta la disponibilidad de la referencia"}
-          </span>
-        )}
-        <Link href="/coffee" className="button coffee-button">
-          Ver precio del café <IoArrowForward />
-        </Link>
-      </section>
+        <IoArrowForward />
+      </Link>
       <SectionTitle
-        eyebrow={region || "DEL CAMPO COLOMBIANO"}
-        title={
-          role === "farmer"
-            ? "¿Cómo están los precios?"
-            : "Encuentra tu próxima compra"
-        }
+        title="Productos para consultar"
         href="/products"
-        link="Todos los productos"
+        link="Ver todos"
       />
-      <p className="section-description">
-        Precios mayoristas de referencia. Elige un producto para comparar
-        mercados.
-      </p>
       {catalog.loading ? (
         <LoadingCards />
       ) : catalog.error ? (
         <ErrorState message={catalog.error} retry={catalog.retry} />
-      ) : catalog.data?.products.length ? (
+      ) : (
         <div className="product-grid">
-          {catalog.data.products.slice(0, 4).map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {catalog.data?.products.slice(0, 4).map((p) => (
+            <ProductCard key={p.id} product={p} />
           ))}
         </div>
-      ) : (
-        <div className="empty-state">
-          <h3>No hay precios para este departamento</h3>
-          <p>Selecciona Toda Colombia para ver los mercados disponibles.</p>
-        </div>
       )}
-      <section className="home-bottom">
-        <div className="next-step">
-          <span className="step-icon">
-            <IoLocationOutline />
-          </span>
-          <div>
-            <h3>El mismo producto, distintos precios.</h3>
-            <p>
-              Compara mercados y ten en cuenta el transporte antes de decidir.
-            </p>
-          </div>
-          <Link href="/products" aria-label="Comparar mercados">
-            <IoArrowForward />
-          </Link>
-        </div>
-        <div className="source-note">
-          <IoShieldCheckmarkOutline />
-          <p>
-            <strong>Información que puedes comprobar</strong>Cada precio tiene
-            una fecha y una fuente. <Link href="/sources">Conócelas aquí.</Link>
-          </p>
-        </div>
-      </section>
+      <div className="home-source">
+        <strong>Información que puedes comprobar.</strong>
+        <span>
+          Abre la fuente junto a cada dato para consultar el documento.
+        </span>
+        <Link href="/sources">Conocer las fuentes →</Link>
+      </div>
     </>
   );
 }

@@ -84,10 +84,10 @@ void main() {
     await checkTabs();
     await binding.takeScreenshot('ios-layout-home');
     await web.runJavaScript(
-      'document.querySelector(".mobile-nav a[href=\\"/saved\\"]").click()',
+      'document.querySelector(".mobile-nav a[href=\\"/markets\\"]").click()',
     );
     await until(
-      'location.pathname === "/saved" && document.querySelector(".mobile-nav a[href=\\"/saved\\"]").hasAttribute("aria-current")',
+      'location.pathname === "/markets" && document.querySelector(".mobile-nav a[href=\\"/markets\\"]").hasAttribute("aria-current")',
     );
     await checkTabs();
     expect(
@@ -96,7 +96,7 @@ void main() {
       reason:
           'Following a link must not shrink the web view for a second back bar',
     );
-    await binding.takeScreenshot('ios-layout-saved');
+    await binding.takeScreenshot('ios-layout-markets');
     await web.runJavaScript(
       r'document.querySelector("a[href=\"/products\"]").click()',
     );
@@ -107,7 +107,9 @@ void main() {
     await checkTabs();
     await binding.takeScreenshot('ios-layout-products');
 
-    await web.runJavaScript('localStorage.removeItem("agroamigo-farm-v1")');
+    await web.runJavaScript(
+      'localStorage.removeItem("agroamigo-farm-v1"); localStorage.removeItem("agroamigo-farms-v2")',
+    );
     await web.loadRequest(Uri.parse('${app.appOrigin}/farm'));
     await until(
       'Array.from(document.querySelectorAll("button")).some(b => b.innerText.includes("Pitalito") && !b.disabled)',
@@ -115,26 +117,35 @@ void main() {
     await web.runJavaScript(
       'Array.from(document.querySelectorAll("button")).find(b => b.innerText.includes("Pitalito")).click()',
     );
+    await until(
+      'location.pathname.startsWith("/farm/") && document.querySelector(".farm-section-tabs") !== null',
+    );
+    await web.runJavaScript(
+      'Array.from(document.querySelectorAll("[role=tab]")).find(b => b.innerText === "Clima y labores").click()',
+    );
     await until('document.body.innerText.includes("Tu plan para esta semana")');
     final profile = await web.runJavaScriptReturningResult(
-      'localStorage.getItem("agroamigo-farm-v1") || ""',
+      'localStorage.getItem("agroamigo-farms-v2") || ""',
     );
     expect(profile.toString().length, greaterThan(20));
     await web.reload();
     await until('document.body.innerText.includes("Pitalito")');
     expect(
       await web.runJavaScriptReturningResult(
-        'localStorage.getItem("agroamigo-farm-v1") || ""',
+        'localStorage.getItem("agroamigo-farms-v2") || ""',
       ),
       profile,
     );
     await web.runJavaScript('window.scrollTo(0, 0)');
     await binding.takeScreenshot('ios-layout-farm');
 
-    await web.loadRequest(
-      Uri.parse('${app.appOrigin}/evidence/coffee-cost-benchmark?page=6'),
+    await until(
+      'Array.from(document.querySelectorAll("a.evidence-link")).some(a => a.textContent.includes("Comprobar el costo cafetero"))',
     );
-    await until('document.body.innerText.includes("Comprueba el dato")');
+    await web.runJavaScript(
+      'Array.from(document.querySelectorAll("a.evidence-link")).find(a => a.textContent.includes("Comprobar el costo cafetero")).click()',
+    );
+    await until('document.querySelector("dialog[open]") !== null');
     await until(
       r'document.querySelector("canvas[data-rendered=true][aria-label=\"Página 6 del PDF\"]") !== null && document.querySelector(".pdf-text")?.textContent.includes("1,550,805")',
     );
@@ -148,9 +159,10 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await binding.takeScreenshot('ios-evidence');
     expect(state.canGoBack, isTrue);
-    await web.runJavaScript('document.querySelector(".back-button").click()');
+    await web.goBack();
+    await until('document.querySelector("dialog[open]") === null');
     await until(
-      'location.pathname === "/farm" && document.body.innerText.includes("Tu plan para esta semana")',
+      'location.pathname.startsWith("/farm/") && document.querySelector(".farm-section-tabs") !== null',
     );
 
     // Inspect all exported data through the same native navigation path used by

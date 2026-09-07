@@ -15,9 +15,11 @@ import type { FarmData, FarmProfile, Weather } from "@/lib/planning-types";
 export function WeeklyPlan({
   farm,
   data,
+  storageKey,
 }: {
   farm: FarmProfile;
   data: FarmData;
+  storageKey?: string;
 }) {
   const lat = farm.latitude ? +farm.latitude : data.municipality.latitude,
     lon = farm.longitude ? +farm.longitude : data.municipality.longitude;
@@ -35,14 +37,15 @@ export function WeeklyPlan({
     try {
       setDone(
         JSON.parse(
-          localStorage.getItem("agroamigo-tasks-" + farm.municipalityId) ||
-            "[]",
+          localStorage.getItem(
+            "agroamigo-tasks-" + (storageKey || farm.municipalityId),
+          ) || "[]",
         ).filter((s: unknown) => typeof s === "string"),
       );
     } catch {
       setDone([]);
     }
-  }, [farm.municipalityId]);
+  }, [farm.municipalityId, storageKey]);
   const toggle = (id: string) => {
     const next = done.includes(id)
       ? done.filter((x) => x !== id)
@@ -50,7 +53,7 @@ export function WeeklyPlan({
     setDone(next);
     try {
       localStorage.setItem(
-        "agroamigo-tasks-" + farm.municipalityId,
+        "agroamigo-tasks-" + (storageKey || farm.municipalityId),
         JSON.stringify(next),
       );
     } catch {}

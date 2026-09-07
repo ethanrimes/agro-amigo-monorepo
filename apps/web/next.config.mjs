@@ -1,5 +1,13 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const root = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
 /** @type {import('next').NextConfig} */
-export default {output:'standalone',outputFileTracingRoot:root,poweredByHeader:false};
+export default {
+  devIndicators: false,
+  output: "standalone",
+  outputFileTracingRoot: root,
+  poweredByHeader: false,
+};

@@ -1,114 +1,132 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
+  IoAddOutline,
   IoLocationOutline,
-  IoCalculatorOutline,
   IoLeafOutline,
-  IoSwapHorizontalOutline,
-  IoCreateOutline,
 } from "react-icons/io5";
-import { useFarm } from "@/components/planning/FarmContext";
+import { useFarm, EMPTY_FARM } from "@/components/planning/FarmContext";
 import { FarmEditor } from "@/components/planning/FarmEditor";
-import { WeeklyPlan } from "@/components/planning/WeeklyPlan";
-import { EvidenceLink } from "@/components/planning/EvidenceLink";
+import { Overlay } from "@/components/ui/Overlay";
 import { useData } from "@/components/marketplace/useData";
-import { ErrorState } from "@/components/marketplace/Shared";
+import { allocatedArea, hasPin } from "@/lib/farm-types";
 import { number } from "@/lib/market-types";
-import type { FarmData } from "@/lib/planning-types";
-export default function FarmPage() {
-  const { farm, ready } = useFarm(),
-    [editing, setEditing] = useState(false);
-  const info = useData<FarmData>(
-    ready && farm.municipalityId
-      ? "/api/planning/farm?id=" + farm.municipalityId
-      : null,
-  );
-  if (!ready) return <p role="status">Cargando tu finca…</p>;
-  const crop = info.data?.crops.find((c) => c.crop_code === farm.cropCode);
+import type { Municipality } from "@/lib/planning-types";
+export default function FarmsPage() {
+  const { farms, ready, addFarm, storageError } = useFarm(),
+    router = useRouter(),
+    [adding, setAdding] = useState(false);
+  const places = useData<Municipality[]>("/api/planning/municipalities");
+  const create = (profile: typeof EMPTY_FARM) => {
+    const id = addFarm(profile);
+    setAdding(false);
+    if (adding) router.replace("/farm/" + id);
+    else router.push("/farm/" + id);
+  };
+  if (!ready) return <p role="status">Cargando tus fincas…</p>;
   return (
     <>
-      <div className="page-heading">
+      <div className="catalog-heading">
         <div>
           <span className="eyebrow">MI FINCA</span>
-          <h1>
-            {farm.municipalityId
-              ? farm.name
-              : "Mejores decisiones, desde tu finca"}
-          </h1>
-          <p>
-            {info.data ? (
-              <>
-                <IoLocationOutline /> {info.data.municipality.name},{" "}
-                {info.data.municipality.department} · {number(+farm.area)} ha{" "}
-                {crop ? "· " + crop.variety : ""}
-              </>
-            ) : (
-              "Clima, cultivos y cuentas en un solo lugar."
-            )}
-          </p>
+          <h1>Mis fincas</h1>
+          <p>Cada finca, con sus cultivos, su ubicación y sus cuentas.</p>
         </div>
-        {farm.municipalityId && (
-          <button
-            className="button secondary"
-            onClick={() => setEditing(!editing)}
-          >
-            <IoCreateOutline />
-            {editing ? "Cerrar edición" : "Editar mi finca"}
+        {farms.length > 0 && (
+          <button className="button primary" onClick={() => setAdding(true)}>
+            <IoAddOutline />
+            Agregar finca
           </button>
         )}
       </div>
-      {!farm.municipalityId || editing ? (
-        <FarmEditor
-          key={farm.municipalityId}
-          onSaved={() => setEditing(false)}
-        />
+      {storageError && (
+        <p role="alert" className="inline-warning">
+          {storageError}
+        </p>
+      )}
+      {!farms.length ? (
+        <FarmEditor initial={EMPTY_FARM} onCommit={create} />
       ) : (
         <>
-          <div className="decision-grid">
-            <Link href="/plan" className="decision-card">
-              <IoLeafOutline />
-              <h3>¿Qué podría sembrar?</h3>
-              <p>Explora cultivos con referencias para tu municipio.</p>
-              <span>Ver opciones →</span>
-            </Link>
-            <Link href="/plan?tab=budget" className="decision-card">
-              <IoCalculatorOutline />
-              <h3>¿Me salen las cuentas?</h3>
-              <p>Estima costos, cosecha y precio de equilibrio.</p>
-              <span>Hacer mi presupuesto →</span>
-            </Link>
-            <Link href="/offers" className="decision-card">
-              <IoSwapHorizontalOutline />
-              <h3>¿Qué oferta me conviene?</h3>
-              <p>Compara lo que queda después de los gastos de venta.</p>
-              <span>Comparar ofertas →</span>
-            </Link>
+          <div className="farm-overview-strip">
+            <span>
+              <strong>{farms.length}</strong> fincas
+            </span>
+            <span>
+              <strong>
+                {number(farms.reduce((s, f) => s + (+f.profile.area || 0), 0))}
+              </strong>{" "}
+              hectáreas registradas
+            </span>
+            <span>
+              <strong>{farms.reduce((s, f) => s + f.crops.length, 0)}</strong>{" "}
+              cultivos / lotes
+            </span>
           </div>
-          {info.loading ? (
-            <div className="panel" role="status">
-              Consultando datos de tu zona…
-            </div>
-          ) : info.error ? (
-            <ErrorState message={info.error} retry={info.retry} />
-          ) : (
-            info.data && (
-              <>
-                <WeeklyPlan farm={farm} data={info.data} />
-                <section className="farm-source-footnote">
-                  <p>
-                    Tu ubicación y los cultivos de referencia provienen de datos
-                    públicos. Los valores de tu finca se conservan en este
-                    navegador.
-                  </p>
-                  <EvidenceLink id={info.data.municipality.document_id}>
-                    Consultar directorio municipal
-                  </EvidenceLink>
-                </section>
-              </>
-            )
-          )}
+          <div className="farm-cards">
+            {farms.map((f) => {
+              const place = places.data?.find(
+                (p) => p.id === f.profile.municipalityId,
+              );
+              return (
+                <Link className="farm-card" href={"/farm/" + f.id} key={f.id}>
+                  <div className="farm-card-photo">
+                    <img
+                      src="/images/farm.jpg"
+                      alt="Paisaje agrícola ilustrativo"
+                    />
+                    <span>
+                      <IoLeafOutline />
+                      {f.crops.length} cultivos / lotes
+                    </span>
+                  </div>
+                  <div className="farm-card-body">
+                    <h2>{f.profile.name}</h2>
+                    <p>
+                      <IoLocationOutline />
+                      {place
+                        ? `${place.name}, ${place.department}`
+                        : "Municipio registrado"}
+                    </p>
+                    <div className="farm-card-facts">
+                      <span>
+                        <b>{number(+f.profile.area)} ha</b>Área total
+                      </span>
+                      <span>
+                        <b>{number(allocatedArea(f))} ha</b>En tus cultivos
+                      </span>
+                    </div>
+                    <small>
+                      {hasPin(f.profile)
+                        ? "Ubicación con pin guardada"
+                        : "Falta ubicar el pin de esta finca"}
+                    </small>
+                    <span className="farm-card-link">
+                      Ver mi finca y sus cuentas →
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <p className="privacy-note">
+            Tus fincas se guardan en este dispositivo. Puedes descargar una
+            copia desde el detalle de cada finca.
+          </p>
         </>
+      )}
+      {adding && (
+        <Overlay
+          title="Agregar una finca"
+          onClose={() => setAdding(false)}
+          className="farm-editor-overlay"
+        >
+          <div className="document-workspace">
+            <FarmEditor initial={EMPTY_FARM} onCommit={create} />
+          </div>
+        </Overlay>
       )}
     </>
   );

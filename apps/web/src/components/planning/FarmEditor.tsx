@@ -4,10 +4,25 @@ import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { EMPTY_FARM, useFarm } from "./FarmContext";
 import type { FarmData, FarmProfile, Municipality } from "@/lib/planning-types";
+import { FarmLocation } from "@/components/farms/FarmLocation";
 import { fold } from "@/lib/planning-math";
-export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
-  const { farm, save } = useFarm(),
-    [draft, setDraft] = useState(farm),
+export function FarmEditor({
+  onSaved,
+  initial,
+  onCommit,
+  minimumArea = 0,
+  locationOnly = false,
+}: {
+  onSaved?: () => void;
+  initial?: FarmProfile;
+  onCommit?: (p: FarmProfile) => void;
+  minimumArea?: number;
+  locationOnly?: boolean;
+}) {
+  const context = useFarm(),
+    farm = initial || context.farm,
+    save = onCommit || context.save;
+  const [draft, setDraft] = useState(farm),
     [department, setDepartment] = useState(""),
     [problem, setProblem] = useState("");
   const places = useData<Municipality[]>("/api/planning/municipalities");
@@ -18,10 +33,17 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
       : null,
   );
   useEffect(() => {
-    if (selected && !department) setDepartment(selected.department);
+    if (selected && selected.department !== department)
+      setDepartment(selected.department);
   }, [selected, department]);
   const patch = (key: keyof FarmProfile, value: string | boolean) =>
-    setDraft((d) => ({ ...d, [key]: value }));
+    setDraft((d) => ({
+      ...d,
+      [key]: value,
+      ...(["latitude", "longitude"].includes(key)
+        ? { locationMethod: "manual", locationAccuracy: "" }
+        : {}),
+    }));
   const departments = [
     ...new Set(places.data?.map((m) => m.department) || []),
   ].sort((a, b) => a.localeCompare(b, "es"));
@@ -65,6 +87,12 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
       setProblem("La altitud debe estar entre 0 y 6.000 metros.");
       return;
     }
+    if (+draft.area + 1e-8 < minimumArea) {
+      setProblem(
+        `Los cultivos ocupan ${minimumArea} ha. El área de la finca no puede ser menor.`,
+      );
+      return;
+    }
     save({
       ...draft,
       cropCode: crop?.crop_code || "",
@@ -93,11 +121,17 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
         <ErrorState message={places.error} retry={places.retry} />
       ) : (
         <form onSubmit={submit}>
+          <FarmLocation
+            draft={draft}
+            places={places.data || []}
+            onChange={(p) => setDraft((d) => ({ ...d, ...p }))}
+          />
           <div className="form-grid">
             <label className="form-field">
               Departamento
               <select
                 required
+                aria-label="Departamento"
                 value={department}
                 onChange={(e) => {
                   setDepartment(e.target.value);
@@ -105,8 +139,6 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
                     ...d,
                     municipalityId: "",
                     cropCode: "",
-                    latitude: "",
-                    longitude: "",
                   }));
                 }}
               >
@@ -124,14 +156,13 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
               Municipio
               <select
                 required
+                aria-label="Municipio"
                 value={draft.municipalityId}
                 onChange={(e) =>
                   setDraft((d) => ({
                     ...d,
                     municipalityId: e.target.value,
                     cropCode: "",
-                    latitude: "",
-                    longitude: "",
                   }))
                 }
               >
@@ -158,7 +189,7 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
                   />
                 </label>
                 <label className="form-field">
-                  Área que vas a planear (hectáreas)
+                  Área total de la finca (hectáreas)
                   <input
                     type="number"
                     step="any"
@@ -169,77 +200,96 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
                     onChange={(e) => patch("area", e.target.value)}
                   />
                 </label>
-                <label className="form-field">
-                  Cultivo principal
-                  <select
-                    value={draft.cropCode}
-                    onChange={(e) => patch("cropCode", e.target.value)}
-                  >
-                    <option value="">Todavía estoy decidiendo</option>
-                    {local.data?.crops.map((c) => (
-                      <option key={c.crop_code} value={c.crop_code}>
-                        {c.variety}
+                {!locationOnly && (
+                  <label className="form-field">
+                    Cultivo principal
+                    <select
+                      aria-label="Cultivo principal"
+                      value={draft.cropCode}
+                      onChange={(e) => patch("cropCode", e.target.value)}
+                    >
+                      <option value="">Todavía estoy decidiendo</option>
+                      {local.data?.crops.map((c) => (
+                        <option key={c.crop_code} value={c.crop_code}>
+                          {c.variety}
+                        </option>
+                      ))}
+                    </select>
+                    <small>Opciones reportadas en el municipio por UPRA.</small>
+                  </label>
+                )}
+                {!locationOnly && (
+                  <label className="form-field">
+                    Momento del cultivo
+                    <select
+                      value={draft.stage}
+                      onChange={(e) => patch("stage", e.target.value)}
+                    >
+                      <option value="planning">Estoy planeando</option>
+                      <option value="planting">
+                        Siembra o establecimiento
                       </option>
-                    ))}
-                  </select>
-                  <small>Opciones reportadas en el municipio por UPRA.</small>
-                </label>
-                <label className="form-field">
-                  Momento del cultivo
-                  <select
-                    value={draft.stage}
-                    onChange={(e) => patch("stage", e.target.value)}
-                  >
-                    <option value="planning">Estoy planeando</option>
-                    <option value="planting">Siembra o establecimiento</option>
-                    <option value="growth">Crecimiento</option>
-                    <option value="flowering">Floración</option>
-                    <option value="harvest">Cosecha o poscosecha</option>
-                  </select>
-                </label>
+                      <option value="growth">Crecimiento</option>
+                      <option value="flowering">Floración</option>
+                      <option value="harvest">Cosecha o poscosecha</option>
+                    </select>
+                  </label>
+                )}
               </div>
-              <label className="check-field">
-                <input
-                  type="checkbox"
-                  checked={draft.irrigation}
-                  onChange={(e) => patch("irrigation", e.target.checked)}
-                />{" "}
-                Tengo acceso a riego
-              </label>
+              {!locationOnly && (
+                <label className="check-field">
+                  <input
+                    type="checkbox"
+                    checked={draft.irrigation}
+                    onChange={(e) => patch("irrigation", e.target.checked)}
+                  />{" "}
+                  Tengo acceso a riego
+                </label>
+              )}
               <details className="source-explanation">
                 <summary>
-                  Agregar fechas, variedad o ubicación precisa (opcional)
+                  {locationOnly
+                    ? "Altitud y coordenadas (opcional)"
+                    : "Fechas, variedad, altitud y coordenadas (opcional)"}
                 </summary>
                 <div className="form-grid">
-                  <label className="form-field">
-                    Variedad que tienes
-                    <input
-                      placeholder="Por ejemplo: Castillo o Alhaja"
-                      value={draft.variety}
-                      onChange={(e) => patch("variety", e.target.value)}
-                      maxLength={100}
-                    />
-                  </label>
-                  <label className="form-field">
-                    Fecha de siembra o establecimiento
-                    <input
-                      type="date"
-                      value={draft.plantingDate}
-                      onChange={(e) => patch("plantingDate", e.target.value)}
-                    />
-                  </label>
-                  {fold(crop?.crop || "") === "cafe" && (
-                    <label className="form-field">
-                      Floración principal observada
-                      <input
-                        type="date"
-                        value={draft.floweringDate}
-                        onChange={(e) => patch("floweringDate", e.target.value)}
-                      />
-                      <small>
-                        Se usa para estimar la ventana de cosecha del café.
-                      </small>
-                    </label>
+                  {!locationOnly && (
+                    <>
+                      <label className="form-field">
+                        Variedad que tienes
+                        <input
+                          placeholder="Por ejemplo: Castillo o Alhaja"
+                          value={draft.variety}
+                          onChange={(e) => patch("variety", e.target.value)}
+                          maxLength={100}
+                        />
+                      </label>
+                      <label className="form-field">
+                        Fecha de siembra o establecimiento
+                        <input
+                          type="date"
+                          value={draft.plantingDate}
+                          onChange={(e) =>
+                            patch("plantingDate", e.target.value)
+                          }
+                        />
+                      </label>
+                      {fold(crop?.crop || "") === "cafe" && (
+                        <label className="form-field">
+                          Floración principal observada
+                          <input
+                            type="date"
+                            value={draft.floweringDate}
+                            onChange={(e) =>
+                              patch("floweringDate", e.target.value)
+                            }
+                          />
+                          <small>
+                            Se usa para estimar la ventana de cosecha del café.
+                          </small>
+                        </label>
+                      )}
+                    </>
                   )}
                   <label className="form-field">
                     Altitud conocida (metros)
@@ -279,6 +329,12 @@ export function FarmEditor({ onSaved }: { onSaved?: () => void }) {
                 </p>
               </details>
             </>
+          )}
+          {initial && (
+            <p className="inline-note">
+              Si cambias de municipio, revisa y vuelve a guardar los
+              presupuestos de sus cultivos con las nuevas referencias.
+            </p>
           )}
           {local.error && <p className="inline-warning">{local.error}</p>}
           {problem && (

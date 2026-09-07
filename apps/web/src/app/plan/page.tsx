@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useFarm } from "@/components/planning/FarmContext";
@@ -8,14 +8,27 @@ import { CropOptions } from "@/components/planning/CropOptions";
 import { CropBudget } from "@/components/planning/CropBudget";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
-import type { FarmData } from "@/lib/planning-types";
+import { profileFor } from "@/lib/farm-types";
+import type { FarmData, CropReference } from "@/lib/planning-types";
 function Planner() {
-  const { farm, ready } = useFarm(),
+  const context = useFarm(),
+    { ready } = context,
     params = useSearchParams(),
     [tab, setTab] = useState(
       params.get("tab") === "budget" ? "budget" : "crops",
     ),
     [chosen, setChosen] = useState("");
+  const record =
+    context.farms.find((f) => f.id === params.get("farm")) ||
+    context.activeFarm;
+  const managed =
+    record?.crops.find(
+      (c) => c.id === (params.get("crop") || record.selectedCropId),
+    ) || record?.crops[0];
+  const farm = record ? profileFor(record, managed?.id) : context.farm;
+  useEffect(() => {
+    if (record) context.selectFarm(record.id);
+  }, [record?.id, context.activeFarm?.id]);
   const info = useData<FarmData>(
     ready && farm.municipalityId
       ? "/api/planning/farm?id=" + farm.municipalityId
@@ -23,7 +36,22 @@ function Planner() {
   );
   const crop =
     info.data?.crops.find((c) => c.crop_code === (chosen || farm.cropCode)) ||
-    info.data?.crops[0];
+    (!chosen && managed?.cropCode.startsWith("manual-")
+      ? ({
+          crop_code: managed.cropCode,
+          crop: managed.name,
+          variety: managed.variety || managed.name,
+          reference_year: 0,
+          cycle: "Transitorio",
+          physical_state: managed.physicalState,
+          planted_ha: 0,
+          harvested_ha: 0,
+          production_t: 0,
+          yield_kg_ha: null,
+          document_id: "",
+          source_rows: [],
+        } as CropReference)
+      : info.data?.crops[0]);
   return (
     <>
       <div className="page-heading">
@@ -40,7 +68,7 @@ function Planner() {
         </div>
         {farm.municipalityId && (
           <Link className="button secondary" href="/farm">
-            Cambiar mi finca
+            Ver mis fincas
           </Link>
         )}
       </div>
@@ -96,6 +124,11 @@ function Planner() {
                         value={crop.crop_code}
                         onChange={(e) => setChosen(e.target.value)}
                       >
+                        {!info.data.crops.some(
+                          (c) => c.crop_code === crop.crop_code,
+                        ) && (
+                          <option value={crop.crop_code}>{crop.variety}</option>
+                        )}
                         {info.data.crops.map((c) => (
                           <option key={c.crop_code} value={c.crop_code}>
                             {c.variety}
@@ -104,11 +137,46 @@ function Planner() {
                       </select>
                     </label>
                     <CropBudget
-                      key={farm.municipalityId + "-" + crop.crop_code}
+                      key={
+                        (record?.id || farm.municipalityId) +
+                        "-" +
+                        (managed?.id || "") +
+                        "-" +
+                        crop.crop_code
+                      }
                       crop={crop}
                       data={info.data}
                       farm={farm}
+                      managed={
+                        managed?.cropCode === crop.crop_code
+                          ? managed
+                          : undefined
+                      }
+                      scenarioKey={
+                        record
+                          ? "agroamigo-scenarios-" + record.id
+                          : "agroamigo-scenarios-v1"
+                      }
+                      onApply={
+                        record && managed?.cropCode === crop.crop_code
+                          ? (plan) =>
+                              context.saveCrop(record.id, {
+                                ...managed,
+                                area: String(plan.areaHa),
+                                yieldKgHa: String(plan.yieldKgHa),
+                                budget: plan,
+                              })
+                          : undefined
+                      }
                     />
+                    {record && (
+                      <Link
+                        className="button secondary"
+                        href={"/farm/" + record.id}
+                      >
+                        Ver las cuentas de {record.profile.name} →
+                      </Link>
+                    )}
                   </>
                 ) : (
                   <div className="empty-state">

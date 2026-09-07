@@ -353,35 +353,6 @@ html {
   font-size: 13px;
   color: #66735f;
 }
-.role-switch {
-  display: flex;
-  padding: 4px;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-  background: #eff1e9;
-  flex-shrink: 0;
-  gap: 3px;
-}
-.role-switch button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: transparent;
-  color: #75806c;
-  font-size: 11px;
-  padding: 9px 13px;
-  border-radius: 5px;
-  min-height: 36px;
-}
-.role-switch button svg {
-  font-size: 15px;
-}
-.role-switch button.selected {
-  background: #fff;
-  color: #365038;
-  box-shadow: 0 1px 4px #2739200d;
-  font-weight: 700;
-}
 .hero {
   position: relative;
   min-height: 369px;
@@ -1548,9 +1519,6 @@ th {
   .welcome-row p {
     font-size: 15px;
   }
-  .role-switch button {
-    font-size: 13px;
-  }
 }
 @media (max-width: 1200px) {
   .sidebar {
@@ -1644,16 +1612,8 @@ th {
     flex-direction: column;
     gap: 14px;
   }
-  .welcome-row .role-switch {
-    align-self: flex-end;
-    margin-top: -43px;
-  }
   .welcome-row p {
     max-width: 230px;
-  }
-  .role-switch button {
-    font-size: 10px;
-    padding: 8px;
   }
   .home-bottom {
     grid-template-columns: 1fr;
@@ -1774,19 +1734,6 @@ th {
   .welcome-row p {
     max-width: 100%;
     font-size: 12px;
-  }
-  .welcome-row .role-switch {
-    margin-top: 16px;
-    width: 100%;
-  }
-  .role-switch button {
-    flex: 1;
-    justify-content: center;
-    font-size: 12px;
-    min-height: 42px;
-  }
-  .role-switch {
-    width: 100%;
   }
   .hero {
     min-height: 375px;
@@ -2305,9 +2252,6 @@ th {
 }
 .location-select {
   font-size: 13px;
-}
-.role-switch button {
-  font-size: 12px;
 }
 @media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
   .hero p {
