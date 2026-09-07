@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -12,7 +13,7 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 const appOrigin = 'https://agroamigo-demo-9a04.azurewebsites.net';
 const brandGreen = Color(0xff22643f);
-const paper = Color(0xfff7f8f2);
+const paper = Color(0xfff2f4ef);
 
 bool isAppUrl(Uri url) =>
     url.scheme == 'https' &&
@@ -231,69 +232,67 @@ class FarmBrowserState extends State<FarmBrowser> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SafeArea(
-      child: Column(
-        children: [
-          if (canGoBack)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: () => controller.goBack(),
-                icon: const Icon(Icons.arrow_back, size: 20),
-                label: const Text('Volver'),
+  Widget build(BuildContext context) => AnnotatedRegion<SystemUiOverlayStyle>(
+    value: SystemUiOverlayStyle.dark,
+    child: Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        // WKWebView and the web tab bar extend behind the home indicator.
+        // CSS safe-area-inset-bottom keeps its controls above the indicator.
+        bottom: false,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            WebViewWidget(controller: controller),
+            if (loading)
+              const Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: LinearProgressIndicator(color: brandGreen, minHeight: 2),
               ),
-            ),
-          if (loading)
-            const LinearProgressIndicator(color: brandGreen, minHeight: 2),
-          Expanded(
-            child: Stack(
-              children: [
-                WebViewWidget(controller: controller),
-                if (failed)
-                  ColoredBox(
-                    color: paper,
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.cloud_off_outlined,
-                              size: 48,
-                              color: brandGreen,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'Revisa tu conexión',
-                              style: TextStyle(fontSize: 24),
-                            ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Necesitas internet para consultar precios y fuentes. Tus datos guardados siguen en este dispositivo.',
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            FilledButton(
-                              onPressed: () {
-                                setState(() {
-                                  failed = false;
-                                  loading = true;
-                                });
-                                controller.loadRequest(Uri.parse(appOrigin));
-                              },
-                              child: const Text('Intentar de nuevo'),
-                            ),
-                          ],
+            if (failed)
+              ColoredBox(
+                color: paper,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.cloud_off_outlined,
+                          size: 48,
+                          color: brandGreen,
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Revisa tu conexión',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Necesitas internet para consultar precios y fuentes. Tus datos guardados siguen en este dispositivo.',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 20),
+                        FilledButton(
+                          onPressed: () {
+                            setState(() {
+                              failed = false;
+                              loading = true;
+                            });
+                            controller.loadRequest(Uri.parse(appOrigin));
+                          },
+                          child: const Text('Intentar de nuevo'),
+                        ),
+                      ],
                     ),
                   ),
-              ],
-            ),
-          ),
-        ],
+                ),
+              ),
+          ],
+        ),
       ),
     ),
   );

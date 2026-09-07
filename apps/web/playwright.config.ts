@@ -22,6 +22,11 @@ export default defineConfig({
       },
   projects: [
     {
+      name: "iphone-webkit",
+      testMatch: "layout.spec.ts",
+      use: { ...devices["iPhone 13"] },
+    },
+    {
       name: "desktop",
       use: {
         ...devices["Desktop Chrome"],

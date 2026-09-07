@@ -1,47 +1,3 @@
-@font-face {
-  font-family: "DM Sans";
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url(/fonts/dm-sans-latin-ext.woff2) format("woff2");
-  unicode-range:
-    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
-    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
-    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "DM Sans";
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url(/fonts/dm-sans-latin.woff2) format("woff2");
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
-    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
-    U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Manrope";
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(/fonts/manrope-latin-ext.woff2) format("woff2");
-  unicode-range:
-    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
-    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
-    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Manrope";
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(/fonts/manrope-latin.woff2) format("woff2");
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
-    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
-    U+2215, U+FEFF, U+FFFD;
-}
 :root {
   --paper: #f7f8f3;
   --white: #fff;
@@ -52,8 +8,8 @@
   --line: #e4e8df;
   --pale: #edf2e7;
   --orange: #bc653d;
-  --serif: Georgia, "Times New Roman", serif;
-  --font: "DM Sans", sans-serif;
+  --serif: var(--font);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -114,7 +70,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Manrope", var(--font);
+  font-family: var(--font);
   line-height: 1.25;
 }
 svg {
@@ -150,8 +106,14 @@ img {
 .muted {
   color: var(--muted);
 }
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+}
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 .sidebar {
   width: 238px;
@@ -171,10 +133,10 @@ img {
   align-items: center;
   font-size: 25px;
   font-weight: 700;
-  letter-spacing: -1.3px;
+  letter-spacing: normal;
 }
 .brand > span:not(.brand-mark) {
-  font-weight: 450;
+  font-weight: 400;
 }
 .brand i {
   background: #d89d4c;
@@ -199,7 +161,7 @@ img {
 }
 .sidebar-caption {
   font-size: 8px;
-  letter-spacing: 1.75px;
+  letter-spacing: normal;
   margin: 14px 0 39px 3px;
   color: #88917e;
   font-weight: 600;
@@ -217,7 +179,7 @@ img {
   min-height: 51px;
   border-radius: 7px;
   color: #687362;
-  font-weight: 550;
+  font-weight: 600;
   font-size: 13px;
   white-space: nowrap;
 }
@@ -234,7 +196,7 @@ img {
 }
 .nav-new {
   font-size: 7px;
-  letter-spacing: 0.7px;
+  letter-spacing: normal;
   background: #eae8d7;
   color: #817545;
   padding: 3px 5px;
@@ -275,7 +237,7 @@ img {
   gap: 8px;
   align-items: center;
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .help-link {
   display: flex;
@@ -303,6 +265,10 @@ img {
 }
 .main-shell {
   margin-left: 238px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 .topbar {
   height: 85px;
@@ -361,6 +327,9 @@ img {
   background: var(--line);
 }
 .app-content {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
   max-width: 1460px;
   padding: 30px 42px 20px;
   margin: 0 auto;
@@ -375,7 +344,7 @@ img {
 .eyebrow {
   display: block;
   font-size: 9px;
-  letter-spacing: 1.75px;
+  letter-spacing: normal;
   color: #7c886f;
   font-weight: 700;
   margin-bottom: 7px;
@@ -411,7 +380,7 @@ img {
   background: #fff;
   color: #365038;
   box-shadow: 0 1px 4px #2739200d;
-  font-weight: 650;
+  font-weight: 700;
 }
 .hero {
   position: relative;
@@ -448,7 +417,7 @@ img {
   align-items: center;
   gap: 8px;
   font-size: 8px;
-  letter-spacing: 2px;
+  letter-spacing: normal;
   color: #e1e9d0;
   font-weight: 600;
   margin-bottom: 15px;
@@ -463,7 +432,7 @@ img {
   font-family: var(--serif);
   font-weight: 400;
   font-size: 48px;
-  letter-spacing: -1px;
+  letter-spacing: normal;
   line-height: 1.12;
 }
 .hero p {
@@ -564,13 +533,13 @@ img {
 .home-coffee-intro .eyebrow {
   color: #9a7d52;
   font-size: 8px;
-  letter-spacing: 1.4px;
+  letter-spacing: normal;
   margin-bottom: 5px;
 }
 .home-coffee-intro h2 {
   font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -0.4px;
+  font-weight: 700;
+  letter-spacing: normal;
 }
 .home-coffee-intro p {
   font-size: 9px;
@@ -583,14 +552,14 @@ img {
 }
 .home-coffee-price strong {
   font-size: 24px;
-  font-weight: 650;
-  letter-spacing: -1px;
+  font-weight: 700;
+  letter-spacing: normal;
   white-space: nowrap;
 }
 .home-coffee-price small {
   font-size: 9px;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: normal;
   color: #827a67;
 }
 .home-coffee-price > span {
@@ -642,8 +611,8 @@ img {
 }
 .section-title h2 {
   font-size: 23px;
-  font-weight: 650;
-  letter-spacing: -0.6px;
+  font-weight: 700;
+  letter-spacing: normal;
 }
 .text-link {
   display: flex;
@@ -741,17 +710,17 @@ img {
   margin-top: 5px;
 }
 .product-price {
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
   font-size: 25px;
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: normal;
   margin-top: 13px;
 }
 .product-price > span {
   font-family: var(--font);
   font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: normal;
   color: #7d8774;
 }
 .price-change {
@@ -818,7 +787,7 @@ img {
 }
 .next-step h3 {
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .next-step p {
   font-size: 10px;
@@ -885,7 +854,7 @@ img {
 }
 .page-heading h1 {
   font-size: 35px;
-  letter-spacing: -1.2px;
+  letter-spacing: normal;
   font-weight: 600;
 }
 .page-heading p {
@@ -1040,7 +1009,7 @@ img {
 .empty-state h2,
 .empty-state h3 {
   font-size: 21px;
-  font-weight: 550;
+  font-weight: 600;
 }
 .empty-state p {
   font-size: 13px;
@@ -1096,7 +1065,7 @@ img {
 }
 .detail-intro h1 {
   font-size: 34px;
-  letter-spacing: -0.8px;
+  letter-spacing: normal;
 }
 .detail-intro p {
   font-size: 12px;
@@ -1120,7 +1089,7 @@ img {
 }
 .panel h2 {
   font-size: 20px;
-  letter-spacing: -0.5px;
+  letter-spacing: normal;
 }
 .panel > p {
   font-size: 12px;
@@ -1141,7 +1110,7 @@ img {
 }
 .chart-header h2 {
   font-size: 18px;
-  letter-spacing: -0.5px;
+  letter-spacing: normal;
 }
 .chart-header p {
   font-size: 11px;
@@ -1253,7 +1222,7 @@ th {
   display: block;
   font-size: 29px;
   font-weight: 600;
-  letter-spacing: -1px;
+  letter-spacing: normal;
   margin: 5px 0;
 }
 .calculation-result p {
@@ -1322,7 +1291,7 @@ th {
 .market-value strong {
   font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.5px;
+  letter-spacing: normal;
 }
 .market-value small {
   font-size: 10px;
@@ -1359,12 +1328,12 @@ th {
 }
 .coffee-big-price {
   font-size: 46px;
-  font-weight: 650;
-  letter-spacing: -1.5px;
+  font-weight: 700;
+  letter-spacing: normal;
 }
 .coffee-big-price small {
   font-size: 12px;
-  letter-spacing: 0;
+  letter-spacing: normal;
   font-weight: 400;
   color: #817461;
 }
@@ -1597,7 +1566,7 @@ th {
   }
   .sidebar-caption {
     font-size: 7px;
-    letter-spacing: 1.35px;
+    letter-spacing: normal;
   }
   .topbar {
     padding: 0 28px;
@@ -1747,7 +1716,7 @@ th {
     bottom: 13px;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
   body {
     font-size: 16px;
   }
@@ -1771,8 +1740,8 @@ th {
     display: flex;
     align-items: center;
     font-size: 22px;
-    font-weight: 650;
-    letter-spacing: -1px;
+    font-weight: 700;
+    letter-spacing: normal;
     gap: 4px;
   }
   .mobile-brand svg {
@@ -1837,7 +1806,7 @@ th {
   }
   .hero-kicker {
     font-size: 8px;
-    letter-spacing: 1.7px;
+    letter-spacing: normal;
   }
   .hero h1 {
     font-size: 43px;
@@ -2045,7 +2014,7 @@ th {
   }
   .mobile-nav a.active {
     color: #395b31;
-    font-weight: 650;
+    font-weight: 700;
   }
   .page-heading {
     margin: 3px 0 24px;
@@ -2340,7 +2309,7 @@ th {
 .role-switch button {
   font-size: 12px;
 }
-@media (max-width: 760px) {
+@media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
   .hero p {
     font-size: 14px;
   }
@@ -2393,7 +2362,7 @@ th {
   width: 100%;
   height: 100%;
 }
-@media (max-width: 760px) {
+@media (max-width: 760px), (pointer: coarse) and (max-height: 500px) {
   .detail-picture {
     width: 75px;
     height: 75px;
@@ -2418,7 +2387,7 @@ th {
 .section-heading h2,
 .budget-header h2 {
   font-size: 25px;
-  letter-spacing: -0.7px;
+  letter-spacing: normal;
 }
 .section-heading p,
 .budget-header p {
@@ -2455,7 +2424,7 @@ th {
 }
 .decision-card h3 {
   font-size: 18px;
-  letter-spacing: -0.4px;
+  letter-spacing: normal;
 }
 .decision-card p {
   font-size: 14px;
@@ -2466,7 +2435,7 @@ th {
 .decision-card > span {
   font-size: 13px;
   color: #285a3e;
-  font-weight: 650;
+  font-weight: 700;
   margin-top: auto;
 }
 .form-grid {
@@ -2846,7 +2815,7 @@ th {
 }
 .aptitude-result strong {
   font-size: 27px;
-  letter-spacing: -0.7px;
+  letter-spacing: normal;
   color: #285139;
 }
 .aptitude-result span {
@@ -2996,7 +2965,7 @@ th {
 }
 .step-title h3 {
   font-size: 21px;
-  letter-spacing: -0.5px;
+  letter-spacing: normal;
 }
 .yield-note {
   font-size: 13px;
@@ -3077,7 +3046,7 @@ th {
 }
 .summary-numbers dd {
   text-align: right;
-  font-weight: 650;
+  font-weight: 700;
 }
 .break-even {
   padding: 23px 18px;
@@ -3093,12 +3062,12 @@ th {
   display: block;
   font-size: 32px;
   margin: 9px 0;
-  letter-spacing: -1px;
+  letter-spacing: normal;
 }
 .break-even small {
   font-size: 15px;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: normal;
 }
 .break-even > p {
   font-size: 12px;
@@ -3350,7 +3319,7 @@ th {
   border-radius: 6px;
   font-size: 12px;
   color: #3b652d;
-  font-weight: 650;
+  font-weight: 700;
   margin-bottom: 17px;
 }
 .offer-conditions {
@@ -3380,7 +3349,7 @@ th {
 .offer-result > strong {
   font-size: 30px;
   color: #305b34;
-  letter-spacing: -0.6px;
+  letter-spacing: normal;
 }
 .offer-result > b {
   font-size: 15px;

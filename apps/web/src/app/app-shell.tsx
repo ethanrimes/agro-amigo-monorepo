@@ -33,7 +33,13 @@ const links = [
 ];
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const { role, setRole, region, setRegion } = usePreferences();
+  const { role, region, setRegion } = usePreferences();
+  const isSelected = (href: string) =>
+    href === "/"
+      ? path === "/"
+      : path === href || path.startsWith(href + "/") ||
+        (href === "/farm" && ["/plan", "/offers", "/insumos"].includes(path)) ||
+        (href === "/products" && (path.startsWith("/product/") || path === "/daily"));
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -53,18 +59,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               key={href}
               href={href}
-              className={
-                "nav-link " +
-                ((
-                  href === "/"
-                    ? path === "/"
-                    : path.startsWith(href) || (href === "/farm" && ["/plan", "/offers"].includes(path)) ||
-                      (href === "/products" && path.startsWith("/product/"))
-                )
-                  ? "active"
-                  : "")
-              }
-              aria-current={path === href ? "page" : undefined}
+              className={"nav-link " + (isSelected(href) ? "active" : "")}
+              aria-current={isSelected(href) ? (path === href ? "page" : "location") : undefined}
             >
               <Icon />
               {label}
@@ -170,7 +166,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href={href}
             key={href}
-            className={path === href ? "active" : ""}
+            className={isSelected(href) ? "active" : ""}
+            aria-current={isSelected(href) ? (path === href ? "page" : "location") : undefined}
           >
             <Icon />
             <span>{mobile || label}</span>

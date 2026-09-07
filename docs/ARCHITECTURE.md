@@ -38,3 +38,7 @@ The active Flutter iOS client was moved from `agroamigo-iphone` to `apps/ios`, i
 ## Shared visual design
 
 `apps/web/src/app/globals.css` provides component layout and responsive behavior; `field-theme.css` defines the shared colors, photographic headers, crop cards, alert treatments and mobile refinements. All three clients load this same product interface. The iOS deployment target is iOS 18, matching the supported PDF viewer browser baseline. PDF text uses explicit stream readers for older WebKit versions without asynchronous stream iteration.
+
+Typography uses standard platform fonts without downloaded display fonts. Solid fills, visible borders, larger labels and simple corners keep the interface familiar. The five mobile destinations share equal grid columns and the same parent-route selection rules as desktop navigation. Short pages fill the dynamic viewport; landscape phones retain mobile navigation.
+
+The iOS WebView fills a Stack below the top safe area and extends to the bottom screen edge. Loading is an overlay and there is no separate native back-button row to change the page height after navigation. The web viewport uses `viewport-fit=cover`; the tab bar adds `env(safe-area-inset-bottom)` so its background reaches the edge while controls clear the home indicator. This follows [WebKit's safe-area guidance](https://webkit.org/blog/7929/designing-websites-for-iphone-x/). Page back buttons and native swipe gestures remain available.
