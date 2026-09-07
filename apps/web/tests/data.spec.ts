@@ -7,10 +7,14 @@ test("Azure API returns real, dated sources and only the demo window", async ({
   expect(catalog.products.length).toBeGreaterThan(100);
   expect(
     catalog.products.every(
-      (p: any) => p.price > 0 && p.unit === "kg" && p.period === "monthly",
+      (p: any) =>
+        p.price > 0 &&
+        (p.id === "cafe-pergamino-seco"
+          ? p.unit === "125kg" && p.period === "daily"
+          : p.unit === "kg" && p.period === "monthly"),
     ),
   ).toBeTruthy();
-  const selected = catalog.products[0];
+  const selected = catalog.products.find((p: any) => p.id === "aguacate-hass");
   const detail = await (
     await request.get("/api/products/" + selected.id)
   ).json();
@@ -39,7 +43,9 @@ test("Azure API returns real, dated sources and only the demo window", async ({
   const noRegion = await (
     await request.get("/api/catalog?region=region-does-not-exist")
   ).json();
-  expect(noRegion.products).toEqual([]);
+  expect(noRegion.products.map((p: any) => p.id)).toEqual([
+    "cafe-pergamino-seco",
+  ]);
   expect((await request.get("/api/products/does-not-exist")).status()).toBe(
     404,
   );

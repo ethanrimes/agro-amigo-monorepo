@@ -29,3 +29,5 @@ apps/android/local.properties
 scratch.md
 pastes
 apps/web/public/release.json
+
+apps/web/public/maplibre/

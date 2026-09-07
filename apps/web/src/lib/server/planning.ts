@@ -303,5 +303,43 @@ export async function evidence(
         [input.slice(0, 180), r.id, department || ""],
       )
     ).rows;
+  if (
+    (filters.get("food") || r.metadata?.dataset === "supply") &&
+    (filters.get("market") || filters.get("product"))
+  ) {
+    r.records = (
+      await db.query(
+        `SELECT s.food_name,s.market_id,m.name market_name,s.period_start,s.first_reported_on,s.observed_on,s.quantity_kg,s.reporting_days,s.source_rows
+      FROM supply_observation s JOIN market m ON m.id=s.market_id WHERE document_id=$1 AND ($2='' OR market_id=$2) AND ($3='' OR product_id=$3) AND ($4='' OR food_id=$4) AND ($5='' OR period_start::text=$5) AND ${WINDOW} ORDER BY s.observed_on DESC LIMIT 100`,
+        [
+          r.id,
+          (filters.get("market") || "").slice(0, 220),
+          (filters.get("product") || "").slice(0, 220),
+          (filters.get("food") || "").slice(0, 220),
+          (filters.get("month") || "").slice(0, 10),
+        ],
+      )
+    ).rows;
+  }
+  if (
+    filters.get("product") &&
+    !filters.get("food") &&
+    r.metadata?.dataset !== "supply"
+  ) {
+    r.records = (
+      await db.query(
+        `SELECT p.name AS product_name,m.name AS market_name,o.observed_on,o.price,o.unit,o.period,o.source_locator
+      FROM price_observation o JOIN market m ON m.id=o.market_id JOIN product p ON p.id=o.product_id
+      WHERE o.document_id=$1 AND o.product_id=$2 AND ($3='' OR o.market_id=$3) AND ($4='' OR o.observed_on::text=$4) AND ${WINDOW}
+      ORDER BY o.observed_on DESC LIMIT 100`,
+        [
+          r.id,
+          filters.get("product")!.slice(0, 220),
+          (filters.get("market") || "").slice(0, 220),
+          (filters.get("month") || "").slice(0, 10),
+        ],
+      )
+    ).rows;
+  }
   return r;
 }

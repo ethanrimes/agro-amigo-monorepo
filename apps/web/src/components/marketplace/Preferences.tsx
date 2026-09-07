@@ -6,10 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Role } from "@/lib/market-types";
 type Preferences = {
-  role: Role;
-  setRole: (role: Role) => void;
   region: string;
   setRegion: (region: string) => void;
   saved: string[];
@@ -18,7 +15,6 @@ type Preferences = {
 };
 const Context = createContext<Preferences | null>(null);
 export function PreferencesProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>("farmer");
   const [region, setRegion] = useState("");
   const [saved, setSaved] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
@@ -27,7 +23,6 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       const value = JSON.parse(
         localStorage.getItem("agroamigo-preferences-v2") || "{}",
       );
-      if (value.role === "buyer") setRole("buyer");
       if (typeof value.region === "string") setRegion(value.region);
       if (Array.isArray(value.saved))
         setSaved(value.saved.filter((x: unknown) => typeof x === "string"));
@@ -39,15 +34,13 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       try {
         localStorage.setItem(
           "agroamigo-preferences-v2",
-          JSON.stringify({ role, region, saved }),
+          JSON.stringify({ region, saved }),
         );
       } catch {}
-  }, [role, region, saved, ready]);
+  }, [region, saved, ready]);
   return (
     <Context.Provider
       value={{
-        role,
-        setRole,
         region,
         setRegion,
         saved,

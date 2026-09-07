@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./field-theme.css";
+import "./explore.css";
+import "./farms.css";
 import { Providers } from "./providers";
 import { AppShell } from "./app-shell";
 

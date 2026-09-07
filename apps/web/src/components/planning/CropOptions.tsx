@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { SearchBox } from "@/components/ui/SearchBox";
+import { photoFor } from "@/lib/images";
 import {
   IoLeafOutline,
   IoArrowForward,
@@ -38,10 +40,6 @@ export function CropOptions({
       (a, b) => b.suitable - a.suitable || b.c.harvested_ha - a.c.harvested_ha,
     );
   const soil = data.soil;
-  const cropPhoto = (name: string) => {
-    const n = fold(name);
-    return n.includes("cafe") ? "coffee" : n.includes("aguacate") ? "avocado" : n.includes("platano") ? "plantain" : n.includes("banano") ? "banana" : n.includes("tomate") ? "tomato" : n.includes("papa") ? "potato" : "farm";
-  };
   return (
     <>
       <section className="plan-intro panel">
@@ -56,18 +54,23 @@ export function CropOptions({
           cuentas.
         </p>
         <div className="form-grid">
-          <label className="form-field">
-            Buscar cultivo
-            <input
-              type="search"
+          <div className="form-field">
+            <span>Buscar cultivo</span>
+            <SearchBox
+              label="Buscar cultivo"
+              placeholder="Café, aguacate, frijol…"
               value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
+              onChange={(v) => {
+                setQuery(v);
                 setMore(false);
               }}
-              placeholder="Café, aguacate, frijol…"
+              options={data.crops.map((c) => ({
+                id: c.crop_code,
+                label: c.variety,
+                detail: c.crop,
+              }))}
             />
-          </label>
+          </div>
           <label className="form-field">
             Mes que estás considerando
             <select value={month} onChange={(e) => setMonth(+e.target.value)}>
@@ -89,8 +92,14 @@ export function CropOptions({
           .map(({ c, mapped, total, suitable }) => (
             <article className="crop-option panel" key={c.crop_code}>
               <div className="crop-option-photo">
-                <img src={`/images/${cropPhoto(c.crop)}.jpg`} alt={cropPhoto(c.crop) === "farm" ? "Paisaje agrícola ilustrativo" : `Imagen ilustrativa del cultivo de ${c.crop}`} loading="lazy" />
-                <span><IoLocationOutline /> {data.municipality.name}</span>
+                <img
+                  src={photoFor(c.crop).src}
+                  alt={photoFor(c.crop).alt}
+                  loading="lazy"
+                />
+                <span>
+                  <IoLocationOutline /> {data.municipality.name}
+                </span>
               </div>
               <div className="crop-option-title">
                 <span className="crop-option-icon">

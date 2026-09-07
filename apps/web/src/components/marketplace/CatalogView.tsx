@@ -1,103 +1,76 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  IoSearchOutline,
-  IoHeartOutline,
-  IoClose,
-  IoCafeOutline,
-  IoArrowForward,
-} from "react-icons/io5";
+import { useRouter } from "next/navigation";
+import { IoHeartOutline } from "react-icons/io5";
 import { usePreferences } from "./Preferences";
 import { useData } from "./useData";
-import {
-  ProductCard,
-  ErrorState,
-  LoadingCards,
-  RoleSwitch,
-  Notice,
-} from "./Shared";
+import { ProductCard, ErrorState, LoadingCards, Notice } from "./Shared";
+import { SearchBox } from "@/components/ui/SearchBox";
+import { MapButton } from "@/components/explore/ColombiaMap";
+import { fold } from "@/lib/planning-math";
 import type { Catalog } from "@/lib/market-types";
-const normalize = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
 export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
-  const { region, saved, setRegion } = usePreferences();
+  const { region, saved, setRegion } = usePreferences(),
+    router = useRouter();
   const { data, loading, error, retry } = useData<Catalog>(
     "/api/catalog?region=" + encodeURIComponent(region),
   );
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Todos");
-  const [limit, setLimit] = useState(24);
-  useEffect(() => {
-    setQuery(new URLSearchParams(window.location.search).get("q") || "");
-  }, []);
-  useEffect(() => {
-    setLimit(24);
-  }, [query, category, region]);
-  const categories = useMemo(
-    () => [
-      "Todos",
-      ...Array.from(new Set((data?.products || []).map((p) => p.category))),
-    ],
-    [data],
+  const [query, setQuery] = useState(""),
+    [category, setCategory] = useState("Todos"),
+    [limit, setLimit] = useState(24);
+  useEffect(
+    () => setQuery(new URLSearchParams(window.location.search).get("q") || ""),
+    [],
   );
-  const products = (data?.products || []).filter(
+  useEffect(() => setLimit(24), [query, category, region]);
+  const candidates = (data?.products || []).filter(
     (p) =>
       (!savedOnly || saved.includes(p.id)) &&
-      (category === "Todos" || p.category === category) &&
-      normalize(p.name).includes(normalize(query)),
+      (category === "Todos" || p.category === category),
   );
-  const showCoffee =
-    category === "Todos" &&
-    (!query || normalize("café pergamino seco").includes(normalize(query))) &&
-    (!savedOnly || saved.includes("cafe-pergamino-seco"));
+  const products = candidates.filter((p) => fold(p.name).includes(fold(query)));
+  const categories = [
+    "Todos",
+    ...new Set((data?.products || []).map((p) => p.category)),
+  ];
   return (
     <>
-      <div className="page-heading">
+      <div className="catalog-heading">
         <div>
           <span className="eyebrow">
-            {savedOnly
-              ? "A UN PASO DE LO QUE CULTIVAS"
-              : "INFORMACIÓN PARA DECIDIR"}
+            {savedOnly ? "TUS CONSULTAS A MANO" : "DEL CAMPO COLOMBIANO"}
           </span>
-          <h1>{savedOnly ? "Mis productos" : "Precios del campo"}</h1>
+          <h1>{savedOnly ? "Mis guardados" : "Productos agrícolas"}</h1>
           <p>
             {savedOnly
-              ? "Tus favoritos, reunidos en un solo lugar."
-              : "Busca tu producto y compara su precio entre mercados."}
+              ? "Los productos que te interesan, en este dispositivo."
+              : "Encuentra tu producto. Consulta precios y abastecimiento."}
           </p>
         </div>
-        <RoleSwitch />
-      </div>
-      {!savedOnly && (
-        <div className="panel daily-prompt">
-          <div>
-            <strong>¿Vas a negociar esta semana?</strong>
-            <p>Consulta también el último boletín diario de DANE.</p>
-          </div>
-          <Link className="button secondary" href="/daily">
-            Ver precios diarios →
-          </Link>
-        </div>
-      )}
-      <div className="catalog-controls">
-        <div className="search-field">
-          <IoSearchOutline />
-          <input
-            placeholder="Buscar producto…"
-            aria-label="Buscar producto"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+        {!savedOnly && (
+          <MapButton
+            kind="product"
+            id={
+              products.find((p) => p.id === "aguacate-hass")?.id ||
+              products[0]?.id
+            }
           />
-          {query && (
-            <button aria-label="Borrar búsqueda" onClick={() => setQuery("")}>
-              <IoClose />
-            </button>
-          )}
-        </div>
+        )}
+      </div>
+      <div className="catalog-controls">
+        <SearchBox
+          label="Buscar producto"
+          placeholder="Café, papa, aguacate…"
+          value={query}
+          onChange={setQuery}
+          options={candidates.map((p) => ({
+            id: p.id,
+            label: p.name,
+            detail: p.category,
+          }))}
+          onSelect={(p) => router.push("/product/" + p.id)}
+        />
         <label className="region-field">
           <span>Departamento</span>
           <select
@@ -106,9 +79,12 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
             onChange={(e) => setRegion(e.target.value)}
           >
             <option value="">Toda Colombia</option>
-            {Array.from(
-              new Set([...(data?.regions || []), ...(region ? [region] : [])]),
-            )
+            {[
+              ...new Set([
+                ...(data?.regions || []),
+                ...(region ? [region] : []),
+              ]),
+            ]
               .sort()
               .map((r) => (
                 <option key={r}>{r}</option>
@@ -120,24 +96,14 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
         {categories.map((c) => (
           <button
             key={c}
-            className={c === category ? "active" : ""}
-            aria-pressed={c === category}
+            aria-pressed={category === c}
+            className={category === c ? "active" : ""}
             onClick={() => setCategory(c)}
           >
             {c}
           </button>
         ))}
       </div>
-      {showCoffee && (
-        <Link href="/coffee" className="coffee-search-result">
-          <IoCafeOutline />
-          <div>
-            <strong>Café pergamino seco</strong>
-            <span>Referencia FNC, precios regionales y calculadora</span>
-          </div>
-          <IoArrowForward />
-        </Link>
-      )}
       {loading ? (
         <LoadingCards />
       ) : error ? (
@@ -146,10 +112,12 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
         <>
           <div className="results-label">
             <span>
-              {products.length + (showCoffee ? 1 : 0)} productos{" "}
+              {products.length} productos{" "}
               {region ? "en " + region : "en Colombia"}
             </span>
-            <span>DANE · SIPSA · COP por kg</span>
+            <Link href={savedOnly ? "/products" : "/saved"}>
+              {savedOnly ? "Ver todos los productos" : "Mis guardados"}
+            </Link>
           </div>
           {products.length ? (
             <div className="product-grid">
@@ -157,7 +125,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
-          ) : showCoffee ? null : (
+          ) : (
             <div className="empty-state">
               <IoHeartOutline />
               <h2>
@@ -167,11 +135,11 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
               </h2>
               <p>
                 {savedOnly
-                  ? "Toca el corazón de un producto para encontrarlo aquí. Se guarda en este dispositivo."
-                  : "Prueba otro nombre o selecciona Toda Colombia."}
+                  ? "Toca el corazón de un producto para encontrarlo aquí."
+                  : "Prueba otro nombre o departamento."}
               </p>
               <Link className="button primary" href="/products">
-                Explorar productos <IoArrowForward />
+                Explorar productos
               </Link>
             </div>
           )}
@@ -179,7 +147,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
             <div className="load-more">
               <button
                 className="button secondary"
-                onClick={() => setLimit((x) => x + 24)}
+                onClick={() => setLimit((v) => v + 24)}
               >
                 Ver más productos ({products.length - limit})
               </button>
@@ -188,9 +156,8 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
         </>
       )}
       <Notice>
-        Los valores son promedios mensuales de venta mayorista publicados por
-        DANE, no precios de compra en finca. El precio de una negociación
-        depende de la calidad, el volumen y el transporte.
+        DANE SIPSA: promedios mayoristas mensuales. Café: referencia diaria FNC
+        por carga de 125 kg. Cada detalle conserva su fecha, unidad y fuente.
       </Notice>
     </>
   );

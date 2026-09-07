@@ -23,7 +23,7 @@ export default defineConfig({
   projects: [
     {
       name: "iphone-webkit",
-      testMatch: "layout.spec.ts",
+      testMatch: ["layout.spec.ts", "explore.spec.ts", "farms.spec.ts"],
       use: { ...devices["iPhone 13"] },
     },
     {

@@ -1,5 +1,7 @@
 package co.agroamigo.demo;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Intent;
@@ -27,6 +29,9 @@ public class MainActivity extends Activity {
     private String pendingExport;
     private String lastPage = ORIGIN + "/";
     private boolean failed;
+    private static final int LOCATION_PERMISSION = 20;
+    private GeolocationPermissions.Callback pendingLocation;
+    private String pendingLocationOrigin;
 
     private boolean trusted(String url) {
         if (url == null) return false;
@@ -45,10 +50,20 @@ public class MainActivity extends Activity {
         TextView message = new TextView(this); message.setText("Revisa tu conexión a internet y vuelve a intentar. Los datos que guardaste en este dispositivo se conservan."); message.setTextSize(17); message.setPadding(0,24,0,28); error.addView(message);
         Button retry = new Button(this); retry.setText("Volver a intentar"); retry.setOnClickListener(v->web.loadUrl(lastPage)); error.addView(retry); body.addView(error,new FrameLayout.LayoutParams(-1,-1)); error.setVisibility(View.GONE);
         setContentView(root);
-        WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true); settings.setAllowFileAccess(false); settings.setAllowContentAccess(false); settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setGeolocationEnabled(false); settings.setSafeBrowsingEnabled(true); settings.setSupportMultipleWindows(false); settings.setUserAgentString(settings.getUserAgentString()+" AgroAmigoAndroid/1.0");
+        WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true); settings.setAllowFileAccess(false); settings.setAllowContentAccess(false); settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setGeolocationEnabled(true); settings.setSafeBrowsingEnabled(true); settings.setSupportMultipleWindows(false); settings.setUserAgentString(settings.getUserAgentString()+" AgroAmigoAndroid/1.0");
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        web.setWebChromeClient(new WebChromeClient(){@Override public void onProgressChanged(WebView view,int value){progress.setProgress(value);progress.setVisibility(value==100?View.GONE:View.VISIBLE);}});
+        web.setWebChromeClient(new WebChromeClient(){
+            @Override public void onProgressChanged(WebView view,int value){progress.setProgress(value);progress.setVisibility(value==100?View.GONE:View.VISIBLE);}
+            @Override public void onGeolocationPermissionsShowPrompt(String origin,GeolocationPermissions.Callback callback){
+                if(!trusted(origin)||!trusted(web.getUrl())){callback.invoke(origin,false,false);return;}
+                if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)==PackageManager.PERMISSION_GRANTED){callback.invoke(origin,true,false);return;}
+                if(pendingLocation!=null)pendingLocation.invoke(pendingLocationOrigin,false,false);
+                pendingLocation=callback;pendingLocationOrigin=origin;
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},LOCATION_PERMISSION);
+            }
+            @Override public void onGeolocationPermissionsHidePrompt(){pendingLocation=null;pendingLocationOrigin=null;}
+        });
         web.setWebViewClient(new WebViewClient(){
             @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request) {
                 String url=request.getUrl().toString();
@@ -69,6 +84,10 @@ public class MainActivity extends Activity {
         });
         if(Build.VERSION.SDK_INT>=33)getOnBackInvokedDispatcher().registerOnBackInvokedCallback(android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,this::navigateBack);
         if(state==null || web.restoreState(state)==null)web.loadUrl(ORIGIN+"/");
+    }
+    @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results){
+        super.onRequestPermissionsResult(request,permissions,results);
+        if(request==LOCATION_PERMISSION&&pendingLocation!=null){boolean granted=false;for(int r:results)if(r==PackageManager.PERMISSION_GRANTED)granted=true;pendingLocation.invoke(pendingLocationOrigin,granted&&trusted(web.getUrl()),false);pendingLocation=null;pendingLocationOrigin=null;}
     }
     private void openExternal(Uri uri){String scheme=uri.getScheme();if(!"https".equals(scheme)&&!"http".equals(scheme)&&!"mailto".equals(scheme)&&!"tel".equals(scheme))return;try{startActivity(new Intent(Intent.ACTION_VIEW,uri));}catch(Exception ignored){Toast.makeText(this,"No hay una aplicación para abrir este enlace.",Toast.LENGTH_LONG).show();}}
     private void saveScenario(Uri uri){try{String json=uri.getQueryParameter("data");if(json==null||json.length()>250000||!"scenario".equals(uri.getHost()))return;new JSONObject(json);pendingExport=json;Intent save=new Intent(Intent.ACTION_CREATE_DOCUMENT);save.addCategory(Intent.CATEGORY_OPENABLE);save.setType("application/json");save.putExtra(Intent.EXTRA_TITLE,"escenario-agroamigo.json");startActivityForResult(save,SAVE_SCENARIO);}catch(Exception ex){Toast.makeText(this,"No se pudo preparar el archivo.",Toast.LENGTH_LONG).show();}}

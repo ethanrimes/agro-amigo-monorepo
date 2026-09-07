@@ -1,0 +1,741 @@
+/* Farm management keeps the same everyday typography and touch targets as the catalogs. */
+.farm-cards,
+.managed-crop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin: 24px 0;
+}
+.farm-overview-strip {
+  display: flex;
+  gap: 32px;
+  background: #eaf0e4;
+  border: 1px solid #cbd9c1;
+  padding: 18px 24px;
+  border-radius: 10px;
+}
+.farm-overview-strip span {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.farm-overview-strip strong {
+  font-size: 28px;
+  color: #205539;
+}
+.farm-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  overflow: hidden;
+  color: inherit;
+}
+.farm-card-photo {
+  height: 200px;
+  position: relative;
+}
+.farm-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.farm-card-photo > span {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  background: white;
+  padding: 7px 11px;
+  border-radius: 5px;
+  font-size: 13px;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.farm-card-body {
+  padding: 24px;
+}
+.farm-card h2 {
+  font-size: 26px;
+  margin: 0 0 8px;
+}
+.farm-card p {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #546650;
+}
+.farm-card-facts {
+  display: flex;
+  gap: 40px;
+  margin: 22px 0;
+}
+.farm-card-facts span {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.farm-card-facts b {
+  font-size: 23px;
+}
+.farm-card small {
+  display: block;
+  color: #61755b;
+}
+.farm-card-link {
+  display: block;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-weight: 700;
+  color: var(--green);
+}
+.farm-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.farm-switcher {
+  max-width: 420px;
+  margin: 22px 0;
+}
+.farm-location-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr);
+  gap: 24px;
+  margin: 24px 0;
+}
+.farm-land-summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #edf2e8;
+}
+.farm-land-number {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 14px 0;
+}
+.farm-land-number strong {
+  font-size: 64px;
+  line-height: 1;
+  color: #20563e;
+}
+.farm-land-number span {
+  font-size: 16px;
+  color: #596853;
+}
+.farm-area-bar {
+  display: flex;
+  width: 100%;
+  height: 18px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #d1dcce;
+  margin: 18px 0 8px;
+}
+.farm-map-panel {
+  padding: 18px;
+}
+.farm-map-panel .section-heading {
+  margin-bottom: 12px;
+}
+.farm-map-panel h2 {
+  font-size: 20px;
+}
+.farm-location-map {
+  height: 280px;
+  width: 100%;
+  border: 1px solid #c0cbbb;
+  border-radius: 8px;
+  overflow: hidden;
+  touch-action: pan-x pan-y;
+}
+.farm-map-wrap {
+  position: relative;
+  min-width: 0;
+}
+.farm-map-loading {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: white;
+  padding: 8px;
+  font-size: 14px;
+}
+.farm-map-panel .field-help {
+  margin-bottom: 0;
+}
+.farm-location-editor {
+  margin-bottom: 24px;
+}
+.farm-location-editor h3 {
+  margin: 0 0 6px;
+}
+.farm-location-editor .section-heading {
+  margin-bottom: 14px;
+}
+.farm-location-editor .farm-location-map {
+  height: 330px;
+}
+.location-coordinate {
+  font-family: monospace;
+  font-size: 13px;
+}
+.farm-section-tabs {
+  display: flex;
+  border-bottom: 2px solid #ccd7c6;
+  gap: 6px;
+  margin: 28px 0;
+}
+.farm-section-tabs button {
+  padding: 16px 22px;
+  min-height: 52px;
+  background: transparent;
+  border: 0;
+  border-bottom: 4px solid transparent;
+  color: #50654a;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: -2px;
+}
+.farm-section-tabs button[aria-selected="true"] {
+  border-bottom-color: #286744;
+  color: #194b31;
+  background: #edf2e7;
+  border-radius: 8px 8px 0 0;
+}
+.finance-empty {
+  background: #f2f4ed;
+  border: 1px solid #cdd8c5;
+  border-radius: 10px;
+  padding: 26px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 22px 0;
+}
+.finance-empty h3 {
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+.finance-empty p {
+  margin: 0;
+  max-width: 620px;
+}
+.finance-empty .button {
+  flex-shrink: 0;
+}
+.finance-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+.finance-kpis article {
+  border: 1px solid var(--line);
+  background: white;
+  padding: 22px 18px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.finance-kpis span {
+  font-size: 14px;
+  font-weight: 700;
+}
+.finance-kpis strong {
+  font-size: 27px;
+  letter-spacing: -0.5px;
+  overflow-wrap: anywhere;
+}
+.finance-kpis small {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #687560;
+}
+.finance-kpis .profit-kpi {
+  background: #20573d;
+  color: white;
+  border-color: #20573d;
+}
+.finance-kpis .profit-kpi small {
+  color: #d2e1c7;
+}
+.finance-kpis .profit-kpi.negative {
+  background: #873d2f;
+  border-color: #873d2f;
+}
+.finance-bridge {
+  margin: 20px 0;
+}
+.finance-bridge h3,
+.finance-table-panel h3 {
+  margin-top: 0;
+}
+.finance-bar {
+  display: grid;
+  grid-template-columns: 85px minmax(0, 1fr) 150px;
+  gap: 18px;
+  align-items: center;
+  margin: 18px 0;
+}
+.finance-bar > div {
+  height: 30px;
+  background: #f0f3ec;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.finance-bar i {
+  display: block;
+  height: 100%;
+  background: #669b66;
+}
+.finance-bar i.cost {
+  background: #c5964e;
+}
+.finance-bar i.profit {
+  background: #20573d;
+}
+.finance-bar i.loss {
+  background: #ae5540;
+}
+.finance-bar strong {
+  text-align: right;
+  font-size: 17px;
+}
+.finance-table-panel {
+  padding: 22px 0;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.finance-table-panel > h3 {
+  padding: 0 22px;
+}
+.finance-table-scroll {
+  overflow: auto;
+}
+.finance-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.finance-table caption {
+  text-align: left;
+  padding: 0 22px 16px;
+  color: #6a785e;
+  font-size: 13px;
+}
+.finance-table th,
+.finance-table td {
+  padding: 16px;
+  border-bottom: 1px solid #e1e7dd;
+  text-align: right;
+}
+.finance-table th:first-child {
+  text-align: left;
+  padding-left: 22px;
+}
+.finance-table thead {
+  background: #edf2e7;
+}
+.finance-table tbody th small {
+  display: block;
+  color: #76816c;
+  font-weight: 400;
+  margin-top: 4px;
+}
+.gain-text {
+  color: #20573d;
+  font-weight: 700;
+}
+.loss-text {
+  color: #9a3e2e;
+  font-weight: 700;
+}
+.farm-scenarios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.farm-scenarios article {
+  padding: 20px;
+  border: 1px solid #d4ddcc;
+  border-radius: 9px;
+  background: #f6f7f2;
+  display: grid;
+  gap: 10px;
+}
+.farm-scenarios strong {
+  font-size: 23px;
+}
+.farm-scenarios span {
+  font-size: 14px;
+  font-weight: 700;
+}
+.farm-scenarios small {
+  font-size: 12px;
+  color: #61745c;
+}
+.farm-scenarios .central {
+  border-color: #7b9d6b;
+  background: #edf4e7;
+}
+.finance-pending {
+  padding: 18px 22px;
+  border-left: 4px solid #c49749;
+  background: #fff7e7;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 24px 0;
+}
+.finance-pending strong {
+  width: 100%;
+}
+.finance-pending a {
+  color: #755620;
+  font-weight: 700;
+}
+.farm-benchmarks {
+  margin: 24px 0;
+}
+.benchmark-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border-top: 1px solid #dae1d4;
+  padding: 20px 0;
+}
+.benchmark-pair > div {
+  display: grid;
+  gap: 8px;
+}
+.benchmark-pair > div > span {
+  font-size: 13px;
+  color: #65775d;
+}
+.benchmark-pair strong {
+  font-size: 23px;
+}
+.benchmark-pair p,
+.benchmark-pair > small,
+.benchmark-pair > .evidence-link {
+  grid-column: 1/-1;
+  margin: 0;
+}
+.benchmark-pair > small {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #66765c;
+}
+.managed-crop-card {
+  background: white;
+  border: 1px solid #ccd8c5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.managed-crop-card > img {
+  width: 100%;
+  height: 155px;
+  object-fit: cover;
+}
+.managed-crop-card > div {
+  padding: 22px;
+}
+.managed-crop-card h3 {
+  font-size: 23px;
+  margin: 7px 0 12px;
+}
+.managed-crop-card .form-actions {
+  margin-top: 20px;
+  gap: 10px;
+}
+.managed-crop-card small {
+  color: #687660;
+}
+.farm-bottom-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 25px 0;
+  flex-wrap: wrap;
+}
+.danger-link {
+  color: #a54836 !important;
+  font-size: 13px !important;
+  margin-top: 16px;
+}
+.farm-editor-overlay {
+  max-width: 1100px;
+}
+.crop-editor-overlay {
+  max-width: 900px;
+}
+.crop-editor-overlay .document-workspace,
+.farm-editor-overlay .document-workspace {
+  background: #f7f8f2;
+}
+.crop-editor > .button {
+  margin-top: 22px;
+}
+.purchase-result {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid #bdceb6;
+}
+.purchase-result > span,
+.purchase-result > b {
+  display: block;
+}
+.purchase-label {
+  background: #f0e6cf !important;
+  color: #71521f !important;
+}
+.calculation-result [data-result="purchase"] {
+  padding-top: 5px;
+}
+.calculation-result [data-result="sale"] {
+  margin-bottom: 20px;
+}
+@media (max-width: 1100px) {
+  .finance-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .finance-kpis strong {
+    font-size: 29px;
+  }
+}
+@media (max-width: 760px) {
+  .farm-cards,
+  .managed-crop-grid,
+  .farm-location-summary {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .farm-overview-strip {
+    gap: 12px;
+    padding: 14px;
+  }
+  .farm-overview-strip span {
+    flex: 1;
+    display: block;
+    font-size: 12px;
+  }
+  .farm-overview-strip strong {
+    display: block;
+    font-size: 26px;
+  }
+  .farm-card-photo {
+    height: 170px;
+  }
+  .farm-card-body {
+    padding: 18px;
+  }
+  .farm-land-summary {
+    padding: 20px;
+  }
+  .farm-land-number strong {
+    font-size: 52px;
+  }
+  .farm-location-map {
+    height: 235px;
+  }
+  .farm-location-editor .farm-location-map {
+    height: 275px;
+  }
+  .farm-map-panel {
+    padding: 14px;
+  }
+  .farm-location-editor .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .farm-section-tabs {
+    gap: 0;
+    width: 100%;
+    margin: 22px 0;
+  }
+  .farm-section-tabs button {
+    flex: 1;
+    font-size: 14px;
+    padding: 13px 8px;
+  }
+  .finance-empty {
+    display: block;
+    padding: 20px;
+  }
+  .finance-empty .button {
+    margin-top: 18px;
+    white-space: normal;
+  }
+  .finance-kpis {
+    gap: 10px;
+  }
+  .finance-kpis article {
+    padding: 16px 12px;
+  }
+  .finance-kpis span {
+    font-size: 12px;
+  }
+  .finance-kpis strong {
+    font-size: 23px;
+    letter-spacing: -0.7px;
+  }
+  .finance-kpis small {
+    font-size: 11px;
+  }
+  .finance-bar {
+    grid-template-columns: 60px minmax(0, 1fr) 110px;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .finance-bar strong {
+    font-size: 14px;
+  }
+  .finance-bar > div {
+    height: 25px;
+  }
+  .farm-scenarios {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .farm-scenarios article {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 16px;
+  }
+  .farm-scenarios small {
+    grid-column: 1/-1;
+  }
+  .farm-scenarios strong {
+    font-size: 21px;
+  }
+  .benchmark-pair strong {
+    font-size: 19px;
+  }
+  .farm-switcher {
+    max-width: 100%;
+  }
+  .managed-crop-card .button {
+    font-size: 13px;
+  }
+  .farm-land-number {
+    margin: 10px 0;
+  }
+  .farm-header-actions {
+    width: 100%;
+  }
+  .farm-header-actions .button {
+    flex: 1;
+    padding: 12px;
+    font-size: 13px;
+  }
+  .farm-land-summary h2 {
+    font-size: 22px;
+  }
+  .crop-editor .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .farm-bottom-links {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 760px) {
+  .farm-detail-heading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .farm-detail-heading h1 {
+    overflow-wrap: anywhere;
+  }
+  .farm-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .farm-header-actions .button {
+    white-space: normal;
+    min-height: 48px;
+  }
+  .farm-land-summary {
+    padding: 16px;
+  }
+  .farm-land-summary h2 {
+    font-size: 19px;
+    margin: 0;
+  }
+  .farm-land-summary p {
+    margin: 6px 0;
+  }
+  .farm-land-number strong {
+    font-size: 44px;
+  }
+  .farm-area-bar {
+    margin: 10px 0 4px;
+    height: 12px;
+  }
+  .farm-location-summary {
+    margin: 18px 0;
+  }
+  .farm-financials > .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .finance-table,
+  .finance-table tbody,
+  .finance-table tr {
+    display: block;
+    width: 100%;
+    white-space: normal;
+  }
+  .finance-table thead {
+    display: none;
+  }
+  .finance-table caption {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    line-height: 1.5;
+  }
+  .finance-table tr {
+    border-top: 1px solid #d4ddcc;
+    padding: 10px 0;
+  }
+  .finance-table tbody th {
+    display: block;
+    background: #edf2e7;
+    padding: 14px 18px !important;
+    border: 0;
+  }
+  .finance-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    border: 0;
+    padding: 9px 18px;
+    font-size: 14px;
+  }
+  .finance-table td::before {
+    content: attr(data-label);
+    color: #627258;
+    font-weight: 400;
+    text-align: left;
+  }
+  .finance-table-scroll {
+    overflow: visible;
+  }
+}

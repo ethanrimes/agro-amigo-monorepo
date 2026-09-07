@@ -20,6 +20,8 @@ export type FarmProfile = {
   latitude: string;
   longitude: string;
   elevation: string;
+  locationMethod?: string;
+  locationAccuracy?: string;
 };
 export type CropReference = {
   crop_code: string;

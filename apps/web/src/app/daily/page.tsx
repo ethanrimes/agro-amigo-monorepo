@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
+import { SearchBox } from "@/components/ui/SearchBox";
 import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
-import { ErrorState, RoleSwitch } from "@/components/marketplace/Shared";
-import { usePreferences } from "@/components/marketplace/Preferences";
+import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { money, dateLabel } from "@/lib/market-types";
 import { fold } from "@/lib/planning-math";
@@ -20,7 +20,6 @@ export default function DailyPage() {
   const { data, loading, error, retry } = useData<Daily[]>(
       "/api/planning/daily",
     ),
-    { role } = usePreferences(),
     [product, setProduct] = useState(""),
     [market, setMarket] = useState("");
   const rows = (data || [])
@@ -31,8 +30,7 @@ export default function DailyPage() {
     )
     .sort(
       (a, b) =>
-        a.product_name.localeCompare(b.product_name, "es") ||
-        (role === "buyer" ? a.price - b.price : b.price - a.price),
+        a.product_name.localeCompare(b.product_name, "es") || b.price - a.price,
     );
   return (
     <>
@@ -51,7 +49,6 @@ export default function DailyPage() {
             · COP por kilogramo
           </p>
         </div>
-        <RoleSwitch />
       </div>
       <section className="panel">
         <p>
@@ -59,15 +56,17 @@ export default function DailyPage() {
           variedad y los gastos antes de acordar una venta.
         </p>
         <div className="form-grid">
-          <label className="form-field">
-            Buscar producto en el boletín
-            <input
-              type="search"
+          <div className="form-field">
+            <span>Buscar producto en el boletín</span>
+            <SearchBox
+              label="Buscar producto en el boletín"
               value={product}
-              onChange={(e) => setProduct(e.target.value)}
-              placeholder="Ej. tomate, papa…"
+              onChange={setProduct}
+              options={[
+                ...new Set((data || []).map((r) => r.product_name)),
+              ].map((n) => ({ id: n, label: n }))}
             />
-          </label>
+          </div>
           <label className="form-field">
             Plaza del boletín
             <select value={market} onChange={(e) => setMarket(e.target.value)}>

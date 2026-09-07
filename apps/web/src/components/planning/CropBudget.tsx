@@ -27,6 +27,7 @@ import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "./EvidenceLink";
 import { CoffeeCostReference } from "./CoffeeCostReference";
 import { SeasonalChart } from "./SeasonalChart";
+import type { ManagedCrop, FarmPlan } from "@/lib/farm-types";
 type EditCost = { label: string; amount: string; timing: "before" | "harvest" };
 const emptyCosts: EditCost[] = [
   { label: "Preparación, siembra y labores", amount: "", timing: "before" },
@@ -38,33 +39,56 @@ export function CropBudget({
   crop,
   data,
   farm,
+  managed,
+  onApply,
+  scenarioKey = "agroamigo-scenarios-v1",
 }: {
   crop: CropReference;
   data: FarmData;
   farm: FarmProfile;
+  managed?: ManagedCrop;
+  onApply?: (p: FarmPlan) => boolean;
+  scenarioKey?: string;
 }) {
+  const seed = managed?.budget;
   const coffee = fold(crop.crop) === "cafe",
     permanent = crop.cycle === "Permanente";
-  const [area, setArea] = useState(farm.area || "1"),
+  const [area, setArea] = useState(managed?.area || farm.area || "1"),
     [yieldKg, setYield] = useState(
-      crop.yield_kg_ha ? String(Math.round(crop.yield_kg_ha)) : "",
+      managed?.yieldKgHa ||
+        (crop.yield_kg_ha ? String(Math.round(crop.yield_kg_ha)) : ""),
     );
-  const [period, setPeriod] = useState(permanent ? "annual" : "cycle"),
-    [loss, setLoss] = useState("0"),
-    [uncertainty, setUncertainty] = useState("20");
-  const [costs, setCosts] = useState<EditCost[]>(
-      emptyCosts.map((c) => ({ ...c })),
+  const [period, setPeriod] = useState(
+      seed?.periodCode || (permanent ? "annual" : "cycle"),
     ),
-    [template, setTemplate] = useState<CostTemplate | null>(null),
-    [costReviewed, setCostReviewed] = useState(false),
-    [extra, setExtra] = useState("0"),
-    [commission, setCommission] = useState("0"),
-    [discount, setDiscount] = useState("0");
-  const [productId, setProduct] = useState(coffee ? "cafe-pergamino-seco" : ""),
-    [marketId, setMarket] = useState("");
-  const [priceMode, setPriceMode] = useState<"history" | "manual">("history"),
-    [manualPrice, setManualPrice] = useState(""),
-    [month, setMonth] = useState(new Date().getMonth() + 1);
+    [loss, setLoss] = useState(String(seed?.lossPercent ?? 0)),
+    [uncertainty, setUncertainty] = useState(
+      String(seed?.uncertaintyPercent ?? 20),
+    );
+  const [costs, setCosts] = useState<EditCost[]>(
+      seed?.costsPerHa.map((c) => ({ ...c, amount: String(c.amount) })) ||
+        emptyCosts.map((c) => ({ ...c })),
+    ),
+    [template, setTemplate] = useState<CostTemplate | null>(
+      data.templates.find((t) => t.id === seed?.costSource?.templateId) || null,
+    ),
+    [costReviewed, setCostReviewed] = useState(
+      seed?.costSource?.reviewed || false,
+    ),
+    [extra, setExtra] = useState(String(seed?.extraSaleCost ?? 0)),
+    [commission, setCommission] = useState(
+      String(seed?.commissionPercent ?? 0),
+    ),
+    [discount, setDiscount] = useState(String(seed?.discountPercent ?? 0));
+  const [productId, setProduct] = useState(
+      seed?.productId || (coffee ? "cafe-pergamino-seco" : ""),
+    ),
+    [marketId, setMarket] = useState(seed?.marketId || "");
+  const [priceMode, setPriceMode] = useState<"history" | "manual">(
+      seed?.priceMode || "history",
+    ),
+    [manualPrice, setManualPrice] = useState(seed?.manualPrice || ""),
+    [month, setMonth] = useState(seed?.month || new Date().getMonth() + 1);
   const [plantDate, setPlantDate] = useState(farm.plantingDate),
     [days, setDays] = useState(""),
     [status, setStatus] = useState(""),
@@ -191,9 +215,12 @@ export function CropBudget({
       : null;
   useEffect(() => {
     try {
-      const v = JSON.parse(
-        localStorage.getItem("agroamigo-scenarios-v1") || "[]",
-      );
+      let raw = localStorage.getItem(scenarioKey);
+      if (!raw && scenarioKey === "agroamigo-scenarios-legacy-farm") {
+        raw = localStorage.getItem("agroamigo-scenarios-v1");
+        if (raw) localStorage.setItem(scenarioKey, raw);
+      }
+      const v = JSON.parse(raw || "[]");
       if (Array.isArray(v)) setSaved(v.slice(-6));
     } catch {}
   }, []);
@@ -221,6 +248,11 @@ export function CropBudget({
     municipalityId: data.municipality.id,
     createdAt: new Date().toISOString(),
     period: periodLabel,
+    periodCode: period,
+    planYear: managed?.planYear || String(new Date().getFullYear()),
+    productId: resolvedProduct,
+    marketId: selectedMarket?.id || "",
+    manualPrice,
     areaHa: +area,
     yieldKgHa: +yieldKg,
     lossPercent: +loss,
@@ -229,6 +261,7 @@ export function CropBudget({
     costSource: template
       ? {
           document: template.document_id,
+          templateId: template.id,
           page: template.source_page,
           year: template.reference_year,
           reviewed: costReviewed,
@@ -254,7 +287,7 @@ export function CropBudget({
       next = [...saved, row].slice(-6);
     setSaved(next);
     try {
-      localStorage.setItem("agroamigo-scenarios-v1", JSON.stringify(next));
+      localStorage.setItem(scenarioKey, JSON.stringify(next));
       setStatus("Escenario guardado en este navegador.");
     } catch {
       setStatus("No se pudo guardar en este navegador. Descarga el escenario.");
@@ -368,23 +401,31 @@ export function CropBudget({
                 />
               </label>
             </div>
-            <div className="yield-note">
-              <p>
-                <strong>Referencia EVA {crop.reference_year}:</strong>{" "}
-                {crop.yield_kg_ha
-                  ? number(crop.yield_kg_ha) + " kg/ha"
-                  : "Sin rendimiento disponible"}
-                , calculada con {number(crop.production_t)} toneladas /{" "}
-                {number(crop.harvested_ha)} hectáreas cosechadas. Corresponde a{" "}
-                {crop.variety.toLowerCase()} en el municipio.
+            {crop.document_id ? (
+              <div className="yield-note">
+                <p>
+                  <strong>Referencia EVA {crop.reference_year}:</strong>{" "}
+                  {crop.yield_kg_ha
+                    ? number(crop.yield_kg_ha) + " kg/ha"
+                    : "Sin rendimiento disponible"}
+                  , calculada con {number(crop.production_t)} toneladas /{" "}
+                  {number(crop.harvested_ha)} hectáreas cosechadas. Corresponde
+                  a {crop.variety.toLowerCase()} en el municipio.
+                </p>
+                <EvidenceLink
+                  id={crop.document_id}
+                  municipality={data.municipality.id}
+                >
+                  Comprobar rendimiento y unidades
+                </EvidenceLink>
+              </div>
+            ) : (
+              <p className="inline-note">
+                No hay una referencia municipal comparable. Ingresa tu
+                rendimiento y el estado del producto; estos serán supuestos
+                propios.
               </p>
-              <EvidenceLink
-                id={crop.document_id}
-                municipality={data.municipality.id}
-              >
-                Comprobar rendimiento y unidades
-              </EvidenceLink>
-            </div>
+            )}
             {permanent && (
               <p className="inline-warning">
                 El rendimiento de EVA corresponde a áreas cosechadas, no a una
@@ -399,7 +440,7 @@ export function CropBudget({
               <span>2</span>
               <h3>Lo que cuesta producir</h3>
             </div>
-            {coffee && <CoffeeCostReference/>}
+            {coffee && <CoffeeCostReference />}
             {templates.length > 0 ? (
               <label className="form-field">
                 Comenzar con una referencia publicada
@@ -486,7 +527,8 @@ export function CropBudget({
                               ? {
                                   ...r,
                                   timing: e.target.value as
-                                    "before" | "harvest",
+                                    | "before"
+                                    | "harvest",
                                 }
                               : r,
                           ),
@@ -784,8 +826,25 @@ export function CropBudget({
                 compradores.
               </p>
             )}
+            {onApply && (
+              <button
+                type="button"
+                className="button primary"
+                disabled={!results}
+                onClick={() => {
+                  if (!results) return;
+                  setStatus(
+                    onApply(snapshot())
+                      ? "Presupuesto aplicado a este cultivo. Consulta el resumen de tu finca."
+                      : "El área supera el espacio disponible en la finca. Revisa las hectáreas.",
+                  );
+                }}
+              >
+                Aplicar presupuesto a este cultivo
+              </button>
+            )}
             <button
-              className="button primary"
+              className="button secondary"
               disabled={!results}
               onClick={save}
             >
@@ -937,7 +996,7 @@ export function CropBudget({
               className="button secondary"
               onClick={() => {
                 setSaved([]);
-                localStorage.removeItem("agroamigo-scenarios-v1");
+                localStorage.removeItem(scenarioKey);
               }}
             >
               Borrar escenarios

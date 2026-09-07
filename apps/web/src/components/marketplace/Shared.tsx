@@ -8,33 +8,10 @@ import {
   IoArrowUp,
   IoArrowDown,
   IoRefresh,
-  IoLeafOutline,
-  IoStorefrontOutline,
   IoInformationCircleOutline,
 } from "react-icons/io5";
 import { usePreferences } from "./Preferences";
 import { change, money, dateLabel, type Product } from "@/lib/market-types";
-export function RoleSwitch() {
-  const { role, setRole } = usePreferences();
-  return (
-    <div className="role-switch" aria-label="¿Cómo usas AgroAmigo?">
-      <button
-        aria-pressed={role === "farmer"}
-        className={role === "farmer" ? "selected" : ""}
-        onClick={() => setRole("farmer")}
-      >
-        <IoLeafOutline /> Soy productor
-      </button>
-      <button
-        aria-pressed={role === "buyer"}
-        className={role === "buyer" ? "selected" : ""}
-        onClick={() => setRole("buyer")}
-      >
-        <IoStorefrontOutline /> Soy comprador
-      </button>
-    </div>
-  );
-}
 export function Change({
   price,
   previous,
@@ -55,7 +32,7 @@ export function Change({
   );
 }
 export function ProductCard({ product }: { product: Product }) {
-  const { saved, toggleSaved, role } = usePreferences();
+  const { saved, toggleSaved } = usePreferences();
   const active = saved.includes(product.id);
   return (
     <article className="product-card">
@@ -80,17 +57,27 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </Link>
         <span className="product-date">
-          Promedio mensual · {dateLabel(product.date, true)}
+          {product.period === "daily" ? "Referencia FNC" : "Promedio mensual"} ·{" "}
+          {dateLabel(product.date, true)}
         </span>
         <div className="product-price">
-          {money(product.price)} <span>/ kg</span>
+          {money(product.price)}{" "}
+          <span>{product.unit === "125kg" ? "/ carga de 125 kg" : "/ kg"}</span>
         </div>
-        <Change price={product.price} previous={product.previous_price} />
+        <Change
+          price={product.price}
+          previous={product.previous_price}
+          label={
+            product.period === "daily"
+              ? "vs. referencia anterior"
+              : "vs. mes anterior"
+          }
+        />
         <Link href={"/product/" + product.id} className="product-card-footer">
           <span>
-            {role === "buyer"
-              ? "Comparar para comprar"
-              : "Ver precios por mercado"}
+            {product.id === "cafe-pergamino-seco"
+              ? "Ver referencia del café"
+              : "Ver producto"}
           </span>
           <IoArrowForward />
         </Link>

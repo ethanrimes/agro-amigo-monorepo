@@ -7,6 +7,7 @@ Verified for the September 2026 demonstration. Every integrated dataset has an i
 | Source | App use | Coverage and limits |
 |---|---|---|
 | [DANE SIPSA monthly](https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-mensual-1) | Product history, wholesale comparisons and seasonal scenarios | 50,656 recent monthly rows; latest month July 2026. Five complete historical years, 2021–2025. Same-product/market ratios, minimum three complete years. Source XLSX plus clearly labeled PDF extracts. |
+| [DANE SIPSA-A microdata](https://www.dane.gov.co/files/operaciones/SIPSA/anex-Microdato-abastecimiento-2026.xlsx) | Product/market supply tabs and map | Initial demo import: 42,318 food/market/month aggregates, 32 markets, 97 exact catalog products, reporting dates 8 September 2025–2 September 2026. Original 2025/2026 workbooks and sheet/row ranges are archived in Azure. Partial months retain their actual coverage; volumes are arrivals, not stock. |
 | [DANE daily prices](https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-04sep2026.pdf) | More recent negotiation reference and supply bulletin | 425 quotes from 4 September 2026. Asterisks mean predominant variety in each market; not spliced into monthly variety-specific series. Supply tables in the original PDF remain a dated report, not live inventory. |
 | [FNC statistics](https://federaciondecafeteros.org/estadisticas-cafeteras/) and [purchase table](https://federaciondecafeteros.org/wp-content/uploads/2026/03/precio_cafe.pdf) | National daily reference, delivery branches, yield factors | 365 national daily observations, latest 6 September 2026. The archived factor/Almacafé PDF is dated 4 September, with 13 factors and 16 branches. A load is 125 kg of dry parchment; neither coffee cherry nor roasted coffee is converted into it. |
 | [SFC TRM](https://www.datos.gov.co/resource/32sa-8pi3.json) | Exchange-rate context for coffee | 234 dated records, latest 5 September. Not a coffee price or buyer quote. |
@@ -40,3 +41,9 @@ Copernicus terrain/vegetation imagery and automated pest-risk models were not im
 ## Statistical and product judgment
 
 The crop shortlist combines observed municipal cultivation and compatible mapped suitability. It does not establish profitability or recommend a crop for a precise parcel. Cost and yield scenarios are separately editable. Only comparable physical product states and markets are used for seasonal ratios; missing history yields an explicit insufficient-data state. Lower/central/upper outputs are scenarios with visible assumptions, not probabilities or financial forecasts.
+
+## Benchmarks in Mi finca
+
+Each farm has separately entered crop areas and financial assumptions. EVA municipal yields, explicitly selected UPRA cost structures, and the dated national FEPCafé dry-parchment cost reference can be compared alongside the farmer’s budget. Period, physical state, region and study year remain visible. Costs from older studies are nominal and require review.
+
+The [2014 CNA catalog](https://microdatos.dane.gov.co/catalog/513) explicitly excludes production costs, selling prices and incomes. Its public microdata therefore cannot support a cost/profit peer leaderboard. The app explains this limitation and links to DANE. No individual census records or invented percentile ranks are published.

@@ -11,6 +11,7 @@
     "predev": "node scripts/prepare-pdf.mjs"
   },
   "dependencies": {
+    "maplibre-gl": "^6.7.0",
     "next": "^15.1.0",
     "pdfjs-dist": "^6.3.289",
     "pg": "^8.23.0",

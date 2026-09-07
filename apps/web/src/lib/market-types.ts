@@ -1,4 +1,3 @@
-export type Role = "farmer" | "buyer";
 export type Product = {
   id: string;
   name: string;
@@ -13,6 +12,7 @@ export type Product = {
   period: "daily" | "monthly";
 };
 export type MarketPrice = {
+  product_id?: string;
   id: string;
   name: string;
   city: string;
@@ -44,7 +44,12 @@ export type Coffee = {
   history: Point[];
   markets: MarketPrice[];
   factors: { factor: number; price: number; date: string }[];
-  exchange: { price: number; date: string; source_url: string; document_id?: string } | null;
+  exchange: {
+    price: number;
+    date: string;
+    source_url: string;
+    document_id?: string;
+  } | null;
 };
 export const money = (value: number) =>
   new Intl.NumberFormat("es-CO", {
