@@ -45,7 +45,7 @@ class FarmBrowser extends StatefulWidget {
   State<FarmBrowser> createState() => FarmBrowserState();
 }
 
-class FarmBrowserState extends State<FarmBrowser> {
+class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
   late final WebViewController controller;
   bool loading = true;
   bool failed = false;
@@ -55,6 +55,7 @@ class FarmBrowserState extends State<FarmBrowser> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(paper)
@@ -70,6 +71,7 @@ class FarmBrowserState extends State<FarmBrowser> {
             }
           },
           onPageFinished: (_) async {
+            await _syncSafeArea();
             await _updateBack();
             if (mounted) setState(() => loading = false);
           },
@@ -104,6 +106,36 @@ class FarmBrowserState extends State<FarmBrowser> {
       unawaited(platform.setAllowsBackForwardNavigationGestures(true));
     }
     unawaited(_start());
+  }
+
+  // Flutter's embedded WKWebView can report CSS env(safe-area-inset-bottom)
+  // as zero. Pass only the native layout measurement to our trusted page.
+  Future<void> _syncSafeArea() async {
+    if (!mounted) return;
+    final view = View.of(context);
+    final bottom = view.viewPadding.bottom / view.devicePixelRatio;
+    final current = Uri.tryParse(await controller.currentUrl() ?? '');
+    if (current == null || !isAppUrl(current)) return;
+    try {
+      await controller.runJavaScript(
+        "document.documentElement.style.setProperty('--agro-safe-bottom', '${bottom}px')",
+      );
+    } catch (_) {
+      // The next finished navigation reapplies the value if the document changed.
+    }
+  }
+
+  @override
+  void didChangeMetrics() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_syncSafeArea());
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _start() async {
@@ -238,7 +270,7 @@ class FarmBrowserState extends State<FarmBrowser> {
       backgroundColor: Colors.white,
       body: SafeArea(
         // WKWebView and the web tab bar extend behind the home indicator.
-        // CSS safe-area-inset-bottom keeps its controls above the indicator.
+        // The native inset is passed to CSS to clear the home indicator.
         bottom: false,
         child: Stack(
           fit: StackFit.expand,

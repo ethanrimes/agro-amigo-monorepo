@@ -731,14 +731,14 @@ h3 {
       max(16px, env(safe-area-inset-left, 0px));
   }
   .site-footer {
-    padding: 20px 16px calc(94px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 16px calc(94px + var(--agro-safe-bottom, env(safe-area-inset-bottom, 0px)));
     font-size: 12px;
   }
   .mobile-nav {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 0;
-    padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px)
+    padding: 0 env(safe-area-inset-right, 0px) var(--agro-safe-bottom, env(safe-area-inset-bottom, 0px))
       env(safe-area-inset-left, 0px);
     background: white;
     border-top: 1px solid #a9b8a0;

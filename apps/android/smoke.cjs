@@ -13,6 +13,7 @@ const shot=(name)=>writeFileSync('artifacts/'+name,execFileSync(process.env.ANDR
   await page.goto('https://agroamigo-demo-9a04.azurewebsites.net/');await expect(page.locator('.product-card')).toHaveCount(4);
   await expect(page.locator('.mobile-nav a')).toHaveText(['Inicio','Productos','Mercados','Insumos','Mi finca']);
   await page.locator('.mobile-nav a[href="/farm"]').click();
+  await expect(page.locator('.farm-editor, .farm-card').first()).toBeVisible();
   if(await page.getByRole('button',{name:'Explorar ejemplo en Pitalito'}).isVisible())await page.getByRole('button',{name:'Explorar ejemplo en Pitalito'}).click();
   else await page.locator('.farm-card').first().click();
   await expect(page.locator('.farm-location-map')).toBeVisible();
@@ -27,7 +28,7 @@ const shot=(name)=>writeFileSync('artifacts/'+name,execFileSync(process.env.ANDR
   // The test harness grants Android foreground location and sets an emulator fix before this step.
   await page.getByRole('button',{name:'Editar finca',exact:true}).click();await page.getByRole('button',{name:'Usar mi ubicación GPS',exact:true}).click();
   await expect(page.locator('.location-coordinate')).toContainText('1.85470');await page.getByRole('button',{name:'Guardar mi finca →',exact:true}).click();await expect(page.locator('dialog')).toHaveCount(0);
-  await expect(page.locator('.farm-location-map')).toHaveAttribute('data-latitude','1.8547');await page.reload();await expect(page.locator('.farm-location-map')).toHaveAttribute('data-latitude','1.8547');shot('android-farm-pin.png');
+  await expect(page.locator('.farm-location-map')).toHaveAttribute('data-latitude','1.8547');await page.reload();await expect(page.locator('.farm-location-map')).toHaveAttribute('data-latitude','1.8547');await expect(page.locator('.farm-location-map')).toHaveAttribute('data-ready','true');await expect(page.locator('.maplibregl-marker')).toBeVisible();await page.locator('.farm-map-panel').scrollIntoViewIfNeeded();shot('android-farm-pin.png');
   await page.goto('https://agroamigo-demo-9a04.azurewebsites.net/products');await page.getByRole('button',{name:'Ver mapa',exact:true}).click();await expect.poll(async()=>Number(await page.locator('.colombia-map').getAttribute('data-features'))).toBeGreaterThan(0);shot('android-colombia-map.png');await device.shell('input keyevent 4');await expect(page.locator('dialog')).toHaveCount(0);
   await page.goto('https://agroamigo-demo-9a04.azurewebsites.net/offers');await page.getByLabel('Precio oferta 1',{exact:true}).fill('2000');await expect(page.locator('.offer-result strong').first()).toContainText('200.000');await page.reload();await expect(page.getByLabel('Precio oferta 1',{exact:true})).toHaveValue('2000');shot('android-offers.png');
   expect(errors).toEqual([]);console.log('Android: Spanish navigation, Azure data, farm/weather, GPS pin persistence, MapLibre polygons, popup PDF rendering/download/back, offer math and persistence passed.');

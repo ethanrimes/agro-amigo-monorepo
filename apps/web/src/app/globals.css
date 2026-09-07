@@ -109,7 +109,7 @@ img {
 html {
   min-height: 100%;
   -webkit-text-size-adjust: 100%;
-  scroll-padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  scroll-padding-bottom: calc(90px + var(--agro-safe-bottom, env(safe-area-inset-bottom, 0px)));
 }
 .app-shell {
   min-height: 100vh;
@@ -1942,7 +1942,7 @@ th {
     border-top: 1px solid var(--line);
     background: #fffffff7;
     backdrop-filter: blur(10px);
-    padding: 10px 6px max(12px, env(safe-area-inset-bottom));
+    padding: 10px 6px max(12px, var(--agro-safe-bottom, env(safe-area-inset-bottom)));
     justify-content: space-around;
     z-index: 30;
   }

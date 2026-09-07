@@ -1354,7 +1354,7 @@
     font-size: 17px;
   }
   .document-workspace {
-    padding: 12px 10px calc(16px + env(safe-area-inset-bottom));
+    padding: 12px 10px calc(16px + var(--agro-safe-bottom, env(safe-area-inset-bottom)));
   }
   .document-workspace > .evidence-heading {
     padding: 14px;
@@ -1411,7 +1411,7 @@
     overflow: visible;
     border-left: 0;
     border-top: 1px solid var(--line);
-    padding: 16px 16px calc(20px + env(safe-area-inset-bottom));
+    padding: 16px 16px calc(20px + var(--agro-safe-bottom, env(safe-area-inset-bottom)));
   }
   .map-legend {
     font-size: 11px;
