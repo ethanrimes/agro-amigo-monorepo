@@ -92,17 +92,10 @@ test("larger phone text keeps navigation and form controls usable", async ({
   await page.addStyleTag({
     content: "html { -webkit-text-size-adjust: 130%; }",
   });
-  await page
-    .locator(".farm-editor")
-    .getByRole("combobox", { name: "Departamento", exact: true })
-    .selectOption("HUILA");
-  await page
-    .getByRole("combobox", { name: "Municipio", exact: true })
-    .selectOption("41551");
-  const field = page.getByLabel("Nombre de tu finca");
+  const field = page.getByRole("combobox", { name: "Buscar municipio" });
   await expect(field).toBeVisible();
-  await field.fill("Mi finca");
-  await expect(field).toHaveValue("Mi finca");
+  await field.fill("Pitalito");
+  await expect(field).toHaveValue("Pitalito");
   expect(
     await field.evaluate((e) => parseFloat(getComputedStyle(e).fontSize)),
   ).toBeGreaterThanOrEqual(16);

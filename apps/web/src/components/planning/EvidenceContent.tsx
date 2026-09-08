@@ -5,10 +5,26 @@ import { IoDownloadOutline, IoShieldCheckmarkOutline } from "react-icons/io5";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { PdfViewer } from "@/components/planning/PdfViewer";
+import { WorkbookViewer } from "@/components/planning/WorkbookViewer";
 import type { Evidence } from "@/lib/planning-types";
 import { dateLabel, number } from "@/lib/market-types";
 const labels: Record<string, string> = {
   product_name: "Producto",
+  rangos: "Lluvia habitual (intervalo)",
+  rango: "Temperatura habitual (°C)",
+  TEXTURA: "Textura",
+  PROFUNDIDA: "Profundidad",
+  FERTILIDAD: "Fertilidad",
+  ACIDEZ: "Acidez",
+  DRENAJE: "Drenaje",
+  PAISAJE: "Paisaje",
+  TIPO_RELIE: "Relieve",
+  PENDIENT_1: "Código de pendiente (IGAC)",
+  CLIMA_1: "Clima ambiental",
+  UCSuelo: "Unidad de suelo",
+  tipo: "Tipo de erosión",
+  clas: "Forma de erosión",
+  gra: "Grado de erosión",
   unit: "Unidad",
   period: "Frecuencia",
   food_name: "Alimento",
@@ -118,6 +134,8 @@ export function EvidenceContent({
             </section>
             {data.media_type === "application/pdf" ? (
               <PdfViewer id={data.id} initialPage={initial} />
+            ) : data.media_type.includes("spreadsheet") || data.media_type === "application/vnd.ms-excel" ? (
+              <WorkbookViewer key={data.id} id={data.id} initialSheet={q.get("sheet") || ""} initialRow={Math.max(1,Number(q.get("row")) || 1)} />
             ) : data.text ? (
               <section className="panel">
                 <h2>Texto de la publicación</h2>
@@ -202,7 +220,7 @@ export function EvidenceContent({
                     : "Identificador de integridad SHA-256"}
                 </dt>
                 <dd className="source-hash">
-                  {data.id.replace("weather-", "")}
+                  {data.id.replace(/^(weather|spatial)-/, "")}
                 </dd>
               </dl>
               {typeof data.metadata.description === "string" && (

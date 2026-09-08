@@ -13,17 +13,17 @@ flowchart TB
     app --> productos["2 · Productos<br/>Productos agrícolas y café"]
     app --> mercados["3 · Mercados<br/>Plazas y puntos de entrega"]
     app --> insumos["4 · Insumos<br/>Producto, fabricante y presentación"]
-    app --> fincas["5 · Mi finca<br/>Todas tus fincas"]
+    app --> fincas["5 · Mi finca<br/>Información territorial y rentabilidad"]
     productos --> producto["Detalle del producto<br/>Precios / Abastecimiento"]
     productos --> cafe["Detalle del café<br/>Referencia FNC, calidad y entrega"]
     mercados --> mercado["Detalle del mercado<br/>Precios / Abastecimiento"]
     insumos --> insumo["Detalle del insumo<br/>Precios / Abastecimiento"]
     productos & mercados & insumos --> mapa["Ver mapa<br/>Mapa interactivo de Colombia"]
     producto & cafe & mercado & insumo --> documento["Comprobar dato<br/>Visor emergente y descarga"]
-    fincas --> finca["Una finca<br/>Ubicación y cultivos"]
-    finca --> cuentas["Mis cuentas<br/>Costos, ingresos y utilidad estimada"]
-    finca --> cultivos["Mis cultivos<br/>Áreas, rendimientos y presupuestos"]
-    finca --> clima["Clima y labores<br/>Pronóstico y sugerencias de trabajo"]
+    fincas --> zona["Explorar mi zona<br/>Pin, capas y valores del lugar"]
+    fincas --> cuentas["Costos y rentabilidad<br/>Supuestos, tabla y cascada"]
+    zona --> capas["Lluvia, temperatura, tiempo severo<br/>Suelos, erosión e inundación"]
+    capas & cuentas --> documento
 ```
 
 | Sección | Ruta | Contenido |
@@ -32,7 +32,7 @@ flowchart TB
 | Productos | `/products` | Filtros de departamento/categoría, favoritos y mapa. Detalle: `/product/[id]`. El café está en `/product/cafe-pergamino-seco`. |
 | Mercados | `/markets` | Directorio con búsqueda y mapa. `/market/[id]` muestra precios de cada producto y volúmenes reportados. |
 | Insumos | `/insumos` | Identidades y presentaciones comparables. `/insumo/[id]` muestra historia y comparación departamental. |
-| Mi finca | `/farm` | Lista y registro de fincas. `/farm/[id]` contiene mapa con pin, cultivos, cuentas y clima. `/plan` y `/offers` mantienen seleccionada esta sección. |
+| Mi finca | `/farm` | Explorador territorial y análisis económico. `/farm/[id]` abre la ubicación anterior en el nuevo explorador. `/plan` y `/offers` mantienen seleccionada esta sección. |
 
 **Mis guardados** está en el corazón del encabezado, en `/saved`. **Fuentes y ayuda** y **Créditos de imágenes** están en el encabezado o pie. No son pestañas adicionales. Un detalle conserva seleccionada su sección principal.
 
@@ -81,30 +81,41 @@ flowchart TD
 
 Azure PostgreSQL guarda copias inmutables de los documentos. Un PDF oficial se conserva intacto; un PDF generado por AgroAmigo se identifica como extracto y enlaza al libro original. Los XLSX se presentan con sus registros y descarga, sin fingir que son PDF. El visor conserva el foco, responde a Escape/Atrás y devuelve al elemento que lo abrió. `/evidence/[id]` permite enlaces directos.
 
-### Registrar varias fincas y llevar sus cuentas
+### Mi finca: consultar el territorio y evaluar una idea
 
 ```mermaid
 flowchart TD
-    lista["Mis fincas"] --> registro["Agregar finca<br/>Nombre, municipio y área total"]
-    registro --> ubicacion["Poner pin en mapa o usar GPS<br/>Confirmar municipio"]
-    ubicacion --> detalle["Detalle de la finca<br/>Mapa con su pin guardado"]
-    detalle --> cultivos["Agregar cultivos o lotes<br/>Hectáreas, variedad, estado y rendimiento"]
-    cultivos --> presupuesto["Presupuesto por cultivo<br/>Año o ciclo, costos y precio esperado"]
-    presupuesto --> evidencia["Revisar referencias<br/>UPRA, EVA, SIPSA y FEPCafé"]
-    presupuesto --> aplicar["Aplicar presupuesto al cultivo"]
-    aplicar --> resumen["Mis cuentas<br/>Ingresos, costos, utilidad y caja previa"]
-    resumen --> escenarios["Escenarios bajo, central y alto<br/>Equilibrio por kg y aportes por cultivo"]
-    detalle --> labores["Clima y labores del cultivo elegido"]
-    detalle --> exportar["Descargar datos de esta finca"]
+    entrada["Mi finca · sin registro obligatorio"] --> zona["Explorar mi zona"]
+    zona --> ubicar["Buscar municipio / GPS / fijar pin"]
+    ubicar --> explorar["Navegar el mapa sin mover el pin"]
+    explorar --> capas["Elegir capa y período"]
+    capas --> clima["Lluvia y temperatura<br/>Próximos 7 días / mes habitual / año habitual"]
+    capas --> terreno["Suelos, erosión, susceptibilidad a inundación"]
+    capas --> riesgo["Indicadores de tiempo severo<br/>Reglas orientativas del pronóstico"]
+    clima & terreno & riesgo --> valores["Valores del pin y del punto explorado"]
+    valores --> evidencia["Consulta original, entidad, fecha, escala y descarga"]
+    zona --> opciones["Cultivos y aptitud publicados para el municipio"]
+    entrada & opciones --> analisis["Costos y rentabilidad"]
+    analisis --> supuestos["Cultivo, área, rendimiento, pérdidas y precio"]
+    supuestos --> costos["Costos propios + estudio UPRA opcional"]
+    costos --> comparar["Diferencias nominales por rubro<br/>Confirmar sistema, año, región y alcance"]
+    comparar --> resultado["Ingresos, costos, utilidad y equilibrio"]
+    resultado --> vistas["Alternar tabla / cascada"]
+    resultado --> sensibilidad["Variar precio y rendimiento"]
+    resultado --> descargar["Descargar análisis con sus fuentes"]
 ```
 
-Cada finca tiene identificador, perfil, pin y cultivos propios. Cada cultivo conserva área, variedad/lote, estado del producto, rendimiento esperado, año, etapa, riego y fechas opcionales. La suma de áreas no puede superar la finca. Cambiar área, rendimiento, cultivo, estado del producto o año obliga a recalcular el presupuesto; cambiar de municipio invalida los presupuestos vinculados a las referencias anteriores.
+Mi finca se centra en información para decidir. El mapa funciona sin registrar cultivos ni organizar labores. Buscar un municipio centra la exploración; GPS o «Fijar mi pin aquí» establecen el punto. El pin guardado y el punto explorado tienen colores y resultados separados. Fijar un pin nuevo solicita confirmar el municipio usado para las referencias agrícolas; no se asigna municipio a partir del centroide más cercano. Los registros anteriores se conservan, y sus ubicaciones siguen disponibles.
 
-El resumen agrupa presupuestos del **mismo año y tipo de período**: establecimiento, año en producción o un ciclo por cultivo. No suma períodos incompatibles ni convierte automáticamente ciclos en años. Los costos incluyen producción, gastos de venta y comisión; la utilidad es ingreso menos esos costos. La caja antes de cosechar suma las labores marcadas para ese momento. El equilibrio se muestra por cultivo: no se promedian kilogramos de productos diferentes.
+**Capas verificadas y archivadas:** lluvia mensual/anual IDEAM 1991–2020, temperatura media mensual/anual IDEAM 1981–2010, correlación de suelos IGAC 1:100.000, erosión IDEAM 2020 1:100.000 y susceptibilidad a inundación IDEAM 2010 1:500.000. El mes se filtra por la fecha inicial de cada unidad del geoservicio. Una normal histórica no se presenta como pronóstico del mes de este año. La capa de suelos muestra paisaje; textura, profundidad, fertilidad, acidez y drenaje se consultan en la unidad del punto, sin fingir un análisis del predio.
 
-Los escenarios utilizan los supuestos guardados y, cuando se elige historia, cinco años completos de precios nominales comparables. Son proyecciones condicionales, no ganancias garantizadas. Los cultivos sin presupuesto permanecen visibles como pendientes.
+Los próximos siete días se consultan en Open-Meteo. El mapa muestra hasta 25 puntos separados, con muestreo más cercano al acercarse, sin interpolarlos como mediciones continuas. Lluvia = suma del período; temperatura = máxima del período. El indicador de atención se activa si algún día supera los umbrales explicados (lluvia ≥20 mm, viento ≥40 km/h, máxima ≥35 °C o mínima ≤2 °C). Es una regla del producto, no una alerta oficial ni una probabilidad de daño. Datos ausentes no se convierten en cero ni en ausencia de amenaza. Las alertas oficiales se consultan mediante el enlace IDEAM.
 
-EVA aporta referencias municipales de rendimiento, UPRA estructuras de costos por región/año y FEPCafé una referencia nacional para pergamino seco. El porcentaje de rendimiento requiere período y estado comparables. El [Censo Nacional Agropecuario de DANE](https://microdatos.dane.gov.co/catalog/513) tiene microdatos, pero no recoge costos de producción, precios de venta ni ingresos: no permite inventar una clasificación de utilidad entre fincas vecinas. La aptitud y el contexto de suelos se presentan con su escala territorial; no sustituyen mediciones de la finca.
+El análisis económico trabaja con un cultivo, un año en producción para permanentes o un ciclo para transitorios. Calcula kilos vendibles, ingresos, costos por rubro, transporte, comisión, utilidad, margen y precio de equilibrio. Tabla y cascada derivan de las mismas fórmulas y admiten pérdidas. Los campos incompletos impiden mostrar un resultado engañoso. El usuario puede partir de los costos nominales de un estudio UPRA, editarlos y confirmar comparabilidad antes de ver diferencias; no se trata a los datos de 2023 como costos actuales ajustados por inflación.
+
+EVA aporta rendimiento municipal y FEPCafé un costo nacional por kg de pergamino seco. El [CNA 2014 de DANE](https://microdatos.dane.gov.co/index.php/catalog/513) excluye costos de producción, precios e ingresos. [EMICRON 2024](https://microdatos.dane.gov.co/index.php/catalog/875/variable/F8/V147?name=P3057_D) agrupa gastos agrícolas, pecuarios y extractivos en un rubro que no permite asignar un costo por hectárea de este cultivo. No hay un ranking ni percentiles de utilidad de fincas vecinas. Las diferencias frente a UPRA son nominales y técnicas, con su región, año, sistema y PDF visibles.
+
+El precio puede ser propio o una referencia estacional de al menos tres años completos. La comparación conserva el producto físico (caña no se valora como panela, arroz paddy no como arroz molido) y exige confirmar su equivalencia. El precio mayorista requiere revisar el descuento a finca. Los escenarios bajo/central/alto combinan cuartiles históricos con variación de rendimiento ingresada, manteniendo costos constantes para sensibilidad; no son probabilidades. [Detalles de fuentes y operación](MI_FINCA_DATA.md).
 
 ### Funcionalidad y límites
 
@@ -117,11 +128,11 @@ EVA aporta referencias municipales de rendimiento, UPRA estructuras de costos po
 | Insumos | Detalle de insumo | Precios fechados de la misma presentación, sin dosis recomendadas ni ofertas de tiendas. |
 | Transporte y ofertas | Producto, café y `/offers` | Comparar neto de venta y costo de compra con cantidades, descuentos, gastos, pago y vencimiento. Ofertas privadas ingresadas por el usuario. |
 | Boletín diario | Producto → `/daily` | Definiciones diarias separadas de variedades mensuales, con PDF archivado. |
-| Fincas y cultivos | Mi finca | Registros múltiples, mapa con pin, GPS opcional y presupuestos por cultivo. Sin subir análisis de suelo. |
+| Territorio y cultivos | Mi finca | Pin/GPS, seis capas temáticas, períodos, valores del punto y referencias municipales de cultivos. |
 | Clima y alertas | Finca → Clima y labores | Pronóstico de siete días, reglas explicadas y publicaciones oficiales fechadas. No notificaciones push ni confirmación automática de plagas. |
 | Qué sembrar | Finca → Mis cultivos → Explorar | Producción/rendimiento EVA, aptitud SIPRA y contexto regional de suelos. Sin diagnóstico de parcela. |
 | Cosecha y estacionalidad | Presupuesto | Calendarios históricos, ventana según floración de café y simulación por ciclo. No determina madurez de cosecha. |
-| Guardar y exportar | Finca y presupuesto | Copia JSON de finca; hasta seis escenarios por finca con supuestos e identificadores de fuente. |
+| Guardar y exportar | Mi finca | Pin local persistente; descarga del análisis económico con supuestos, resultados y fuentes. Los registros anteriores se conservan. |
 | Fotografías e ilustraciones | Catálogos y créditos | Fotografías por familia, plazas conocidas y material ilustrativo. Se distinguen ilustraciones y empaques genéricos. |
 
 Pendiente de desarrollo: red de ofertas en vivo, pagos verificados, notificaciones push, fechas de siembra óptimas automáticas, aptitud de parcela, satélites, rutas de transporte, análisis CHIRPS e integración de modelos AGRORAC. Las notas de investigación no implican que esas funciones estén activas.
@@ -134,7 +145,9 @@ Pendiente de desarrollo: red de ofertas en vivo, pagos verificados, notificacion
 | Detalles | `app/product/[id]`, `app/market/[id]`, `app/insumo/[id]`, `components/explore/CoffeeDetail.tsx` |
 | Abastecimiento y mapas | `components/explore/SupplyPanel.tsx`, `ColombiaMap.tsx`, `lib/server/explore.ts`, `/api/explore/[resource]` |
 | Búsqueda y visor | `components/ui`, `components/planning/EvidenceProvider.tsx`, `EvidenceContent.tsx`, `PdfViewer.tsx` |
-| Fincas y cuentas | `app/farm/[id]`, `components/farms`, `lib/farm-types.ts`, `components/planning/FarmContext.tsx` |
+| Mi finca informativa | `app/farm`, `components/location`, `lib/location-types.ts`, `lib/cleansheet.ts` |
+| Capas y evidencia territorial | `lib/server/location.ts`, `api/location/[resource]`, `pipelines/spatial` |
+| Compatibilidad de datos anteriores | `lib/farm-types.ts`, `components/planning/FarmContext.tsx` |
 | Planificación | `app/plan`, `components/planning/WeeklyPlan.tsx`, `CropOptions.tsx`, `CropBudget.tsx`, `lib/planning-math.ts` |
 | Imágenes | `lib/images.ts`, `lib/image-library.json`, `app/credits`, `pipelines/assets` |
 | Importación inicial de abastecimiento | `pipelines/market` |
@@ -154,7 +167,7 @@ Observation guards reject future Colombia dates. Historical observations are ret
 
 Farm records, crops, saved products, quotes, task status and up to six scenarios per farm are stored on the user's device. They are not uploaded or published. Climate requests send rounded coordinates (0.01°) to the server/provider and store the public forecast response for provenance. Municipal default points are explicitly distinguished from a farm location. User-entered dates and yields are assumptions or records, not remotely verified facts.
 
-Farm storage uses `agroamigo-farms-v2`. The existing `agroamigo-farm-v1` is migrated once with stable identifiers, and old scenario snapshots remain accessible on that migrated farm. Budgets are applied explicitly to one crop. Weather task status is scoped to farm/crop. Location permission is requested only by the GPS button; permission denial keeps map/manual entry available. The saved pin appears on every farm detail. JSON exports carry the farm, crop plans and source identifiers; there is no account-based device synchronization.
+The informational workspace stores only the chosen pin and municipality in `agroamigo-location-v1`; economic assumptions stay in the session and export to JSON. Point GIS queries send six-decimal coordinates to the public source and archive query/response envelopes in Azure `spatial_snapshot`, with SHA-256 and source schema parents. Forecast requests archive both requested and model coordinates. Legacy farm storage uses `agroamigo-farms-v2`. The existing `agroamigo-farm-v1` is migrated once with stable identifiers, and old scenario snapshots remain accessible on that migrated farm. Budgets are applied explicitly to one crop. Weather task status is scoped to farm/crop. Location permission is requested only by the GPS button; permission denial keeps map/manual entry available. The saved pin appears on every farm detail. JSON exports carry the farm, crop plans and source identifiers; there is no account-based device synchronization.
 
 ## Refresh and deployment
 

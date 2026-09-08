@@ -51,56 +51,33 @@ async function farm(page: Page) {
     localStorage.setItem("agroamigo-farm-v1", JSON.stringify(p));
   }, profile);
 }
-test("profile saves, local crop references and weather have working evidence", async ({
+test("municipal crop references remain available from the informational workspace", async ({
   page,
-}, info) => {
-  const errors: string[] = [];
-  page.on("pageerror", (e) => errors.push(e.message));
+}) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "agroamigo-location-v1",
+      JSON.stringify({
+        point: { latitude: 1.9, longitude: -76.1 },
+        municipalityId: "41551",
+        name: "Mi pin",
+      }),
+    ),
+  );
   await page.goto("/farm");
   await page
-    .getByRole("button", { name: "Explorar ejemplo en Pitalito" })
+    .getByRole("button", { name: "¿Qué se cultiva en este municipio?" })
     .click();
-  await page.getByRole("tab", { name: "Clima y labores", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Tu plan para esta semana" }),
-  ).toBeVisible();
-  await expect(page.locator(".weather-day")).toHaveCount(7, { timeout: 35000 });
-  await page.locator(".task-toggle").first().click();
-  await expect(page.locator(".task-toggle").first()).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await page.screenshot({
-    path: resolve(
-      __dirname,
-      "../../../artifacts",
-      `farm-${info.project.name}.png`,
-    ),
-    fullPage: true,
-  });
-  await page.reload();
-  await page.getByRole("tab", { name: "Clima y labores", exact: true }).click();
-  await expect(page.locator(".task-toggle").first()).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-  await page.goto("/plan");
   await expect(page.locator(".crop-option").first()).toBeVisible();
   await expect(page.locator(".aptitude-result").first()).toBeVisible();
+  await expect(
+    page.locator(".crop-option .evidence-link").first(),
+  ).toHaveAttribute("href", /municipality=41551/);
   expect(
     await page.evaluate(
-      () => document.documentElement.scrollWidth > innerWidth,
+      () => document.documentElement.scrollWidth <= innerWidth,
     ),
-  ).toBe(false);
-  await page.screenshot({
-    path: resolve(
-      __dirname,
-      "../../../artifacts",
-      `plan-${info.project.name}.png`,
-    ),
-    fullPage: true,
-  });
-  expect(errors).toEqual([]);
+  ).toBe(true);
 });
 test("budget computes costs, commission and scenarios and preserves evidence", async ({
   page,
@@ -316,7 +293,16 @@ test("daily quotes and input prices retain their frequency, units and source", a
 test("unavailable weather is actionable and never supplies invented forecasts", async ({
   page,
 }) => {
-  await farm(page);
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      "agroamigo-location-v1",
+      JSON.stringify({
+        point: { latitude: 1.9, longitude: -76.1 },
+        municipalityId: "41551",
+        name: "Mi pin",
+      }),
+    ),
+  );
   await page.route("**/api/planning/weather*", (r) =>
     r.fulfill({
       status: 503,
@@ -324,8 +310,10 @@ test("unavailable weather is actionable and never supplies invented forecasts", 
       body: JSON.stringify({ error: "No pudimos consultar el clima." }),
     }),
   );
-  await page.goto("/farm/legacy-farm");
-  await page.getByRole("tab", { name: "Clima y labores", exact: true }).click();
-  await expect(page.locator("main [role=alert]")).toBeVisible();
-  await expect(page.locator(".weather-day")).toHaveCount(0);
+  await page.goto("/farm");
+  await page.getByLabel("Horizonte de la información").selectOption("forecast");
+  await expect(
+    page.locator(".zone-reading [role=alert]").first(),
+  ).toBeVisible();
+  await expect(page.locator(".forecast-day-strip")).toHaveCount(0);
 });

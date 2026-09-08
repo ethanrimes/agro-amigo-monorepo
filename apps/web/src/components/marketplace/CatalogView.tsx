@@ -122,7 +122,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
           {products.length ? (
             <div className="product-grid">
               {products.slice(0, limit).map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={`${p.id}:${p.unit}:${p.source}`} product={p} />
               ))}
             </div>
           ) : (
