@@ -3,6 +3,7 @@ import "./globals.css";
 import "./field-theme.css";
 import "./explore.css";
 import "./farms.css";
+import "./location.css";
 import { Providers } from "./providers";
 import { AppShell } from "./app-shell";
 

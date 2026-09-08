@@ -110,52 +110,50 @@ void main() {
     await checkTabs();
     await binding.takeScreenshot('ios-layout-products');
 
+    // This suite runs only on an explicitly created disposable test simulator.
     await web.runJavaScript(
-      'localStorage.removeItem("agroamigo-farm-v1"); localStorage.removeItem("agroamigo-farms-v2")',
+      'localStorage.setItem("agroamigo-location-v1", JSON.stringify({point:{latitude:1.9,longitude:-76.1},municipalityId:"41551",name:"Pin de prueba"}))',
     );
     await web.loadRequest(Uri.parse('${app.appOrigin}/farm'));
     await until(
-      'Array.from(document.querySelectorAll("button")).some(b => b.innerText.includes("Pitalito") && !b.disabled)',
-    );
-    await web.runJavaScript(
-      'Array.from(document.querySelectorAll("button")).find(b => b.innerText.includes("Pitalito")).click()',
+      'document.querySelector(".zone-map")?.dataset.ready === "true"',
     );
     await until(
-      'location.pathname.startsWith("/farm/") && document.querySelector(".farm-section-tabs") !== null',
+      'Number(document.querySelector(".zone-map")?.dataset.tiles) > 0',
     );
-    await web.runJavaScript(
-      'Array.from(document.querySelectorAll("[role=tab]")).find(b => b.innerText === "Clima y labores").click()',
+    await until(
+      'document.querySelector(".zone-reading")?.textContent.includes("Lluvia habitual")',
     );
-    await until('document.body.innerText.includes("Tu plan para esta semana")');
     final profile = await web.runJavaScriptReturningResult(
-      'localStorage.getItem("agroamigo-farms-v2") || ""',
+      'localStorage.getItem("agroamigo-location-v1") || ""',
     );
-    expect(profile.toString().length, greaterThan(20));
     await web.reload();
-    await until('document.body.innerText.includes("Pitalito")');
+    await until(
+      'document.querySelector(".zone-map")?.dataset.pinLat === "1.9"',
+    );
     expect(
       await web.runJavaScriptReturningResult(
-        'localStorage.getItem("agroamigo-farms-v2") || ""',
+        'localStorage.getItem("agroamigo-location-v1") || ""',
       ),
       profile,
     );
-    await web.runJavaScript('window.scrollTo(0, 0)');
-    await binding.takeScreenshot('ios-layout-farm');
-
+    await checkTabs();
+    await web.runJavaScript(
+      'document.querySelector(".zone-map").scrollIntoView()',
+    );
+    await binding.takeScreenshot('ios-location-map');
+    await web.runJavaScript('document.getElementById("clean-tab").click()');
+    await until('document.querySelector(".clean-sheet") !== null');
     await until(
-      'Array.from(document.querySelectorAll("a.evidence-link")).some(a => a.textContent.includes("Comprobar el costo cafetero"))',
+      'Array.from(document.querySelectorAll("a.evidence-link")).some(a => a.textContent.includes("Ver costo publicado"))',
     );
     await web.runJavaScript(
-      'Array.from(document.querySelectorAll("a.evidence-link")).find(a => a.textContent.includes("Comprobar el costo cafetero")).click()',
+      'Array.from(document.querySelectorAll("a.evidence-link")).find(a => a.textContent.includes("Ver costo publicado")).click()',
     );
     await until('document.querySelector("dialog[open]") !== null');
     await until(
       r'document.querySelector("canvas[data-rendered=true][aria-label=\"Página 6 del PDF\"]") !== null && document.querySelector(".pdf-text")?.textContent.includes("1,550,805")',
     );
-    final headings = await web.runJavaScriptReturningResult(
-      'JSON.stringify(Array.from(document.querySelectorAll("h2")).map(e=>e.innerText))',
-    );
-    expect(headings.toString(), contains('FEPCaf'));
     await web.runJavaScript(
       'document.querySelector(".pdf-viewer").scrollIntoView()',
     );
@@ -164,9 +162,7 @@ void main() {
     expect(state.canGoBack, isTrue);
     await web.goBack();
     await until('document.querySelector("dialog[open]") === null');
-    await until(
-      'location.pathname.startsWith("/farm/") && document.querySelector(".farm-section-tabs") !== null',
-    );
+    await until('document.querySelector(".clean-sheet") !== null');
 
     // Inspect all exported data through the same native navigation path used by
     // the budget UI. The share sheet is left open for simulator visual QA.

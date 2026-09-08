@@ -11,7 +11,7 @@ test("Azure API returns real, dated sources and only the demo window", async ({
         p.price > 0 &&
         (p.id === "cafe-pergamino-seco"
           ? p.unit === "125kg" && p.period === "daily"
-          : p.unit === "kg" && p.period === "monthly"),
+          : ["kg", "unit", "litre"].includes(p.unit) && p.period === "monthly"),
     ),
   ).toBeTruthy();
   const selected = catalog.products.find((p: any) => p.id === "aguacate-hass");

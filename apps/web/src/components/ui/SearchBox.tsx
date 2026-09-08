@@ -31,7 +31,7 @@ export function SearchBox({
     [active, setActive] = useState(-1);
   const matches = useMemo(
     () =>
-      options
+      Array.from(new Map(options.map((option) => [option.id, option])).values())
         .filter((o) =>
           fold(o.label + " " + (o.detail || "")).includes(fold(value)),
         )

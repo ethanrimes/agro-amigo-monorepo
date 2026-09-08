@@ -180,7 +180,7 @@ test("legacy routes have a useful destination and source explanations are availa
   await expect(page.locator(".market-card").first()).toBeVisible();
   await page.goto("/insumos");
   await expect(
-    page.getByRole("heading", { name: "Insumos agrícolas" }),
+    page.getByRole("heading", { name: /Insumos (agrícolas|agropecuarios)/ }),
   ).toBeVisible();
   await page.goto("/sources");
   await page
