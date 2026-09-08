@@ -13,12 +13,12 @@ import {
   IoLocationOutline,
   IoHeartOutline,
   IoHeart,
-  IoArrowBack,
 } from "react-icons/io5";
 import { useData } from "@/components/marketplace/useData";
 import { usePreferences } from "@/components/marketplace/Preferences";
 import { ErrorState, Notice } from "@/components/marketplace/Shared";
 import { PriceChart } from "@/components/marketplace/PriceChart";
+import { CatalogBackLink } from "@/components/marketplace/CatalogBackLink";
 import { MarketList } from "@/components/marketplace/MarketList";
 import { money, dateLabel, number, type Coffee } from "@/lib/market-types";
 export function CoffeeDetail() {
@@ -48,9 +48,7 @@ export function CoffeeDetail() {
     (Date.now() - new Date(data.date + "T12:00:00Z").getTime()) / 86400000 > 7;
   return (
     <>
-      <Link href="/products" className="back-link">
-        <IoArrowBack /> Volver a productos
-      </Link>
+      <CatalogBackLink />
       <div className="page-heading">
         <div>
           <span className="eyebrow">EL VALOR DE CADA COSECHA</span>

@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "run_at": "2026-09-08T04:33:08Z",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:18:00-05:00",
+  "stories": [
+    {
+      "canonical_url": "https://www.agrosavia.co/noticias/productores-de-santander-y-norte-de-santander-podr%C3%A1n-vincularse-al-proyecto-bioinnova-p%C3%A1ramos-y-bosques",
+      "source_name": "AGROSAVIA",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "AGROSAVIA abrió convocatoria BIOINNOVA para fortalecer capacidades productivas, comerciales y ambientales de productores de cacao, papa, cebolla de rama, hortalizas, frutales y ganadería en municipios priorizados.",
+      "published_at": "2026-08-25T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:33:08Z",
+      "decision": "review",
+      "confidence": "media",
+      "primary_category": "apoyos_y_normativa",
+      "tags": [],
+      "crops": [
+        "cacao",
+        "papa",
+        "cebolla de rama",
+        "hortalizas",
+        "frutales",
+        "ganadería"
+      ],
+      "inputs": [
+        "semillas"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Santander",
+          "Norte de Santander"
+        ],
+        "municipalities": [
+          "Tona",
+          "Suratá",
+          "Silos",
+          "Mutiscua",
+          "Teorama",
+          "Convención"
+        ]
+      },
+      "colombia_relevance_es": "AGROSAVIA abrió convocatoria BIOINNOVA para fortalecer capacidades productivas, comerciales y ambientales de productores de cacao, papa, cebolla de rama, hortalizas, frutales y ganadería en municipios priorizados.",
+      "evidence_urls": [
+        "https://www.agrosavia.co/noticias/productores-de-santander-y-norte-de-santander-podr%C3%A1n-vincularse-al-proyecto-bioinnova-p%C3%A1ramos-y-bosques"
+      ],
+      "publication_evidence": {
+        "url": "https://www.agrosavia.co/noticias/productores-de-santander-y-norte-de-santander-podr%C3%A1n-vincularse-al-proyecto-bioinnova-p%C3%A1ramos-y-bosques",
+        "method": "original-page dateline/content",
+        "value": "Página fechada Agosto 25, 2026; cuerpo indica Rionegro, Santander, 24 de agosto de 2026"
+      },
+      "display_expires_at": "2026-09-08T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-08T00:00:00-05:00",
+      "status": "review",
+      "rights_status": "unverified",
+      "review_reason": "La página muestra fecha de listado 25-ago, pero el cuerpo dice 24-ago; requiere resolver la discrepancia antes de incluir en ventana."
+    },
+    {
+      "canonical_url": "https://www.agrosavia.co/noticias/encuentro-linkata-florencia-impulsando-la-bioeconom%C3%ADa-en-el-coraz%C3%B3n-de-la-amazon%C3%ADa",
+      "source_name": "AGROSAVIA",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "Encuentro Linkata en Florencia impulsó intercambio sobre bioeconomía y oportunidades productivas en la Amazonía.",
+      "published_at": "2026-08-28T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:33:08Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "investigacion_y_cultivos",
+      "tags": [],
+      "crops": [
+        "frutales"
+      ],
+      "inputs": [],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Caquetá"
+        ],
+        "municipalities": [
+          "Florencia"
+        ]
+      },
+      "colombia_relevance_es": "Encuentro Linkata en Florencia impulsó intercambio sobre bioeconomía y oportunidades productivas en la Amazonía.",
+      "evidence_urls": [
+        "https://www.agrosavia.co/noticias/encuentro-linkata-florencia-impulsando-la-bioeconom%C3%ADa-en-el-coraz%C3%B3n-de-la-amazon%C3%ADa"
+      ],
+      "publication_evidence": {
+        "url": "https://www.agrosavia.co/noticias/encuentro-linkata-florencia-impulsando-la-bioeconom%C3%ADa-en-el-coraz%C3%B3n-de-la-amazon%C3%ADa",
+        "method": "original-page listing/dateline",
+        "value": "Listado candidato 28/08/2026; página accesible"
+      },
+      "display_expires_at": "2026-09-11T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-11T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.ica.gov.co/noticias/acompanamiento-tecnico-ica-isla-providencia",
+      "source_name": "ICA",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "ICA brindó acompañamiento técnico al vivero municipal de Providencia para producir plántulas sanas y avanzar en su registro fitosanitario.",
+      "published_at": "2026-09-07T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:33:08Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "sanidad_agropecuaria",
+      "tags": [],
+      "crops": [
+        "plántulas"
+      ],
+      "inputs": [
+        "material vegetal"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Archipiélago de San Andrés, Providencia y Santa Catalina"
+        ],
+        "municipalities": [
+          "Providencia"
+        ]
+      },
+      "colombia_relevance_es": "ICA brindó acompañamiento técnico al vivero municipal de Providencia para producir plántulas sanas y avanzar en su registro fitosanitario.",
+      "evidence_urls": [
+        "https://www.ica.gov.co/noticias/acompanamiento-tecnico-ica-isla-providencia"
+      ],
+      "publication_evidence": {
+        "url": "https://www.ica.gov.co/noticias/acompanamiento-tecnico-ica-isla-providencia",
+        "method": "original-page dateline",
+        "value": "07 de septiembre de 2026"
+      },
+      "display_expires_at": "2026-09-21T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-21T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.ica.gov.co/noticias/ica-impulsa-acuicultura-uraba-antioqueno",
+      "source_name": "ICA",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "ICA lideró una jornada de formación y asistencia técnica para acuicultores y camaroneros del Urabá, con bioseguridad, normatividad y proyección exportadora.",
+      "published_at": "2026-09-02T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:33:08Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "sanidad_agropecuaria",
+      "tags": [],
+      "crops": [
+        "peces",
+        "camarón"
+      ],
+      "inputs": [
+        "bioseguridad"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Antioquia",
+          "Chocó"
+        ],
+        "municipalities": [
+          "Apartadó"
+        ]
+      },
+      "colombia_relevance_es": "ICA lideró una jornada de formación y asistencia técnica para acuicultores y camaroneros del Urabá, con bioseguridad, normatividad y proyección exportadora.",
+      "evidence_urls": [
+        "https://www.ica.gov.co/noticias/ica-impulsa-acuicultura-uraba-antioqueno"
+      ],
+      "publication_evidence": {
+        "url": "https://www.ica.gov.co/noticias/ica-impulsa-acuicultura-uraba-antioqueno",
+        "method": "original-page dateline",
+        "value": "02 de septiembre de 2026"
+      },
+      "display_expires_at": "2026-09-16T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-16T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    }
+  ],
+  "excluded_accessible": [
+    {
+      "source_name": "ICA",
+      "url": "https://www.ica.gov.co/noticias/nuevo-gerente-ica-carlos-eduardo-campo-cuello",
+      "decision": "discard",
+      "reason": "Artículo institucional de nombramiento; no aporta novedad agropecuaria verificable para el feed."
+    },
+    {
+      "source_name": "AGROSAVIA",
+      "url": "https://www.agrosavia.co/noticias/agrosavia-y-la-comunidad-inga-de-santiago-putumayo-fortalecen-la-conservaci%C3%B3n-de-recursos-gen%C3%A9ticos-y-las-casas-comunitarias-de-semillas/",
+      "decision": "include_candidate",
+      "reason": "Accesible y relevante sobre semillas comunitarias; queda separado para deduplicación/merger."
+    }
+  ],
+  "unreviewed_remaining_count": 31,
+  "unreviewed_note": "Los 31 candidatos restantes no fueron intentados en esta extracción final; no se marcaron como accesibles ni revisados.",
+  "review": []
+}

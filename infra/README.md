@@ -2,12 +2,12 @@
 
 Subscription: `9a04b64b-af19-4519-be50-56ec2acbd855` (tenant `148ba320-1a6d-4fd7-ba8b-2897083e7531`). All new resources are isolated in `agroamigo-demo-rg`, North Central US.
 
-| Resource | Name | Configuration |
-|---|---|---|
-| PostgreSQL Flexible Server | `agroamigo-demo-pg-9a04` | PostgreSQL 16, Burstable B1ms, 32 GiB, 7-day backups |
-| Database | `agroamigo` | Recent observations, historical references and immutable evidence |
-| App Service plan | `agroamigo-demo-plan` | Linux B1 |
-| Web app | `agroamigo-demo-9a04` | Node 22 LTS, HTTPS only, TLS 1.2+, FTPS disabled |
+| Resource                   | Name                     | Configuration                                                     |
+| -------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| PostgreSQL Flexible Server | `agroamigo-demo-pg-9a04` | PostgreSQL 16, Burstable B1ms, 32 GiB, 7-day backups              |
+| Database                   | `agroamigo`              | Recent observations, historical references and immutable evidence |
+| App Service plan           | `agroamigo-demo-plan`    | Linux B2 (2 cores, 3.5 GB)                                                          |
+| Web app                    | `agroamigo-demo-9a04`    | Node 22 LTS, HTTPS only, TLS 1.2+, FTPS disabled                  |
 
 App URL: https://agroamigo-demo-9a04.azurewebsites.net
 
@@ -49,6 +49,10 @@ The application starts with `node apps/web/server.js`. `/api/health` returns HTT
 
 ## Refresh and retention
 
+Production environment settings live in Azure App Service / Function App configuration. The web app owns its read-only `DATABASE_URL` and `SOURCE_STORAGE_ACCOUNT`; the ingestion app owns its restricted writer `DATABASE_URL`, `AzureWebJobsStorage`, schedules, and `GEMINI_API_KEY`, `GEMINI_OCR_MODEL`, `GEMINI_OCR_DAILY_REQUESTS`. Gemini is server-only and used only after ordinary extraction fails. Change these settings in Azure; deployments preserve existing operator-managed values and only initialize missing values. Deployments explicitly set runtime host requirements, verify changes without logging values, and exclude credential files from packages. Local settings remain for local development and are not the production source of truth.
+
+See [permanent scheduled ingestion](../pipelines/ingestion/README.md). The Function App `agroamigo-data-9a04` uses the existing plan; storage account `agroamigodata9a04` holds timer state and immutable source copies. Deploy it with `.venv/bin/python infra/deploy_ingestion.py`.
+
 ```sh
 .venv/bin/python pipelines/demo/import_data.py
 .venv/bin/python pipelines/planning/fetch_references.py
@@ -60,6 +64,6 @@ The application starts with `node apps/web/server.js`. `/api/health` returns HTT
 .venv/bin/python pipelines/planning/verify.py
 ```
 
-`--cached` reuses downloaded source files for reproducibility; omit it to refresh. Raw source workbooks are archived in PostgreSQL and cached locally; only recent observations enter the rolling observation tables. Five complete years support the separate seasonal tables. The last-12-month boundary uses `America/Bogota`, including database insertion guards. Each import prunes expired records. There is no unattended schedule configured; this is an explicitly dated demo snapshot. Public queries always enforce the date window even between refreshes.
+`--cached` reuses downloaded source files for reproducibility; omit it to refresh. Raw source workbooks are permanently archived in PostgreSQL and private Azure Blob Storage. Historical observations and revisions are retained without age-based deletion. Daily updates run at 18:00 Colombia and historical backfill runs hourly. Price queries default to a recent 12-month window and offer complete-history views where supported; planning selects five complete prior years from retained history. Database insertion guards reject future dates, and historical stores reject deletion/truncation.
 
 Provisioning credentials are held in owner-only local files under `.azure-local/`. That directory also holds ignored build/deployment artifacts. Keep this folder secure. A new administrator can reset the server password using Azure and update local credentials; the application role's credential must be rotated independently.

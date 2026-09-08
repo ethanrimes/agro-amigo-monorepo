@@ -57,6 +57,7 @@ class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     controller = WebViewController()
+      ..enableZoom(false)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(paper)
       ..setNavigationDelegate(
@@ -241,6 +242,9 @@ class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
       const extensions = {
         'application/pdf': 'pdf',
         'application/json': 'json',
+        'application/zip': 'zip',
+        'image/png': 'png',
+        'application/vnd.ms-excel': 'xls',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
             'xlsx',
         'text/plain': 'txt',
@@ -250,8 +254,8 @@ class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
       final bytes = BytesBuilder(copy: false);
       await for (final chunk in response.timeout(const Duration(seconds: 30))) {
         bytes.add(chunk);
-        if (bytes.length > 50 * 1024 * 1024) {
-          throw const FormatException('Document exceeds 50 MB');
+        if (bytes.length > 200 * 1024 * 1024) {
+          throw const FormatException('Document exceeds 200 MB');
         }
       }
       await _share(bytes.takeBytes(), 'fuente-agroamigo.$ext', mime);

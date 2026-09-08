@@ -1,0 +1,63 @@
+{
+  "reviewer": "parent_assistant",
+  "classified_with_luna": false,
+  "stories": [
+    {
+      "id": "5e5f8d509552b747725267b6",
+      "content_sha256": "93c43e26066bed7265f61504a59e5c126b51ee5ba053127bcafb7d4fdbd94eac",
+      "decision": "include",
+      "primary_category": "precios_y_mercados",
+      "story_kind": "market_trend",
+      "crops": [
+        "arroz",
+        "maíz",
+        "trigo",
+        "soya",
+        "palma de aceite",
+        "caña de azúcar"
+      ],
+      "inputs": [],
+      "transmission_channel": "comercio",
+      "factual_label_es": "La FAO informó que su índice mundial de alimentos aumentó 1,9 % en agosto frente al dato revisado de julio de 2026.",
+      "colombia_relevance_es": "Los cambios internacionales podrían influir en cereales, aceites y alimentos para animales en Colombia. Es una señal para contrastar cotizaciones locales; el índice no establece el precio recibido en una finca.",
+      "impact_is_inference": true,
+      "priority": 90,
+      "event_id": "fao-food-index-2026-08"
+    },
+    {
+      "id": "663e8169794f548ec14c8fb9",
+      "content_sha256": "0b90bcbe385f8339ab962da42273f1f88aa0cc37ca0739918347c3e2b198b1e9",
+      "decision": "include",
+      "primary_category": "precios_y_mercados",
+      "story_kind": "market_trend",
+      "crops": [
+        "aguacate",
+        "cítricos"
+      ],
+      "inputs": [],
+      "transmission_channel": "comercio",
+      "factual_label_es": "El análisis de Decofrut publicado por Portal Frutícola describe cambios en la oferta y comercialización de aguacates y cítricos durante la semana 36.",
+      "colombia_relevance_es": "La oferta de otros exportadores podría afectar la competencia que enfrentan productores colombianos en destinos compartidos. Conviene revisar destino, calidad y costos antes de trasladar este análisis a una oferta local.",
+      "impact_is_inference": true,
+      "priority": 75,
+      "event_id": "fruit-market-week-36-2026"
+    },
+    {
+      "id": "d2aff1cc520dcf4aac0ab525",
+      "content_sha256": "593fb16c3d266823b9fc166b70cab4ccb3545327ea5b9f6502a6c77e73c17293",
+      "decision": "include",
+      "primary_category": "abastecimiento_y_cosechas",
+      "story_kind": "general",
+      "crops": [
+        "mango"
+      ],
+      "inputs": [],
+      "transmission_channel": "comercio",
+      "factual_label_es": "FreshPlaza recoge una estimación de la Fundación Mango Ecuador: la cosecha de la nueva temporada podría disminuir al menos 40 %. Es una previsión.",
+      "colombia_relevance_es": "Una menor oferta ecuatoriana podría cambiar la competencia en mercados que también compran mango colombiano. El resultado depende de destinos, calidad y fechas; esta noticia no garantiza un mayor precio en Colombia.",
+      "impact_is_inference": true,
+      "priority": 70,
+      "event_id": "ecuador-mango-season-2026"
+    }
+  ]
+}

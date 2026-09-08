@@ -5,6 +5,7 @@ import { IoDownloadOutline, IoShieldCheckmarkOutline } from "react-icons/io5";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { PdfViewer } from "@/components/planning/PdfViewer";
+import { WorkbookViewer } from "@/components/planning/WorkbookViewer";
 import type { Evidence } from "@/lib/planning-types";
 import { dateLabel, number } from "@/lib/market-types";
 const labels: Record<string, string> = {
@@ -59,7 +60,11 @@ const labels: Record<string, string> = {
   department: "Departamento",
   observed_on: "Fecha",
   presentation: "Presentación",
-  price: "Precio (COP)",
+  price: "Precio en la moneda de la fuente",
+  currency: "Moneda",
+  basis: "Tipo de precio",
+  min_price: "Mínimo",
+  max_price: "Máximo",
   source_locator: "Ubicación del dato",
 };
 export function EvidenceContent({
@@ -133,6 +138,21 @@ export function EvidenceContent({
             </section>
             {data.media_type === "application/pdf" ? (
               <PdfViewer id={data.id} initialPage={initial} />
+            ) : data.media_type.includes("spreadsheet") ||
+              data.media_type === "application/vnd.ms-excel" ? (
+              <WorkbookViewer
+                key={data.id}
+                id={data.id}
+                initialSheet={q.get("sheet") || ""}
+                initialRow={Math.max(1, Number(q.get("row")) || 1)}
+              />
+            ) : data.media_type.startsWith("image/") ? (
+              <section className="panel source-image">
+                <img
+                  src={"/api/evidence/" + data.id + "/content"}
+                  alt={data.title}
+                />
+              </section>
             ) : data.text ? (
               <section className="panel">
                 <h2>Texto de la publicación</h2>

@@ -16,6 +16,7 @@ export function SearchBox({
   options,
   onSelect,
   onSubmit,
+  filterOptions = true,
 }: {
   label: string;
   placeholder?: string;
@@ -24,6 +25,7 @@ export function SearchBox({
   options: SearchOption[];
   onSelect?: (option: SearchOption) => void;
   onSubmit?: () => void;
+  filterOptions?: boolean;
 }) {
   const id = useId(),
     input = useRef<HTMLInputElement>(null);
@@ -33,10 +35,10 @@ export function SearchBox({
     () =>
       Array.from(new Map(options.map((option) => [option.id, option])).values())
         .filter((o) =>
-          fold(o.label + " " + (o.detail || "")).includes(fold(value)),
+          !filterOptions || fold(o.label + " " + (o.detail || "")).includes(fold(value)),
         )
         .slice(0, 8),
-    [options, value],
+    [options, value, filterOptions],
   );
   const select = (option: SearchOption) => {
     onChange(option.label);

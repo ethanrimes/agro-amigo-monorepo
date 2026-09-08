@@ -1,6 +1,6 @@
 """Import real FNC, DANE and SFC observations. No synthetic prices or buyer offers.
 Run: .venv/bin/python pipelines/demo/import_data.py [--cached]
-A source failure aborts before any DB changes. Every run prunes outside 12 months.
+A source failure aborts before any DB changes. Historical rows are never pruned.
 """
 import argparse,calendar,json,math,re,subprocess,unicodedata,os
 from datetime import date,datetime
@@ -123,16 +123,14 @@ def main(cached=False):
  with psycopg.connect(host=config['host'],dbname=config['database'],user=config['user'],password=config['password'],sslmode='verify-full',sslrootcert=certifi.where(),connect_timeout=15) as conn:
   with conn.cursor() as cur:
    cur.execute((HERE/'schema.sql').read_text())
-   for table in ['price_observation','coffee_reference','coffee_factor','exchange_rate','buyer_offer']:
-    cur.execute(sql.SQL('DELETE FROM {} WHERE observed_on<=%s OR observed_on>%s').format(sql.Identifier(table)),(START,TODAY))
    cur.executemany('INSERT INTO source VALUES (%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET url=excluded.url',[
     ('dane-sipsa','DANE · SIPSA',DANE_PAGE,'monthly'),('fnc','Federación Nacional de Cafeteros',FNC_PAGE,'daily'),('sfc','Superintendencia Financiera',TRM_PAGE,'daily')])
    cur.executemany('INSERT INTO product VALUES (%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET name=excluded.name,category=excluded.category,image_key=excluded.image_key,priority=excluded.priority',products.values())
-   cur.executemany('INSERT INTO market VALUES (%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET name=excluded.name,city=excluded.city,region=excluded.region',markets.values())
+   cur.executemany('INSERT INTO market(id,name,city,region) VALUES (%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET name=excluded.name,city=excluded.city,region=excluded.region',markets.values())
    cur.executemany('INSERT INTO price_observation(product_id,market_id,source_id,observed_on,period,unit,price,source_url) VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,fetched_at=now()',observations)
    cur.executemany('INSERT INTO coffee_reference(observed_on,price,source_url) VALUES (%s,%s,%s) ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,source_url=excluded.source_url',history)
-   cur.executemany('INSERT INTO coffee_factor VALUES (%s,%s,%s,%s) ON CONFLICT(observed_on,factor) DO UPDATE SET price=excluded.price,source_url=excluded.source_url',factors)
-   cur.executemany('INSERT INTO exchange_rate VALUES (%s,%s,%s,%s) ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,valid_until=excluded.valid_until',rates)
+   cur.executemany('INSERT INTO coffee_factor(observed_on,factor,price,source_url) VALUES (%s,%s,%s,%s) ON CONFLICT(observed_on,factor) DO UPDATE SET price=excluded.price,source_url=excluded.source_url',factors)
+   cur.executemany('INSERT INTO exchange_rate(observed_on,valid_until,price,source_url) VALUES (%s,%s,%s,%s) ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,valid_until=excluded.valid_until',rates)
    cur.execute('INSERT INTO import_run(window_start,window_end,summary) VALUES (%s,%s,%s)',(START,TODAY,json.dumps(summary)))
    cur.execute("SELECT 1 FROM pg_roles WHERE rolname='agro_reader'")
    if not cur.fetchone(): cur.execute(sql.SQL('CREATE ROLE agro_reader LOGIN PASSWORD {}').format(sql.Literal(config['appPassword'])))

@@ -1,0 +1,421 @@
+{
+  "schema_version": 1,
+  "run_at": "2026-09-08T04:27:55Z",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:18:00-05:00",
+  "model": "gpt-5.6-luna",
+  "coverage": [
+    {
+      "source": "La República",
+      "url": "https://larepublica.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Portafolio Agro",
+      "url": "https://portafolio.co/economia/agro",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Redagrícola",
+      "url": "https://redagricola.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "CONtexto Ganadero",
+      "url": "https://contextoganadero.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "El Espectador",
+      "url": "https://elespectador.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "El Tiempo",
+      "url": "https://eltiempo.com",
+      "status": "access_blocked",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Dominio bloqueado por robots.txt durante búsqueda."
+    },
+    {
+      "source": "Caracol Radio",
+      "url": "https://caracol.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Radio Nacional",
+      "url": "https://radionacional.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "RTVC Noticias",
+      "url": "https://rtvcnoticias.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "FAO",
+      "url": "https://fao.org/newsroom",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "IICA",
+      "url": "https://iica.int",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Alliance Bioversity International y CIAT",
+      "url": "https://alliancebioversityciat.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "CIMMYT",
+      "url": "https://cimmyt.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "CIP",
+      "url": "https://cipotato.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "USDA FAS",
+      "url": "https://fas.usda.gov",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "ICO",
+      "url": "https://ico.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "ICCO",
+      "url": "https://icco.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "IFPRI",
+      "url": "https://ifpri.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Embrapa",
+      "url": "https://embrapa.br",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "CONAB Brasil",
+      "url": "https://gov.br/conab",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Reuters materias primas",
+      "url": "https://reuters.com/markets/commodities/",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "EFE Agro",
+      "url": "https://efeagro.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Cenicafé",
+      "url": "https://cenicafe.org",
+      "status": "article_verified",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Se verificó página original/bulletin con fecha dentro de ventana."
+    },
+    {
+      "source": "Fenalce",
+      "url": "https://fenalce.co",
+      "status": "article_verified",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Se verificó página original/bulletin con fecha dentro de ventana."
+    },
+    {
+      "source": "Fedearroz",
+      "url": "https://fedearroz.com.co",
+      "status": "article_verified",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Se verificó página original/bulletin con fecha dentro de ventana."
+    },
+    {
+      "source": "Fedecacao",
+      "url": "https://fedecacao.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Cenicaña",
+      "url": "https://cenicana.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Cenipalma",
+      "url": "https://cenipalma.org",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Fedepanela",
+      "url": "https://fedepanela.org.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Augura",
+      "url": "https://augura.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Asbama",
+      "url": "https://asbama.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "Corpohass",
+      "url": "https://corpohass.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    },
+    {
+      "source": "SAC",
+      "url": "https://sac.org.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:27:55Z",
+      "reason": "Búsqueda de dominio con términos agro y fechas 2026-08-25..2026-09-07; sin artículo original verificable en ventana."
+    }
+  ],
+  "stories": [
+    {
+      "canonical_url": "https://publicaciones.cenicafe.org/index.php/boletin_agrometeorologico/issue/view/2463",
+      "source_name": "Cenicafé",
+      "source_type": "boletín/investigación",
+      "title": null,
+      "factual_label_es": "Boletín agrometeorológico de septiembre prevé lluvias por debajo de lo normal en gran parte de la región cafetera y ofrece recomendaciones para el cultivo.",
+      "published_at": "2026-09-04T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:27:55Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "clima_y_riesgos",
+      "tags": [
+        "pronóstico",
+        "lluvias",
+        "café"
+      ],
+      "crops": [
+        "café"
+      ],
+      "inputs": [],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Antioquia",
+          "Santander",
+          "Boyacá",
+          "Cundinamarca",
+          "Risaralda",
+          "Huila",
+          "Caquetá",
+          "Putumayo",
+          "Magdalena",
+          "La Guajira",
+          "Norte de Santander"
+        ]
+      },
+      "colombia_relevance_es": "Pronóstico agrometeorológico primario para decisiones de manejo cafetero; licencia visible CC BY-NC-ND 4.0.",
+      "evidence_urls": [
+        "https://publicaciones.cenicafe.org/index.php/boletin_agrometeorologico/article/view/5721"
+      ],
+      "publication_evidence": {
+        "url": "https://publicaciones.cenicafe.org/index.php/boletin_agrometeorologico/article/view/5721",
+        "method": "original publication page",
+        "value": "Publicado: 4 Septiembre 2026"
+      },
+      "display_expires_at": "2026-09-18T00:00:00-05:00",
+      "expiry_reason": "boletín/investigación: 14 días editoriales desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-18T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.fenalce.co/noticias-y-multimedia/frente-a-la-sequia-el-frijol-caupi-se-convierte-en-una-oportunidad-para-los-agricultores-de-la-costa-caribe/",
+      "source_name": "Fenalce",
+      "source_type": "boletín/investigación",
+      "title": null,
+      "factual_label_es": "Fenalce recomienda considerar fríjol caupí como rotación de ciclo corto y tolerante al déficit hídrico; señala ventana del 1 al 15 de septiembre para zonas productoras de Córdoba.",
+      "published_at": "2026-09-04T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:27:55Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "investigacion_y_cultivos",
+      "tags": [
+        "caupí",
+        "rotación",
+        "déficit hídrico"
+      ],
+      "crops": [
+        "fríjol caupí",
+        "maíz"
+      ],
+      "inputs": [],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Córdoba"
+        ],
+        "municipalities": []
+      },
+      "colombia_relevance_es": "Recomendación técnica gremial concreta para productores de Córdoba.",
+      "evidence_urls": [
+        "https://www.fenalce.co/noticias-y-multimedia/frente-a-la-sequia-el-frijol-caupi-se-convierte-en-una-oportunidad-para-los-agricultores-de-la-costa-caribe/"
+      ],
+      "publication_evidence": {
+        "url": "https://www.fenalce.co/noticias-y-multimedia/frente-a-la-sequia-el-frijol-caupi-se-convierte-en-una-oportunidad-para-los-agricultores-de-la-costa-caribe/",
+        "method": "original publication page",
+        "value": "Publicado el 4 de septiembre de 2026"
+      },
+      "display_expires_at": "2026-09-18T00:00:00-05:00",
+      "expiry_reason": "boletín/investigación: 14 días editoriales desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-18T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://boletin-arroz.fedearroz.com.co/",
+      "source_name": "Fedearroz",
+      "source_type": "boletín/investigación",
+      "title": null,
+      "factual_label_es": "Boletín agroclimático del arroz proyecta condiciones secas en gran parte de Colombia desde el 5 de septiembre y detalla pronósticos de precipitación para cuencas del Tolima.",
+      "published_at": "2026-09-05T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:27:55Z",
+      "decision": "review",
+      "confidence": "media",
+      "primary_category": "clima_y_riesgos",
+      "tags": [
+        "pronóstico",
+        "precipitación",
+        "riego"
+      ],
+      "crops": [
+        "arroz",
+        "maíz",
+        "sorgo",
+        "algodón"
+      ],
+      "inputs": [],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Tolima"
+        ],
+        "municipalities": [
+          "Murillo",
+          "Santa Isabel",
+          "Líbano",
+          "Lérida",
+          "Venadillo",
+          "Ambalema",
+          "Roncesvalles",
+          "San Antonio",
+          "Ortega"
+        ]
+      },
+      "colombia_relevance_es": "Boletín sectorial primario con información de agua relevante para arroz; la fecha de publicación exacta no aparece claramente separada del periodo pronosticado.",
+      "evidence_urls": [
+        "https://boletin-arroz.fedearroz.com.co/"
+      ],
+      "publication_evidence": {
+        "url": "https://boletin-arroz.fedearroz.com.co/",
+        "method": "original bulletin page; date in forecast text",
+        "value": "A partir del 5 de septiembre de 2026"
+      },
+      "display_expires_at": "2026-09-19T00:00:00-05:00",
+      "expiry_reason": "boletín/investigación: 14 días editoriales desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-19T00:00:00-05:00",
+      "status": "review",
+      "rights_status": "unverified",
+      "review_reason": "La página es accesible y el contenido es actual, pero no separa con claridad fecha de publicación de fechas del periodo pronosticado; no se incluye como verificado."
+    }
+  ],
+  "review": [
+    {
+      "source_name": "La República",
+      "url": "https://www.larepublica.co/cultivos",
+      "decision": "review",
+      "reason": "El listado muestra actualización 6-sep-2026 y temas agro, pero no se verificó una página original individual con fecha/publicación inequívoca dentro de la ventana.",
+      "checked_at": "2026-09-08T04:27:55Z"
+    }
+  ],
+  "expired_or_corrected": [],
+  "new_sources": []
+}

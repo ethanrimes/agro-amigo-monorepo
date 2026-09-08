@@ -1,5 +1,7 @@
 # Azure data pipeline
 
+The [permanent Azure ingestion service](ingestion/README.md) runs daily refreshes and an hourly historical backfill. Historical records and source originals are never deleted. Use that service for unattended updates; the commands below remain manual reference importers.
+
 These importers replace the retired Supabase pipeline. Use Python 3.11+ and the owner-only `.azure-local/database.json` produced by `infra/provision.py`. Network access to the Azure PostgreSQL firewall and official data hosts is required.
 
 ```sh
@@ -27,8 +29,8 @@ The daily importer takes an ISO date and expects corresponding `daily-YYYY-MM-DD
 
 ## Retention and traceability
 
-- Observations use `(today in America/Bogota minus 12 months, today]`. Database triggers reject inserts outside the interval. Imports prune expired observations, and public queries also enforce the interval.
-- `seasonal_year` holds five complete prior calendar years by product and market. It stores all 12 original monthly values and source row locators. Four conflicting DANE market-years are explicitly excluded in `seasonality-exclusions.json`.
+- Historical observations are retained permanently. Public queries use `(today in America/Bogota minus 12 months, today]`; database guards reject only future observations. Imports never prune old records.
+- `seasonal_year` retains complete historical calendar years by product and market; planning queries select the five complete prior years. It stores all 12 original monthly values and source row locators. Four conflicting DANE market-years are explicitly excluded in `seasonality-exclusions.json`.
 - EVA 2025, calendars 2024, UPRA cost publications and other older references are reference data, not current quotes. Their publication periods remain visible.
 - Source originals, generated price extracts and methodology PDFs are stored in `source_document.content` (PostgreSQL `bytea`). A SHA-256 key identifies immutable bytes; aliases point to current versions. Exact observation links use hashes.
 - Updating data and regenerating evidence are one refresh workflow. Do not publish a price update while leaving its previous document attached.
@@ -38,4 +40,8 @@ The daily importer takes an ISO date and expects corresponding `daily-YYYY-MM-DD
 
 Maintain physical state, variety, region, season, units and reference year. Paddy is not milled rice; cane is not panela; coffee cherry is not parchment. Cost templates must reconcile to the source's total and preserve whether the model covers a cycle, a producing year or establishment. Multi-year cost studies are archived without flattening them into one-year budgets. Soil sample aggregates are regional context only.
 
-The demonstration has no unattended ingestion schedule. Refreshing newer source publications requires running these checked importers; weather is requested and cached when a user opens their farm. Model assumptions live in `apps/web/src/lib/planning-math.ts`, `CropBudget.tsx`, and the archived methodology PDF.
+The Azure ingestion service refreshes official prices, exchange rates, inputs and supply data on a schedule. Older agronomic publications still require schema and methodology review through the manual reference importers; weather is requested and cached when a user opens their farm. Model assumptions live in `apps/web/src/lib/planning-math.ts`, `CropBudget.tsx`, and the archived methodology PDF.
+
+## Spanish-language news research
+
+The separate [news collector](news/README.md) discovers Spanish articles from a diverse Colombian and international catalog, preserves publication evidence and a durable backlog, and accepts reviewed category/relevance/expiry decisions. It does not modify official price observations or publish news to the app. Its subscription-funded daily Luna cloud task is prepared but not scheduled; see [activation status](../docs/automation/README.md).

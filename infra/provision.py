@@ -29,9 +29,16 @@ def provision_db():
     az('postgres','flexible-server','create','-g',GROUP,'-n',SERVER,'-l',REGION,'--tier','Burstable','--sku-name','Standard_B1ms','--storage-size','32','--version','16','--admin-user',config['user'],'--admin-password',config['password'],'--public-access',ip,'--backup-retention','7','--tags','project=agroamigo','environment=demo','--yes')
     az('postgres','flexible-server','db','create','-g',GROUP,'--server-name',SERVER,'--name',config['database'])
     print('Database created.',flush=True)
+def selected_app_service_sku(plans, requested=None):
+    """Keep the operator's deployed capacity unless a change is explicit."""
+    if requested:
+        return requested
+    current=next((p for p in plans if p['name']=='agroamigo-demo-plan'),None)
+    return current['sku']['name'] if current else 'B2'
 def provision_web():
-    print('Provisioning Linux App Service B1.',flush=True)
-    az('appservice','plan','create','-g',GROUP,'-n','agroamigo-demo-plan','--is-linux','--sku','B1','-l',REGION)
+    sku=selected_app_service_sku(az('appservice','plan','list','-g',GROUP),os.environ.get('AGRO_APP_SERVICE_SKU'))
+    print(f'Provisioning Linux App Service {sku}; retaining existing capacity unless explicitly configured.',flush=True)
+    az('appservice','plan','create','-g',GROUP,'-n','agroamigo-demo-plan','--is-linux','--sku',sku,'-l',REGION)
     app=az('webapp','create','-g',GROUP,'-p','agroamigo-demo-plan','-n',APP,'--runtime','NODE:22-lts')
     az('webapp','update','-g',GROUP,'-n',APP,'--https-only','true')
     az('webapp','config','set','-g',GROUP,'-n',APP,'--startup-file','node apps/web/server.js','--min-tls-version','1.2','--ftps-state','Disabled','--always-on','true')

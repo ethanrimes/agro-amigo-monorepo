@@ -26,10 +26,34 @@ The built APK and copied download are generated artifacts, excluded from Git. `/
 
 ## Emulator verification
 
-From the repository root with the app installed and an emulator booted:
+Use the dedicated `Pixel_9` AVD on `emulator-5554`. Port 5556 belongs to another app and must not be restarted or reused by these checks. From the repository root:
 
 ```sh
-ANDROID_TEST_SERIAL=emulator-5556 ANDROID_HOME=/path/to/android/sdk node apps/android/smoke.cjs
+ANDROID_HOME=/Users/ethan/Library/Android/sdk apps/android/run-emulator.sh
 ```
 
-The explicit serial prevents targeting another running device. The check uses the deployed Azure app and verifies farm/weather, source PDF rendering, native back, offer arithmetic and device persistence.
+The launcher refuses to replace a running emulator on port 5554. If that port is occupied, first verify the AVD with `adb -s emulator-5554 emu avd name`; stop it with `adb -s emulator-5554 emu kill` only when it is the dedicated `Pixel_9` and no validation is running.
+
+The verified underlying command is:
+
+```sh
+/Users/ethan/Library/Android/sdk/emulator/emulator -avd Pixel_9 -port 5554 \
+  -no-snapshot-load -no-snapshot-save -no-boot-anim \
+  -gpu host -feature -Vulkan -dns-server 8.8.8.8,1.1.1.1
+```
+
+This preserves userdata and neither loads nor writes emulator snapshots. `AGRO_EMULATOR_DNS` can override the launcher's DNS list when the local network requires different resolvers. Do not use `-wipe-data` to fix rendering problems.
+
+This graphics configuration was verified on Apple M4/macOS, Pixel 9 Android 17/API 37 and WebView 151.0.7922.199. The active renderer was `Android Emulator OpenGL ES Translator (Apple M4)`, OpenGL ES 3.0 / Metal 90.5. The previous SwiftShader backend painted stale coffee-price blocks over other products even though DOM geometry, hit targets, and WebView CDP screenshots were correct. Disabling CSS hover transforms or adding paint containment did not fix those native pixels. Switching only the emulator renderer fixed the same deployed app, including native scroll/save/back and 48-card expansion. This result does not establish a general bug in all SwiftShader environments or physical Android devices. Keep application hardware acceleration enabled.
+
+With the app installed and the emulator booted:
+
+```sh
+ANDROID_TEST_SERIAL=emulator-5554 ANDROID_HOME=/path/to/android/sdk node apps/android/smoke.cjs
+ANDROID_TEST_SERIAL=emulator-5554 ANDROID_HOME=/path/to/android/sdk \
+  ANDROID_TEST_RELEASE=REPLACE_WITH_DEPLOYED_RELEASE_ID \
+  ANDROID_TEST_ARTIFACTS=artifacts/android-validation-unique-run \
+  node apps/android/validate.cjs
+```
+
+The explicit serial prevents targeting another running device. The checks use the deployed Azure app and cover farm/weather, PDF and read-only Excel sources, price filters, comparisons, supply history, native back, arithmetic and device persistence. Use `ANDROID_TEST_CASES='^(26|27)-'` for focused supply/catalog checks. Case 27 captures native and WebView CDP screenshots plus DOM bounds; its geometry assertions alone do not establish a visual pass. Inspect the native screenshots before accepting a rendering fix. The harness restores original local settings and radio states, retaining a private recovery snapshot until restoration is verified.

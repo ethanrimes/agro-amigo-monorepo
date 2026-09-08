@@ -25,7 +25,7 @@ export async function GET(
         (q.get("market") || "").slice(0, 200),
       );
     else if (resource === "inputs")
-      result = await inputs((q.get("department") || "").slice(0, 100));
+      result = await inputs((q.get("department") || "").slice(0, 100), q.get("scope") || "department", q.get("history") === "all", "", q.get("grouped") === "true");
     else if (resource === "weather") {
       if (!q.has("lat") || !q.has("lon"))
         return NextResponse.json(
@@ -47,7 +47,12 @@ export async function GET(
           { status: 400 },
         );
       result = await weatherFor(lat, lon);
-    } else if (resource === "daily")
+    } else if (resource === "regional")
+      result = (await database().query(`WITH latest AS (SELECT market_name,max(observed_on) AS day FROM regional_price WHERE observed_on<=CURRENT_DATE GROUP BY market_name), ranked AS (
+       SELECT r.*,m.id AS market_id,coalesce(c.category_path,string_to_array(r.category,' > ')) AS category_path,row_number() OVER(PARTITION BY r.market_name,r.product_name,r.presentation,r.quantity,r.source_unit,r.round ORDER BY d.retrieved_at DESC,r.document_id) rn
+       FROM regional_price r JOIN latest l ON l.market_name=r.market_name AND l.day=r.observed_on JOIN source_document d ON d.id=r.document_id LEFT JOIN regional_classification c ON c.document_id=r.document_id AND c.source_locator=r.source_locator LEFT JOIN market m ON m.name=r.market_name
+      ) SELECT * FROM ranked WHERE rn=1 ORDER BY product_name,market_name,quantity,round`)).rows;
+    else if (resource === "daily")
       result = (
         await database().query(
           "SELECT * FROM daily_price WHERE observed_on=(SELECT max(observed_on) FROM daily_price WHERE observed_on>((CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date-interval '12 months') AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date) ORDER BY product_name,market_name",
@@ -73,7 +78,7 @@ export async function GET(
       headers: {
         "Cache-Control":
           resource === "weather"
-            ? "private, max-age=300"
+            ? "private, no-store"
             : "public, max-age=300",
       },
     });

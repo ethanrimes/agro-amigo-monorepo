@@ -1,0 +1,94 @@
+{
+  "run_id": "2026-09-08T05:25:06+00:00",
+  "started_at": "2026-09-08T05:25:06+00:00",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:59:59.999999-05:00",
+  "language": "es",
+  "mode": "research_only",
+  "coverage": [
+    {
+      "source_id": "fao",
+      "source": "FAO",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:25:08+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "omm-en-espanol",
+      "source": "OMM en español",
+      "group": "internacional_oficial",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 1,
+      "outcomes": {
+        "conflicting_publication_dates": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:25:09+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "freshplaza-en-espanol",
+      "source": "FreshPlaza en español",
+      "group": "internacional_especializado",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:25:11+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "portal-fruticola",
+      "source": "Portal Frutícola",
+      "group": "internacional_especializado",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:25:14+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    }
+  ],
+  "errors": [],
+  "classified_with_luna": false,
+  "finished_at": "2026-09-08T05:25:14+00:00",
+  "totals": {
+    "stored": 4,
+    "decisions": {
+      "review": 4
+    },
+    "source_statuses": {
+      "checked": 4
+    }
+  }
+}

@@ -1,0 +1,1038 @@
+{
+  "comparison": "Same first 32 cases, two repetitions; last batch excluded from all models because Azure blocked it. Operational score ignores geography of correctly discarded stories; this secondary scoring rule was defined after observing results.",
+  "estimated_total_test_cost_usd": 0.07465075000000002,
+  "models": {
+    "gemini-3.5-flash-lite": {
+      "shared_predictions": 64,
+      "relevance_correct": 64,
+      "all_fields_correct": 49,
+      "operational_correct": 59,
+      "median_seconds_per_8_headlines": 1.4144999999999999,
+      "estimated_usd_per_10000_headlines": 1.186,
+      "errors": [
+        {
+          "round": 0,
+          "id": 11,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "clima"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 11,
+            "decision": "relevante",
+            "topics": [
+              "cacao"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 14,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 14,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 15,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "aguacate"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 15,
+            "decision": "relevante",
+            "topics": [
+              "aguacate",
+              "corabastos"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 4,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 4,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 6,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 6,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 19,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 19,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 30,
+          "expected": {
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 30,
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 32,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 32,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 4,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 4,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 6,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 6,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 20,
+          "expected": {
+            "decision": "revisar",
+            "topics": [],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 20,
+            "decision": "revisar",
+            "topics": [],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 30,
+          "expected": {
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 30,
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 32,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 32,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        }
+      ]
+    },
+    "gemini-3.1-flash-lite": {
+      "shared_predictions": 64,
+      "relevance_correct": 62,
+      "all_fields_correct": 50,
+      "operational_correct": 62,
+      "median_seconds_per_8_headlines": 1.455,
+      "estimated_usd_per_10000_headlines": 0.876953125,
+      "errors": [
+        {
+          "round": 0,
+          "id": 4,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 4,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 6,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 6,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 14,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 14,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 19,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 19,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 30,
+          "expected": {
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 30,
+            "decision": "relevante",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 32,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 32,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 4,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 4,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 6,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 6,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 14,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 14,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 19,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 19,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 30,
+          "expected": {
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 30,
+            "decision": "relevante",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 32,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 32,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        }
+      ]
+    },
+    "gemini-3.5-flash": {
+      "shared_predictions": 64,
+      "relevance_correct": 64,
+      "all_fields_correct": 64,
+      "operational_correct": 64,
+      "median_seconds_per_8_headlines": 1.379,
+      "estimated_usd_per_10000_headlines": 3.83015625,
+      "errors": []
+    },
+    "gpt-4.1-mini": {
+      "shared_predictions": 64,
+      "relevance_correct": 62,
+      "all_fields_correct": 56,
+      "operational_correct": 59,
+      "median_seconds_per_8_headlines": 2.5895,
+      "estimated_usd_per_10000_headlines": 0.727125,
+      "errors": [
+        {
+          "round": 0,
+          "id": 11,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "clima"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 11,
+            "decision": "relevante",
+            "topics": [
+              "cacao"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 14,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 14,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 20,
+          "expected": {
+            "decision": "revisar",
+            "topics": [],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 20,
+            "decision": "revisar",
+            "topics": [
+              "semillas"
+            ],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 30,
+          "expected": {
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 30,
+            "decision": "relevante",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 11,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "clima"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 11,
+            "decision": "relevante",
+            "topics": [
+              "cacao"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 30,
+          "expected": {
+            "decision": "revisar",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 30,
+            "decision": "relevante",
+            "topics": [
+              "cafe"
+            ],
+            "geography": "sin_dato"
+          }
+        }
+      ]
+    },
+    "gpt-5-mini": {
+      "shared_predictions": 64,
+      "relevance_correct": 64,
+      "all_fields_correct": 44,
+      "operational_correct": 52,
+      "median_seconds_per_8_headlines": 2.9795,
+      "estimated_usd_per_10000_headlines": 0.812578125,
+      "errors": [
+        {
+          "round": 0,
+          "id": 5,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "papa",
+              "corabastos"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 5,
+            "decision": "relevante",
+            "topics": [
+              "papa",
+              "corabastos",
+              "transporte"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 6,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 6,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 7,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "fertilizantes"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 7,
+            "decision": "relevante",
+            "topics": [
+              "fertilizantes",
+              "transporte"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 8,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "arroz",
+              "semillas"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 8,
+            "decision": "relevante",
+            "topics": [
+              "semillas",
+              "fitosanitarios"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 11,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "clima"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 11,
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "semillas",
+              "fitosanitarios"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 13,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "central_mayorista_antioquia",
+              "maiz"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 13,
+            "decision": "relevante",
+            "topics": [
+              "maiz",
+              "central_mayorista_antioquia",
+              "transporte"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 14,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 14,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 19,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 19,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 25,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "platano",
+              "aguacate",
+              "corabastos"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 25,
+            "decision": "relevante",
+            "topics": [
+              "platano",
+              "aguacate",
+              "corabastos",
+              "transporte"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 0,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 0,
+          "id": 29,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "fertilizantes"
+            ],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 29,
+            "decision": "relevante",
+            "topics": [
+              "fertilizantes",
+              "transporte"
+            ],
+            "geography": "internacional"
+          }
+        },
+        {
+          "round": 1,
+          "id": 5,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "papa",
+              "corabastos"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 5,
+            "decision": "relevante",
+            "topics": [
+              "papa",
+              "corabastos",
+              "transporte"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 6,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "internacional"
+          },
+          "got": {
+            "id": 6,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 7,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "fertilizantes"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 7,
+            "decision": "relevante",
+            "topics": [
+              "fertilizantes",
+              "transporte"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 8,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "arroz",
+              "semillas"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 8,
+            "decision": "relevante",
+            "topics": [
+              "semillas",
+              "fitosanitarios"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 10,
+          "expected": {
+            "decision": "revisar",
+            "topics": [],
+            "geography": "sin_dato"
+          },
+          "got": {
+            "id": 10,
+            "decision": "revisar",
+            "topics": [
+              "maiz"
+            ],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 11,
+          "expected": {
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "clima"
+            ],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 11,
+            "decision": "relevante",
+            "topics": [
+              "cacao",
+              "fitosanitarios",
+              "clima"
+            ],
+            "geography": "colombia"
+          }
+        },
+        {
+          "round": 1,
+          "id": 14,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 14,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 19,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 19,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        },
+        {
+          "round": 1,
+          "id": 26,
+          "expected": {
+            "decision": "descartar",
+            "topics": [],
+            "geography": "colombia"
+          },
+          "got": {
+            "id": 26,
+            "decision": "descartar",
+            "topics": [],
+            "geography": "sin_dato"
+          }
+        }
+      ]
+    },
+    "gemini-3.8-flash": {
+      "shared_predictions": 64,
+      "relevance_correct": 64,
+      "all_fields_correct": 64,
+      "operational_correct": 64,
+      "median_seconds_per_8_headlines": 1.4205,
+      "estimated_usd_per_10000_headlines": 1.9948828125000002,
+      "errors": []
+    }
+  }
+}

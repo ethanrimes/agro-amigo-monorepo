@@ -1,0 +1,18 @@
+[
+  {
+    "url": "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/pepsico-y-minagricultura-exploran-alianza-para-impulsar-produccion-de-maiz-papa-y-platano",
+    "status": 200,
+    "retrieved_at": "2026-09-08T04:30:19.057593+00:00",
+    "publication_dateline": null,
+    "publication_evidence_method": "visible original-page dateline; public HTTPS GET",
+    "body_sha256": "336ecc369a70941a5708bfef730cb8700237353468b6f23cb8f8f609c1fbf4f1"
+  },
+  {
+    "url": "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/el-gobierno-nacional-ayuda-a-los-pequenos-ganaderos-en-el-cesar-para-contrarrestar-las-afectaciones-provocadas-por-el-fenomeno-el-nino",
+    "status": 200,
+    "retrieved_at": "2026-09-08T04:30:19.077607+00:00",
+    "publication_dateline": null,
+    "publication_evidence_method": "visible original-page dateline; public HTTPS GET",
+    "body_sha256": "41fb38bcc808853d3438b3f221136d2eacbcdfcc842a11566a7e876680c915f0"
+  }
+]

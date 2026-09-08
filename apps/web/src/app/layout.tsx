@@ -4,6 +4,7 @@ import "./field-theme.css";
 import "./explore.css";
 import "./farms.css";
 import "./location.css";
+import "./page-scale.css";
 import { Providers } from "./providers";
 import { AppShell } from "./app-shell";
 
@@ -16,6 +17,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
   themeColor: "#ffffff",
 };

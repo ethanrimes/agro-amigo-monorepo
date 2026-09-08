@@ -2,7 +2,12 @@
 import Link from "next/link";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { useMemo, useState } from "react";
-import { dateLabel, money, type MarketPrice } from "@/lib/market-types";
+import {
+  dateLabel,
+  money,
+  unitLabel,
+  type MarketPrice,
+} from "@/lib/market-types";
 export function MarketList({
   markets,
   coffee = false,
@@ -10,14 +15,15 @@ export function MarketList({
   markets: MarketPrice[];
   coffee?: boolean;
 }) {
-  const [order, setOrder] = useState("recommended");
+  const [order, setOrder] = useState("high");
   const [showAll, setShowAll] = useState(false);
   const sorted = useMemo(
     () =>
       [...markets].sort((a, b) => {
-        const d = b.date.localeCompare(a.date);
-        if (d) return d;
-        return order === "low" ? a.price - b.price : b.price - a.price;
+        return (
+          (order === "low" ? a.price - b.price : b.price - a.price) ||
+          b.date.localeCompare(a.date)
+        );
       }),
     [markets, order],
   );
@@ -25,7 +31,11 @@ export function MarketList({
     <section className="market-section">
       <div className="section-title">
         <h2>
-          {coffee ? "Referencia por punto de entrega" : "Compara los mercados"}
+          {coffee
+            ? "Referencia por punto de entrega"
+            : markets[0]?.name.includes(" · ")
+              ? "Compara las referencias por municipio"
+              : "Compara los mercados"}
         </h2>
       </div>
       <div className="market-sort">
@@ -33,12 +43,17 @@ export function MarketList({
           {markets.length} {coffee ? "sucursales Almacafé" : "mercados"} ·{" "}
           {coffee
             ? "COP por carga de 125 kg"
-            : "Promedios mensuales, COP por kg"}
+            : markets[0]?.series === "city"
+              ? "Informe diario · " +
+                markets[0].presentation +
+                " · " +
+                markets[0].units
+              : "Promedios mensuales, COP por " +
+                unitLabel(markets[0]?.unit || "kg")}
         </span>
         <label>
           Ordenar
           <select value={order} onChange={(e) => setOrder(e.target.value)}>
-            <option value="recommended">Mayor precio primero</option>
             <option value="high">Mayor precio primero</option>
             <option value="low">Menor precio primero</option>
           </select>
@@ -59,18 +74,36 @@ export function MarketList({
               <p>
                 {m.region} · {dateLabel(m.date, true)}
               </p>
-              {m.date !== sorted[0]?.date && <p>Dato de un período anterior</p>}
+              {m.date !==
+                markets.reduce((d, r) => (r.date > d ? r.date : d), "") && (
+                <p>Dato de un período anterior</p>
+              )}
             </div>
             <div className="market-value">
               <strong>{money(m.price)}</strong>
-              <small> / {coffee ? "carga" : "kg"}</small>
+              <small>
+                {" "}
+                /{" "}
+                {m.series === "city"
+                  ? `${m.presentation} · ${m.units}`
+                  : unitLabel(m.unit)}
+              </small>
+              {m.series === "city" && (
+                <small>
+                  Rango: {money(m.min_price!)}–{money(m.max_price!)}
+                </small>
+              )}
               <EvidenceLink
                 id={m.document_id}
+                locator={m.source_locator}
                 product={m.product_id}
                 market={m.id}
                 month={m.date}
                 page={
-                  Number(m.source_locator?.match(/PDF p\. (\d+)/)?.[1]) ||
+                  m.source_page ||
+                  Number(
+                    m.source_locator?.match(/PDF (?:p\.|page) (\d+)/)?.[1],
+                  ) ||
                   (coffee ? 2 : 1)
                 }
               >

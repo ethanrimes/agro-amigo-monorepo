@@ -76,7 +76,7 @@ export function LocationMap({
             ],
           },
           center: p ? [p.longitude, p.latitude] : [-74, 4.5],
-          zoom: p ? 8 : 4.5,
+          zoom: pin ? 15 : p ? 9 : 4.5,
           minZoom: 3,
           maxZoom: 17,
           attributionControl: { compact: true },
@@ -184,7 +184,12 @@ export function LocationMap({
     if (ready && focus)
       map.current?.flyTo({
         center: [focus.longitude, focus.latitude],
-        zoom: 8,
+        zoom:
+          pin &&
+          focus.latitude === pin.latitude &&
+          focus.longitude === pin.longitude
+            ? 15
+            : 9,
         duration: 350,
       });
   }, [ready, focus]);

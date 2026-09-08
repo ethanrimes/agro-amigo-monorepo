@@ -6,6 +6,7 @@ import { useData } from "@/components/marketplace/useData";
 import { usePreferences } from "@/components/marketplace/Preferences";
 import { ErrorState, LoadingCards } from "@/components/marketplace/Shared";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { MapButton } from "@/components/explore/ColombiaMap";
 import { photoFor } from "@/lib/images";
 import { fold } from "@/lib/planning-math";
@@ -18,13 +19,32 @@ function Inputs() {
   const [department, setDepartment] = useState(q.get("department") || region),
     [query, setQuery] = useState(""),
     [category, setCategory] = useState("Todos"),
-    [limit, setLimit] = useState(24);
+    [limit, setLimit] = useState(24),
+    [scope, setScope] = useState(q.get("scope") || "department");
+  const historical = false;
   const { data, loading, error, retry } = useData<InputPrice[]>(
-    "/api/planning/inputs",
+    "/api/planning/inputs?grouped=true&department=" +
+      encodeURIComponent(department) +
+      "&scope=" +
+      scope +
+      (historical ? "&history=all" : ""),
+  );
+  const { data: places } = useData<{ department: string }[]>(
+    "/api/planning/municipalities",
   );
   const departments = [
-    ...new Set((data || []).map((i) => i.department)),
+    ...new Set((places || []).map((i) => i.department)),
   ].sort();
+  const target = (i: InputPrice) =>
+    "/insumo/" +
+    i.id +
+    "?" +
+    new URLSearchParams({
+      department: i.department,
+      municipality: i.municipality || "",
+      scope,
+      history: historical ? "all" : "recent",
+    }).toString();
   const available = (data || []).filter(
     (i) =>
       (!department || fold(i.department) === fold(department)) &&
@@ -43,19 +63,89 @@ function Inputs() {
         ) || a.name.localeCompare(b.name),
   );
   const rows = unique.filter((i) =>
-    fold(i.name + " " + i.presentation).includes(fold(query)),
+    fold(
+      i.name +
+        " " +
+        i.presentation +
+        " " +
+        i.brand +
+        " " +
+        i.registration +
+        " " +
+        i.category,
+    ).includes(fold(query)),
   );
   return (
     <>
       <div className="catalog-heading">
         <div>
-          <span className="eyebrow">PARA CUIDAR TU CULTIVO</span>
-          <h1>Insumos agrícolas</h1>
-          <p>Compara referencias por presentación y departamento.</p>
+          <span className="eyebrow">INSUMOS Y FACTORES DE PRODUCCIÓN</span>
+          <h1>Insumos agropecuarios</h1>
+          <p>
+            Consulta insumos agrícolas, pecuarios y servicios por presentación y
+            ubicación.
+          </p>
         </div>
-        <MapButton kind="input" />
+        <div className="detail-actions">
+          <MapButton
+            kind="input"
+            filters={{
+              scope,
+              region: department,
+              category: category === "Todos" ? "" : category,
+              query,
+              history: historical ? "all" : "recent",
+            }}
+          />
+          <Link
+            className="button secondary"
+            href={
+              "/compare/inputs?" +
+              new URLSearchParams({
+                department,
+                scope,
+                history: historical ? "all" : "recent",
+                category: category === "Todos" ? "" : category,
+                q: query,
+              })
+            }
+          >
+            Comparar ubicaciones →
+          </Link>
+        </div>
       </div>
+      <AppliedFilters
+        items={[
+          {
+            label: "Cobertura",
+            value:
+              scope === "municipality" ? "Municipio" : "Promedio departamental",
+          },
+          { label: "Departamento", value: department || "Colombia" },
+          { label: "Categoría", value: category },
+          { label: "Búsqueda", value: query },
+        ]}
+      />
+      <p>
+        <Link href="/data-references" className="button secondary">
+          Resúmenes de insumos y tarifas eléctricas →
+        </Link>
+      </p>
       <div className="catalog-controls">
+        <label className="region-field">
+          <span>Cobertura del precio</span>
+          <select
+            value={scope}
+            onChange={(e) => {
+              setScope(e.target.value);
+              setCategory("Todos");
+              setLimit(24);
+            }}
+          >
+            <option value="department">Promedio por departamento</option>
+            <option value="municipality">Precio por municipio</option>
+          </select>
+        </label>
         <SearchBox
           label="Buscar insumo"
           placeholder="Urea, cal, abono orgánico…"
@@ -69,14 +159,10 @@ function Inputs() {
             label: i.name,
             detail: i.presentation,
           }))}
-          onSelect={(i) =>
-            router.push(
-              "/insumo/" +
-                i.id +
-                "?department=" +
-                encodeURIComponent(department),
-            )
-          }
+          onSelect={(option) => {
+            const i = unique.find((i) => i.id === option.id);
+            if (i) router.push(target(i));
+          }}
         />
         <label className="region-field">
           <span>Departamento</span>
@@ -98,7 +184,7 @@ function Inputs() {
         </label>
       </div>
       <div className="category-filters">
-        {["Todos", "Fertilizantes y enmiendas", "Bioinsumos"].map((c) => (
+        {["Todos", ...new Set((data || []).map((i) => i.category))].map((c) => (
           <button
             key={c}
             aria-pressed={category === c}
@@ -131,12 +217,7 @@ function Inputs() {
               );
               return (
                 <Link
-                  href={
-                    "/insumo/" +
-                    i.id +
-                    "?department=" +
-                    encodeURIComponent(department || i.department)
-                  }
+                  href={target(i)}
                   className="input-catalog-card"
                   key={i.id}
                 >
@@ -148,9 +229,11 @@ function Inputs() {
                     <span className="eyebrow">{i.category}</span>
                     <h2>{i.name}</h2>
                     <p>{i.presentation}</p>
+                    {i.brand && <small>{i.brand}</small>}
                     <strong className="input-price">{money(i.price)}</strong>
                     <small>
-                      {i.department} · {dateLabel(i.observed_on, true)}
+                      {i.municipality ? i.municipality + ", " : ""}
+                      {i.department} · {dateLabel(i.observed_on)}
                     </small>
                     <span className="input-card-action">
                       Ver precios y cobertura →
@@ -179,8 +262,12 @@ function Inputs() {
         </>
       )}
       <p className="notice">
-        DANE SIPSA-I · Promedios departamentales. Consulta la presentación y
-        confirma tu cotización antes de comprar.
+        DANE SIPSA-I ·{" "}
+        {scope === "municipality"
+          ? "Precios municipales"
+          : "Promedios departamentales"}
+        . Consulta la fecha, presentación y confirma tu cotización antes de
+        comprar.
       </p>
     </>
   );

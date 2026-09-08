@@ -1,0 +1,2126 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "source_language": "es",
+    "allow_machine_translation": false,
+    "require_article_language_check": true,
+    "initial_window_days": 14,
+    "overlap_hours": 72,
+    "default_per_source_pages": 2,
+    "default_per_source_articles": 8,
+    "default_review_days": 14,
+    "public_display_default": false
+  },
+  "sources": [
+    {
+      "id": "agronet",
+      "name": "Agronet",
+      "language": "es",
+      "url": "https://agronet.gov.co/noticias",
+      "discovery_urls": [
+        "https://agronet.gov.co/noticias"
+      ],
+      "allowed_hosts": [
+        "agronet.gov.co",
+        "www.agronet.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "minagricultura",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ministerio-de-agricultura",
+      "name": "Ministerio de Agricultura",
+      "language": "es",
+      "url": "https://www.minagricultura.gov.co",
+      "discovery_urls": [
+        "https://www.minagricultura.gov.co"
+      ],
+      "allowed_hosts": [
+        "minagricultura.gov.co",
+        "www.minagricultura.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "minagricultura",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa.",
+      "article_path_pattern": "^/noticias/Paginas/.+\\.aspx$"
+    },
+    {
+      "id": "upra",
+      "name": "UPRA",
+      "language": "es",
+      "url": "https://upra.gov.co/es-co/sala-de-prensa/noticias",
+      "discovery_urls": [
+        "https://upra.gov.co/es-co/sala-de-prensa/noticias"
+      ],
+      "allowed_hosts": [
+        "upra.gov.co",
+        "www.upra.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "upra",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "dane",
+      "name": "DANE",
+      "language": "es",
+      "url": "https://www.dane.gov.co",
+      "discovery_urls": [
+        "https://www.dane.gov.co"
+      ],
+      "allowed_hosts": [
+        "dane.gov.co",
+        "www.dane.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "dane",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ica",
+      "name": "ICA",
+      "language": "es",
+      "url": "https://www.ica.gov.co/noticias",
+      "discovery_urls": [
+        "https://www.ica.gov.co/noticias"
+      ],
+      "allowed_hosts": [
+        "ica.gov.co",
+        "www.ica.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "ica",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa.",
+      "article_path_pattern": "^/noticias/[^/].+"
+    },
+    {
+      "id": "ideam",
+      "name": "IDEAM",
+      "language": "es",
+      "url": "https://ideam.gov.co",
+      "discovery_urls": [
+        "https://ideam.gov.co"
+      ],
+      "allowed_hosts": [
+        "ideam.gov.co",
+        "www.ideam.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "ideam",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ungrd",
+      "name": "UNGRD",
+      "language": "es",
+      "url": "https://gestiondelriesgo.gov.co",
+      "discovery_urls": [
+        "https://gestiondelriesgo.gov.co"
+      ],
+      "allowed_hosts": [
+        "gestiondelriesgo.gov.co",
+        "www.gestiondelriesgo.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "ungrd",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "invias",
+      "name": "INVÍAS",
+      "language": "es",
+      "url": "https://invias.gov.co",
+      "discovery_urls": [
+        "https://invias.gov.co"
+      ],
+      "allowed_hosts": [
+        "invias.gov.co",
+        "www.invias.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "invias",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ani",
+      "name": "ANI",
+      "language": "es",
+      "url": "https://ani.gov.co",
+      "discovery_urls": [
+        "https://ani.gov.co"
+      ],
+      "allowed_hosts": [
+        "ani.gov.co",
+        "www.ani.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "ani",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "adr",
+      "name": "ADR",
+      "language": "es",
+      "url": "https://www.adr.gov.co",
+      "discovery_urls": [
+        "https://www.adr.gov.co"
+      ],
+      "allowed_hosts": [
+        "adr.gov.co",
+        "www.adr.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "adr",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ant",
+      "name": "ANT",
+      "language": "es",
+      "url": "https://ant.gov.co",
+      "discovery_urls": [
+        "https://ant.gov.co"
+      ],
+      "allowed_hosts": [
+        "ant.gov.co",
+        "www.ant.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "ant",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "finagro",
+      "name": "FINAGRO",
+      "language": "es",
+      "url": "https://finagro.com.co",
+      "discovery_urls": [
+        "https://finagro.com.co"
+      ],
+      "allowed_hosts": [
+        "finagro.com.co",
+        "www.finagro.com.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "finagro",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "banco-agrario",
+      "name": "Banco Agrario",
+      "language": "es",
+      "url": "https://www.bancoagrario.gov.co",
+      "discovery_urls": [
+        "https://www.bancoagrario.gov.co"
+      ],
+      "allowed_hosts": [
+        "bancoagrario.gov.co",
+        "www.bancoagrario.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "banco-agrario",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "mincomercio",
+      "name": "MinComercio",
+      "language": "es",
+      "url": "https://mincit.gov.co",
+      "discovery_urls": [
+        "https://mincit.gov.co"
+      ],
+      "allowed_hosts": [
+        "mincit.gov.co",
+        "www.mincit.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "mincomercio",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "sic",
+      "name": "SIC",
+      "language": "es",
+      "url": "https://sic.gov.co",
+      "discovery_urls": [
+        "https://sic.gov.co"
+      ],
+      "allowed_hosts": [
+        "sic.gov.co",
+        "www.sic.gov.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "sic",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "procolombia",
+      "name": "ProColombia",
+      "language": "es",
+      "url": "https://procolombia.co",
+      "discovery_urls": [
+        "https://procolombia.co"
+      ],
+      "allowed_hosts": [
+        "procolombia.co",
+        "www.procolombia.co"
+      ],
+      "group": "oficiales_colombia",
+      "publisher_id": "procolombia",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agrosavia",
+      "name": "AGROSAVIA",
+      "language": "es",
+      "url": "https://www.agrosavia.co/noticias",
+      "discovery_urls": [
+        "https://www.agrosavia.co/noticias"
+      ],
+      "allowed_hosts": [
+        "agrosavia.co",
+        "www.agrosavia.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "agrosavia",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa.",
+      "publication_date_selector": "time.post-full-meta-date",
+      "article_path_pattern": "^/noticias/[^/].+"
+    },
+    {
+      "id": "cenicafe",
+      "name": "Cenicafé",
+      "language": "es",
+      "url": "https://cenicafe.org",
+      "discovery_urls": [
+        "https://cenicafe.org"
+      ],
+      "allowed_hosts": [
+        "cenicafe.org",
+        "www.cenicafe.org"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "cenicafe",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fnc",
+      "name": "FNC",
+      "language": "es",
+      "url": "https://federaciondecafeteros.org/listado-noticias/",
+      "discovery_urls": [
+        "https://federaciondecafeteros.org/listado-noticias/"
+      ],
+      "allowed_hosts": [
+        "federaciondecafeteros.org",
+        "www.federaciondecafeteros.org"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fnc",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "permission_required",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "Restricción previa de automatización.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "cenicana",
+      "name": "Cenicaña",
+      "language": "es",
+      "url": "https://cenicana.org",
+      "discovery_urls": [
+        "https://cenicana.org"
+      ],
+      "allowed_hosts": [
+        "cenicana.org",
+        "www.cenicana.org"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "cenicana",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "cenipalma",
+      "name": "Cenipalma",
+      "language": "es",
+      "url": "https://cenipalma.org",
+      "discovery_urls": [
+        "https://cenipalma.org"
+      ],
+      "allowed_hosts": [
+        "cenipalma.org",
+        "www.cenipalma.org"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "cenipalma",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fedearroz",
+      "name": "Fedearroz",
+      "language": "es",
+      "url": "https://fedearroz.com.co",
+      "discovery_urls": [
+        "https://fedearroz.com.co"
+      ],
+      "allowed_hosts": [
+        "fedearroz.com.co",
+        "www.fedearroz.com.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fedearroz",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fedecacao",
+      "name": "Fedecacao",
+      "language": "es",
+      "url": "https://fedecacao.com.co",
+      "discovery_urls": [
+        "https://fedecacao.com.co"
+      ],
+      "allowed_hosts": [
+        "fedecacao.com.co",
+        "www.fedecacao.com.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fedecacao",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fedepapa",
+      "name": "Fedepapa",
+      "language": "es",
+      "url": "https://fedepapa.com",
+      "discovery_urls": [
+        "https://fedepapa.com"
+      ],
+      "allowed_hosts": [
+        "fedepapa.com",
+        "www.fedepapa.com"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fedepapa",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "asohofrucol",
+      "name": "Asohofrucol",
+      "language": "es",
+      "url": "https://asohofrucol.com.co",
+      "discovery_urls": [
+        "https://asohofrucol.com.co"
+      ],
+      "allowed_hosts": [
+        "asohofrucol.com.co",
+        "www.asohofrucol.com.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "asohofrucol",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fenalce",
+      "name": "Fenalce",
+      "language": "es",
+      "url": "https://fenalce.co",
+      "discovery_urls": [
+        "https://fenalce.co"
+      ],
+      "allowed_hosts": [
+        "fenalce.co",
+        "www.fenalce.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fenalce",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fedepalma",
+      "name": "Fedepalma",
+      "language": "es",
+      "url": "https://fedepalma.org",
+      "discovery_urls": [
+        "https://fedepalma.org"
+      ],
+      "allowed_hosts": [
+        "fedepalma.org",
+        "www.fedepalma.org"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fedepalma",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fedepanela",
+      "name": "Fedepanela",
+      "language": "es",
+      "url": "https://fedepanela.org.co",
+      "discovery_urls": [
+        "https://fedepanela.org.co"
+      ],
+      "allowed_hosts": [
+        "fedepanela.org.co",
+        "www.fedepanela.org.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "fedepanela",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "augura",
+      "name": "Augura",
+      "language": "es",
+      "url": "https://augura.com.co",
+      "discovery_urls": [
+        "https://augura.com.co"
+      ],
+      "allowed_hosts": [
+        "augura.com.co",
+        "www.augura.com.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "augura",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "asbama",
+      "name": "Asbama",
+      "language": "es",
+      "url": "https://asbama.com",
+      "discovery_urls": [
+        "https://asbama.com"
+      ],
+      "allowed_hosts": [
+        "asbama.com",
+        "www.asbama.com"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "asbama",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "corpohass",
+      "name": "Corpohass",
+      "language": "es",
+      "url": "https://corpohass.com",
+      "discovery_urls": [
+        "https://corpohass.com"
+      ],
+      "allowed_hosts": [
+        "corpohass.com",
+        "www.corpohass.com"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "corpohass",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "sac",
+      "name": "SAC",
+      "language": "es",
+      "url": "https://sac.org.co",
+      "discovery_urls": [
+        "https://sac.org.co"
+      ],
+      "allowed_hosts": [
+        "sac.org.co",
+        "www.sac.org.co"
+      ],
+      "group": "investigacion_y_gremios",
+      "publisher_id": "sac",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agronegocios",
+      "name": "Agronegocios",
+      "language": "es",
+      "url": "https://agronegocios.co",
+      "discovery_urls": [
+        "https://agronegocios.co"
+      ],
+      "allowed_hosts": [
+        "agronegocios.co",
+        "www.agronegocios.co"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "agronegocios",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "permission_required",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "Restricción previa de automatización.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "la-republica",
+      "name": "La República",
+      "language": "es",
+      "url": "https://larepublica.co",
+      "discovery_urls": [
+        "https://larepublica.co"
+      ],
+      "allowed_hosts": [
+        "larepublica.co",
+        "www.larepublica.co"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "la-republica",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "portafolio-agro",
+      "name": "Portafolio Agro",
+      "language": "es",
+      "url": "https://portafolio.co/economia/agro",
+      "discovery_urls": [
+        "https://portafolio.co/economia/agro"
+      ],
+      "allowed_hosts": [
+        "portafolio.co",
+        "www.portafolio.co"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "portafolio-agro",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "redagricola",
+      "name": "Redagrícola",
+      "language": "es",
+      "url": "https://redagricola.com",
+      "discovery_urls": [
+        "https://redagricola.com/feed/",
+        "https://redagricola.com"
+      ],
+      "allowed_hosts": [
+        "redagricola.com",
+        "www.redagricola.com"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "redagricola",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "contexto-ganadero",
+      "name": "CONtexto Ganadero",
+      "language": "es",
+      "url": "https://contextoganadero.com",
+      "discovery_urls": [
+        "https://contextoganadero.com"
+      ],
+      "allowed_hosts": [
+        "contextoganadero.com",
+        "www.contextoganadero.com"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "contexto-ganadero",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-espectador",
+      "name": "El Espectador",
+      "language": "es",
+      "url": "https://elespectador.com",
+      "discovery_urls": [
+        "https://elespectador.com"
+      ],
+      "allowed_hosts": [
+        "elespectador.com",
+        "www.elespectador.com"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "el-espectador",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-tiempo",
+      "name": "El Tiempo",
+      "language": "es",
+      "url": "https://eltiempo.com",
+      "discovery_urls": [
+        "https://eltiempo.com"
+      ],
+      "allowed_hosts": [
+        "eltiempo.com",
+        "www.eltiempo.com"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "el-tiempo",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "caracol-radio",
+      "name": "Caracol Radio",
+      "language": "es",
+      "url": "https://caracol.com.co",
+      "discovery_urls": [
+        "https://caracol.com.co"
+      ],
+      "allowed_hosts": [
+        "caracol.com.co",
+        "www.caracol.com.co"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "caracol-radio",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "radio-nacional",
+      "name": "Radio Nacional",
+      "language": "es",
+      "url": "https://radionacional.co",
+      "discovery_urls": [
+        "https://radionacional.co"
+      ],
+      "allowed_hosts": [
+        "radionacional.co",
+        "www.radionacional.co"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "radio-nacional",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "rtvc-noticias",
+      "name": "RTVC Noticias",
+      "language": "es",
+      "url": "https://rtvcnoticias.com",
+      "discovery_urls": [
+        "https://rtvcnoticias.com"
+      ],
+      "allowed_hosts": [
+        "rtvcnoticias.com",
+        "www.rtvcnoticias.com"
+      ],
+      "group": "medios_especializados_y_nacionales",
+      "publisher_id": "rtvc-noticias",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "la-nacion",
+      "name": "La Nación",
+      "language": "es",
+      "url": "https://lanacion.com.co",
+      "discovery_urls": [
+        "https://lanacion.com.co"
+      ],
+      "allowed_hosts": [
+        "lanacion.com.co",
+        "www.lanacion.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "la-nacion",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "diario-del-huila",
+      "name": "Diario del Huila",
+      "language": "es",
+      "url": "https://diariodelhuila.com",
+      "discovery_urls": [
+        "https://diariodelhuila.com"
+      ],
+      "allowed_hosts": [
+        "diariodelhuila.com",
+        "www.diariodelhuila.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "diario-del-huila",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "la-patria",
+      "name": "La Patria",
+      "language": "es",
+      "url": "https://lapatria.com",
+      "discovery_urls": [
+        "https://lapatria.com"
+      ],
+      "allowed_hosts": [
+        "lapatria.com",
+        "www.lapatria.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "la-patria",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "la-cronica-del-quindio",
+      "name": "La Crónica del Quindío",
+      "language": "es",
+      "url": "https://cronicadelquindio.com",
+      "discovery_urls": [
+        "https://cronicadelquindio.com"
+      ],
+      "allowed_hosts": [
+        "cronicadelquindio.com",
+        "www.cronicadelquindio.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "la-cronica-del-quindio",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-diario-pereira",
+      "name": "El Diario Pereira",
+      "language": "es",
+      "url": "https://eldiario.com.co",
+      "discovery_urls": [
+        "https://eldiario.com.co"
+      ],
+      "allowed_hosts": [
+        "eldiario.com.co",
+        "www.eldiario.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-diario-pereira",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-colombiano",
+      "name": "El Colombiano",
+      "language": "es",
+      "url": "https://elcolombiano.com",
+      "discovery_urls": [
+        "https://elcolombiano.com"
+      ],
+      "allowed_hosts": [
+        "elcolombiano.com",
+        "www.elcolombiano.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-colombiano",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-pais-cali",
+      "name": "El País Cali",
+      "language": "es",
+      "url": "https://elpais.com.co",
+      "discovery_urls": [
+        "https://elpais.com.co"
+      ],
+      "allowed_hosts": [
+        "elpais.com.co",
+        "www.elpais.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-pais-cali",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "vanguardia",
+      "name": "Vanguardia",
+      "language": "es",
+      "url": "https://vanguardia.com",
+      "discovery_urls": [
+        "https://vanguardia.com"
+      ],
+      "allowed_hosts": [
+        "vanguardia.com",
+        "www.vanguardia.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "vanguardia",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "la-opinion-cucuta",
+      "name": "La Opinión Cúcuta",
+      "language": "es",
+      "url": "https://laopinion.co",
+      "discovery_urls": [
+        "https://laopinion.co"
+      ],
+      "allowed_hosts": [
+        "laopinion.co",
+        "www.laopinion.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "la-opinion-cucuta",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-heraldo",
+      "name": "El Heraldo",
+      "language": "es",
+      "url": "https://elheraldo.co",
+      "discovery_urls": [
+        "https://elheraldo.co"
+      ],
+      "allowed_hosts": [
+        "elheraldo.co",
+        "www.elheraldo.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-heraldo",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-universal-cartagena",
+      "name": "El Universal Cartagena",
+      "language": "es",
+      "url": "https://eluniversal.com.co",
+      "discovery_urls": [
+        "https://eluniversal.com.co"
+      ],
+      "allowed_hosts": [
+        "eluniversal.com.co",
+        "www.eluniversal.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-universal-cartagena",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "boyaca-7-dias",
+      "name": "Boyacá 7 Días",
+      "language": "es",
+      "url": "https://boyaca7dias.com.co",
+      "discovery_urls": [
+        "https://boyaca7dias.com.co"
+      ],
+      "allowed_hosts": [
+        "boyaca7dias.com.co",
+        "www.boyaca7dias.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "boyaca-7-dias",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-nuevo-dia-tolima",
+      "name": "El Nuevo Día Tolima",
+      "language": "es",
+      "url": "https://elnuevodia.com.co",
+      "discovery_urls": [
+        "https://elnuevodia.com.co"
+      ],
+      "allowed_hosts": [
+        "elnuevodia.com.co",
+        "www.elnuevodia.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-nuevo-dia-tolima",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "diario-del-sur",
+      "name": "Diario del Sur",
+      "language": "es",
+      "url": "https://diariodelsur.com.co",
+      "discovery_urls": [
+        "https://www.diariodelsur.com.co/feed/",
+        "https://diariodelsur.com.co"
+      ],
+      "allowed_hosts": [
+        "diariodelsur.com.co",
+        "www.diariodelsur.com.co"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "diario-del-sur",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-nuevo-liberal",
+      "name": "El Nuevo Liberal",
+      "language": "es",
+      "url": "https://elnuevoliberal.com",
+      "discovery_urls": [
+        "https://elnuevoliberal.com"
+      ],
+      "allowed_hosts": [
+        "elnuevoliberal.com",
+        "www.elnuevoliberal.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "el-nuevo-liberal",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "llano-7-dias",
+      "name": "Llano 7 Días",
+      "language": "es",
+      "url": "https://llano7dias.com",
+      "discovery_urls": [
+        "https://llano7dias.com"
+      ],
+      "allowed_hosts": [
+        "llano7dias.com",
+        "www.llano7dias.com"
+      ],
+      "group": "medios_regionales",
+      "publisher_id": "llano-7-dias",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "fao",
+      "name": "FAO",
+      "language": "es",
+      "url": "https://www.fao.org/newsroom/es",
+      "discovery_urls": [
+        "https://www.fao.org/newsroom/es"
+      ],
+      "allowed_hosts": [
+        "www.fao.org",
+        "fao.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "fao",
+      "timezone": "Europe/Rome",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "iica",
+      "name": "IICA",
+      "language": "es",
+      "url": "https://iica.int/es/prensa/noticias",
+      "discovery_urls": [
+        "https://iica.int/es/prensa/noticias"
+      ],
+      "allowed_hosts": [
+        "iica.int",
+        "www.iica.int"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "iica",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "alliance-bioversity-international-y-ciat",
+      "name": "Alliance Bioversity International y CIAT",
+      "language": "es",
+      "url": "https://alliancebioversityciat.org/es/news",
+      "discovery_urls": [
+        "https://alliancebioversityciat.org/es/news"
+      ],
+      "allowed_hosts": [
+        "alliancebioversityciat.org",
+        "www.alliancebioversityciat.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "alliance-bioversity-international-y-ciat",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "cimmyt",
+      "name": "CIMMYT",
+      "language": "es",
+      "url": "https://www.cimmyt.org/es/noticias/",
+      "discovery_urls": [
+        "https://www.cimmyt.org/es/noticias/"
+      ],
+      "allowed_hosts": [
+        "www.cimmyt.org",
+        "cimmyt.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "cimmyt",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "cip",
+      "name": "CIP",
+      "language": "es",
+      "url": "https://cipotato.org/es/",
+      "discovery_urls": [
+        "https://cipotato.org/es/"
+      ],
+      "allowed_hosts": [
+        "cipotato.org",
+        "www.cipotato.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "cip",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "usda-fas",
+      "name": "USDA FAS",
+      "language": "es",
+      "url": "https://fas.usda.gov",
+      "discovery_urls": [
+        "https://fas.usda.gov"
+      ],
+      "allowed_hosts": [
+        "fas.usda.gov",
+        "www.fas.usda.gov"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "usda-fas",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ico",
+      "name": "ICO",
+      "language": "es",
+      "url": "https://ico.org/es/",
+      "discovery_urls": [
+        "https://ico.org/es/"
+      ],
+      "allowed_hosts": [
+        "ico.org",
+        "www.ico.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "ico",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "icco",
+      "name": "ICCO",
+      "language": "es",
+      "url": "https://www.icco.org/",
+      "discovery_urls": [
+        "https://www.icco.org/"
+      ],
+      "allowed_hosts": [
+        "www.icco.org",
+        "icco.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "icco",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "ifpri",
+      "name": "IFPRI",
+      "language": "es",
+      "url": "https://www.ifpri.org/es/",
+      "discovery_urls": [
+        "https://www.ifpri.org/es/"
+      ],
+      "allowed_hosts": [
+        "www.ifpri.org",
+        "ifpri.org"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "ifpri",
+      "timezone": "America/Bogota",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "embrapa",
+      "name": "Embrapa",
+      "language": "es",
+      "url": "https://embrapa.br",
+      "discovery_urls": [
+        "https://embrapa.br"
+      ],
+      "allowed_hosts": [
+        "embrapa.br",
+        "www.embrapa.br"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "embrapa",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "conab-brasil",
+      "name": "CONAB Brasil",
+      "language": "es",
+      "url": "https://gov.br/conab",
+      "discovery_urls": [
+        "https://gov.br/conab"
+      ],
+      "allowed_hosts": [
+        "gov.br",
+        "www.gov.br"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "conab-brasil",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "reuters-materias-primas",
+      "name": "Reuters materias primas",
+      "language": "es",
+      "url": "https://reuters.com/markets/commodities/",
+      "discovery_urls": [
+        "https://reuters.com/markets/commodities/"
+      ],
+      "allowed_hosts": [
+        "reuters.com",
+        "www.reuters.com"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "reuters-materias-primas",
+      "timezone": "America/Bogota",
+      "enabled": false,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa.",
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "efe-agro",
+      "name": "EFE Agro",
+      "language": "es",
+      "url": "https://efeagro.com",
+      "discovery_urls": [
+        "https://efeagro.com/feed/",
+        "https://efeagro.com"
+      ],
+      "allowed_hosts": [
+        "efeagro.com",
+        "www.efeagro.com"
+      ],
+      "group": "internacional_relevante",
+      "publisher_id": "efe-agro",
+      "timezone": "Europe/Madrid",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa.",
+      "headline_selector": "h2.news-details-title",
+      "publication_date_selector": ".noticia-fecha"
+    },
+    {
+      "id": "omm-en-espanol",
+      "name": "OMM en español",
+      "language": "es",
+      "url": "https://public.wmo.int/es",
+      "discovery_urls": [
+        "https://public.wmo.int/es"
+      ],
+      "allowed_hosts": [
+        "public.wmo.int",
+        "www.public.wmo.int",
+        "wmo.int"
+      ],
+      "group": "internacional_oficial",
+      "publisher_id": "omm-en-espanol",
+      "timezone": "Europe/Zurich",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa.",
+      "publication_date_selector": ".container-medium > .items-center > .text-sm > .font-normal"
+    },
+    {
+      "id": "noticias-onu",
+      "name": "Noticias ONU",
+      "language": "es",
+      "url": "https://news.un.org/es/",
+      "discovery_urls": [
+        "https://news.un.org/es/"
+      ],
+      "allowed_hosts": [
+        "news.un.org",
+        "www.news.un.org"
+      ],
+      "group": "internacional_oficial",
+      "publisher_id": "noticias-onu",
+      "timezone": "America/New_York",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "cepal",
+      "name": "CEPAL",
+      "language": "es",
+      "url": "https://www.cepal.org/es/noticias",
+      "discovery_urls": [
+        "https://www.cepal.org/es/noticias"
+      ],
+      "allowed_hosts": [
+        "www.cepal.org",
+        "cepal.org"
+      ],
+      "group": "internacional_oficial",
+      "publisher_id": "cepal",
+      "timezone": "America/Santiago",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "freshplaza-en-espanol",
+      "name": "FreshPlaza en español",
+      "language": "es",
+      "url": "https://www.freshplaza.es/",
+      "discovery_urls": [
+        "https://www.freshplaza.es/"
+      ],
+      "allowed_hosts": [
+        "www.freshplaza.es",
+        "freshplaza.es"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "freshplaza-en-espanol",
+      "timezone": "Europe/Madrid",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "portal-fruticola",
+      "name": "Portal Frutícola",
+      "language": "es",
+      "url": "https://www.portalfruticola.com/",
+      "discovery_urls": [
+        "https://www.portalfruticola.com/feed/",
+        "https://www.portalfruticola.com/"
+      ],
+      "allowed_hosts": [
+        "www.portalfruticola.com",
+        "portalfruticola.com"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "portal-fruticola",
+      "timezone": "America/Santiago",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agrodigital",
+      "name": "Agrodigital",
+      "language": "es",
+      "url": "https://www.agrodigital.com/",
+      "discovery_urls": [
+        "https://www.agrodigital.com/feed/",
+        "https://www.agrodigital.com/"
+      ],
+      "allowed_hosts": [
+        "www.agrodigital.com",
+        "agrodigital.com"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "agrodigital",
+      "timezone": "Europe/Madrid",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agroinformacion",
+      "name": "Agroinformación",
+      "language": "es",
+      "url": "https://agroinformacion.com/",
+      "discovery_urls": [
+        "https://agroinformacion.com/"
+      ],
+      "allowed_hosts": [
+        "agroinformacion.com",
+        "www.agroinformacion.com"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "agroinformacion",
+      "timezone": "Europe/Madrid",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agencia-agraria-del-peru",
+      "name": "Agencia Agraria del Perú",
+      "language": "es",
+      "url": "https://agraria.pe/",
+      "discovery_urls": [
+        "https://agraria.pe/"
+      ],
+      "allowed_hosts": [
+        "agraria.pe",
+        "www.agraria.pe"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "agencia-agraria-del-peru",
+      "timezone": "America/Lima",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "infocampo",
+      "name": "Infocampo",
+      "language": "es",
+      "url": "https://www.infocampo.com.ar/",
+      "discovery_urls": [
+        "https://www.infocampo.com.ar/feed/",
+        "https://www.infocampo.com.ar/"
+      ],
+      "allowed_hosts": [
+        "www.infocampo.com.ar",
+        "infocampo.com.ar"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "infocampo",
+      "timezone": "America/Argentina/Buenos_Aires",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agrofy-news",
+      "name": "Agrofy News",
+      "language": "es",
+      "url": "https://news.agrofy.com.ar/",
+      "discovery_urls": [
+        "https://news.agrofy.com.ar/"
+      ],
+      "allowed_hosts": [
+        "news.agrofy.com.ar",
+        "www.news.agrofy.com.ar"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "agrofy-news",
+      "timezone": "America/Argentina/Buenos_Aires",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "revista-chacra",
+      "name": "Revista Chacra",
+      "language": "es",
+      "url": "https://www.revistachacra.com.ar/",
+      "discovery_urls": [
+        "https://www.revistachacra.com.ar/"
+      ],
+      "allowed_hosts": [
+        "www.revistachacra.com.ar",
+        "revistachacra.com.ar"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "revista-chacra",
+      "timezone": "America/Argentina/Buenos_Aires",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "mundo-agropecuario",
+      "name": "Mundo Agropecuario",
+      "language": "es",
+      "url": "https://mundoagropecuario.com/",
+      "discovery_urls": [
+        "https://mundoagropecuario.com/"
+      ],
+      "allowed_hosts": [
+        "mundoagropecuario.com",
+        "www.mundoagropecuario.com"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "mundo-agropecuario",
+      "timezone": "America/Caracas",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "perfect-daily-grind-espanol",
+      "name": "Perfect Daily Grind español",
+      "language": "es",
+      "url": "https://perfectdailygrind.com/es/",
+      "discovery_urls": [
+        "https://perfectdailygrind.com/es/feed/",
+        "https://perfectdailygrind.com/es/"
+      ],
+      "allowed_hosts": [
+        "perfectdailygrind.com",
+        "www.perfectdailygrind.com"
+      ],
+      "group": "internacional_especializado",
+      "publisher_id": "perfect-daily-grind-espanol",
+      "timezone": "Europe/London",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "bbc-mundo",
+      "name": "BBC Mundo",
+      "language": "es",
+      "url": "https://www.bbc.com/mundo",
+      "discovery_urls": [
+        "https://feeds.bbci.co.uk/mundo/rss.xml",
+        "https://www.bbc.com/mundo"
+      ],
+      "allowed_hosts": [
+        "www.bbc.com",
+        "bbc.com",
+        "feeds.bbci.co.uk"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "bbc-mundo",
+      "timezone": "Europe/London",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "dw-espanol",
+      "name": "DW Español",
+      "language": "es",
+      "url": "https://www.dw.com/es/actualidad/s-30684",
+      "discovery_urls": [
+        "https://www.dw.com/es/actualidad/s-30684"
+      ],
+      "allowed_hosts": [
+        "www.dw.com",
+        "dw.com",
+        "rss.dw.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "dw-espanol",
+      "timezone": "Europe/Berlin",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "france-24-espanol",
+      "name": "France 24 Español",
+      "language": "es",
+      "url": "https://www.france24.com/es/",
+      "discovery_urls": [
+        "https://www.france24.com/es/rss",
+        "https://www.france24.com/es/"
+      ],
+      "allowed_hosts": [
+        "www.france24.com",
+        "france24.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "france-medias-monde",
+      "timezone": "Europe/Paris",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "rfi-espanol",
+      "name": "RFI Español",
+      "language": "es",
+      "url": "https://www.rfi.fr/es/",
+      "discovery_urls": [
+        "https://www.rfi.fr/es/rss",
+        "https://www.rfi.fr/es/"
+      ],
+      "allowed_hosts": [
+        "www.rfi.fr",
+        "rfi.fr"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "france-medias-monde",
+      "timezone": "Europe/Paris",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "euronews-espanol",
+      "name": "Euronews Español",
+      "language": "es",
+      "url": "https://es.euronews.com/",
+      "discovery_urls": [
+        "https://es.euronews.com/"
+      ],
+      "allowed_hosts": [
+        "es.euronews.com",
+        "www.es.euronews.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "euronews-espanol",
+      "timezone": "Europe/Paris",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-pais-america",
+      "name": "El País América",
+      "language": "es",
+      "url": "https://elpais.com/america/",
+      "discovery_urls": [
+        "https://elpais.com/america/"
+      ],
+      "allowed_hosts": [
+        "elpais.com",
+        "www.elpais.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "el-pais-america",
+      "timezone": "Europe/Madrid",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "infobae-america",
+      "name": "Infobae América",
+      "language": "es",
+      "url": "https://www.infobae.com/america/",
+      "discovery_urls": [
+        "https://www.infobae.com/america/"
+      ],
+      "allowed_hosts": [
+        "www.infobae.com",
+        "infobae.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "infobae-america",
+      "timezone": "America/Argentina/Buenos_Aires",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "agencia-efe",
+      "name": "Agencia EFE",
+      "language": "es",
+      "url": "https://efe.com/",
+      "discovery_urls": [
+        "https://efe.com/"
+      ],
+      "allowed_hosts": [
+        "efe.com",
+        "www.efe.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "agencia-efe",
+      "timezone": "Europe/Madrid",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "el-universo-ecuador",
+      "name": "El Universo Ecuador",
+      "language": "es",
+      "url": "https://www.eluniverso.com/noticias/economia/",
+      "discovery_urls": [
+        "https://www.eluniverso.com/noticias/economia/"
+      ],
+      "allowed_hosts": [
+        "www.eluniverso.com",
+        "eluniverso.com"
+      ],
+      "group": "internacional_general",
+      "publisher_id": "el-universo-ecuador",
+      "timezone": "America/Guayaquil",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "senasa-peru",
+      "name": "SENASA Perú",
+      "language": "es",
+      "url": "https://www.gob.pe/institucion/senasa/noticias",
+      "discovery_urls": [
+        "https://www.gob.pe/institucion/senasa/noticias"
+      ],
+      "allowed_hosts": [
+        "www.gob.pe",
+        "gob.pe"
+      ],
+      "group": "internacional_oficial",
+      "publisher_id": "senasa-peru",
+      "timezone": "America/Lima",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    },
+    {
+      "id": "sader-mexico",
+      "name": "SADER México",
+      "language": "es",
+      "url": "https://www.gob.mx/agricultura/prensa",
+      "discovery_urls": [
+        "https://www.gob.mx/agricultura/prensa"
+      ],
+      "allowed_hosts": [
+        "www.gob.mx",
+        "gob.mx"
+      ],
+      "group": "internacional_oficial",
+      "publisher_id": "sader-mexico",
+      "timezone": "America/Mexico_City",
+      "enabled": true,
+      "access_policy": "check_access_terms_on_run",
+      "public_display_rights": "unverified",
+      "verification_status": "candidate",
+      "disabled_reason": null,
+      "discovery_note": "Los canales son candidatos; comprobar acceso y contenido al ejecutar. No se afirma cobertura completa."
+    }
+  ]
+}

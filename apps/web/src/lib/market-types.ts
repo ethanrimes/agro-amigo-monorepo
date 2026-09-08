@@ -10,6 +10,9 @@ export type Product = {
   unit: string;
   source: string;
   period: "daily" | "monthly";
+  series?: string;
+  presentation?: string;
+  units?: string;
 };
 export type MarketPrice = {
   product_id?: string;
@@ -26,6 +29,10 @@ export type MarketPrice = {
   source_locator?: string;
   period: string;
   unit: string;
+  presentation?: string;
+  units?: string;
+  series?: string;
+  source_page?: number;
 };
 export type Point = { date: string; price: number };
 export type Catalog = {
@@ -70,3 +77,6 @@ export const change = (now: number, previous: number | null) =>
   previous && previous > 0 ? ((now - previous) / previous) * 100 : null;
 export const productImage = (key: string) =>
   `/images/${["coffee", "avocado", "tomato", "banana", "plantain", "potato"].includes(key) ? key : "produce"}.jpg`;
+
+export const unitLabel = (unit: string) => ({ kg: "kg", "125kg": "carga de 125 kg", unit: "unidad", litre: "litro" })[unit] || unit;
+export const quantityLabel = (unit: string) => unit === "unit" ? "Cantidad en unidades" : unit === "litre" ? "Cantidad en litros" : "Cantidad en kilos";

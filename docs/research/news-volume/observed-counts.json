@@ -1,0 +1,720 @@
+{
+  "checked_utc": "2026-09-08T03:21:20.056553+00:00",
+  "start_inclusive": "2026-08-24",
+  "end_exclusive": "2026-09-07",
+  "days": 14,
+  "date_basis": "Publisher-reported publication date. WordPress queries use publisher-local dates; this is not a first-seen crawl log.",
+  "sources": [
+    {
+      "source": "La Nación — Economía",
+      "listing_url": "https://www.lanacion.com.co",
+      "coverage": "All posts returned by public WordPress API date/category query; publisher-local date.",
+      "count_14_days": 19,
+      "mean_per_calendar_day": 1.3571428571428572,
+      "daily_counts": {
+        "2026-08-24": 3,
+        "2026-08-25": 1,
+        "2026-08-26": 3,
+        "2026-08-27": 1,
+        "2026-08-28": 2,
+        "2026-08-31": 1,
+        "2026-09-01": 1,
+        "2026-09-02": 2,
+        "2026-09-03": 2,
+        "2026-09-04": 2,
+        "2026-09-05": 1
+      },
+      "rows": [
+        {
+          "url": "https://www.lanacion.com.co/asi-le-sacara-provecho-el-huila-a-la-emergencia-economica/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T06:49:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/camacol-propone-iva-cero-para-materiales/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T16:03:59",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/esta-impactando-la-caida-del-dolar-al-turismo-en-huila/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T06:42:00",
+          "categories": [
+            22,
+            46
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/dolar-economistas-no-se-ponen-de-acuerdo-sobre-caida-ni-como-mitigar-efectos/",
+          "date": "2026-08-25",
+          "date_gmt": "2026-08-25T06:50:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/buscan-eliminar-el-impuesto-saludable/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T06:30:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/esposa-y-otros-nuevos-reportes-en-declaracion-de-de-la-espriella/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T06:28:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/reforma-pensional-de-petro-supera-filtro-de-la-corte/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T06:33:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/estos-son-los-cuatro-pilares-del-nuevo-sistema-pensional-en-cual-se-ubica/",
+          "date": "2026-08-27",
+          "date_gmt": "2026-08-27T06:20:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/al-gobierno-le-falta-plata-y-no-es-un-problema-pasajero/",
+          "date": "2026-08-28",
+          "date_gmt": "2026-08-28T06:59:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/presupuesto-del-tigre-vs-el-de-petro-los-cambios-mas-polemicos/",
+          "date": "2026-08-28",
+          "date_gmt": "2026-08-28T06:24:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/reforma-en-codigo-nacional-de-transito-incluiria-reducir-en-un-50-las-multas/",
+          "date": "2026-08-31",
+          "date_gmt": "2026-08-31T06:59:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/del-118-al-98-bajo-el-desempleo-en-neiva-durante-el-gobierno-petro/",
+          "date": "2026-09-01",
+          "date_gmt": "2026-09-01T06:38:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/no-le-vamos-a-firmar-un-cheque-en-blanco-ponente-de-presupuesto-del-tigre/",
+          "date": "2026-09-02",
+          "date_gmt": "2026-09-02T06:08:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/si-no-ahorra-energia-pagara-cargo-adicional-recuerda-electrohuila/",
+          "date": "2026-09-02",
+          "date_gmt": "2026-09-02T06:11:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/los-precios-del-arroz-estan-reaccionando-y-van-a-subir-mas/",
+          "date": "2026-09-03",
+          "date_gmt": "2026-09-03T06:49:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/milagro-por-la-internacionalizacion-del-huila/",
+          "date": "2026-09-03",
+          "date_gmt": "2026-09-03T06:48:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/el-comercio-electronico-alcanza-nuevo-record-de-transacciones/",
+          "date": "2026-09-04",
+          "date_gmt": "2026-09-04T06:01:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/se-vienen-descuentos-para-morosos-del-predial-e-ica-en-neiva/",
+          "date": "2026-09-04",
+          "date_gmt": "2026-09-04T06:58:00",
+          "categories": [
+            22
+          ]
+        },
+        {
+          "url": "https://www.lanacion.com.co/la-produccion-de-cafe-de-colombia-caera-por-segundo-ano-consecutivo/",
+          "date": "2026-09-05",
+          "date_gmt": "2026-09-05T06:33:00",
+          "categories": [
+            22
+          ]
+        }
+      ],
+      "oldest_listing_date": "2026-08-24",
+      "query_url": "https://www.lanacion.com.co/wp-json/wp/v2/posts?after=2026-08-23T23%3A59%3A59&before=2026-09-07T00%3A00%3A00&per_page=100&_fields=id%2Cdate%2Cdate_gmt%2Clink%2Ccategories&categories=22",
+      "api_total": 19
+    },
+    {
+      "source": "Redagrícola — all countries",
+      "listing_url": "https://redagricola.com",
+      "coverage": "All posts returned by public WordPress API date/category query; publisher-local date.",
+      "count_14_days": 19,
+      "mean_per_calendar_day": 1.3571428571428572,
+      "daily_counts": {
+        "2026-08-24": 4,
+        "2026-08-25": 4,
+        "2026-08-26": 5,
+        "2026-08-27": 3,
+        "2026-08-28": 2,
+        "2026-09-03": 1
+      },
+      "rows": [
+        {
+          "url": "https://redagricola.com/bioestimulantes-y-protectores-solares-en-avellano-europeo/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T17:24:22",
+          "categories": [
+            643,
+            7278,
+            658
+          ]
+        },
+        {
+          "url": "https://redagricola.com/impacto-de-las-enfermedades-de-madera-en-avellano-europeo/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T16:18:31",
+          "categories": [
+            643,
+            7278,
+            658
+          ]
+        },
+        {
+          "url": "https://redagricola.com/por-que-el-kiwi-no-sufrira-como-la-cereza-y-esta-saldra-de-la-crisis/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T20:34:48",
+          "categories": [
+            643,
+            7278,
+            661,
+            666
+          ]
+        },
+        {
+          "url": "https://redagricola.com/seminario-internacional-abordara-el-huerto-de-manzanos-para-la-proxima-decada/",
+          "date": "2026-08-24",
+          "date_gmt": "2026-08-24T13:54:27",
+          "categories": [
+            643,
+            7278,
+            668
+          ]
+        },
+        {
+          "url": "https://redagricola.com/escasez-de-mango-convencional-presiona-aun-mas-al-segmento-organico-iqf/",
+          "date": "2026-08-25",
+          "date_gmt": "2026-08-25T16:56:24",
+          "categories": [
+            644,
+            7278,
+            667
+          ]
+        },
+        {
+          "url": "https://redagricola.com/inacal-actualiza-las-buenas-practicas-agricolas-para-el-cultivo-del-arandano-peruano/",
+          "date": "2026-08-25",
+          "date_gmt": "2026-08-25T16:33:04",
+          "categories": [
+            644,
+            7278,
+            657
+          ]
+        },
+        {
+          "url": "https://redagricola.com/la-oferta-esta-creciendo-ahora-toca-hacer-crecer-el-mercado/",
+          "date": "2026-08-25",
+          "date_gmt": "2026-08-25T18:51:20",
+          "categories": [
+            644,
+            7278,
+            657
+          ]
+        },
+        {
+          "url": "https://redagricola.com/mas-hectareas-menos-cajas-peru-proyecta-8265-millones-de-cajas-de-uva-para-2026-2027/",
+          "date": "2026-08-25",
+          "date_gmt": "2026-08-25T19:18:23",
+          "categories": [
+            644,
+            7278,
+            672
+          ]
+        },
+        {
+          "url": "https://redagricola.com/el-gigante-de-los-berries-se-renueva-driscolls-anuncio-nuevo-ceo/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T13:37:59",
+          "categories": [
+            643,
+            645,
+            928,
+            644,
+            7278,
+            657
+          ]
+        },
+        {
+          "url": "https://redagricola.com/grape-talks-benjamin-cilloniz-aborda-sin-tapujos-los-retos-de-la-uva-de-mesa/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T13:43:06",
+          "categories": [
+            644,
+            7278,
+            672
+          ]
+        },
+        {
+          "url": "https://redagricola.com/informacion-vital-sobre-plantacion-y-gestion-exitosa/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T12:31:27",
+          "categories": [
+            643,
+            7278,
+            658
+          ]
+        },
+        {
+          "url": "https://redagricola.com/palta-lo-que-decidira-la-campana-no-sera-el-volumen-sino-el-precio/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T15:22:34",
+          "categories": [
+            644,
+            7278,
+            670
+          ]
+        },
+        {
+          "url": "https://redagricola.com/tecnologias-innovativas-para-la-gestion-de-huertos-de-castano/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T17:04:58",
+          "categories": [
+            643,
+            7278,
+            677
+          ]
+        },
+        {
+          "url": "https://redagricola.com/aprueban-systems-approach-como-alternativa-de-exportacion-para-envio-de-cerezas-a-vietnam/",
+          "date": "2026-08-27",
+          "date_gmt": "2026-08-27T15:07:56",
+          "categories": [
+            643,
+            7278,
+            661
+          ]
+        },
+        {
+          "url": "https://redagricola.com/camposol-duplica-su-capacidad-de-despacho-de-arandanos-en-chao/",
+          "date": "2026-08-27",
+          "date_gmt": "2026-08-27T19:25:25",
+          "categories": [
+            644,
+            7278,
+            657
+          ]
+        },
+        {
+          "url": "https://redagricola.com/un-programa-profesional-de-abejas-puede-cubrir-por-completo-lo-que-el-cultivo-exige/",
+          "date": "2026-08-27",
+          "date_gmt": "2026-08-27T16:27:29",
+          "categories": [
+            643,
+            7278,
+            661,
+            666,
+            720
+          ]
+        },
+        {
+          "url": "https://redagricola.com/exportadores-de-nueces-de-chile-llaman-a-acelerar-mejoras-arancelarias/",
+          "date": "2026-08-28",
+          "date_gmt": "2026-08-28T15:44:55",
+          "categories": [
+            643,
+            7278,
+            676
+          ]
+        },
+        {
+          "url": "https://redagricola.com/peru-esta-viviendo-un-ano-historico-para-la-palta-en-europa/",
+          "date": "2026-08-28",
+          "date_gmt": "2026-08-28T15:59:42",
+          "categories": [
+            644,
+            7278,
+            670
+          ]
+        },
+        {
+          "url": "https://redagricola.com/guardianes-del-paisaje-llega-a-ica-el-adelanto-del-septimo-capitulo-con-grupo-vanguard-internacional/",
+          "date": "2026-09-03",
+          "date_gmt": "2026-09-03T21:21:56",
+          "categories": [
+            644,
+            7278,
+            672
+          ]
+        }
+      ],
+      "oldest_listing_date": "2026-08-24",
+      "query_url": "https://redagricola.com/wp-json/wp/v2/posts?after=2026-08-23T23%3A59%3A59&before=2026-09-07T00%3A00%3A00&per_page=100&_fields=id%2Cdate%2Cdate_gmt%2Clink%2Ccategories",
+      "api_total": 19
+    },
+    {
+      "source": "Redagrícola — Colombia category",
+      "listing_url": "https://redagricola.com",
+      "coverage": "All posts returned by public WordPress API date/category query; publisher-local date.",
+      "count_14_days": 1,
+      "mean_per_calendar_day": 0.07142857142857142,
+      "daily_counts": {
+        "2026-08-26": 1
+      },
+      "rows": [
+        {
+          "url": "https://redagricola.com/el-gigante-de-los-berries-se-renueva-driscolls-anuncio-nuevo-ceo/",
+          "date": "2026-08-26",
+          "date_gmt": "2026-08-26T13:37:59",
+          "categories": [
+            643,
+            645,
+            928,
+            644,
+            7278,
+            657
+          ]
+        }
+      ],
+      "oldest_listing_date": "2026-08-26",
+      "query_url": "https://redagricola.com/wp-json/wp/v2/posts?after=2026-08-23T23%3A59%3A59&before=2026-09-07T00%3A00%3A00&per_page=100&_fields=id%2Cdate%2Cdate_gmt%2Clink%2Ccategories&categories=645",
+      "api_total": 1
+    },
+    {
+      "source": "AGROSAVIA",
+      "listing_url": "https://www.agrosavia.co/noticias",
+      "coverage": "Dated cards on news listing, which extends before the start of the window.",
+      "count_14_days": 9,
+      "mean_per_calendar_day": 0.6428571428571429,
+      "daily_counts": {
+        "2026-08-25": 2,
+        "2026-08-28": 2,
+        "2026-08-31": 2,
+        "2026-09-01": 2,
+        "2026-09-03": 1
+      },
+      "rows": [
+        {
+          "url": "https://www.agrosavia.co/noticias/alianzas-que-hacen-crecer-el-campo/",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/productores-de-santander-y-norte-de-santander-podrán-vincularse-al-proyecto-bioinnova-páramos-y-bosques/",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/agrosavia-lleva-la-experiencia-colombiana-en-sistemas-pastoriles-y-restauración-de-tierras-a-la-silk-road-caravan-y-la-cop17-en-mongolia/",
+          "date": "2026-08-28"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/encuentro-linkata-florencia-impulsando-la-bioeconomía-en-el-corazón-de-la-amazonía/",
+          "date": "2026-08-28"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/agrosavia-transfiere-tecnología-para-la-producción-de-cacao/",
+          "date": "2026-08-31"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/agrosavia-y-la-comunidad-inga-de-santiago-putumayo-fortalecen-la-conservación-de-recursos-genéticos-y-las-casas-comunitarias-de-semillas/",
+          "date": "2026-08-31"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/bacterias-ácido-lácticas-abren-una-ruta-para-proteger-el-banano-del-marchitamiento-por-fusarium-con-menos-aplicaciones-químicas/",
+          "date": "2026-09-01"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/más-de-20-actores-fortalecen-la-innovación-agropecuaria-del-cesar-en-el-marco-de-la-mectia-impulsada-por-agrosavia/",
+          "date": "2026-09-01"
+        },
+        {
+          "url": "https://www.agrosavia.co/noticias/mujeres-que-cultivan-futuro-en-el-catatumbo/",
+          "date": "2026-09-03"
+        }
+      ],
+      "oldest_listing_date": "2026-07-28"
+    },
+    {
+      "source": "Agronet",
+      "listing_url": "https://agronet.gov.co/noticias",
+      "coverage": "Dated cards on news listing, which extends before the start of the window.",
+      "count_14_days": 2,
+      "mean_per_calendar_day": 0.14285714285714285,
+      "daily_counts": {
+        "2026-08-24": 1,
+        "2026-08-30": 1
+      },
+      "rows": [
+        {
+          "url": "https://agronet.gov.co/noticias/minagricultura-anuncia-plan-compromiso-tolima-para-mitigar-los-efectos-de-los-incendios",
+          "date": "2026-08-24"
+        },
+        {
+          "url": "https://agronet.gov.co/noticias/minagricultura-escucha-los-productores-de-arroz-del-caribe-y-anuncia-medidas-para",
+          "date": "2026-08-30"
+        }
+      ],
+      "oldest_listing_date": "2026-07-31"
+    },
+    {
+      "source": "UPRA",
+      "listing_url": "https://upra.gov.co/es-co/sala-de-prensa/noticias",
+      "coverage": "Dated cards on news listing, which extends before the start of the window.",
+      "count_14_days": 3,
+      "mean_per_calendar_day": 0.21428571428571427,
+      "daily_counts": {
+        "2026-08-25": 1,
+        "2026-08-31": 1,
+        "2026-09-04": 1
+      },
+      "rows": [
+        {
+          "url": "https://upra.gov.co/es-co/sala-de-prensa/noticias/upra-dispone-plataformas-tecnologicas-sistemas-informacion-consolidar-danos-sector-agropecuario-terremoto",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://upra.gov.co/es-co/sala-de-prensa/noticias/llegamos-territorios-alberto-jose-esmeral-ramirez-asume-director-secretario-upra",
+          "date": "2026-08-31"
+        },
+        {
+          "url": "https://upra.gov.co/es-co/sala-de-prensa/noticias/desempleo-rural-llego-nivel-ocupacion-campo-alcanzo-cifra-alta",
+          "date": "2026-09-04"
+        }
+      ],
+      "oldest_listing_date": "2026-07-29"
+    },
+    {
+      "source": "Portafolio — Agro",
+      "listing_url": "https://www.portafolio.co/economia/agro",
+      "coverage": "Dated agriculture-section cards; no whole-site business/news count.",
+      "count_14_days": 18,
+      "mean_per_calendar_day": 1.2857142857142858,
+      "daily_counts": {
+        "2026-08-25": 4,
+        "2026-08-26": 2,
+        "2026-08-27": 2,
+        "2026-08-28": 1,
+        "2026-08-29": 1,
+        "2026-08-31": 1,
+        "2026-09-01": 2,
+        "2026-09-02": 1,
+        "2026-09-03": 1,
+        "2026-09-05": 1,
+        "2026-09-06": 2
+      },
+      "rows": [
+        {
+          "url": "https://www.portafolio.co/economia/agro/colombia-abre-mercado-de-ee-uu-para-exportar-sebo-bovino-destinado-a-producir-biocombustibles-y-diesel-renovable-501129",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/el-agro-enfrenta-una-tormenta-perfecta-por-el-nino-los-costos-la-inseguridad-y-los-retos-del-campo-dice-la-sac-501171",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/el-gobierno-le-pide-a-asobancaria-congelar-creditos-de-productores-del-agro-afectados-por-el-terremoto-y-el-nino-501127",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/las-acciones-para-mitigar-los-estragos-de-el-nino-en-el-agro-501139",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/colombia-ha-logrado-un-desarrollo-genetico-muy-importante-y-hoy-tenemos-un-gran-potencial-de-exportacion-asocebu-501220",
+          "date": "2026-08-26"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/el-nino-ya-le-cuesta-47-000-millones-a-la-ganaderia-y-fedegan-pide-al-gobierno-actuar-antes-de-que-crezca-el-dano-501206",
+          "date": "2026-08-26"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/el-nino-y-las-importaciones-ponen-presion-sobre-la-produccion-y-la-industria-lactea-colombiana-en-501283",
+          "date": "2026-08-27"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/grupo-evo-destaca-el-potencial-del-campo-el-acceso-a-financiacion-y-la-necesidad-de-atraer-jovenes-al-sector-501301",
+          "date": "2026-08-27"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/huila-afianza-su-reinado-cafetero-ya-produce-casi-uno-de-cada-cinco-sacos-de-colombia-y-suma-15-anos-al-frente-501354",
+          "date": "2026-08-28"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/trump-autoriza-300-000-toneladas-de-carne-para-ee-uu-y-colombia-busca-entrar-al-mercado-en-los-proximos-90-dias-501428",
+          "date": "2026-08-29"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/diez-plantas-colombianas-buscan-renovar-su-habilitacion-sanitaria-para-exportar-carne-bovina-hacia-el-salvador-501519",
+          "date": "2026-08-31"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/colombia-da-primer-paso-para-producir-fertilizantes-en-huila-y-aliviar-costos-de-los-agricultores-501553",
+          "date": "2026-09-01"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/el-nino-y-los-incendios-dejan-perdidas-por-75-327-millones-a-la-ganaderia-colombiana-501566",
+          "date": "2026-09-01"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/gobierno-anuncia-plan-para-convertir-a-colombia-en-potencia-exportadora-de-pollo-y-huevo-y-abrir-nuevos-mercados-501647",
+          "date": "2026-09-02"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/minagricultura-busca-derogar-cinco-areas-de-proteccion-para-la-produccion-de-alimentos-en-cundinamarca-501731",
+          "date": "2026-09-03"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/es-cafetero-y-va-a-votar-estas-son-las-claves-que-debe-conocer-antes-de-las-elecciones-de-este-fin-de-semana-501894",
+          "date": "2026-09-05"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/importaciones-de-azucar-de-bolivia-afectan-al-suroccidente-mientras-se-reconstruye-por-el-terremoto-501876",
+          "date": "2026-09-06"
+        },
+        {
+          "url": "https://www.portafolio.co/economia/agro/pepsico-y-minagricultura-buscan-darle-un-nuevo-impulso-al-campo-colombiano-con-papa-platano-y-maiz-amarillo-501921",
+          "date": "2026-09-06"
+        }
+      ],
+      "oldest_listing_date": "2026-08-07"
+    },
+    {
+      "source": "ICA",
+      "listing_url": "https://www.ica.gov.co/noticias",
+      "coverage": "Paginated dated news cards; reached dates before window.",
+      "count_14_days": 16,
+      "mean_per_calendar_day": 1.1428571428571428,
+      "daily_counts": {
+        "2026-08-24": 2,
+        "2026-08-25": 3,
+        "2026-08-26": 1,
+        "2026-08-27": 1,
+        "2026-08-28": 1,
+        "2026-09-01": 2,
+        "2026-09-02": 2,
+        "2026-09-03": 3,
+        "2026-09-04": 1
+      },
+      "rows": [
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-compromiso-buenas-practicas-agricolas",
+          "date": "2026-08-24"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-vigilancia-fitosanitaria-hortofruticolas",
+          "date": "2026-08-24"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-fortalece-soberania-alimentaria-amazonas",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-vigilancia-fitosanitaria-palmadeaceite-cesar",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/nuevo-gerente-ica-carlos-eduardo-campo-cuello",
+          "date": "2026-08-25"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-el-agro-actua-fenomenodeelnino",
+          "date": "2026-08-26"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-fortalece-bienestar-animal-laguajira",
+          "date": "2026-08-27"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-expoasis-2026-vigilancia-control-sanitario",
+          "date": "2026-08-28"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-certificacion-porcicultores-puertoasis",
+          "date": "2026-09-01"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-fortalece-exportacion-vegetales-frescos-valle",
+          "date": "2026-09-01"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-fortalece-vigilancia-fitosanitaria-cacao-arauc",
+          "date": "2026-09-02"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-impulsa-acuicultura-uraba-antioqueno",
+          "date": "2026-09-02"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-inspeccion-fitosanitaria-puertoantioquia",
+          "date": "2026-09-03"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-sanandres-jovenes-vigilantes-epidemiologicos",
+          "date": "2026-09-03"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-vigilancia-fitosanitaria-cafe-santander",
+          "date": "2026-09-03"
+        },
+        {
+          "url": "https://www.ica.gov.co/noticias/ica-recertificacion-brucelosis-tuberculosis-bovina",
+          "date": "2026-09-04"
+        }
+      ],
+      "oldest_listing_date": "2026-08-20",
+      "pages_checked": [
+        "https://www.ica.gov.co/noticias",
+        "https://www.ica.gov.co/noticias?page=2",
+        "https://www.ica.gov.co/noticias?page=3",
+        "https://www.ica.gov.co/noticias?page=4"
+      ],
+      "complete_window_on_listing": true
+    }
+  ]
+}

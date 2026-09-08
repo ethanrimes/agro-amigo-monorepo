@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { catalog } from "@/lib/server/queries";
+import { unifiedCatalog } from "@/lib/server/catalog";
 export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     return NextResponse.json(
-      await catalog(
+      await unifiedCatalog(
         (request.nextUrl.searchParams.get("region") || "").slice(0, 100),
       ),
       {

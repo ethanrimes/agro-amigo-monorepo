@@ -13,21 +13,39 @@ export async function GET(
 ) {
   const { resource } = await params,
     q = req.nextUrl.searchParams;
-  const get = (key: string) => (q.get(key) || "").slice(0, 220);
+  const get = (key: string) => (q.get(key) || "").slice(0, 700);
   try {
     let data;
     if (resource === "markets") data = await markets();
     else if (resource === "market") data = await marketDetail(get("id"));
     else if (resource === "input")
-      data = await inputDetail(get("id"), get("department"));
+      data = await inputDetail(
+        get("id"),
+        get("department"),
+        get("scope"),
+        get("municipality"),
+        get("history") === "all",
+      );
     else if (resource === "supply")
       data = await supply(
         get("product"),
         get("market"),
         /^\d{4}-\d{2}-01$/.test(get("month")) ? get("month") : "",
+        get("history") === "all",
       );
     else if (resource === "map")
-      data = await mapData(get("kind"), get("id"), get("mode"));
+      data = await mapData(get("kind"), get("id"), get("mode"), {
+        series: get("series"),
+        market: get("market"),
+        presentation: get("presentation"),
+        units: get("units"),
+        history: get("history"),
+        region: get("region"),
+        scope: get("scope"),
+        municipality: get("municipality"),
+        category: get("category"),
+        query: get("query"),
+      });
     else
       return NextResponse.json(
         { error: "Consulta no disponible." },

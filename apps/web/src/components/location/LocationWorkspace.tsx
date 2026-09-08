@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IoMapOutline,
   IoCalculatorOutline,
@@ -12,15 +12,20 @@ import { SearchBox } from "@/components/ui/SearchBox";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { CropOptions } from "@/components/planning/CropOptions";
 import type { Municipality, FarmData } from "@/lib/planning-types";
-import { hasPin } from "@/lib/farm-types";
+import { EMPTY_PROFILE, hasPin } from "@/lib/farm-types";
 import { inColombia, type LocationPoint } from "@/lib/location-types";
 import { ZoneExplorer } from "./ZoneExplorer";
 import { CleanSheet } from "./CleanSheet";
+import { FarmWeather } from "./FarmWeather";
 const STORAGE = "agroamigo-location-v1";
 type SavedLocation = {
   point: LocationPoint | null;
   municipalityId: string;
   name: string;
+  farmId?: string;
+  method?: string;
+  accuracy?: number | null;
+  version?: number;
 };
 export function LocationWorkspace({ farmId }: { farmId?: string }) {
   const context = useFarm(),
@@ -28,7 +33,7 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
   const [location, setLocation] = useState<SavedLocation>({
       point: null,
       municipalityId: "",
-      name: "Mi pin",
+      name: "Mi finca",
     }),
     [ready, setReady] = useState(false),
     [focus, setFocus] = useState<LocationPoint | null>(null),
@@ -39,59 +44,125 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
     [crops, setCrops] = useState(false),
     [financeVisited, setFinanceVisited] = useState(false),
     [selectedCrop, setSelectedCrop] = useState("");
+  const live = useRef(true);
   useEffect(() => {
-    if (!context.ready) return;
-    const legacy =
-      context.farms.find((f) => f.id === farmId) || context.activeFarm;
-    let saved: SavedLocation | null = null;
-    try {
-      const raw = JSON.parse(localStorage.getItem(STORAGE) || "null");
-      if (
-        !farmId &&
-        raw &&
-        typeof raw.municipalityId === "string" &&
-        typeof raw.name === "string" &&
-        (!raw.point || inColombia(raw.point))
-      )
-        saved = raw;
-    } catch {
-      setMessage(
-        "No pudimos leer la ubicación guardada. La copia anterior se conserva.",
-      );
-    }
-    if (!saved && legacy)
-      saved = {
-        point: hasPin(legacy.profile)
-          ? {
-              latitude: +legacy.profile.latitude,
-              longitude: +legacy.profile.longitude,
-            }
-          : null,
-        municipalityId: legacy.profile.municipalityId,
-        name: legacy.profile.name,
-      };
-    if (saved) {
-      setLocation(saved);
-      setFocus(saved.point);
-    }
-    setReady(true);
-  }, [context.ready, farmId]);
+    live.current = true;
+    return () => {
+      live.current = false;
+    };
+  }, []);
   const save = (next: SavedLocation) => {
-    setLocation(next);
+    let selectedId = next.farmId || farmId || context.activeFarm?.id || "";
+    const existing = context.farms.find((f) => f.id === selectedId);
+    if (next.point) {
+      const profile = {
+        ...(existing?.profile || EMPTY_PROFILE),
+        name: next.name,
+        latitude: next.point.latitude.toFixed(6),
+        longitude: next.point.longitude.toFixed(6),
+        locationMethod: next.method || "saved",
+        locationAccuracy: next.accuracy == null ? "" : String(next.accuracy),
+        // The municipality picker is a reference lookup. Keep an existing
+        // farm's administrative identity and crop budgets when exploring.
+        municipalityId: existing
+          ? existing.profile.municipalityId
+          : next.municipalityId,
+      };
+      if (existing) context.updateFarm(existing.id, profile);
+      else selectedId = context.addFarm(profile);
+    }
+    const saved = { ...next, farmId: selectedId, version: 2 };
+    setLocation(saved);
     try {
-      localStorage.setItem(STORAGE, JSON.stringify(next));
+      localStorage.setItem(STORAGE, JSON.stringify(saved));
     } catch {
       setMessage(
         "La ubicación está en esta sesión, pero no pudimos guardarla en el dispositivo.",
       );
     }
   };
-  const setPin = (p: LocationPoint) => {
+  useEffect(() => {
+    if (!context.ready) return;
+    const selected =
+      context.farms.find((f) => f.id === farmId) || context.activeFarm;
+    let saved: SavedLocation | null = null;
+    try {
+      const original = localStorage.getItem(STORAGE);
+      const raw = JSON.parse(original || "null");
+      if (
+        raw &&
+        typeof raw.municipalityId === "string" &&
+        typeof raw.name === "string" &&
+        (!raw.point || inColombia(raw.point))
+      ) {
+        if (!farmId && (!raw.farmId || raw.farmId === selected?.id))
+          saved = raw;
+        if (
+          original &&
+          raw.version !== 2 &&
+          !localStorage.getItem("agroamigo-location-legacy-v1")
+        )
+          localStorage.setItem("agroamigo-location-legacy-v1", original);
+      }
+    } catch {
+      setMessage(
+        "No pudimos leer la ubicación guardada. La copia anterior se conserva.",
+      );
+    }
+    if (selected && hasPin(selected.profile)) {
+      saved = {
+        point: {
+          latitude: +selected.profile.latitude,
+          longitude: +selected.profile.longitude,
+        },
+        municipalityId:
+          saved?.farmId === selected.id
+            ? saved.municipalityId
+            : selected.profile.municipalityId,
+        name: selected.profile.name,
+        farmId: selected.id,
+        method: selected.profile.locationMethod,
+        accuracy: selected.profile.locationAccuracy
+          ? +selected.profile.locationAccuracy
+          : null,
+        version: 2,
+      };
+    } else if (selected) {
+      saved = {
+        ...saved,
+        point: saved?.point || null,
+        municipalityId:
+          saved?.farmId === selected.id
+            ? saved.municipalityId
+            : selected.profile.municipalityId || saved?.municipalityId || "",
+        name: selected.profile.name,
+        farmId: selected.id,
+        version: 2,
+      };
+    }
+    if (saved) {
+      if (saved.point && (!selected || !hasPin(selected.profile)))
+        save({ ...saved, farmId: selected?.id });
+      else setLocation(saved);
+      setFocus(saved.point);
+    }
+    setReady(true);
+  }, [context.ready, farmId, context.activeFarm?.id]);
+  const setPin = (
+    point: LocationPoint,
+    method = "pin",
+    accuracy: number | null = null,
+    name = location.name,
+  ) => {
+    if (!inColombia(point)) {
+      setMessage("Selecciona un punto dentro del área de Colombia.");
+      return;
+    }
     setQuery("");
-    save({ ...location, point: p, municipalityId: "" });
-    setFocus({ ...p });
+    save({ ...location, point, name, method, accuracy });
+    setFocus({ ...point });
     setMessage(
-      "Pin guardado. Confirma abajo el municipio para consultar sus referencias agrícolas. Mover el mapa no mueve tu pin.",
+      "Ubicación exacta guardada en tu finca. El municipio solo aporta referencias agrícolas; mover el mapa o cambiar esa referencia no mueve tu pin.",
     );
   };
   const locate = () => {
@@ -105,6 +176,7 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
     setMessage("Buscando la ubicación del dispositivo…");
     navigator.geolocation.getCurrentPosition(
       (p) => {
+        if (!live.current) return;
         setGps(false);
         const point = {
           latitude: p.coords.latitude,
@@ -116,12 +188,13 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           );
           return;
         }
-        setPin(point);
+        setPin(point, "gps", p.coords.accuracy);
         setMessage(
           `Pin guardado con GPS (precisión aproximada ±${Math.round(p.coords.accuracy)} m). Confirma el municipio para ver sus referencias.`,
         );
       },
       (e) => {
+        if (!live.current) return;
         setGps(false);
         setMessage(
           e.code === 1
@@ -149,7 +222,10 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
             <br />
             Haz tus cuentas.
           </h1>
-          <p>Clima, suelos y números para tomar mejores decisiones.</p>
+          <p>
+            Ubica tu finca con un punto exacto para consultar el clima, el
+            terreno y tus cuentas.
+          </p>
         </div>
         <div className="location-header-icon">
           <IoMapOutline />
@@ -164,12 +240,29 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
             </strong>
             <span>
               {location.point
-                ? `${location.point.latitude.toFixed(5)}, ${location.point.longitude.toFixed(5)}`
-                : "Busca un municipio o usa el mapa para comenzar"}
+                ? `${location.point.latitude.toFixed(6)}, ${location.point.longitude.toFixed(6)}`
+                : "Aún no has marcado la ubicación de tu finca"}
             </span>
+            {location.point && (
+              <small>
+                {location.method === "gps"
+                  ? `GPS${location.accuracy == null ? "" : ` · precisión aproximada ±${Math.round(location.accuracy)} m`}`
+                  : location.method === "manual"
+                    ? "Coordenadas ingresadas por ti"
+                    : location.method === "pin"
+                      ? "Punto elegido en el mapa"
+                      : "Ubicación exacta guardada"}
+                . Este punto no representa el centro municipal ni define
+                linderos.
+              </small>
+            )}
           </div>
         </div>
         <div className="location-actions">
+          <button className="button secondary" onClick={() => {
+            setTab("map");
+            requestAnimationFrame(() => document.getElementById("zone-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+          }}><IoMapOutline /> Buscar en el mapa</button>
           {location.point && (
             <button
               className="button secondary"
@@ -183,9 +276,13 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           )}
           <button className="button primary" disabled={gps} onClick={locate}>
             <IoLocateOutline />
-            {gps ? "Buscando…" : "Usar mi ubicación GPS"}
+          {gps ? "Buscando…" : "Usar mi ubicación"}
           </button>
         </div>
+        <p className="privacy-note">
+          Usa el GPS cuando estés en la finca. También puedes buscar un municipio
+          o un lugar en el mapa, acercarte y tocar el punto de tu finca.
+        </p>
         <div className="location-search">
           <label>
             {location.point
@@ -205,8 +302,8 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
             onSelect={(o) => {
               const p = places.data!.find((p) => p.id === o.id)!;
               save({ ...location, municipalityId: p.id });
-              if (!location.point)
-                setFocus({ latitude: p.latitude, longitude: p.longitude });
+              setFocus({ latitude: p.latitude, longitude: p.longitude });
+              setTab("map");
               setMessage(
                 "Referencias municipales: " +
                   p.name +
@@ -231,9 +328,9 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
         </div>
         {context.farms.length > 0 && (
           <label className="legacy-locations">
-            Consultar una ubicación anterior
+            Finca guardada
             <select
-              value=""
+              value={location.farmId || ""}
               onChange={(e) => {
                 const f = context.farms.find((f) => f.id === e.target.value);
                 if (!f) return;
@@ -243,10 +340,16 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
                       longitude: +f.profile.longitude,
                     }
                   : null;
+                context.selectFarm(f.id);
                 save({
                   point,
                   municipalityId: f.profile.municipalityId,
                   name: f.profile.name,
+                  farmId: f.id,
+                  method: f.profile.locationMethod,
+                  accuracy: f.profile.locationAccuracy
+                    ? +f.profile.locationAccuracy
+                    : null,
                 });
                 setFocus(point);
                 setMessage(
@@ -264,11 +367,17 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           </label>
         )}
       </section>
+      {context.storageError && (
+        <p className="inline-note" role="alert">
+          {context.storageError}
+        </p>
+      )}
       {message && (
         <p className="inline-note location-message" role="status">
           {message}
         </p>
       )}
+      {location.point && <FarmWeather point={location.point} name={location.name} />}
       <div
         className="location-main-tabs"
         role="tablist"
@@ -308,7 +417,7 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
         aria-labelledby="zone-tab"
         hidden={tab !== "map"}
       >
-        <ZoneExplorer pin={location.point} focus={focus} onPin={setPin} />
+        <ZoneExplorer pin={location.point} focus={focus} onPin={setPin} onExplore={setFocus} />
         {data.data && (
           <div className="location-crop-context">
             <button

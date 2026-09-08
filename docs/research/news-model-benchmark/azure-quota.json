@@ -1,0 +1,463 @@
+[
+  {
+    "region": "eastus",
+    "positive_standard": [
+      {
+        "name": "OpenAI.Standard.code-cushman-fine-tune-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.code-davinci-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.code-davinci-fine-tune-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.davinci",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-davinci-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-davinci-003",
+        "limit": 120.0
+      },
+      {
+        "name": "OpenAI.Standard.text-davinci-fine-tune-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.babbage",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-babbage-001",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.ada",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.text-ada-001",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-ada-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-similarity-ada-001",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.curie",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-curie-001",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-similarity-curie-001",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-3-small",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-3-large",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.text-embedding-3-small",
+        "limit": 1000.0
+      },
+      {
+        "name": "OpenAI.DataZoneStandard.text-embedding-3-small",
+        "limit": 1000.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.o4-mini",
+        "limit": 100.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.gpt4.1-mini",
+        "limit": 200.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.gpt-5-mini",
+        "limit": 500.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.MaaS",
+        "limit": 600.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.GPT-OSS-20B-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-3.3-70B-Instruct-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-3.3-70B-Instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-mini-instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-mini-reasoning",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-multimodal-instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-reasoning",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.mistral-medium-2505",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.mistral-small-2503",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Codestral-2501",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-4-Scout-17B-16E-Instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.gpt-oss-120b",
+        "limit": 5000.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.mistral-document-ai-2505",
+        "limit": 60.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.Llama-3.3-70B-Instruct-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.GPT-OSS-20B-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.FLUX.2-pro",
+        "limit": 15.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.FLUX.2-pro",
+        "limit": 7.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.FLUX.2-flex",
+        "limit": 5.0
+      }
+    ],
+    "nano_batch": [
+      {
+        "name": "OpenAI.GlobalBatch.gpt-4.1-nano",
+        "limit": 90.0
+      },
+      {
+        "name": "OpenAI.DataZoneBatch.gpt-4.1-nano",
+        "limit": 90.0
+      }
+    ]
+  },
+  {
+    "region": "swedencentral",
+    "positive_standard": [
+      {
+        "name": "OpenAI.Standard.whisper",
+        "limit": 3.0
+      },
+      {
+        "name": "OpenAI.Standard.babbage-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.davinci-002",
+        "limit": 240.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-ada-002",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-3-large",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.text-embedding-3-small",
+        "limit": 1000.0
+      },
+      {
+        "name": "OpenAI.DataZoneStandard.text-embedding-3-small",
+        "limit": 1000.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.sora",
+        "limit": 60.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.o4-mini",
+        "limit": 100.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.gpt4.1-mini",
+        "limit": 200.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.gpt-5-mini",
+        "limit": 500.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.MaaS",
+        "limit": 600.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.GPT-OSS-20B-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-3.3-70B-Instruct-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-3.3-70B-Instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-mini-instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-mini-reasoning",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-multimodal-instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-reasoning",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.mistral-medium-2505",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.mistral-small-2503",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Codestral-2501",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-4-Scout-17B-16E-Instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.gpt-oss-120b",
+        "limit": 5000.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.mistral-document-ai-2505",
+        "limit": 60.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.FLUX.2-pro",
+        "limit": 15.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.FLUX.2-pro",
+        "limit": 7.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.FLUX.2-flex",
+        "limit": 5.0
+      }
+    ],
+    "nano_batch": [
+      {
+        "name": "OpenAI.GlobalBatch.gpt-4.1-nano",
+        "limit": 90.0
+      },
+      {
+        "name": "OpenAI.DataZoneBatch.gpt-4.1-nano",
+        "limit": 90.0
+      }
+    ]
+  },
+  {
+    "region": "eastus2",
+    "positive_standard": [
+      {
+        "name": "OpenAI.Standard.whisper",
+        "limit": 3.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-ada-002",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-3-small",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.Standard.text-embedding-3-large",
+        "limit": 350.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.text-embedding-3-small",
+        "limit": 1000.0
+      },
+      {
+        "name": "OpenAI.DataZoneStandard.text-embedding-3-small",
+        "limit": 1000.0
+      },
+      {
+        "name": "OpenAI.Standard.sora",
+        "limit": 60.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.sora",
+        "limit": 60.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.o4-mini",
+        "limit": 100.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.gpt4.1-mini",
+        "limit": 200.0
+      },
+      {
+        "name": "OpenAI.GlobalStandard.gpt-5-mini",
+        "limit": 500.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.MaaS",
+        "limit": 600.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.GPT-OSS-20B-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-3.3-70B-Instruct-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-3.3-70B-Instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-mini-instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-mini-reasoning",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-multimodal-instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Phi-4-reasoning",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.mistral-medium-2505",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.mistral-small-2503",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Codestral-2501",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.Llama-4-Scout-17B-16E-Instruct",
+        "limit": 20.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.gpt-oss-120b",
+        "limit": 5000.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.gpt-oss-120b",
+        "limit": 5000.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.mistral-document-ai-2505",
+        "limit": 60.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.Llama-3.3-70B-Instruct-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.GPT-OSS-20B-Finetune",
+        "limit": 50.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.FLUX.2-pro",
+        "limit": 15.0
+      },
+      {
+        "name": "AIServices.DataZoneStandard.FLUX.2-pro",
+        "limit": 7.0
+      },
+      {
+        "name": "AIServices.GlobalStandard.FLUX.2-flex",
+        "limit": 5.0
+      }
+    ],
+    "nano_batch": [
+      {
+        "name": "OpenAI.GlobalBatch.gpt-4.1-nano",
+        "limit": 90.0
+      },
+      {
+        "name": "OpenAI.DataZoneBatch.gpt-4.1-nano",
+        "limit": 90.0
+      }
+    ]
+  }
+]

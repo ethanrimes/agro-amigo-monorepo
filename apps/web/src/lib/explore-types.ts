@@ -53,10 +53,34 @@ export type MapPoint = {
   date: string;
   unit: string;
   document_id?: string;
+  source_page?: number;
+  source_locator?: string;
+  presentation?: string;
+  units?: string;
+};
+export type MapFilters = {
+  series?: string;
+  market?: string;
+  presentation?: string;
+  units?: string;
+  history?: string;
+  region?: string;
+  scope?: string;
+  municipality?: string;
+  category?: string;
+  query?: string;
 };
 export type MapData = {
+  selection_label?: string;
   points: MapPoint[];
   unit: string;
   date: string | null;
   basis: string;
+  filters?: MapFilters;
+  options?: {
+    series: string[];
+    presentations: string[];
+    units: string[];
+    markets: { id: string; name: string }[];
+  };
 };

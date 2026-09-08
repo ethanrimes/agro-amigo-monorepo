@@ -1,0 +1,5 @@
+/* Keep the application viewport fixed; MapLibre handles its own canvas zoom. */
+html, body { touch-action: pan-x pan-y; }
+@media (pointer: coarse) {
+  input, select, textarea, [contenteditable="true"] { font-size: max(16px, 1em) !important; }
+}

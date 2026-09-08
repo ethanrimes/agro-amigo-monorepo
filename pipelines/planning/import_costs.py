@@ -43,26 +43,13 @@ def costs(cur):
  (HERE/'cost-extractions.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print('Cost templates',len(report),flush=True)
 
 def input_prices(cur):
- path=CACHE/'inputs-history.xlsx';did=doc(cur,path,'DANE SIPSA-I - precios de insumos por departamento','DANE',URLS[path.name],'Serie original 2018-2026; observaciones de la app limitadas a los últimos 12 meses','inputs-workbook')
- book=pd.ExcelFile(path);months={slug(m):i+1 for i,m in enumerate(['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'])};values={};conflicts=set()
- # Inputs most directly useful for editable crop budgets: bioinputs, fertilizers, seedlings/seeds.
- for sheet,category in [('1.1','Bioinsumos'),('1.3','Fertilizantes y enmiendas')]:
-  df=pd.read_excel(book,sheet_name=sheet,header=8);df.columns=df.columns.str.strip()
-  for i,r in df.iterrows():
-   if pd.isna(r['Año']) or not str(r['Mes']).lower() in months:continue
-   year=int(r['Año']);month=months[str(r['Mes']).lower()];d=date(year,month,calendar.monthrange(year,month)[1])
-   if not START<d<=TODAY:continue
-   price=r['Precio promedio departamento']
-   if not isinstance(price,(int,float)) or not math.isfinite(price) or price<=0:continue
-   name=str(r['Artículo']).strip();presentation=str(r['Presentación del producto']).strip();dep=str(r['Nombre departamento']).strip()
-   ident=slug(name+'-'+presentation+'-'+str(r['Casa Comercial'])+'-'+str(r['Registro ICA']))
-   key=(ident,dep,d);row=(ident,dep,d,name,category,presentation,float(price),did,f'Hoja {sheet}, fila {int(i)+10}; precio por presentación')
-   if key in values and values[key][6]!=row[6]:conflicts.add(key)
-   values[key]=row
-  print('Parsed input sheet',sheet,flush=True)
- cur.execute('DELETE FROM input_price WHERE observed_on<=%s OR observed_on>%s',(START,TODAY))
- cur.executemany('INSERT INTO input_price VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id,department,observed_on) DO UPDATE SET price=excluded.price,document_id=excluded.document_id,source_locator=excluded.source_locator',[r for k,r in values.items() if k not in conflicts])
- print('Input observations',len(values)-len(conflicts),'excluded conflicts',len(conflicts),flush=True)
+ from pipelines.ingestion.worker import archive,save_rows
+ from pipelines.ingestion.inputs import parse_inputs,project_inputs
+ path=CACHE/'inputs-history.xlsx';data=path.read_bytes()
+ did=archive(cur.connection,URLS[path.name],data,'inputs')
+ save_rows(cur.connection,did,parse_inputs(data))
+ print('Input conflicts',project_inputs(cur.connection,did),flush=True)
+
 
 def download(url,name):
  p=CACHE/name

@@ -249,8 +249,8 @@ export function FarmEditor({
               <details className="source-explanation">
                 <summary>
                   {locationOnly
-                    ? "Altitud y coordenadas (opcional)"
-                    : "Fechas, variedad, altitud y coordenadas (opcional)"}
+                    ? "Altitud (opcional)"
+                    : "Fechas, variedad y altitud (opcional)"}
                 </summary>
                 <div className="form-grid">
                   {!locationOnly && (
@@ -299,26 +299,6 @@ export function FarmEditor({
                       max="6000"
                       value={draft.elevation}
                       onChange={(e) => patch("elevation", e.target.value)}
-                    />
-                  </label>
-                  <label className="form-field">
-                    Latitud
-                    <input
-                      type="number"
-                      step="any"
-                      placeholder="Ej. 1.85"
-                      value={draft.latitude}
-                      onChange={(e) => patch("latitude", e.target.value)}
-                    />
-                  </label>
-                  <label className="form-field">
-                    Longitud
-                    <input
-                      type="number"
-                      step="any"
-                      placeholder="Ej. -76.05"
-                      value={draft.longitude}
-                      onChange={(e) => patch("longitude", e.target.value)}
                     />
                   </label>
                 </div>

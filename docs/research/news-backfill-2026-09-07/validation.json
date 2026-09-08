@@ -1,0 +1,48 @@
+{
+  "artifact": "/Users/ethan/Documents/development/agro-amigo-monorepo/docs/research/news-backfill-2026-09-07/backfill.json",
+  "check_scope": "structure, dates, URL deduplication, source-accounting; not content truth or licensing",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:18:00-05:00",
+  "records": 31,
+  "decisions": {
+    "include": 30,
+    "review": 1
+  },
+  "statuses": {
+    "active": 27,
+    "expired": 3,
+    "review": 1
+  },
+  "categories": {
+    "apoyos_y_normativa": 6,
+    "sanidad_agropecuaria": 6,
+    "abastecimiento_y_cosechas": 3,
+    "investigacion_y_cultivos": 9,
+    "clima_y_riesgos": 3,
+    "transporte_y_logistica": 1,
+    "eventos_y_formacion": 2,
+    "precios_y_mercados": 1
+  },
+  "contributing_sources": {
+    "Ministerio de Agricultura": 4,
+    "ICA": 8,
+    "UPRA": 2,
+    "Fenalce": 1,
+    "Cenicafé": 1,
+    "Diario del Sur": 4,
+    "AGROSAVIA": 9,
+    "Agronet": 1
+  },
+  "coverage_records": 71,
+  "coverage_statuses": {
+    "selected_originals_verified": 8,
+    "search_attempted_no_verified_inclusion": 57,
+    "skipped_restriction": 2,
+    "original_read_publication_date_unresolved": 1,
+    "selected_originals_attempted_no_inclusion": 2,
+    "access_blocked": 1
+  },
+  "errors": [],
+  "warnings": [],
+  "passed": true
+}

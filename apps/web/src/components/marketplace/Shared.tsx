@@ -11,7 +11,19 @@ import {
   IoInformationCircleOutline,
 } from "react-icons/io5";
 import { usePreferences } from "./Preferences";
-import { change, money, dateLabel, type Product } from "@/lib/market-types";
+import { change } from "@/lib/market-types";
+import {
+  catalogBasis,
+  catalogCurrency,
+  catalogDate,
+  catalogHref,
+  catalogIdentity,
+  catalogPriceNumber,
+  catalogSavedKey,
+  catalogUnit,
+  type CatalogCard,
+} from "@/lib/catalog-display";
+import styles from "./catalog.module.css";
 export function Change({
   price,
   previous,
@@ -31,12 +43,24 @@ export function Change({
     </span>
   );
 }
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  detailReturnTo,
+}: {
+  product: CatalogCard;
+  detailReturnTo?: string;
+}) {
   const { saved, toggleSaved } = usePreferences();
-  const active = saved.includes(product.id);
+  const savedKey = catalogSavedKey(product);
+  const active = saved.includes(savedKey);
+  const href = catalogHref(product, detailReturnTo);
   return (
-    <article className="product-card">
-      <Link className="product-image-link" href={"/product/" + product.id}>
+    <article
+      className={`product-card ${styles.card}`}
+      data-catalog-identity={catalogIdentity(product)}
+      data-product-id={product.id}
+    >
+      <Link className="product-image-link" href={href}>
         <CropPicture
           imageKey={product.image_key}
           name={product.name}
@@ -48,37 +72,41 @@ export function ProductCard({ product }: { product: Product }) {
         className={"save-button " + (active ? "is-saved" : "")}
         aria-label={`${active ? "Quitar" : "Guardar"} ${product.name}`}
         aria-pressed={active}
-        onClick={() => toggleSaved(product.id)}
+        onClick={() => toggleSaved(savedKey)}
       >
         {active ? <IoHeart /> : <IoHeartOutline />}
       </button>
       <div className="product-card-body">
-        <Link href={"/product/" + product.id} className="product-name">
+        <Link href={href} className="product-name">
           {product.name}
         </Link>
-        <span className="product-date">
-          {product.period === "daily" ? "Referencia FNC" : "Promedio mensual"} ·{" "}
-          {dateLabel(product.date, true)}
-        </span>
-        <div className="product-price">
-          {money(product.price)}{" "}
-          <span>{product.unit === "125kg" ? "/ carga de 125 kg" : "/ kg"}</span>
+        <span className="product-date">{catalogDate(product.date)}</span>
+        <div
+          className="product-price"
+          data-price={product.price}
+          data-currency={catalogCurrency(product)}
+        >
+          <span className={styles.currency}>{catalogCurrency(product)}</span>
+          <strong className={styles.amount}>
+            {catalogPriceNumber(product)}
+          </strong>
+          <span className={styles.unit}>{"/ " + catalogUnit(product)}</span>
         </div>
+        <p className={styles.basis}>{catalogBasis(product)}</p>
+        {product.kind === "official-reference" && product.market && (
+          <p className={styles.market}>{product.market}</p>
+        )}
         <Change
           price={product.price}
           previous={product.previous_price}
           label={
-            product.period === "daily"
+            product.period === "daily" || product.kind === "official-reference"
               ? "vs. referencia anterior"
               : "vs. mes anterior"
           }
         />
-        <Link href={"/product/" + product.id} className="product-card-footer">
-          <span>
-            {product.id === "cafe-pergamino-seco"
-              ? "Ver referencia del café"
-              : "Ver producto"}
-          </span>
+        <Link href={href} className="product-card-footer">
+          <span>Ver producto</span>
           <IoArrowForward />
         </Link>
       </div>

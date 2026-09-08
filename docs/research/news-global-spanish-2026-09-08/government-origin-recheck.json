@@ -1,0 +1,141 @@
+{
+  "run_id": "2026-09-08T05:40:10+00:00",
+  "started_at": "2026-09-08T05:40:10+00:00",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:59:59.999999-05:00",
+  "language": "es",
+  "mode": "research_only",
+  "discovery_mode": "listings",
+  "coverage": [
+    {
+      "source_id": "ministerio-de-agricultura",
+      "source": "Ministerio de Agricultura",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 2,
+      "outcomes": {
+        "publication_date_missing": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 3,
+      "checked_at": "2026-09-08T05:40:17+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "dane",
+      "source": "DANE",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 3,
+      "articles_attempted": 2,
+      "outcomes": {
+        "publication_date_missing": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:40:21+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ica",
+      "source": "ICA",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 11,
+      "articles_attempted": 2,
+      "outcomes": {
+        "host_or_language_path_not_allowed": 1,
+        "robots_network_or_timeout": 1
+      },
+      "errors": [
+        {
+          "url": "https://www.ica.gov.co/oferta-institucional/servicios_linea/registro-de-intencion-de-siembra-anual-de-arroz",
+          "code": "host_or_language_path_not_allowed"
+        },
+        {
+          "url": "https://www.ica.gov.co/oferta-institucional/servicios_linea/sispap",
+          "code": "robots_network_or_timeout"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 11,
+      "checked_at": "2026-09-08T05:40:43+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "adr",
+      "source": "ADR",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:40:47+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "banco-agrario",
+      "source": "Banco Agrario",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:40:48+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agrosavia",
+      "source": "AGROSAVIA",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 14,
+      "articles_attempted": 2,
+      "outcomes": {
+        "publication_date_missing": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 12,
+      "checked_at": "2026-09-08T05:40:51+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    }
+  ],
+  "errors": [],
+  "classified_with_luna": false,
+  "finished_at": "2026-09-08T05:40:51+00:00",
+  "totals": {
+    "stored": 7,
+    "decisions": {
+      "review": 6,
+      "discard": 1
+    },
+    "source_statuses": {
+      "checked": 4,
+      "partial": 2
+    }
+  }
+}

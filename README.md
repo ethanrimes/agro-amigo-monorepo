@@ -1,6 +1,6 @@
 # AgroAmigo
 
-A Spanish-language agricultural planning demo for Colombian farmers and purchasers. The redesigned app combines dated market references, farm planning, crop budgets, private offer comparisons, and source documents stored in Azure PostgreSQL.
+A Spanish-language agricultural planning demo for Colombian farmers and purchasers. The redesigned app combines dated market references, farm planning, crop budgets, private offer comparisons, and immutable source documents stored in Azure PostgreSQL and private Blob Storage.
 
 - Web: https://agroamigo-demo-9a04.azurewebsites.net
 - Android installer: https://agroamigo-demo-9a04.azurewebsites.net/android
@@ -8,16 +8,19 @@ A Spanish-language agricultural planning demo for Colombian farmers and purchase
 
 ## Repository
 
-| Folder | Purpose |
-|---|---|
-| `apps/web` | Next.js application, server APIs, PDF viewer, browser tests |
-| `apps/android` | Installable Android client for the same Azure application |
-| `apps/ios` | Flutter iOS client, Xcode project and existing TestFlight app identity |
-| `pipelines/demo` | Recent DANE, FNC and SFC observations; date-window guards |
-| `pipelines/planning` | Historical references, crop/soil/suitability data, documents and methodology |
-| `data` | Original municipal reference files |
-| `infra` | Azure provisioning and verified deployment |
-| `docs` | Architecture, data-source research and verification notes |
+[Code navigation](docs/CODE_NAVIGATION.md) maps the implementation. [Current delivery and validation](docs/VALIDATION_2026-09-08.md) records deployed behavior, test evidence and the remaining unattended backfill.
+
+| Folder                | Purpose                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `apps/web`            | Next.js application, server APIs, PDF/Excel viewers, browser tests                          |
+| `apps/android`        | Installable Android client for the same Azure application                                   |
+| `apps/ios`            | Flutter iOS client, Xcode project and existing TestFlight app identity                      |
+| `pipelines/ingestion` | Daily source discovery, historical queue, PDF/Excel/ZIP parsing, OCR and permanent archives |
+| `pipelines/demo`      | Recent DANE, FNC and SFC observations; date-window guards                                   |
+| `pipelines/planning`  | Historical references, crop/soil/suitability data, documents and methodology                |
+| `data`                | Original municipal reference files                                                          |
+| `infra`               | Azure provisioning and verified deployment                                                  |
+| `docs`                | Architecture, data-source research and verification notes                                   |
 
 The active Flutter iOS app moved from `agroamigo-iphone` to `apps/ios`; its TestFlight workflow remains `.github/workflows/agroamigo-iphone-build.yml`. The old Expo and second web prototypes, unused shared Supabase package, legacy Supabase ingestion/migrations and 20 unreachable web modules were removed. Their prior versions remain in Git history. One npm lockfile manages the web workspace; iOS has its own Dart and CocoaPods lockfiles. Generated caches, build output, APK copies and credentials are ignored.
 
@@ -38,7 +41,7 @@ npm run dev -- --hostname 127.0.0.1 --port 3002
 
 ## Data and deployment
 
-Read [the pipeline instructions](pipelines/README.md) and [Azure operations](infra/README.md). Current prices and input observations retain only the latest 12 months. Five complete years are stored separately for seasonality; older technical references preserve their publication periods.
+Read [the pipeline instructions](pipelines/README.md) and [Azure operations](infra/README.md). The Azure ingestion service refreshes data daily and backfills history hourly. All historical observations, revisions and source originals are retained permanently. Price queries default to 12 months; product, insumo, comparison and official-reference history controls expose older retained data. Seasonality uses five complete prior years.
 
 ```sh
 npm run build
@@ -88,4 +91,4 @@ PLAYWRIGHT_BASE_URL=https://agroamigo-demo-9a04.azurewebsites.net npm run test:e
 
 Browser tests cover desktop/mobile workflows, arithmetic, source integrity, PDF pagination, persistence and unavailable data. GitHub Actions builds web, Android and iOS, runs Android lint and checks iOS navigation rules; live database tests require a configured environment.
 
-The demo is a dated reference snapshot, with live weather requests. Crop scenarios are transparent planning assumptions, not validated farm-specific forecasts. See [coverage and limitations](docs/DATA_SOURCES.md).
+Prices refresh through the scheduled Azure ingestion service, with live weather requests. Crop scenarios are transparent planning assumptions, not validated farm-specific forecasts. See [coverage and limitations](docs/DATA_SOURCES.md).

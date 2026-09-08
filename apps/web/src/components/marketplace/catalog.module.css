@@ -1,0 +1,129 @@
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(3, minmax(120px, 0.48fr));
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+.search,
+.field {
+  min-width: 0;
+}
+.search > span,
+.field > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 600;
+}
+.field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  text-overflow: ellipsis;
+}
+.activeFilters {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  padding-block: 5px;
+  background: var(--paper, #f7f8f2);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.activeFilters :global(.applied-filters) {
+  margin: 0;
+}
+.regionNote {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+.card {
+  min-width: 0;
+}
+.card :global(.product-name) {
+  display: block;
+  white-space: normal;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  overflow-wrap: anywhere;
+}
+.card :global(.product-price) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 6px;
+}
+.card .currency {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+.amount {
+  font: inherit;
+  overflow-wrap: anywhere;
+}
+.card .unit {
+  flex-basis: 100%;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.basis {
+  margin: 8px 0 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--green-dark);
+  overflow-wrap: anywhere;
+}
+.market {
+  margin: 3px 0 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.card :global(.product-date) {
+  min-height: 0;
+  margin-bottom: 2px;
+}
+@media (max-width: 1100px) {
+  .controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .search {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 560px) {
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .department {
+    grid-column: 1 / -1;
+  }
+  .field select {
+    font-size: 16px;
+  }
+  .activeFilters {
+    margin-inline: -3px;
+    padding-inline: 3px;
+  }
+  .basis {
+    font-size: 11px;
+  }
+  .card .currency {
+    font-size: 11px;
+  }
+}

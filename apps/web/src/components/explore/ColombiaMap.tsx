@@ -1,9 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { AppliedFilters, priceSeriesLabel } from "./AppliedFilters";
 import type {
   Map as LibreMap,
   GeoJSONSource,
   MapMouseEvent,
+  Popup,
 } from "maplibre-gl";
 import type { FeatureCollection, Geometry } from "geojson";
 import { mapLibrary, mapSpanish } from "@/lib/maplibre";
@@ -14,8 +17,9 @@ import { ErrorState } from "@/components/marketplace/Shared";
 import { DetailTabs, type InformationMode } from "./DetailTabs";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { money, number, dateLabel, type Catalog } from "@/lib/market-types";
+import type { CatalogCard } from "@/lib/catalog-display";
 import type { InputPrice } from "@/lib/planning-types";
-import type { MapData, MapPoint } from "@/lib/explore-types";
+import type { MapData, MapPoint, MapFilters } from "@/lib/explore-types";
 import { IoMapOutline } from "react-icons/io5";
 import "maplibre-gl/dist/maplibre-gl.css";
 const fold = (s: string) =>
@@ -28,10 +32,12 @@ export function MapButton({
   kind,
   id,
   label = "Ver mapa",
+  filters = {},
 }: {
   kind: Kind;
   id?: string;
   label?: string;
+  filters?: MapFilters;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -53,16 +59,42 @@ export function MapButton({
           className="map-overlay"
           onClose={() => setOpen(false)}
         >
-          <MapView kind={kind} initialId={id} />
+          <MapView kind={kind} initialId={id} initialFilters={filters} />
         </Overlay>
       )}
     </>
   );
 }
-function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
+function MapView({
+  kind,
+  initialId,
+  initialFilters,
+}: {
+  kind: Kind;
+  initialId?: string;
+  initialFilters: MapFilters;
+}) {
+  const [requested, setRequested] = useState(initialFilters);
+  const [popup, setPopup] = useState<{
+    node: HTMLElement;
+    points: MapPoint[];
+    title: string;
+  } | null>(null);
+  const bubble = useRef<Popup | null>(null);
+  const showPopup = useRef<
+    (points: MapPoint[], title: string, coords: [number, number]) => void
+  >(() => {});
   const catalog = useData<Catalog>(kind === "input" ? null : "/api/catalog");
   const inputs = useData<InputPrice[]>(
-    kind === "input" ? "/api/planning/inputs" : null,
+    kind === "input"
+      ? "/api/planning/inputs?" +
+          new URLSearchParams({
+            grouped: "true",
+            scope: requested.scope || "department",
+            department: requested.region || "",
+            history: "recent",
+          })
+      : null,
   );
   const [selected, setSelected] = useState(initialId || ""),
     [search, setSearch] = useState(""),
@@ -77,13 +109,30 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
     kind === "input"
       ? Array.from(
           new Map(
-            (inputs.data || []).map((i) => [
-              i.id,
-              { id: i.id, label: i.name + " · " + i.presentation },
-            ]),
+            (inputs.data || [])
+              .filter(
+                (i) =>
+                  (!requested.category || i.category === requested.category) &&
+                  (!requested.query ||
+                    fold(
+                      i.name +
+                        " " +
+                        i.presentation +
+                        " " +
+                        i.brand +
+                        " " +
+                        i.registration +
+                        " " +
+                        i.category,
+                    ).includes(fold(requested.query))),
+              )
+              .map((i) => [
+                i.id,
+                { id: i.id, label: i.name + " · " + i.presentation },
+              ]),
           ).values(),
         )
-      : (catalog.data?.products || []).map((p) => ({
+      : (catalog.data?.products || []).filter((p: CatalogCard) => p.map_supported !== false).map((p) => ({
           id: p.id,
           label: p.name,
         }));
@@ -96,13 +145,23 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
       setSearch(options.find((o) => o.id === selected)?.label || "");
   }, [catalog.data, inputs.data, selected, kind]); // eslint-disable-line react-hooks/exhaustive-deps
   const data = useData<MapData>(
-    "/api/explore/map?kind=" +
-      kind +
-      "&id=" +
-      encodeURIComponent(selected) +
-      "&mode=" +
-      mode,
+    "/api/explore/map?" +
+      new URLSearchParams({ kind, id: selected, mode, ...requested }),
   );
+  const filters = data.data?.filters || requested;
+  function changeFilter(name: keyof MapFilters, value: string) {
+    setRequested((current) => ({
+      ...current,
+      [name]: value,
+      ...(name === "series"
+        ? { presentation: "", units: "" }
+        : name === "presentation"
+          ? { units: "" }
+          : {}),
+    }));
+    bubble.current?.remove();
+    setPopup(null);
+  }
   const current = useRef<MapData | null>(null);
   current.current = data.data;
   useEffect(() => {
@@ -139,6 +198,25 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
         attributionControl: { compact: true },
       });
       map.current = m;
+      showPopup.current = (points, title, coords) => {
+        bubble.current?.remove();
+        const node = document.createElement("div");
+        node.className = "map-price-popup";
+        const next = new lib.Popup({
+          anchor: "bottom",
+          maxWidth: "340px",
+          closeOnClick: false,
+          offset: 12,
+        })
+          .setLngLat(coords)
+          .setDOMContent(node)
+          .addTo(m);
+        bubble.current = next;
+        setPopup({ node, points, title });
+        next.on("close", () =>
+          setPopup((old) => (old?.node === node ? null : old)),
+        );
+      };
       m.addControl(
         new lib.NavigationControl({ showCompass: false }),
         "top-right",
@@ -227,20 +305,38 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
                 zoom: Math.min(12, m.getZoom() + 2),
               });
             }
-            const d = points[0].properties?.region;
-            if (d) setRegion(d);
-            if (points[0].properties?.cluster) {
-              const area = m.queryRenderedFeatures(e.point, {
-                layers: ["department-fill"],
-              })[0];
-              if (area) setRegion(area.properties?.NOMBRE_DPT || "");
+            if (!points[0].properties?.cluster) {
+              const hit = current.current?.points.find(
+                (p) => p.id === points[0].properties?.id,
+              );
+              if (hit) {
+                const coincident = current.current!.points.filter(
+                  (p) =>
+                    p.latitude === hit.latitude &&
+                    p.longitude === hit.longitude,
+                );
+                showPopup.current(coincident, hit.region, [
+                  hit.longitude,
+                  hit.latitude,
+                ]);
+              }
             }
             return;
           }
           const area = m.queryRenderedFeatures(e.point, {
             layers: ["department-fill"],
           })[0];
-          if (area) setRegion(area.properties?.NOMBRE_DPT || "");
+          if (area) {
+            const name = area.properties?.NOMBRE_DPT || "";
+            const found =
+              current.current?.points.filter(
+                (p) =>
+                  fold(p.region) === fold(name) ||
+                  (p.department_id === "11" &&
+                    name === "SANTAFE DE BOGOTA D.C"),
+              ) || [];
+            showPopup.current(found, name, [e.lngLat.lng, e.lngLat.lat]);
+          }
         });
         m.fitBounds(
           [
@@ -254,24 +350,48 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
       m.on("error", () => {
         if (live && !m.isStyleLoaded())
           setFailure(
-            "No se pudo cargar el mapa. Las referencias siguen disponibles en la lista.",
+            "No se pudo cargar el mapa. Puedes abrir los precios con el selector de departamento.",
           );
       });
     })().catch(() => {
       if (live)
         setFailure(
-          "Este dispositivo no pudo abrir el mapa. Puedes consultar las referencias en la lista.",
+          "Este dispositivo no pudo abrir el mapa. Cierra esta ventana para consultar los precios.",
         );
     });
     return () => {
       live = false;
+      bubble.current?.remove();
       map.current?.remove();
       map.current = null;
     };
   }, []);
   useEffect(() => {
+    if (!popup || !bubble.current || !map.current) return;
+    const frame = requestAnimationFrame(() => {
+      const m = map.current,
+        panel = bubble.current;
+      if (!m || !panel || !popup.node.isConnected) return;
+      m.resize();
+      const height =
+        popup.node.parentElement?.getBoundingClientRect().height ||
+        popup.node.offsetHeight;
+      const mapHeight = m.getContainer().clientHeight;
+      m.easeTo({
+        center: panel.getLngLat(),
+        zoom: Math.max(6, m.getZoom()),
+        offset: [0, Math.min(mapHeight / 2 - 30, (height + 24) / 2)],
+        duration: 250,
+      });
+      panel.setLngLat(panel.getLngLat());
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [popup]);
+  useEffect(() => {
     const m = map.current;
     if (!ready || !m || !boundaries.current || !data.data) return;
+    bubble.current?.remove();
+    setPopup(null);
     const groups = new Map<string, number[]>();
     for (const p of data.data.points) {
       groups.set(p.department_id, [
@@ -304,7 +424,7 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
     (m.getSource("markets") as GeoJSONSource).setData({
       type: "FeatureCollection",
       features:
-        kind === "input"
+        kind === "input" && requested.scope !== "municipality"
           ? []
           : data.data.points.map((p) => ({
               type: "Feature",
@@ -316,13 +436,6 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
             })),
     });
   }, [data.data, ready, mode, selected, kind]);
-  const matches =
-    data.data?.points.filter(
-      (p) =>
-        !region ||
-        fold(p.region) === fold(region) ||
-        (p.department_id === "11" && region === "SANTAFE DE BOGOTA D.C"),
-    ) || [];
   const regions = Array.from(
     new Set(data.data?.points.map((p) => p.region) || []),
   ).sort();
@@ -347,13 +460,154 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
           }}
           options={options}
           onSelect={(o) => {
+            bubble.current?.remove();
+            setPopup(null);
             setSelected(o.id);
             setRegion("");
+            setRequested(kind === "input" ? requested : {});
           }}
         />
         {kind !== "input" && <DetailTabs mode={mode} onChange={setMode} />}
       </div>
-      <div className="map-layout">
+      {mode === "price" && data.data?.options && (
+        <div className="map-price-filters">
+          <label className="form-field">
+            Tipo de precio
+            <select
+              aria-label="Tipo de precio en mapa"
+              value={filters.series}
+              onChange={(e) => changeFilter("series", e.target.value)}
+            >
+              {data.data.options.series.map((s) => (
+                <option key={s} value={s}>
+                  {priceSeriesLabel[s]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="form-field">
+            Presentación
+            <select
+              aria-label="Presentación en mapa"
+              value={filters.presentation}
+              onChange={(e) => changeFilter("presentation", e.target.value)}
+            >
+              {data.data.options.presentations.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </label>
+          <label className="form-field">
+            Unidades
+            <select
+              aria-label="Unidades en mapa"
+              value={filters.units}
+              onChange={(e) => changeFilter("units", e.target.value)}
+            >
+              {data.data.options.units.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
+      <AppliedFilters
+        items={[
+          {
+            label: "Producto",
+            value:
+              data.data?.selection_label ||
+              options.find((o) => o.id === selected)?.label ||
+              search ||
+              (selected ? "Referencia seleccionada" : "Todos"),
+          },
+          {
+            label: "Datos",
+            value:
+              mode === "supply"
+                ? "Abastecimiento"
+                : priceSeriesLabel[filters.series || ""] || "Precios",
+          },
+          {
+            label: "Presentación",
+            value: mode === "price" ? filters.presentation || "" : "",
+          },
+          {
+            label: "Unidades",
+            value: mode === "price" ? filters.units || "" : "",
+          },
+          {
+            label: "Mercado",
+            value:
+              kind === "input"
+                ? ""
+                : mode === "price"
+                  ? data.data?.options?.markets.find(
+                      (m) => m.id === filters.market,
+                    )?.name || "Todos"
+                  : "Todos",
+          },
+          { label: "Departamento", value: filters.region || "Colombia" },
+          { label: "Categoría", value: filters.category || "" },
+          { label: "Búsqueda", value: filters.query || "" },
+          {
+            label: "Municipio",
+            value: kind === "input" ? filters.municipality || "" : "",
+          },
+          {
+            label: "Cobertura",
+            value:
+              kind === "input"
+                ? filters.scope === "municipality"
+                  ? "Municipio"
+                  : "Promedio departamental"
+                : "",
+          },
+        ]}
+      />
+      <div className="map-summary">
+        <label className="form-field">
+          Abrir precios de un departamento
+          <select
+            value={region}
+            onChange={(e) => {
+              const value = e.target.value;
+              setRegion(value);
+              const found =
+                data.data?.points.filter((p) => !value || p.region === value) ||
+                [];
+              if (found.length) {
+                const first = found[0];
+                showPopup.current(found, value || "Colombia", [
+                  first.longitude,
+                  first.latitude,
+                ]);
+              }
+            }}
+          >
+            <option value="">Toca un punto o departamento</option>
+            {regions.map((r) => (
+              <option key={r}>{r}</option>
+            ))}
+          </select>
+        </label>
+        <p>{data.data?.basis}</p>
+      </div>
+      {data.loading ? (
+        <p role="status">Consultando el mapa…</p>
+      ) : data.error ? (
+        <ErrorState message={data.error} retry={data.retry} />
+      ) : !data.data?.points.length ? (
+        <p className="empty-state">
+          No hay precios con ubicación para estos filtros.
+        </p>
+      ) : (
+        <p className="map-hint">
+          {data.data.points.length} referencias · Toca un punto o departamento
+          para abrir sus precios.
+        </p>
+      )}
+      <div className="map-layout map-popup-layout">
         <div className="map-stage">
           <div
             className="colombia-map"
@@ -373,11 +627,13 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
                 { padding: 28 },
               );
               setRegion("");
+              bubble.current?.remove();
+              setPopup(null);
             }}
           >
             Toda Colombia
           </button>
-          <div className="map-legend">
+          <div className="map-legend" hidden={Boolean(popup)}>
             <span className="map-scale" />
             Menor · Mayor
             <span className="map-no-data" />
@@ -389,61 +645,43 @@ function MapView({ kind, initialId }: { kind: Kind; initialId?: string }) {
             </p>
           )}
         </div>
-        <aside className="map-results">
-          <label className="form-field">
-            Departamento
-            <select value={region} onChange={(e) => setRegion(e.target.value)}>
-              <option value="">Toda Colombia</option>
-              {region && !regions.includes(region) && <option>{region}</option>}
-              {regions.map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-            </select>
-          </label>
-          <h3>{matches.length} referencias</h3>
-          <p className="field-help">{data.data?.basis}</p>
-          {data.loading ? (
-            <p role="status">Consultando el mapa…</p>
-          ) : data.error ? (
-            <ErrorState message={data.error} retry={data.retry} />
-          ) : (
-            <div className="map-reference-list">
-              {matches.slice(0, 80).map((p) => (
-                <article key={p.id}>
-                  <strong>{p.name}</strong>
-                  <span>
-                    {display(p)} <small>{p.unit}</small>
-                  </span>
-                  <small>{p.date && dateLabel(p.date, true)}</small>
-                  {kind !== "input" ? (
-                    <a href={"/market/" + p.id}>Abrir mercado →</a>
-                  ) : (
-                    <EvidenceLink
-                      id={p.document_id}
-                      input={selected}
-                      department={p.region}
-                    >
-                      Ver fuente
-                    </EvidenceLink>
-                  )}
-                </article>
-              ))}
-              {!matches.length && (
-                <p>
-                  No hay datos publicados para esta selección. Prueba otro
-                  producto o departamento.
-                </p>
+      </div>
+      {popup &&
+        createPortal(
+          <>
+            <h3>{popup.title}</h3>
+            <div className="map-popup-quotes">
+              {popup.points.length ? (
+                popup.points
+                  .slice()
+                  .sort((a, b) => b.value - a.value)
+                  .map((p) => (
+                    <article key={p.id}>
+                      <strong>{p.name}</strong>
+                      <span className="map-popup-price">{display(p)}</span>
+                      <small>{p.unit}</small>
+                      <small>{p.date && dateLabel(p.date, true)}</small>
+                      {kind !== "input" && (
+                        <a href={"/market/" + p.id}>Abrir mercado →</a>
+                      )}
+                      <EvidenceLink
+                        id={p.document_id}
+                        page={p.source_page}
+                        locator={p.source_locator}
+                        input={kind === "input" ? selected : undefined}
+                        department={kind === "input" ? p.region : undefined}
+                      >
+                        Consultar fuente
+                      </EvidenceLink>
+                    </article>
+                  ))
+              ) : (
+                <p>No hay precios publicados para esta selección.</p>
               )}
             </div>
-          )}
-          {kind !== "input" && (
-            <p className="privacy-note">
-              Los puntos indican el municipio, no la dirección exacta de cada
-              mercado.
-            </p>
-          )}
-        </aside>
-      </div>
+          </>,
+          popup.node,
+        )}
     </div>
   );
 }
