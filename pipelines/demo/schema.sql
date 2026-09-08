@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS import_run (
 );
 CREATE OR REPLACE FUNCTION enforce_demo_window() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
- IF NEW.observed_on <= ((CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date-interval '12 months')::date OR NEW.observed_on>(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date THEN
-  RAISE EXCEPTION 'Observation outside rolling 12-month demo window';
+ IF NEW.observed_on>(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date THEN
+  RAISE EXCEPTION 'Observation cannot be in the future';
  END IF;
  RETURN NEW;
 END $$;

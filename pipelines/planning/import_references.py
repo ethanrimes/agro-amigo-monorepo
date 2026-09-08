@@ -79,7 +79,6 @@ def prices(cur):
  seasonal=[]
  for (pid,mid,y),months in years.items():
   if len(months)==12 and (pid,mid,y) not in conflicts:seasonal.append((pid,mid,y,Jsonb([months[m] for m in range(1,13)]),books[y],Jsonb([locators[(pid,mid,y)][m] for m in range(1,13)])))
- cur.execute('DELETE FROM seasonal_year WHERE reference_year<%s OR reference_year>=%s',(TODAY.year-5,TODAY.year))
  cur.executemany('INSERT INTO seasonal_year VALUES (%s,%s,%s,%s,%s,%s) ON CONFLICT(product_id,market_id,reference_year) DO UPDATE SET monthly_prices=excluded.monthly_prices,document_id=excluded.document_id,source_rows=excluded.source_rows',seasonal)
  for pid,obs in current.items():
   obs.sort(key=lambda r:(-r['date'].toordinal(),r['market_name']));parents=sorted({books[r['year']] for r in obs})

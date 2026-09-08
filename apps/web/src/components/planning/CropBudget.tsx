@@ -13,7 +13,8 @@ import type {
   FarmProfile,
   Seasonality,
 } from "@/lib/planning-types";
-import type { Catalog, MarketPrice } from "@/lib/market-types";
+import type { MarketPrice } from "@/lib/market-types";
+import type { UnifiedCatalog } from "@/lib/catalog-types";
 import { money, number, dateLabel } from "@/lib/market-types";
 import {
   fold,
@@ -93,10 +94,19 @@ export function CropBudget({
     [days, setDays] = useState(""),
     [status, setStatus] = useState(""),
     [saved, setSaved] = useState<Record<string, unknown>[]>([]);
-  const catalog = useData<Catalog>("/api/catalog");
+  const catalog = useData<UnifiedCatalog>("/api/catalog");
   const products = useMemo(
     () =>
       catalog.data?.products.filter((p) => {
+        // This budget prices kilograms through the COP monthly SIPSA history.
+        // Package and official reference quotes require a different conversion basis.
+        if (
+          p.kind !== "product" ||
+          p.currency !== "COP" ||
+          p.unit !== "kg" ||
+          p.series !== "monthly"
+        )
+          return false;
         const name = fold(p.name),
           c = fold(crop.crop);
         if (c === "arroz" || c === "cana panelera") return false; // Paddy / cane cannot be priced as milled rice / panela.
@@ -124,14 +134,18 @@ export function CropBudget({
       products[0]?.id ||
       "";
   const detail = useData<{ markets: MarketPrice[] }>(
-    resolvedProduct && !coffee ? "/api/products/" + resolvedProduct : null,
+    resolvedProduct && !coffee
+      ? "/api/products/" + resolvedProduct + "?series=monthly"
+      : null,
   );
-  const marketOptions = [...(detail.data?.markets || [])].sort(
-    (a, b) =>
-      (fold(a.region) === fold(data.municipality.department) ? 0 : 1) -
-        (fold(b.region) === fold(data.municipality.department) ? 0 : 1) ||
-      a.name.localeCompare(b.name, "es"),
-  );
+  const marketOptions = (detail.data?.markets || [])
+    .filter((m) => m.unit === "kg")
+    .sort(
+      (a, b) =>
+        (fold(a.region) === fold(data.municipality.department) ? 0 : 1) -
+          (fold(b.region) === fold(data.municipality.department) ? 0 : 1) ||
+        a.name.localeCompare(b.name, "es"),
+    );
   const selectedMarket =
     marketOptions.find((m) => m.id === marketId) || marketOptions[0];
   const seasonal = useData<Seasonality>(
@@ -139,9 +153,13 @@ export function CropBudget({
       ? `/api/planning/seasonality?product=${encodeURIComponent(resolvedProduct)}&market=${encodeURIComponent(coffee ? "fnc-national" : selectedMarket!.id)}`
       : null,
   );
-  const historical = seasonal.data
-    ? seasonalPrices(seasonal.data, month)
-    : null;
+  // The dedicated FNC seasonality endpoint already divides the 125 kg carga by 125.
+  const historyUnitValid =
+    seasonal.data?.unit === (coffee ? "kg de pergamino seco" : "kg");
+  const historical =
+    seasonal.data && historyUnitValid
+      ? seasonalPrices(seasonal.data, month)
+      : null;
   const templates = data.templates.filter(
     (t) => fold(t.crop) === fold(crop.crop),
   );
@@ -527,8 +545,7 @@ export function CropBudget({
                               ? {
                                   ...r,
                                   timing: e.target.value as
-                                    | "before"
-                                    | "harvest",
+                                    "before" | "harvest",
                                 }
                               : r,
                           ),
@@ -675,12 +692,18 @@ export function CropBudget({
                     gastos: ese precio no equivale al pago al agricultor.
                   </p>
                 )}
-                {seasonal.data && (
+                {seasonal.data && historyUnitValid && (
                   <SeasonalChart
                     data={seasonal.data}
                     month={month}
                     onMonth={setMonth}
                   />
+                )}
+                {seasonal.data && !historyUnitValid && (
+                  <p className="inline-note">
+                    La referencia disponible no corresponde al precio por kg de
+                    tu cosecha. Ingresa tu propio precio en COP/kg.
+                  </p>
                 )}
               </>
             ) : (

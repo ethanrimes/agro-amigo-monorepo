@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { IconType } from "react-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -8,6 +9,7 @@ import {
   IoBasketOutline,
   IoStorefrontOutline,
   IoFlaskOutline,
+  IoDocumentTextOutline,
 } from "react-icons/io5";
 import {
   ProductCard,
@@ -19,12 +21,27 @@ import { useData } from "@/components/marketplace/useData";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { useFarm } from "@/components/planning/FarmContext";
 import { photoFor } from "@/lib/images";
-import type { Catalog } from "@/lib/market-types";
+import type { UnifiedCatalog } from "@/lib/catalog-types";
+import { catalogHref, catalogMatches } from "@/lib/catalog-display";
+import sourceStyles from "./source-links.module.css";
+
+function SectionPhoto({ src, icon: Icon }: { src: string; icon: IconType }) {
+  const image = useRef<HTMLImageElement>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    // A cached image failure can occur before React attaches onError.
+    if (image.current?.complete && !image.current.naturalWidth) setFailed(true);
+  }, [src]);
+  return failed ? (
+    <span className="home-section-placeholder" aria-hidden="true"><Icon /></span>
+  ) : <img ref={image} src={src} alt="" onError={() => setFailed(true)} />;
+}
+
 export default function Home() {
   const { farm } = useFarm(),
     router = useRouter();
   const [search, setSearch] = useState("");
-  const catalog = useData<Catalog>("/api/catalog");
+  const catalog = useData<UnifiedCatalog>("/api/catalog");
   const sections = [
     {
       href: "/products",
@@ -71,12 +88,16 @@ export default function Home() {
           placeholder="¿Qué producto buscas? Café, papa, aguacate…"
           value={search}
           onChange={setSearch}
-          options={(catalog.data?.products || []).map((p) => ({
+          filterOptions={false}
+          options={(catalog.data?.products || []).filter((p) => catalogMatches(p, search)).map((p) => ({
             id: p.id,
             label: p.name,
-            detail: p.category,
+            detail: [p.category, p.currency, p.basis].filter(Boolean).join(" · "),
           }))}
-          onSelect={(p) => router.push("/product/" + p.id)}
+          onSelect={(option) => {
+            const product = catalog.data?.products.find((p) => p.id === option.id);
+            if (product) router.push(catalogHref(product, "/products?q=" + encodeURIComponent(search)));
+          }}
           onSubmit={() =>
             router.push("/products?q=" + encodeURIComponent(search))
           }
@@ -85,7 +106,7 @@ export default function Home() {
       <div className="home-sections">
         {sections.map(({ href, label, detail, photo, icon: Icon }) => (
           <Link key={href} href={href} className="home-section">
-            <img src={photo} alt="" />
+            <SectionPhoto src={photo} icon={Icon} />
             <div>
               <Icon />
               <h2>{label}</h2>
@@ -125,13 +146,14 @@ export default function Home() {
           ))}
         </div>
       )}
-      <div className="home-source">
-        <strong>Información que puedes comprobar.</strong>
-        <span>
-          Abre la fuente junto a cada dato para consultar el documento.
-        </span>
-        <Link href="/sources">Conocer las fuentes →</Link>
-      </div>
+      <section className={sourceStyles.sourceCard} aria-label="Fuentes de la información">
+        <IoDocumentTextOutline aria-hidden="true" />
+        <div>
+          <h2>Consulta de dónde viene cada dato</h2>
+          <p>Junto a los precios, mapas y pronósticos encontrarás su fuente, fecha y documento original.</p>
+          <Link href="/sources">Conocer las fuentes <span aria-hidden="true">→</span></Link>
+        </div>
+      </section>
     </>
   );
 }

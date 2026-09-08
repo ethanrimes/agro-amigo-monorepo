@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IoRainyOutline,
   IoThermometerOutline,
@@ -22,6 +22,7 @@ import {
   type ForecastGrid,
 } from "@/lib/location-types";
 import type { Weather } from "@/lib/planning-types";
+import { MapPlaceSearch } from "./MapPlaceSearch";
 const CATEGORIES: {
   id: LayerKey;
   label: string;
@@ -169,7 +170,7 @@ function PointForecast({
                 </div>
               ))}
             </div>
-            <EvidenceLink id={w.data.id}>
+            <EvidenceLink id={`weather-${w.data.id}`}>
               Ver pronóstico conservado y unidades
             </EvidenceLink>
             <p className="field-help">
@@ -190,10 +191,12 @@ export function ZoneExplorer({
   pin,
   focus,
   onPin,
+  onExplore,
 }: {
   pin: LocationPoint | null;
   focus: LocationPoint | null;
   onPin: (p: LocationPoint) => void;
+  onExplore: (p: LocationPoint) => void;
 }) {
   const layers = useData<SpatialLayer[]>("/api/location/layers");
   const [category, setCategory] = useState<LayerKey>("rain"),
@@ -213,6 +216,9 @@ export function ZoneExplorer({
       point: LocationPoint;
       step: number;
     } | null>(null);
+  useEffect(() => {
+    setInspection(null);
+  }, [pin?.latitude, pin?.longitude]);
   const climate = category === "rain" || category === "temperature",
     forecastMode = category === "risk" || (climate && horizon === "forecast");
   const selected = forecastMode
@@ -321,6 +327,10 @@ export function ZoneExplorer({
       {layers.error && (
         <ErrorState message={layers.error} retry={layers.retry} />
       )}
+      <MapPlaceSearch onSelect={place => {
+        setInspection(place);
+        onExplore({ latitude: place.latitude, longitude: place.longitude });
+      }} />
       <LocationMap
         pin={pin}
         focus={focus}

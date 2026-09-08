@@ -4,11 +4,13 @@
 **/.env.local
 **/.env.*.local
 .azure-local/
+/gemini-api-key
 .mcp.json
 .claude/
 # Dependencies, builds, generated assets and verification output
 node_modules/
 .next/
+.next-*/
 .venv/
 __pycache__/
 *.pyc
@@ -31,3 +33,4 @@ pastes
 apps/web/public/release.json
 
 apps/web/public/maplibre/
+**/.next-dev/

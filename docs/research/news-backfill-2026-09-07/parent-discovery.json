@@ -1,0 +1,126 @@
+{
+  "note": "Search attempts only; no claim of exhaustive archive coverage or in-window publication.",
+  "coverage": [
+    {
+      "source": "IDEAM",
+      "query": "site:ideam.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "ideam.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "UNGRD",
+      "query": "site:gestiondelriesgo.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "gestiondelriesgo.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "INVÍAS",
+      "query": "site:invias.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "invias.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "DANE",
+      "query": "site:dane.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "dane.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "ADR",
+      "query": "site:adr.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "adr.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "ANT",
+      "query": "site:ant.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "ant.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "FINAGRO",
+      "query": "site:finagro.com.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "finagro.com.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "Banco Agrario",
+      "query": "site:bancoagrario.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "bancoagrario.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "MinComercio",
+      "query": "site:mincit.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "mincit.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "ProColombia",
+      "query": "site:procolombia.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "procolombia.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "ANI",
+      "query": "site:ani.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "ani.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    },
+    {
+      "source": "SIC",
+      "query": "site:sic.gov.co agropecuario agricultura noticias after:2026-08-24 before:2026-09-08",
+      "domain": "sic.gov.co",
+      "method": "domain-filtered web search, partial; date operators are not proof of publication date",
+      "checked_at": "2026-09-08T04:28:11.046853+00:00",
+      "discovery_by": "parent_assistant",
+      "returned_urls": [],
+      "checked_at_precision": "batch_log_time"
+    }
+  ],
+  "logged_at": "2026-09-08T04:28:11.046853+00:00"
+}

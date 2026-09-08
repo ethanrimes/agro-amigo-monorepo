@@ -56,7 +56,7 @@ const sources = [
     subtitle: "Precios mayoristas",
     status: "Integrado",
     description:
-      "Promedios mensuales por producto y mercado, más un boletín diario separado para decisiones próximas. Se muestran en pesos colombianos por kilogramo. La fecha corresponde al cierre del mes observado, no a una cotización de hoy.",
+      "Promedios mensuales, boletines diarios y PDFs de informes por ciudades. Cada precio conserva la presentación y su contenido en kg, litros o unidades; los rangos por empaque y los promedios se distinguen. Incluye leche en finca y arroz en molino.",
     url: "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-mensual-1",
   },
   {
@@ -154,6 +154,7 @@ export default function Sources() {
         </p>
         <EvidenceLink id="planning-method">Ver el método completo</EvidenceLink>
       </section>
+      <p><Link className="button secondary" href="/references">Consultar otras fuentes oficiales de precios →</Link></p>
       <SourceLibrary />
       <section className="faq">
         <h2>Preguntas del campo</h2>

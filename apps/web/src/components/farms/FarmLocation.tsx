@@ -50,7 +50,7 @@ export function FarmLocation({
   const locate = () => {
     if (!navigator.geolocation) {
       setMessage(
-        "Este dispositivo no ofrece GPS. Pon el pin en el mapa o ingresa las coordenadas.",
+        "Este dispositivo no ofrece GPS. Acerca el mapa y pon el pin en tu finca.",
       );
       return;
     }

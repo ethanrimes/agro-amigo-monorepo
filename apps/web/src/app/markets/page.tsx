@@ -7,6 +7,7 @@ import { useData } from "@/components/marketplace/useData";
 import { usePreferences } from "@/components/marketplace/Preferences";
 import { ErrorState, LoadingCards } from "@/components/marketplace/Shared";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { MapButton } from "@/components/explore/ColombiaMap";
 import { fold } from "@/lib/planning-math";
 import { dateLabel } from "@/lib/market-types";
@@ -34,7 +35,12 @@ export default function Markets() {
           <h1>Mercados</h1>
           <p>Consulta qué productos llegan y cómo están sus precios.</p>
         </div>
-        <MapButton kind="market" />
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <Link href="/compare/markets" className="button secondary">
+            Comparar mercados
+          </Link>
+          <MapButton kind="market" />
+        </div>
       </div>
       <div className="catalog-controls">
         <SearchBox
@@ -75,6 +81,12 @@ export default function Markets() {
           </select>
         </label>
       </div>
+      <AppliedFilters
+        items={[
+          { label: "Departamento", value: region || "Toda Colombia" },
+          { label: "Búsqueda", value: query, clear: () => setQuery("") },
+        ]}
+      />
       {loading ? (
         <LoadingCards />
       ) : error ? (

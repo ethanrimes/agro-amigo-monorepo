@@ -302,11 +302,6 @@ h3 {
   border-color: #c7d0c0;
   box-shadow: none;
 }
-.product-card:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: #7b9971;
-}
 .product-image-link {
   height: 168px;
 }

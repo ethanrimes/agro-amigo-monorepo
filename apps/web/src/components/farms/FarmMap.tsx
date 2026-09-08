@@ -67,7 +67,7 @@ export function FarmMap({
       .catch(() => {
         if (live)
           setError(
-            "No pudimos abrir el mapa. Puedes usar el GPS o ingresar las coordenadas.",
+            "No pudimos abrir el mapa. Puedes usar tu ubicación GPS o volver a intentar cuando tengas conexión.",
           );
       });
     return () => {

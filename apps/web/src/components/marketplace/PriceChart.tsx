@@ -9,14 +9,11 @@ export function PriceChart({
   points: Point[];
   label: string;
   unit?: string;
+  allowAll?: boolean;
 }) {
-  const [months, setMonths] = useState(12);
   const [hover, setHover] = useState<number | null>(null);
   const id = useId().replace(/:/g, "");
-  const end = points.at(-1)?.date;
-  const cutoff = end ? new Date(end + "T12:00:00Z") : new Date();
-  cutoff.setUTCMonth(cutoff.getUTCMonth() - months);
-  const data = points.filter((p) => new Date(p.date + "T12:00:00Z") >= cutoff);
+  const data = points;
   const values = data.map((p) => p.price);
   const low = Math.min(...values) * 0.94;
   const high = Math.max(...values) * 1.04;
@@ -38,23 +35,9 @@ export function PriceChart({
               : unit}
           </p>
         </div>
-        <div className="chart-tabs">
-          {[3, 6, 12].map((m) => (
-            <button
-              key={m}
-              className={months === m ? "active" : ""}
-              aria-pressed={months === m}
-              onClick={() => {
-                setMonths(m);
-                setHover(null);
-              }}
-            >
-              {m} meses
-            </button>
-          ))}
-        </div>
+
       </div>
-      {data.length > 1 ? (
+      {data.length ? (
         <>
           <svg
             className="price-chart"
@@ -132,12 +115,17 @@ export function PriceChart({
                   </tr>
                 </thead>
                 <tbody>
-                  {data.map((p) => (
-                    <tr key={p.date}>
-                      <td>{dateLabel(p.date)}</td>
-                      <td>{money(p.price)}</td>
-                    </tr>
-                  ))}
+                  {[...data]
+                    .sort(
+                      (a, b) =>
+                        b.price - a.price || b.date.localeCompare(a.date),
+                    )
+                    .map((p) => (
+                      <tr key={p.date}>
+                        <td>{dateLabel(p.date)}</td>
+                        <td>{money(p.price)}</td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
-import { money, dateLabel } from "@/lib/market-types";
+import { money, dateLabel, unitLabel } from "@/lib/market-types";
 import { fold } from "@/lib/planning-math";
 type Daily = {
   observed_on: string;
   product_name: string;
   market_name: string;
   price: number;
+  unit: string;
   change_percent: number | null;
   document_id: string;
   source_page: number;
@@ -46,10 +47,11 @@ export default function DailyPage() {
             {data?.[0]
               ? dateLabel(data[0].observed_on)
               : "Consulta la fecha de publicación"}{" "}
-            · COP por kilogramo
+            · COP por unidad indicada
           </p>
         </div>
       </div>
+      <p><Link className="button primary" href="/regional">Ver informes por ciudades: rangos, empaques y rondas →</Link></p>
       <section className="panel">
         <p>
           Precios mayoristas reportados ese día. Confirma el pago en finca, la
@@ -101,7 +103,7 @@ export default function DailyPage() {
                 <span className="eyebrow">{r.market_name}</span>
                 <h2>{r.product_name}</h2>
                 <strong className="input-price">
-                  {money(r.price)} <small>/ kg</small>
+                  {money(r.price)} <small>/ {unitLabel(r.unit)}</small>
                 </strong>
                 <p>
                   {r.change_percent === null

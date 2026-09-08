@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
         Button retry = new Button(this); retry.setText("Volver a intentar"); retry.setOnClickListener(v->web.loadUrl(lastPage)); error.addView(retry); body.addView(error,new FrameLayout.LayoutParams(-1,-1)); error.setVisibility(View.GONE);
         setContentView(root);
         WebSettings settings = web.getSettings(); settings.setJavaScriptEnabled(true); settings.setDomStorageEnabled(true); settings.setAllowFileAccess(false); settings.setAllowContentAccess(false); settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW); settings.setGeolocationEnabled(true); settings.setSafeBrowsingEnabled(true); settings.setSupportMultipleWindows(false); settings.setUserAgentString(settings.getUserAgentString()+" AgroAmigoAndroid/1.0");
+        settings.setSupportZoom(false); settings.setBuiltInZoomControls(false); settings.setDisplayZoomControls(false);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         web.setWebChromeClient(new WebChromeClient(){

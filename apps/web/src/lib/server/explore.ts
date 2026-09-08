@@ -9,12 +9,15 @@ import type {
   MapPoint,
 } from "../explore-types";
 import { inputs } from "./planning";
+import { PRICE_QUOTES, filteredProduct } from "./price-quotes";
+import type { MapFilters } from "../explore-types";
 export async function markets(): Promise<Market[]> {
   return (
-    await database().query(`SELECT m.*,u.latitude,u.longitude,u.department_id,
+    await database()
+      .query(`WITH quotes AS (${PRICE_QUOTES}) SELECT m.*,u.latitude,u.longitude,u.department_id,
     coalesce(p.product_count,0) AS product_count,p.date,s.supply_date
     FROM market m LEFT JOIN municipality u ON u.id=m.municipality_id
-    LEFT JOIN (SELECT market_id,count(DISTINCT product_id) product_count,max(observed_on) date FROM price_observation WHERE ${WINDOW} GROUP BY market_id) p ON p.market_id=m.id
+    LEFT JOIN (SELECT market_id,count(DISTINCT product_id) product_count,max(observed_on) date FROM quotes WHERE ${WINDOW} GROUP BY market_id) p ON p.market_id=m.id
     LEFT JOIN (SELECT market_id,max(observed_on) supply_date FROM supply_observation WHERE ${WINDOW} GROUP BY market_id) s ON s.market_id=m.id
     WHERE p.market_id IS NOT NULL OR s.market_id IS NOT NULL ORDER BY product_count DESC,m.name`)
   ).rows;
@@ -26,7 +29,7 @@ export async function marketDetail(id: string): Promise<MarketDetail | null> {
     await database().query(
       `SELECT DISTINCT ON(p.id) p.*,o.price,o.observed_on AS date,o.unit,o.period,o.document_id,o.source_locator,
     NULL AS previous_price,1 AS market_count,CASE WHEN o.source_id='fnc' THEN 'FNC' ELSE 'DANE · SIPSA' END AS source
-    FROM price_observation o JOIN product p ON p.id=o.product_id WHERE market_id=$1 AND ${WINDOW} ORDER BY p.id,o.observed_on DESC`,
+    FROM published_price_observation o JOIN product p ON p.id=o.product_id WHERE market_id=$1 AND ${WINDOW} ORDER BY p.id,o.observed_on DESC`,
       [id],
     )
   ).rows;
@@ -35,15 +38,26 @@ export async function marketDetail(id: string): Promise<MarketDetail | null> {
 export async function inputDetail(
   id: string,
   department: string,
+  scope = "department",
+  municipality = "",
+  historical = false,
 ): Promise<InputDetail | null> {
   const db = database();
-  const regions = (await inputs("")).filter((r) => r.id === id);
+  const regions = await inputs("", scope, historical, id, false);
   if (!regions.length) return null;
-  const input = regions.find((r) => r.department === department) || regions[0];
+  const input =
+    regions.find(
+      (r) =>
+        r.department === department &&
+        (!municipality || r.municipality === municipality),
+    ) || regions[0];
+  const municipal = scope === "municipality";
   const history = (
     await db.query(
-      `SELECT observed_on AS date,price FROM input_price WHERE id=$1 AND department=$2 AND ${WINDOW} ORDER BY observed_on`,
-      [id, input.department],
+      `SELECT observed_on AS date,price FROM ${municipal ? "published_input_municipal_price" : "published_input_price"} WHERE id=$1 AND department=$2 ${municipal ? "AND municipality=$3" : ""} AND ${historical ? "observed_on<=CURRENT_DATE" : WINDOW} ORDER BY observed_on`,
+      municipal
+        ? [id, input.department, input.municipality]
+        : [id, input.department],
     )
   ).rows;
   return { input, regions, history };
@@ -52,11 +66,13 @@ export async function supply(
   product: string,
   market: string,
   month: string,
+  historical = false,
 ): Promise<SupplyData> {
   const db = database();
+  const window = historical ? "observed_on<=CURRENT_DATE" : WINDOW;
   const history = (
     await db.query(
-      `SELECT period_start AS date,sum(quantity_kg) quantity_kg FROM supply_observation WHERE ($1='' OR product_id=$1) AND ($2='' OR market_id=$2) AND ${WINDOW} GROUP BY period_start ORDER BY period_start`,
+      `SELECT period_start AS date,sum(quantity_kg) quantity_kg FROM supply_observation WHERE ($1='' OR product_id=$1) AND ($2='' OR market_id=$2) AND ${window} GROUP BY period_start ORDER BY period_start`,
       [product, market],
     )
   ).rows;
@@ -68,7 +84,7 @@ export async function supply(
     return { rows: [], history, latest_period, selected_period };
   const rows = (
     await db.query(
-      `SELECT s.market_id,m.name market_name,m.region,s.food_id,s.food_name,s.product_id,s.period_start,s.observed_on,s.first_reported_on,s.quantity_kg,s.document_id,s.reporting_days FROM supply_observation s JOIN market m ON m.id=s.market_id WHERE ($1='' OR product_id=$1) AND ($2='' OR market_id=$2) AND period_start=$3 AND ${WINDOW} ORDER BY quantity_kg DESC`,
+      `SELECT s.market_id,m.name market_name,m.region,s.food_id,s.food_name,s.product_id,s.period_start,s.observed_on,s.first_reported_on,s.quantity_kg,s.document_id,s.reporting_days FROM supply_observation s JOIN market m ON m.id=s.market_id WHERE ($1='' OR product_id=$1) AND ($2='' OR market_id=$2) AND period_start=$3 AND ${window} ORDER BY quantity_kg DESC`,
       [product, market, selected_period],
     )
   ).rows;
@@ -78,21 +94,46 @@ export async function mapData(
   kind: string,
   id: string,
   mode: string,
+  filters: MapFilters = {},
 ): Promise<MapData> {
   const db = database();
   let points: MapPoint[] = [];
   let unit = "referencias";
+  let resolved: Pick<MapData, "filters" | "options" | "selection_label"> = {};
   if (kind === "input") {
-    unit = "COP / presentación";
-    const rows = (
-      await db.query(
-        `SELECT DISTINCT ON(department) department,price,observed_on AS date,document_id FROM input_price WHERE id=$1 AND ${WINDOW} ORDER BY department,observed_on DESC`,
-        [id],
-      )
-    ).rows;
+    const municipal = filters.scope === "municipality";
+    const scope = municipal ? "municipality" : "department";
+    const rows = id
+      ? (
+          await inputs(
+            filters.region || "",
+            scope,
+            filters.history === "all",
+            id,
+            false,
+          )
+        ).filter(
+          (r) =>
+            !municipal ||
+            !filters.municipality ||
+            r.municipality === filters.municipality,
+        )
+      : [];
+    unit = "COP / " + (rows[0]?.presentation || "presentación");
+    resolved = {
+      selection_label: rows[0]
+        ? rows[0].name + " · " + rows[0].presentation
+        : undefined,
+      filters: {
+        ...filters,
+        scope,
+        history: filters.history === "all" ? "all" : "recent",
+        presentation: rows[0]?.presentation || "",
+      },
+    };
     const places = (
       await db.query(
-        `SELECT DISTINCT ON(department_id) department_id,department,latitude,longitude FROM municipality ORDER BY department_id,id`,
+        `SELECT id,name,department_id,department,latitude,longitude FROM municipality ORDER BY id`,
       )
     ).rows;
     const fold = (s: string) =>
@@ -101,20 +142,29 @@ export async function mapData(
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
     points = rows.flatMap((r) => {
-      const p = places.find((p) => fold(p.department) === fold(r.department));
-      return p
+      const candidates = places.filter(
+        (p) =>
+          fold(p.department) === fold(r.department) &&
+          (!municipal || fold(p.name) === fold(r.municipality)),
+      );
+      const p = candidates[0];
+      return p && p.latitude !== null && p.longitude !== null
         ? [
             {
-              id: p.department_id,
-              name: r.department,
+              id: municipal ? p.id : p.department_id,
+              name: municipal
+                ? r.municipality + ", " + r.department
+                : r.department,
               region: r.department,
               department_id: p.department_id,
-              latitude: p.latitude,
-              longitude: p.longitude,
+              latitude: Number(p.latitude),
+              longitude: Number(p.longitude),
               value: r.price,
-              date: r.date,
+              date: r.observed_on,
               unit,
               document_id: r.document_id,
+              source_locator: r.source_locator,
+              presentation: r.presentation,
             },
           ]
         : [];
@@ -128,13 +178,36 @@ export async function mapData(
       )
     ).rows;
   } else if (id) {
-    points = (
-      await db.query(
-        `SELECT m.id,m.name,m.region,u.department_id,u.latitude,u.longitude,o.price AS value,o.observed_on AS date,CASE WHEN o.unit='125kg' THEN 'COP / carga 125 kg' ELSE 'COP / kg' END AS unit,o.document_id FROM price_observation o JOIN market m ON m.id=o.market_id JOIN municipality u ON u.id=m.municipality_id WHERE o.product_id=$1 AND ${WINDOW} AND o.observed_on=(SELECT max(observed_on) FROM price_observation WHERE product_id=$1 AND ${WINDOW})`,
-        [id],
-      )
-    ).rows;
-    unit = points[0]?.unit || "COP / kg";
+    const detail = await filteredProduct(id, filters.region || "", filters);
+    if (detail) {
+      resolved = { filters: detail.filters, options: detail.options };
+      unit = `COP / ${detail.filters.presentation} · ${detail.filters.units}`;
+      const places = (
+        await db.query(
+          `SELECT m.id,u.department_id,u.latitude,u.longitude FROM market m JOIN municipality u ON u.id=m.municipality_id WHERE m.id=ANY($1::text[])`,
+          [detail.markets.map((m) => m.id)],
+        )
+      ).rows;
+      points = detail.markets.flatMap((m) => {
+        const place = places.find((p) => p.id === m.id);
+        return place && place.latitude !== null && place.longitude !== null
+          ? [
+              {
+                ...place,
+                name: m.name,
+                region: m.region,
+                value: m.price,
+                date: m.date,
+                unit,
+                document_id: m.document_id,
+                source_page: m.source_page,
+                presentation: m.presentation,
+                units: m.units,
+              },
+            ]
+          : [];
+      });
+    }
   } else {
     points = (await markets())
       .filter((m) => m.latitude !== null && m.longitude !== null)
@@ -152,6 +225,7 @@ export async function mapData(
     unit = "productos con precio";
   }
   return {
+    ...resolved,
     points,
     unit,
     date: points.reduce<string | null>(
@@ -160,11 +234,13 @@ export async function mapData(
     ),
     basis:
       kind === "input"
-        ? "Promedios departamentales por la misma presentación."
+        ? filters.scope === "municipality"
+          ? "Precios municipales de la misma presentación; los puntos representan cabeceras municipales."
+          : "Promedios departamentales de la misma presentación; las áreas representan la cobertura del precio."
         : mode === "supply"
           ? "Llegadas reportadas en el último mes disponible; no son inventario para comprar."
           : id
-            ? "Precios del mismo producto y fecha; ubicaciones municipales de referencia."
+            ? "Último precio por mercado con el mismo producto, presentación y unidades. Cada cotización muestra su fecha; los puntos indican el municipio."
             : "Mercados con información; ubicaciones municipales de referencia.",
   };
 }

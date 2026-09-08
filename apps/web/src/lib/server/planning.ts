@@ -9,6 +9,7 @@ import type {
   Seasonality,
 } from "../planning-types";
 import { fold } from "../planning-math";
+import { CURRENT_WEATHER_KEYS, HOURLY_WEATHER_KEYS, WEATHER_REFRESH_MS, hasCurrentWeather } from "../weather-data";
 export async function municipalities() {
   return (
     await database().query<Municipality>(
@@ -75,7 +76,7 @@ export async function seasonality(
           `SELECT price/125 AS price, observed_on AS date,'FNC nacional' AS market FROM coffee_reference WHERE ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
         )
       : db.query(
-          `SELECT o.price,o.observed_on AS date,m.name AS market FROM price_observation o JOIN market m ON m.id=o.market_id WHERE product_id=$1 AND market_id=$2 AND ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
+          `SELECT o.price,o.unit,o.observed_on AS date,m.name AS market FROM published_price_observation o JOIN market m ON m.id=o.market_id WHERE product_id=$1 AND market_id=$2 AND ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
           [product, market],
         ),
     db.query(
@@ -86,19 +87,82 @@ export async function seasonality(
   return {
     latest: latest.rows[0] || null,
     years: years.rows,
-    unit: coffee ? "kg de pergamino seco" : "kg",
+    unit: coffee ? "kg de pergamino seco" : latest.rows[0]?.unit || "kg",
     method:
       "Para cada año completo se divide el precio del mes objetivo por el precio del mes de referencia, en el mismo mercado y producto. Se aplican los percentiles 25, 50 y 75 de esas razones al precio reciente. Mínimo 3 años completos. Valores nominales; no es un pronóstico de venta ni incorpora inflación futura.",
   };
 }
-export async function inputs(department: string) {
-  return (
-    await database().query(
-      `WITH latest AS (SELECT *,row_number() OVER w AS rn,lead(price) OVER w AS prev,lead(observed_on) OVER w AS prev_date FROM input_price WHERE ${WINDOW} AND ($1='' OR department=$1) WINDOW w AS(PARTITION BY id,department ORDER BY observed_on DESC)) SELECT *,CASE WHEN prev_date=(date_trunc('month',observed_on)-interval '1 day')::date THEN prev ELSE NULL END AS previous_price FROM latest WHERE rn=1 ORDER BY category,name,presentation`,
-      [department],
+/** Catalog reads select a winner before loading its previous-month price.
+ * Detail reads retain a separate newest quote for every exact location.
+ */
+async function loadInputs(
+  department: string,
+  scope = "department",
+  historical = false,
+  id = "",
+  grouped = false,
+) {
+  const municipal = scope === "municipality";
+  const table = municipal ? "input_municipal_price" : "input_price";
+  const period = historical ? "observed_on<=CURRENT_DATE" : WINDOW;
+  const locationKeys = grouped
+    ? ""
+    : `,department${municipal ? ",municipality" : ""}`;
+  const query = `WITH identities AS MATERIALIZED (
+      SELECT id${locationKeys},max(observed_on) AS latest_date FROM ${table}
+      WHERE ${period} AND ($1='' OR department=$1) AND ($2='' OR id=$2)
+      GROUP BY id${locationKeys} ORDER BY id${locationKeys}
+    ), winners AS MATERIALIZED (
+      SELECT p.*${municipal ? "" : ",''::text AS municipality"} FROM identities i
+      CROSS JOIN LATERAL (
+        SELECT p.* FROM published_${table} p WHERE p.id=i.id AND p.observed_on<=i.latest_date
+          AND ${period} AND ($1='' OR p.department=$1)
+          ${grouped ? "" : `AND p.department=i.department ${municipal ? "AND p.municipality=i.municipality" : ""}`}
+        ORDER BY p.observed_on DESC,p.price,p.department${municipal ? ",p.municipality" : ""} LIMIT 1
+      ) p
     )
-  ).rows;
+    SELECT w.*, '${municipal ? "municipality" : "department"}'::text AS scope,
+      previous.price AS previous_price,previous.observed_on AS previous_date
+    FROM winners w LEFT JOIN LATERAL (
+      SELECT p.price,p.observed_on FROM published_${table} p
+      WHERE p.id=w.id AND p.department=w.department ${municipal ? "AND p.municipality=w.municipality" : ""}
+        AND p.observed_on>=(date_trunc('month',w.observed_on)-interval '1 month')::date
+        AND p.observed_on<date_trunc('month',w.observed_on)::date AND ${period}
+      ORDER BY p.observed_on DESC LIMIT 1
+    ) previous ON TRUE
+    ORDER BY ${grouped ? "w.id" : "w.category,w.name,w.presentation,w.department,w.municipality"}`;
+  return (await database().query(query, [department, id])).rows;
 }
+
+// Match the catalog endpoint's five-minute freshness contract and share work
+// across concurrent screens. Individual input/location reads remain uncached.
+const inputCatalogCache = new Map<
+  string,
+  { expires: number; result: ReturnType<typeof loadInputs> }
+>();
+export function inputs(
+  department: string,
+  scope = "department",
+  historical = false,
+  id = "",
+  grouped = false,
+) {
+  if (!grouped) return loadInputs(department, scope, historical, id, grouped);
+  const key = JSON.stringify([department, scope, historical, id, grouped]);
+  const cached = inputCatalogCache.get(key);
+  if (cached && cached.expires > Date.now()) return cached.result;
+  if (cached) inputCatalogCache.delete(key);
+  if (inputCatalogCache.size >= 8)
+    inputCatalogCache.delete(inputCatalogCache.keys().next().value!);
+  const result = loadInputs(department, scope, historical, id, grouped);
+  inputCatalogCache.set(key, { expires: Date.now() + 300_000, result });
+  void result.catch(() => {
+    if (inputCatalogCache.get(key)?.result === result)
+      inputCatalogCache.delete(key);
+  });
+  return result;
+}
+
 const WEATHER_KEYS = [
   "weather_code",
   "temperature_2m_max",
@@ -119,8 +183,8 @@ export async function weatherFor(lat: number, lon: number): Promise<Weather> {
     lon > -66
   )
     throw new Error("INVALID_LOCATION");
-  lat = Math.round(lat * 100) / 100;
-  lon = Math.round(lon * 100) / 100;
+  lat = Math.round(lat * 1_000_000) / 1_000_000;
+  lon = Math.round(lon * 1_000_000) / 1_000_000;
   const key = `${lat},${lon}`;
   if (inflight.has(key)) return inflight.get(key)!;
   const task = loadWeather(lat, lon);
@@ -139,7 +203,7 @@ async function loadWeather(lat: number, lon: number): Promise<Weather> {
         [lat, lon],
       )
     ).rows[0];
-  if (stored && Date.now() - new Date(stored.fetched_at).getTime() < 3600000)
+  if (stored && hasCurrentWeather(stored.payload) && Date.now() - new Date(stored.fetched_at).getTime() < WEATHER_REFRESH_MS)
     return { ...stored, stale: false };
   const apiKey = process.env.OPEN_METEO_API_KEY;
   const url = new URL(
@@ -151,8 +215,13 @@ async function loadWeather(lat: number, lon: number): Promise<Weather> {
     latitude: String(lat),
     longitude: String(lon),
     daily: WEATHER_KEYS.join(","),
+    current: CURRENT_WEATHER_KEYS.join(","),
+    hourly: HOURLY_WEATHER_KEYS.join(","),
     timezone: "America/Bogota",
     forecast_days: "7",
+    temperature_unit: "celsius",
+    wind_speed_unit: "kmh",
+    precipitation_unit: "mm",
   }).toString();
   const publicURL = url.toString();
   if (apiKey) url.searchParams.set("apikey", apiKey);
@@ -167,6 +236,7 @@ async function loadWeather(lat: number, lon: number): Promise<Weather> {
     const payload = JSON.parse(raw),
       daily = payload.daily;
     if (
+      !hasCurrentWeather(payload) ||
       !daily ||
       !Array.isArray(daily.time) ||
       daily.time.length !== 7 ||
@@ -199,7 +269,8 @@ async function loadWeather(lat: number, lon: number): Promise<Weather> {
       stale: false,
     };
   } catch {
-    if (stored) return { ...stored, stale: true };
+    if (stored && Date.now() - new Date(stored.fetched_at).getTime() < 24 * 3600000)
+      return { ...stored, stale: true };
     throw new Error("WEATHER_UNAVAILABLE");
   }
 }
@@ -217,7 +288,7 @@ export async function evidence(
     if (!r) return null;
     return {
       id,
-      title: "Pronóstico consultado - Open-Meteo",
+      title: "Tiempo y pronóstico consultados - Open-Meteo",
       publisher: "Open-Meteo",
       source_url: r.source_url,
       media_type: "application/json",
@@ -227,11 +298,15 @@ export async function evidence(
       page_count: null,
       bytes: JSON.stringify(r.payload).length,
       metadata: {
-        note: "Respuesta del modelo guardada en Azure. Coordenadas del modelo distintas del punto solicitado.",
+        note: "Respuesta meteorológica del modelo guardada en Azure. Sus coordenadas pueden diferir del punto solicitado. El archivo descargable contiene la respuesta original completa, incluidas condiciones actuales y pronóstico por hora cuando están disponibles.",
         requested_latitude: r.latitude,
         requested_longitude: r.longitude,
         model_latitude: r.payload.latitude,
         model_longitude: r.payload.longitude,
+        current: r.payload.current || null,
+        current_units: r.payload.current_units || null,
+        hourly_units: r.payload.hourly_units || null,
+        timezone: r.payload.timezone || "America/Bogota",
       },
       parents: [],
       records: r.payload.daily.time.map((day, i) => ({
@@ -299,8 +374,8 @@ export async function evidence(
   else if (input)
     r.records = (
       await db.query(
-        `SELECT name,department,observed_on,presentation,price,source_locator FROM input_price WHERE id=$1 AND document_id=$2 AND ($3='' OR department=$3) AND ${WINDOW} ORDER BY observed_on DESC LIMIT 100`,
-        [input.slice(0, 180), r.id, department || ""],
+        `SELECT name,department,municipality,observed_on,presentation,price,source_locator,brand,registration FROM (SELECT *,''::text AS municipality FROM published_input_price UNION ALL SELECT * FROM published_input_municipal_price) i WHERE id=$1 AND document_id=$2 AND ($3='' OR department=$3) ORDER BY observed_on DESC LIMIT 100`,
+        [input.slice(0, 500), r.id, department || ""],
       )
     ).rows;
   if (
@@ -310,7 +385,7 @@ export async function evidence(
     r.records = (
       await db.query(
         `SELECT s.food_name,s.market_id,m.name market_name,s.period_start,s.first_reported_on,s.observed_on,s.quantity_kg,s.reporting_days,s.source_rows
-      FROM supply_observation s JOIN market m ON m.id=s.market_id WHERE document_id=$1 AND ($2='' OR market_id=$2) AND ($3='' OR product_id=$3) AND ($4='' OR food_id=$4) AND ($5='' OR period_start::text=$5) AND ${WINDOW} ORDER BY s.observed_on DESC LIMIT 100`,
+      FROM supply_observation s JOIN market m ON m.id=s.market_id WHERE document_id=$1 AND ($2='' OR market_id=$2) AND ($3='' OR product_id=$3) AND ($4='' OR food_id=$4) AND ($5='' OR period_start::text=$5) AND s.observed_on<=CURRENT_DATE ORDER BY s.observed_on DESC LIMIT 100`,
         [
           r.id,
           (filters.get("market") || "").slice(0, 220),
@@ -329,8 +404,8 @@ export async function evidence(
     r.records = (
       await db.query(
         `SELECT p.name AS product_name,m.name AS market_name,o.observed_on,o.price,o.unit,o.period,o.source_locator
-      FROM price_observation o JOIN market m ON m.id=o.market_id JOIN product p ON p.id=o.product_id
-      WHERE o.document_id=$1 AND o.product_id=$2 AND ($3='' OR o.market_id=$3) AND ($4='' OR o.observed_on::text=$4) AND ${WINDOW}
+      FROM published_price_observation o JOIN market m ON m.id=o.market_id JOIN product p ON p.id=o.product_id
+      WHERE o.document_id=$1 AND o.product_id=$2 AND ($3='' OR o.market_id=$3) AND ($4='' OR o.observed_on::text=$4) AND o.observed_on<=CURRENT_DATE
       ORDER BY o.observed_on DESC LIMIT 100`,
         [
           r.id,
@@ -338,6 +413,25 @@ export async function evidence(
           (filters.get("market") || "").slice(0, 220),
           (filters.get("month") || "").slice(0, 10),
         ],
+      )
+    ).rows;
+  }
+  if (r.metadata?.ingestion_kind === "ocr-image") r.kind = "extract";
+  if (
+    String(r.metadata?.ingestion_kind || "").match(/^(international|colombia)-/)
+  ) {
+    r.records = (
+      await db.query(
+        "SELECT product_name,market,observed_on,period_start,price,min_price,max_price,currency,unit,basis,source_locator FROM published_official_price WHERE document_id=$1 AND ($2='' OR source_locator=$2) ORDER BY observed_on DESC LIMIT 100",
+        [r.id, (filters.get("locator") || "").slice(0, 500)],
+      )
+    ).rows;
+  }
+  if (r.metadata?.ingestion_kind === "city-pdf") {
+    r.records = (
+      await db.query(
+        "SELECT product_name,market_name,observed_on,presentation,quantity,source_unit,round_label,min_price,max_price,unit,min_unit_price,max_unit_price,source_page,source_locator FROM regional_price WHERE document_id=$1 ORDER BY source_page,source_locator",
+        [r.id],
       )
     ).rows;
   }

@@ -3,6 +3,17 @@ on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
+  news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: pipelines/news/requirements.txt
+      - run: python -m pip install -r pipelines/news/requirements.txt
+      - run: python -m unittest pipelines.news.test_news
   web:
     runs-on: ubuntu-latest
     steps:

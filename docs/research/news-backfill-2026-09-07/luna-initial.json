@@ -1,0 +1,1067 @@
+{
+  "schema_version": 1,
+  "run_at": "2026-09-08T04:36:00Z",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:18:00-05:00",
+  "state_available": false,
+  "model": "gpt-5.6-luna",
+  "coverage": [
+    {
+      "source": "Agronet",
+      "url": "https://agronet.gov.co/noticias",
+      "status": "reviewed_listing_and_article",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Public listing and selected original page checked."
+    },
+    {
+      "source": "UPRA",
+      "url": "https://upra.gov.co/es-co/sala-de-prensa/noticias",
+      "status": "reviewed_listing_and_article",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Public listing and selected original page checked."
+    },
+    {
+      "source": "AGROSAVIA",
+      "url": "https://agrosavia.co/noticias",
+      "status": "reviewed_listing_and_articles",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Public listing and selected original pages checked."
+    },
+    {
+      "source": "Ministerio de Agricultura",
+      "url": "https://minagricultura.gov.co",
+      "status": "reviewed_listing_and_articles",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Public home listing and selected original pages checked."
+    },
+    {
+      "source": "ICA",
+      "url": "https://ica.gov.co/noticias",
+      "status": "listing_reviewed_article_inaccessible",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Measured listing reviewed; one candidate timed out when opened and remains review."
+    },
+    {
+      "source": "Portafolio Agro",
+      "url": "https://portafolio.co/economia/agro",
+      "status": "listing_measured_not_opened",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Candidate archive rows reviewed; domain access blocked for automated open."
+    },
+    {
+      "source": "Redagrícola",
+      "url": "https://redagricola.com",
+      "status": "listing_measured_not_opened",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Measured public listing rows reviewed; no Colombia-relevant item verified for inclusion."
+    },
+    {
+      "source": "La Nación",
+      "url": "https://www.lanacion.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "FNC",
+      "url": "https://federaciondecafeteros.org/listado-noticias/",
+      "status": "skipped_restriction",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Automated crawl skipped per configured permission restriction."
+    },
+    {
+      "source": "Agronegocios",
+      "url": "https://agronegocios.co",
+      "status": "skipped_restriction",
+      "checked_at": "2026-09-07T23:18:00-05:00",
+      "reason": "Automated crawl skipped per configured permission restriction."
+    },
+    {
+      "source": "DANE",
+      "url": "https://dane.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "IDEAM",
+      "url": "https://ideam.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "UNGRD",
+      "url": "https://gestiondelriesgo.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "INVÍAS",
+      "url": "https://invias.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "ANI",
+      "url": "https://ani.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "ADR",
+      "url": "https://adr.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "ANT",
+      "url": "https://ant.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "FINAGRO",
+      "url": "https://finagro.com.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Banco Agrario",
+      "url": "https://bancoagrario.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "MinComercio",
+      "url": "https://mincit.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "SIC",
+      "url": "https://sic.gov.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "ProColombia",
+      "url": "https://procolombia.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Cenicafé",
+      "url": "https://cenicafe.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Cenicaña",
+      "url": "https://cenicana.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Cenipalma",
+      "url": "https://cenipalma.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Fedearroz",
+      "url": "https://fedearroz.com.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Fedecacao",
+      "url": "https://fedecacao.com.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Fedepapa",
+      "url": "https://fedepapa.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Asohofrucol",
+      "url": "https://asohofrucol.com.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Fenalce",
+      "url": "https://fenalce.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Fedepalma",
+      "url": "https://fedepalma.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Fedepanela",
+      "url": "https://fedepanela.org.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Augura",
+      "url": "https://augura.com.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Asbama",
+      "url": "https://asbama.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Corpohass",
+      "url": "https://corpohass.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "SAC",
+      "url": "https://sac.org.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "La República",
+      "url": "https://larepublica.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "CONtexto Ganadero",
+      "url": "https://contextoganadero.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "El Espectador",
+      "url": "https://elespectador.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "El Tiempo",
+      "url": "https://eltiempo.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Caracol Radio",
+      "url": "https://caracol.com.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Radio Nacional",
+      "url": "https://radionacional.co",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "RTVC Noticias",
+      "url": "https://rtvcnoticias.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Diario del Huila",
+      "url": "https://diariodelhuila.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "La Patria",
+      "url": "https://lapatria.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "La Crónica del Quindío",
+      "url": "https://cronicadelquindio.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El Diario Pereira",
+      "url": "https://eldiario.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El Colombiano",
+      "url": "https://elcolombiano.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El País Cali",
+      "url": "https://elpais.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "Vanguardia",
+      "url": "https://vanguardia.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "La Opinión Cúcuta",
+      "url": "https://laopinion.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El Heraldo",
+      "url": "https://elheraldo.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El Universal Cartagena",
+      "url": "https://eluniversal.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "Boyacá 7 Días",
+      "url": "https://boyaca7dias.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El Nuevo Día Tolima",
+      "url": "https://elnuevodia.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "Diario del Sur",
+      "url": "https://diariodelsur.com.co",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "El Nuevo Liberal",
+      "url": "https://elnuevoliberal.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "Llano 7 Días",
+      "url": "https://llano7dias.com",
+      "status": "search_attempted_no_verified_inclusion",
+      "checked_at": "2026-09-08T04:25:29Z",
+      "reason": "Búsqueda de dominio restringida a 2026-08-25..2026-09-07 con términos agro; resultados fuera de ventana o sin apertura/verificación, salvo candidatos registrados en review."
+    },
+    {
+      "source": "FAO",
+      "url": "https://fao.org/newsroom",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "IICA",
+      "url": "https://iica.int",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Alliance Bioversity International y CIAT",
+      "url": "https://alliancebioversityciat.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "CIMMYT",
+      "url": "https://cimmyt.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "CIP",
+      "url": "https://cipotato.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "USDA FAS",
+      "url": "https://fas.usda.gov",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "ICO",
+      "url": "https://ico.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "ICCO",
+      "url": "https://icco.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "IFPRI",
+      "url": "https://ifpri.org",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Embrapa",
+      "url": "https://embrapa.br",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "CONAB Brasil",
+      "url": "https://gov.br/conab",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "Reuters materias primas",
+      "url": "https://reuters.com/markets/commodities/",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    },
+    {
+      "source": "EFE Agro",
+      "url": "https://efeagro.com",
+      "status": "not_reviewed_catalog_candidate",
+      "checked_at": "2026-09-08T04:36:00Z",
+      "reason": "Catálogo registrado; no se completó revisión profunda en esta pasada."
+    }
+  ],
+  "stories": [
+    {
+      "canonical_url": "https://upra.gov.co/es-co/sala-de-prensa/noticias/upra-dispone-plataformas-tecnologicas-sistemas-informacion-consolidar-danos-sector-agropecuario-terremoto",
+      "source_name": "UPRA",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "UPRA pondrá sus plataformas y sistemas a disposición para consolidar daños agropecuarios del terremoto; reporta 81 municipios y cinco departamentos bajo evaluación.",
+      "published_at": "2026-08-25T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:36:00Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "clima_y_riesgos",
+      "tags": [
+        "terremoto",
+        "daños",
+        "reconstrucción"
+      ],
+      "crops": [
+        "café"
+      ],
+      "inputs": [],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Antioquia",
+          "Cauca",
+          "Chocó",
+          "Valle del Cauca",
+          "Tolima"
+        ],
+        "municipalities": []
+      },
+      "colombia_relevance_es": "Apoya la evaluación oficial de pérdidas productivas y la priorización de respuesta en cinco departamentos.",
+      "evidence_urls": [
+        "https://upra.gov.co/es-co/sala-de-prensa/noticias/upra-dispone-plataformas-tecnologicas-sistemas-informacion-consolidar-danos-sector-agropecuario-terremoto"
+      ],
+      "publication_evidence": {
+        "url": "https://upra.gov.co/es-co/sala-de-prensa/noticias/upra-dispone-plataformas-tecnologicas-sistemas-informacion-consolidar-danos-sector-agropecuario-terremoto",
+        "method": "original-page dateline",
+        "value": "25/08/2026"
+      },
+      "display_expires_at": "2026-09-08T00:00:00-05:00",
+      "expiry_reason": "noticia general de apoyo/recuperación: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-08T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://agronet.gov.co/noticias/minagricultura-escucha-los-productores-de-arroz-del-caribe-y-anuncia-medidas-para",
+      "source_name": "Agronet",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "MinAgricultura anunció cinco líneas de trabajo para rentabilidad arrocera: planeación de siembras, comercialización anticipada, financiación, cartera y buenas prácticas.",
+      "published_at": "2026-08-30T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:36:00Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "precios_y_mercados",
+      "tags": [
+        "rentabilidad",
+        "financiación",
+        "comercialización"
+      ],
+      "crops": [
+        "arroz"
+      ],
+      "inputs": [
+        "semillas",
+        "agua"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Cesar",
+          "La Guajira",
+          "Bolívar",
+          "Antioquia",
+          "Norte de Santander"
+        ],
+        "municipalities": [
+          "Fonseca",
+          "Valledupar",
+          "Aguachica",
+          "Fundación",
+          "Caucasia",
+          "Cúcuta"
+        ]
+      },
+      "colombia_relevance_es": "Medidas dirigidas a productores arroceros colombianos y a sus costos, crédito y comercialización.",
+      "evidence_urls": [
+        "https://agronet.gov.co/noticias/minagricultura-escucha-los-productores-de-arroz-del-caribe-y-anuncia-medidas-para"
+      ],
+      "publication_evidence": {
+        "url": "https://agronet.gov.co/noticias/minagricultura-escucha-los-productores-de-arroz-del-caribe-y-anuncia-medidas-para",
+        "method": "original-page date",
+        "value": "2026-08-30"
+      },
+      "display_expires_at": "2026-09-13T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-13T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.agrosavia.co/noticias/agrosavia-transfiere-tecnolog%C3%ADa-para-la-producci%C3%B3n-de-cacao",
+      "source_name": "AGROSAVIA",
+      "source_type": "investigación y transferencia",
+      "title": null,
+      "factual_label_es": "AGROSAVIA capacitó productores de cacao del Tolima en poscosecha, manejo técnico, mango y bancos de germoplasma.",
+      "published_at": "2026-08-31T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:36:00Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "investigacion_y_cultivos",
+      "tags": [
+        "transferencia tecnológica",
+        "poscosecha"
+      ],
+      "crops": [
+        "cacao",
+        "mango"
+      ],
+      "inputs": [],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Tolima"
+        ],
+        "municipalities": [
+          "Falan",
+          "Lérida",
+          "Venadillo",
+          "Purificación",
+          "Suárez",
+          "Natagaima",
+          "Coyaima",
+          "Cunday",
+          "Ortega",
+          "Rovira",
+          "San Antonio"
+        ]
+      },
+      "colombia_relevance_es": "Transferencia técnica localizada para pequeños productores y estudiantes rurales del Tolima.",
+      "evidence_urls": [
+        "https://www.agrosavia.co/noticias/agrosavia-transfiere-tecnolog%C3%ADa-para-la-producci%C3%B3n-de-cacao"
+      ],
+      "publication_evidence": {
+        "url": "https://www.agrosavia.co/noticias/agrosavia-transfiere-tecnolog%C3%ADa-para-la-producci%C3%B3n-de-cacao",
+        "method": "original-page dateline",
+        "value": "Agosto 31, 2026"
+      },
+      "display_expires_at": "2026-09-14T00:00:00-05:00",
+      "expiry_reason": "investigación/contexto: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-14T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.agrosavia.co/noticias/bacterias-%C3%A1cido-l%C3%A1cticas-abren-una-ruta-para-proteger-el-banano-del-marchitamiento-por-fusarium-con-menos-aplicaciones-qu%C3%ADmicas",
+      "source_name": "AGROSAVIA",
+      "source_type": "investigación",
+      "title": null,
+      "factual_label_es": "Ensayos de laboratorio e invernadero identificaron bacterias ácido-lácticas que redujeron el marchitamiento por Fusarium en banano; falta validación en campo.",
+      "published_at": "2026-09-01T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:36:00Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "sanidad_agropecuaria",
+      "tags": [
+        "Fusarium",
+        "biocontrol",
+        "invernadero"
+      ],
+      "crops": [
+        "banano",
+        "plátano"
+      ],
+      "inputs": [
+        "biocontroladores"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Cundinamarca"
+        ],
+        "municipalities": [
+          "Mosquera"
+        ]
+      },
+      "colombia_relevance_es": "Investigación colombiana con posible utilidad sanitaria; la fuente advierte que aún no es una solución disponible y requiere pruebas de campo.",
+      "evidence_urls": [
+        "https://www.agrosavia.co/noticias/bacterias-%C3%A1cido-l%C3%A1cticas-abren-una-ruta-para-proteger-el-banano-del-marchitamiento-por-fusarium-con-menos-aplicaciones-qu%C3%ADmicas"
+      ],
+      "publication_evidence": {
+        "url": "https://www.agrosavia.co/noticias/bacterias-%C3%A1cido-l%C3%A1cticas-abren-una-ruta-para-proteger-el-banano-del-marchitamiento-por-fusarium-con-menos-aplicaciones-qu%C3%ADmicas",
+        "method": "original-page dateline",
+        "value": "Septiembre 1, 2026"
+      },
+      "display_expires_at": "2026-09-15T00:00:00-05:00",
+      "expiry_reason": "sanidad/investigación: 14 días editoriales; no declara resolución sanitaria.",
+      "source_valid_until": null,
+      "review_at": "2026-09-08T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/pepsico-y-minagricultura-exploran-alianza-para-impulsar-produccion-de-maiz-papa-y-platano",
+      "source_name": "Ministerio de Agricultura",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "MinAgricultura y PepsiCo exploraron una alianza para papa, plátano y maíz amarillo; identificaron potencial de riego en Tolima y una necesidad industrial estimada de 17.000–23.000 toneladas de maíz amarillo.",
+      "published_at": "2026-09-06T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:36:00Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "abastecimiento_y_cosechas",
+      "tags": [
+        "alianza comercial",
+        "riego",
+        "demanda industrial"
+      ],
+      "crops": [
+        "papa",
+        "plátano",
+        "maíz amarillo",
+        "arroz"
+      ],
+      "inputs": [
+        "semillas",
+        "riego",
+        "mecanización"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Tolima"
+        ],
+        "municipalities": []
+      },
+      "colombia_relevance_es": "La agenda vincula demanda industrial, producción y apoyo público en cadenas colombianas.",
+      "evidence_urls": [
+        "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/pepsico-y-minagricultura-exploran-alianza-para-impulsar-produccion-de-maiz-papa-y-platano"
+      ],
+      "publication_evidence": {
+        "url": "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/pepsico-y-minagricultura-exploran-alianza-para-impulsar-produccion-de-maiz-papa-y-platano",
+        "method": "original-page dateline",
+        "value": "Domingo, 06 de Septiembre de 2026"
+      },
+      "display_expires_at": "2026-09-20T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "source_valid_until": null,
+      "review_at": "2026-09-20T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "canonical_url": "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/el-gobierno-nacional-ayuda-a-los-pequenos-ganaderos-en-el-cesar-para-contrarrestar-las-afectaciones-provocadas-por-el-fenomeno-el-nino",
+      "source_name": "Ministerio de Agricultura",
+      "source_type": "comunicado oficial",
+      "title": null,
+      "factual_label_es": "El Gobierno anunció en Codazzi ayudas para pequeños ganaderos del Cesar frente a El Niño, con forrajes, suplementos, riego, crédito y fomento de coco.",
+      "published_at": "2026-09-07T00:00:00-05:00",
+      "date_precision": "date",
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:36:00Z",
+      "decision": "include",
+      "confidence": "alta",
+      "primary_category": "clima_y_riesgos",
+      "tags": [
+        "El Niño",
+        "ganadería",
+        "ayudas"
+      ],
+      "crops": [
+        "coco"
+      ],
+      "inputs": [
+        "forraje",
+        "heno",
+        "alimento balanceado",
+        "riego",
+        "suplemento probiótico"
+      ],
+      "named_markets": [],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Cesar"
+        ],
+        "municipalities": [
+          "Codazzi"
+        ]
+      },
+      "colombia_relevance_es": "Respuesta oficial a una emergencia climática ganadera localizada en Cesar; el contenido no prueba que el riesgo haya terminado.",
+      "evidence_urls": [
+        "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/el-gobierno-nacional-ayuda-a-los-pequenos-ganaderos-en-el-cesar-para-contrarrestar-las-afectaciones-provocadas-por-el-fenomeno-el-nino"
+      ],
+      "publication_evidence": {
+        "url": "https://www.minagricultura.gov.co/el-ministerio/sala-de-p/noticias/el-gobierno-nacional-ayuda-a-los-pequenos-ganaderos-en-el-cesar-para-contrarrestar-las-afectaciones-provocadas-por-el-fenomeno-el-nino",
+        "method": "original-page dateline",
+        "value": "Lunes, 07 de Septiembre de 2026"
+      },
+      "display_expires_at": "2026-09-09T00:00:00-05:00",
+      "expiry_reason": "clima/riesgo: máximo 48 horas y revisión; editorialmente expira aunque la emergencia legal o climática pueda continuar.",
+      "source_valid_until": null,
+      "review_at": "2026-09-08T00:00:00-05:00",
+      "status": "active",
+      "rights_status": "unverified"
+    },
+    {
+      "source_name": "Diario del Sur",
+      "source_type": "medio regional",
+      "title": null,
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:25:29Z",
+      "decision": "include",
+      "confidence": "alta",
+      "inputs": [],
+      "named_markets": [],
+      "rights_status": "unverified",
+      "source_valid_until": null,
+      "canonical_url": "https://www.diariodelsur.com.co/fortalecen-la-produccion-de-cafe-cuyes-y-hortalizas-en-la-caldera/",
+      "factual_label_es": "Acompañamiento técnico en La Caldera fortaleció asociaciones de café, champiñón, fríjol, maíz, hortalizas y cuyes; también compostaje y biofertilizantes.",
+      "published_at": "2026-08-25T00:00:00-05:00",
+      "date_precision": "date",
+      "primary_category": "investigacion_y_cultivos",
+      "tags": [
+        "asistencia técnica",
+        "agricultura sostenible"
+      ],
+      "crops": [
+        "café",
+        "champiñón",
+        "fríjol",
+        "maíz",
+        "hortalizas"
+      ],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Nariño"
+        ],
+        "municipalities": [
+          "Pasto"
+        ]
+      },
+      "colombia_relevance_es": "Aporta información regional verificable sobre capacitación y prácticas productivas en Pasto.",
+      "evidence_urls": [
+        "https://www.diariodelsur.com.co/fortalecen-la-produccion-de-cafe-cuyes-y-hortalizas-en-la-caldera/"
+      ],
+      "publication_evidence": {
+        "url": "https://www.diariodelsur.com.co/fortalecen-la-produccion-de-cafe-cuyes-y-hortalizas-en-la-caldera/",
+        "method": "original-page dateline",
+        "value": "2026-08-25"
+      },
+      "display_expires_at": "2026-09-08T00:00:00-05:00",
+      "expiry_reason": "noticia general: 14 días desde publicación.",
+      "review_at": "2026-09-08T00:00:00-05:00",
+      "status": "active"
+    },
+    {
+      "source_name": "Diario del Sur",
+      "source_type": "medio regional",
+      "title": null,
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:25:29Z",
+      "decision": "include",
+      "confidence": "alta",
+      "inputs": [],
+      "named_markets": [],
+      "rights_status": "unverified",
+      "source_valid_until": null,
+      "canonical_url": "https://www.diariodelsur.com.co/incendios-han-arrasado-mas-de-1-400-hectareas-productivas-en-el-departamento-de-narino/3/",
+      "factual_label_es": "Incendios en Nariño afectaron preliminarmente 1.485 hectáreas productivas, 699 familias y cultivos de café, caña panelera, plátano, maíz, yuca, aguacate y cítricos.",
+      "published_at": "2026-08-27T00:00:00-05:00",
+      "date_precision": "date",
+      "primary_category": "clima_y_riesgos",
+      "tags": [
+        "incendios",
+        "pérdidas productivas"
+      ],
+      "crops": [
+        "café",
+        "caña panelera",
+        "plátano",
+        "maíz",
+        "yuca",
+        "aguacate",
+        "cítricos"
+      ],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Nariño"
+        ],
+        "municipalities": [
+          "Ancuya",
+          "Linares",
+          "Los Andes-Sotomayor",
+          "La Unión"
+        ]
+      },
+      "colombia_relevance_es": "Reporta un impacto agropecuario regional con cifras preliminares y municipios explícitos.",
+      "evidence_urls": [
+        "https://www.diariodelsur.com.co/incendios-han-arrasado-mas-de-1-400-hectareas-productivas-en-el-departamento-de-narino/3/"
+      ],
+      "publication_evidence": {
+        "url": "https://www.diariodelsur.com.co/incendios-han-arrasado-mas-de-1-400-hectareas-productivas-en-el-departamento-de-narino/3/",
+        "method": "original-page dateline",
+        "value": "2026-08-27"
+      },
+      "display_expires_at": "2026-09-10T00:00:00-05:00",
+      "expiry_reason": "clima/riesgo: máximo 48 horas y revisión; la nota permanece en backfill.",
+      "review_at": "2026-09-10T00:00:00-05:00",
+      "status": "active"
+    },
+    {
+      "source_name": "Diario del Sur",
+      "source_type": "medio regional",
+      "title": null,
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:25:29Z",
+      "decision": "include",
+      "confidence": "alta",
+      "inputs": [],
+      "named_markets": [],
+      "rights_status": "unverified",
+      "source_valid_until": null,
+      "canonical_url": "https://www.diariodelsur.com.co/%C2%A8narino-responde%C2%A8-lleva-ayudas-a-50-familias-afectadas-por-incendios-en-el-norte-del-departamento/",
+      "factual_label_es": "La estrategia Nariño Responde entregó ayudas y herramientas agropecuarias a 50 familias afectadas por incendios, con daños reportados en café, caña, yuca y plátano.",
+      "published_at": "2026-09-03T00:00:00-05:00",
+      "date_precision": "date",
+      "primary_category": "apoyos_y_normativa",
+      "tags": [
+        "recuperación",
+        "incendios",
+        "ayudas"
+      ],
+      "crops": [
+        "café",
+        "caña",
+        "yuca",
+        "plátano"
+      ],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Nariño"
+        ],
+        "municipalities": []
+      },
+      "colombia_relevance_es": "Documenta respuesta de recuperación para familias campesinas afectadas.",
+      "evidence_urls": [
+        "https://www.diariodelsur.com.co/%C2%A8narino-responde%C2%A8-lleva-ayudas-a-50-familias-afectadas-por-incendios-en-el-norte-del-departamento/"
+      ],
+      "publication_evidence": {
+        "url": "https://www.diariodelsur.com.co/%C2%A8narino-responde%C2%A8-lleva-ayudas-a-50-familias-afectadas-por-incendios-en-el-norte-del-departamento/",
+        "method": "original-page dateline",
+        "value": "2026-09-03"
+      },
+      "display_expires_at": "2026-09-17T00:00:00-05:00",
+      "expiry_reason": "noticia general de apoyo: 14 días desde publicación.",
+      "review_at": "2026-09-17T00:00:00-05:00",
+      "status": "active"
+    },
+    {
+      "source_name": "Diario del Sur",
+      "source_type": "medio regional",
+      "title": null,
+      "updated_at": null,
+      "retrieved_at": "2026-09-08T04:25:29Z",
+      "decision": "include",
+      "confidence": "alta",
+      "inputs": [],
+      "named_markets": [],
+      "rights_status": "unverified",
+      "source_valid_until": null,
+      "canonical_url": "https://www.diariodelsur.com.co/%E2%98%95-el-precio-del-cafe-colombiano-se-mantiene-como-tema-clave-para-los-productores/2/",
+      "factual_label_es": "Nota regional reportó para el 26 de agosto un precio aproximado de $2.260.000 por carga de 125 kg de café pergamino seco FR 94, atribuido a datos de la Federación Nacional de Cafeteros.",
+      "published_at": "2026-08-27T00:00:00-05:00",
+      "date_precision": "date",
+      "primary_category": "precios_y_mercados",
+      "tags": [
+        "precio",
+        "café pergamino"
+      ],
+      "crops": [
+        "café"
+      ],
+      "geography": {
+        "countries": [
+          "Colombia"
+        ],
+        "departments": [
+          "Nariño"
+        ],
+        "municipalities": []
+      },
+      "colombia_relevance_es": "Dato de precio puntual útil para productores; se conserva la atribución y no se trata como cotización vigente.",
+      "evidence_urls": [
+        "https://www.diariodelsur.com.co/%E2%98%95-el-precio-del-cafe-colombiano-se-mANTIENE-COMO-TEMA-CLAVE-PARA-LOS-PRODUCTORES/2/"
+      ],
+      "publication_evidence": {
+        "url": "https://www.diariodelsur.com.co/%E2%98%95-el-precio-del-cafe-colombiano-se-mANTIENE-COMO-TEMA-CLAVE-PARA-LOS-PRODUCTORES/2/",
+        "method": "original-page dateline",
+        "value": "2026-08-27"
+      },
+      "display_expires_at": "2026-09-10T00:00:00-05:00",
+      "expiry_reason": "cotización puntual: 48 horas desde publicación.",
+      "review_at": "2026-09-10T00:00:00-05:00",
+      "status": "active"
+    }
+  ],
+  "expired_or_corrected": [],
+  "new_sources": [],
+  "review": [
+    {
+      "source_name": "El Colombiano",
+      "url": "https://securegtm.securegtm.elcolombiano.com/negocios/incendios-forestales-el-nino-perdidas-ganaderia-colombia-2026-OD40524183",
+      "decision": "review",
+      "reason": "Resultado de búsqueda muestra fecha 2026-09-01 y relevancia agropecuaria, pero la apertura original agotó tiempo; no se incluyó sin verificación completa.",
+      "checked_at": "2026-09-08T04:25:29Z"
+    }
+  ]
+}

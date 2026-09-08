@@ -1,0 +1,13 @@
+.sourceCard { display: grid; grid-template-columns: 42px 1fr; gap: 14px; padding: 24px; margin-top: 30px; border: 1px solid #c4d7c9; border-radius: 14px; background: #edf4ee; }
+.sourceCard > svg { font-size: 30px; color: #2b613d; margin-top: 3px; }
+.sourceCard h2 { margin: 0 0 7px; font-size: 20px; line-height: 1.4; color: #244d31; }
+.sourceCard p { margin: 0 0 10px; color: #496052; font-size: 15px; line-height: 1.6; }
+.sourceCard a, .footer a { color: #145a9b; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; font-weight: 650; display: inline-flex; gap: 8px; align-items: center; min-height: 44px; }
+.sourceCard a:hover, .footer a:hover { color: #093f72; text-decoration-thickness: 2px; }
+.sourceCard a:focus-visible, .footer a:focus-visible { outline: 3px solid #b47c14; outline-offset: 4px; border-radius: 3px; }
+.footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 30px; max-width: 1240px; margin: 30px auto 0; padding: 22px 30px; border-top: 1px solid #c5d4c9; color: #486050; font-size: 14px; }
+.footer > div { display: grid; gap: 5px; }
+.footer strong { color: #244d31; font-size: 17px; }
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+@media(max-width: 620px) { .sourceCard { padding: 18px 16px; grid-template-columns: 28px 1fr; gap: 10px; } .sourceCard > svg { font-size: 25px; } .sourceCard h2 { font-size: 18px; } .footer { padding: 22px 20px; margin-top: 22px; gap: 14px; } .footer nav { width: 100%; flex-direction: column; gap: 0; } }
+@media(max-width: 900px) { .footer { padding-bottom: calc(100px + var(--agro-safe-bottom, env(safe-area-inset-bottom, 0px))); } }

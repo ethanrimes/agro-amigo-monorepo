@@ -1,0 +1,1724 @@
+{
+  "run_id": "2026-09-08T05:32:48+00:00",
+  "started_at": "2026-09-08T05:32:48+00:00",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:59:59.999999-05:00",
+  "language": "es",
+  "mode": "research_only",
+  "discovery_mode": "listings",
+  "coverage": [
+    {
+      "source_id": "agronet",
+      "source": "Agronet",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:32:50+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ministerio-de-agricultura",
+      "source": "Ministerio de Agricultura",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://minagricultura.gov.co",
+          "code": "dns_unavailable"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:32:50+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "upra",
+      "source": "UPRA",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:32:53+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "dane",
+      "source": "DANE",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://dane.gov.co",
+          "code": "dns_unavailable"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:32:54+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ica",
+      "source": "ICA",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://ica.gov.co/noticias",
+          "code": "dns_unavailable"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:32:54+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ideam",
+      "source": "IDEAM",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 2,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:32:57+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ungrd",
+      "source": "UNGRD",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:14+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "invias",
+      "source": "INVÍAS",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://invias.gov.co",
+          "code": "robots_upstream_unavailable"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:18+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ani",
+      "source": "ANI",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://ani.gov.co",
+          "code": "robots_robots_unverified"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:19+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "adr",
+      "source": "ADR",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://adr.gov.co",
+          "code": "dns_unavailable"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:19+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ant",
+      "source": "ANT",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:20+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "finagro",
+      "source": "FINAGRO",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 10,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 9,
+      "checked_at": "2026-09-08T05:33:26+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "banco-agrario",
+      "source": "Banco Agrario",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://bancoagrario.gov.co",
+          "code": "dns_unavailable"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:26+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "mincomercio",
+      "source": "MinComercio",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 4,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 3,
+      "checked_at": "2026-09-08T05:33:37+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "sic",
+      "source": "SIC",
+      "group": "oficiales_colombia",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://sic.gov.co",
+          "code": "robots_network_or_timeout"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:39+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "procolombia",
+      "source": "ProColombia",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "insufficient_article_text_for_language_check": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:42+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agrosavia",
+      "source": "AGROSAVIA",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 15,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 14,
+      "checked_at": "2026-09-08T05:33:44+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "cenicafe",
+      "source": "Cenicafé",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://cenicafe.org",
+          "code": "robots_network_or_timeout"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:33:47+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fnc",
+      "source": "FNC",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "Restricción previa de automatización."
+    },
+    {
+      "source_id": "cenicana",
+      "source": "Cenicaña",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 2,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:33:58+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "cenipalma",
+      "source": "Cenipalma",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:11+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fedearroz",
+      "source": "Fedearroz",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:34:15+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fedecacao",
+      "source": "Fedecacao",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:18+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fedepapa",
+      "source": "Fedepapa",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:20+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "asohofrucol",
+      "source": "Asohofrucol",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://asohofrucol.com.co",
+          "code": "robots_robots_unverified"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:21+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fenalce",
+      "source": "Fenalce",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:26+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fedepalma",
+      "source": "Fedepalma",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "http_404": 1
+      },
+      "errors": [
+        {
+          "url": "https://fedepalma.org/?page_id=10786",
+          "code": "http_404"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 7,
+      "checked_at": "2026-09-08T05:34:29+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fedepanela",
+      "source": "Fedepanela",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:40+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "augura",
+      "source": "Augura",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:41+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "asbama",
+      "source": "Asbama",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 2,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:34:43+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "corpohass",
+      "source": "Corpohass",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:34:47+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "sac",
+      "source": "SAC",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 3,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 2,
+      "checked_at": "2026-09-08T05:34:50+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agronegocios",
+      "source": "Agronegocios",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "Restricción previa de automatización."
+    },
+    {
+      "source_id": "la-republica",
+      "source": "La República",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 14,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 13,
+      "checked_at": "2026-09-08T05:34:53+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "portafolio-agro",
+      "source": "Portafolio Agro",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 20,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 19,
+      "checked_at": "2026-09-08T05:34:57+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "redagricola",
+      "source": "Redagrícola",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 6,
+      "articles_attempted": 1,
+      "outcomes": {
+        "insufficient_article_text_for_language_check": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 5,
+      "checked_at": "2026-09-08T05:35:06+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "contexto-ganadero",
+      "source": "CONtexto Ganadero",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:35:09+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-espectador",
+      "source": "El Espectador",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:35:11+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-tiempo",
+      "source": "El Tiempo",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:35:15+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "caracol-radio",
+      "source": "Caracol Radio",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:35:18+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "radio-nacional",
+      "source": "Radio Nacional",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:35:23+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "rtvc-noticias",
+      "source": "RTVC Noticias",
+      "group": "medios_especializados_y_nacionales",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:35:26+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "la-nacion",
+      "source": "La Nación",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 9,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 8,
+      "checked_at": "2026-09-08T05:35:32+00:00",
+      "listing_pages_remaining": 3,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "diario-del-huila",
+      "source": "Diario del Huila",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 10,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 9,
+      "checked_at": "2026-09-08T05:35:35+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "la-patria",
+      "source": "La Patria",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 8,
+      "articles_attempted": 1,
+      "outcomes": {
+        "source_not_verified_spanish": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 7,
+      "checked_at": "2026-09-08T05:35:39+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "la-cronica-del-quindio",
+      "source": "La Crónica del Quindío",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:10+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-diario-pereira",
+      "source": "El Diario Pereira",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 2,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:36:15+00:00",
+      "listing_pages_remaining": 3,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-colombiano",
+      "source": "El Colombiano",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "insufficient_article_text_for_language_check": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:23+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-pais-cali",
+      "source": "El País Cali",
+      "group": "medios_regionales",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://elpais.com.co",
+          "code": "response_too_large"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:26+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "vanguardia",
+      "source": "Vanguardia",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:36:32+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "la-opinion-cucuta",
+      "source": "La Opinión Cúcuta",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 6,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 5,
+      "checked_at": "2026-09-08T05:36:34+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-heraldo",
+      "source": "El Heraldo",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 4,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 3,
+      "checked_at": "2026-09-08T05:36:39+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-universal-cartagena",
+      "source": "El Universal Cartagena",
+      "group": "medios_regionales",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://eluniversal.com.co",
+          "code": "response_too_large"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:42+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "boyaca-7-dias",
+      "source": "Boyacá 7 Días",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 2,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:36:45+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-nuevo-dia-tolima",
+      "source": "El Nuevo Día Tolima",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:36:49+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "diario-del-sur",
+      "source": "Diario del Sur",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:52+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-nuevo-liberal",
+      "source": "El Nuevo Liberal",
+      "group": "medios_regionales",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:56+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "llano-7-dias",
+      "source": "Llano 7 Días",
+      "group": "medios_regionales",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://llano7dias.com",
+          "code": "robots_access_restricted"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:56+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fao",
+      "source": "FAO",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:36:59+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "iica",
+      "source": "IICA",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://iica.int/es/prensa/noticias",
+          "code": "access_restricted"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:37:00+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "alliance-bioversity-international-y-ciat",
+      "source": "Alliance Bioversity International y CIAT",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://alliancebioversityciat.org/es/news",
+          "code": "access_restricted"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:37:01+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "cimmyt",
+      "source": "CIMMYT",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 6,
+      "articles_attempted": 1,
+      "outcomes": {
+        "conflicting_publication_dates": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 5,
+      "checked_at": "2026-09-08T05:37:05+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "cip",
+      "source": "CIP",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 4,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 3,
+      "checked_at": "2026-09-08T05:37:08+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "usda-fas",
+      "source": "USDA FAS",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa."
+    },
+    {
+      "source_id": "ico",
+      "source": "ICO",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 4,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 3,
+      "checked_at": "2026-09-08T05:37:13+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "icco",
+      "source": "ICCO",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa."
+    },
+    {
+      "source_id": "ifpri",
+      "source": "IFPRI",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:37:14+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "embrapa",
+      "source": "Embrapa",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa."
+    },
+    {
+      "source_id": "conab-brasil",
+      "source": "CONAB Brasil",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa."
+    },
+    {
+      "source_id": "reuters-materias-primas",
+      "source": "Reuters materias primas",
+      "group": "internacional_relevante",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "status": "disabled",
+      "reason": "No se ha verificado una edición española apropiada; no traducir la edición inglesa o portuguesa."
+    },
+    {
+      "source_id": "efe-agro",
+      "source": "EFE Agro",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 2,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 1,
+      "checked_at": "2026-09-08T05:37:17+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "omm-en-espanol",
+      "source": "OMM en español",
+      "group": "internacional_oficial",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 1,
+      "outcomes": {
+        "source_not_verified_spanish": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:37:21+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "noticias-onu",
+      "source": "Noticias ONU",
+      "group": "internacional_oficial",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://news.un.org/es/",
+          "code": "robots_host_or_language_path_not_allowed"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:37:21+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "cepal",
+      "source": "CEPAL",
+      "group": "internacional_oficial",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:37:22+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "freshplaza-en-espanol",
+      "source": "FreshPlaza en español",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 94,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 93,
+      "checked_at": "2026-09-08T05:37:27+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "portal-fruticola",
+      "source": "Portal Frutícola",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 10,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 9,
+      "checked_at": "2026-09-08T05:37:31+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agrodigital",
+      "source": "Agrodigital",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 17,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_outside_window": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 16,
+      "checked_at": "2026-09-08T05:37:37+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agroinformacion",
+      "source": "Agroinformación",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 12,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 11,
+      "checked_at": "2026-09-08T05:37:40+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agencia-agraria-del-peru",
+      "source": "Agencia Agraria del Perú",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 36,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 35,
+      "checked_at": "2026-09-08T05:37:43+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "infocampo",
+      "source": "Infocampo",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 8,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 7,
+      "checked_at": "2026-09-08T05:37:48+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agrofy-news",
+      "source": "Agrofy News",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 11,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 10,
+      "checked_at": "2026-09-08T05:37:51+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "revista-chacra",
+      "source": "Revista Chacra",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 14,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 13,
+      "checked_at": "2026-09-08T05:37:56+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "mundo-agropecuario",
+      "source": "Mundo Agropecuario",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 20,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 19,
+      "checked_at": "2026-09-08T05:37:59+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "perfect-daily-grind-espanol",
+      "source": "Perfect Daily Grind español",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:38:04+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "bbc-mundo",
+      "source": "BBC Mundo",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 3,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 2,
+      "checked_at": "2026-09-08T05:38:07+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "dw-espanol",
+      "source": "DW Español",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 4,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 3,
+      "checked_at": "2026-09-08T05:38:09+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "france-24-espanol",
+      "source": "France 24 Español",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:38:12+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "rfi-espanol",
+      "source": "RFI Español",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:38:14+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "euronews-espanol",
+      "source": "Euronews Español",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 7,
+      "articles_attempted": 1,
+      "outcomes": {
+        "insufficient_article_text_for_language_check": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 6,
+      "checked_at": "2026-09-08T05:38:17+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-pais-america",
+      "source": "El País América",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:38:20+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "infobae-america",
+      "source": "Infobae América",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 5,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:38:23+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agencia-efe",
+      "source": "Agencia EFE",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:38:25+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "el-universo-ecuador",
+      "source": "El Universo Ecuador",
+      "group": "internacional_general",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:38:56+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "senasa-peru",
+      "source": "SENASA Perú",
+      "group": "internacional_oficial",
+      "discovery_pages": 1,
+      "candidates_found": 19,
+      "articles_attempted": 1,
+      "outcomes": {
+        "publication_date_missing": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 18,
+      "checked_at": "2026-09-08T05:38:58+00:00",
+      "listing_pages_remaining": 1,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "sader-mexico",
+      "source": "SADER México",
+      "group": "internacional_oficial",
+      "discovery_pages": 0,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [
+        {
+          "url": "https://www.gob.mx/agricultura/prensa",
+          "code": "http_404"
+        }
+      ],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:39:00+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    }
+  ],
+  "errors": [],
+  "classified_with_luna": false,
+  "finished_at": "2026-09-08T05:39:00+00:00",
+  "totals": {
+    "stored": 57,
+    "decisions": {
+      "discard": 11,
+      "review": 46
+    },
+    "source_statuses": {
+      "partial": 52,
+      "checked": 36,
+      "disabled": 7
+    }
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import sourceStyles from "./source-links.module.css";
 import {
   IoLeafOutline,
   IoHomeOutline,
@@ -27,9 +28,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         path.startsWith(href + "/") ||
         (href === "/products" &&
           (path.startsWith("/product/") ||
-            ["/coffee", "/daily", "/saved"].includes(path))) ||
-        (href === "/markets" && path.startsWith("/market/")) ||
-        (href === "/insumos" && path.startsWith("/insumo/")) ||
+            [
+              "/coffee",
+              "/daily",
+              "/saved",
+              "/regional",
+              "/references",
+            ].includes(path) ||
+            path.startsWith("/references/"))) ||
+        (href === "/markets" &&
+          (path.startsWith("/market/") || path === "/compare/markets")) ||
+        (href === "/insumos" &&
+          (path.startsWith("/insumo/") || path === "/compare/inputs")) ||
         (href === "/farm" && ["/plan", "/offers"].includes(path));
   return (
     <div className="app-shell">
@@ -110,10 +120,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           {children}
         </main>
-        <footer className="site-footer">
-          <span>AgroAmigo · Del campo, para el campo.</span>
-          <Link href="/sources">Fuentes y ayuda</Link>
-          <Link href="/credits">Créditos de imágenes</Link>
+        <footer className={sourceStyles.footer}>
+          <div><strong>AgroAmigo</strong><span>Del campo, para el campo.</span></div>
+          <nav aria-label="Fuentes y créditos">
+            <Link href="/sources">Fuentes y ayuda <span aria-hidden="true">→</span></Link>
+            <Link href="/credits">Créditos de imágenes <span aria-hidden="true">→</span></Link>
+          </nav>
         </footer>
       </div>
       <nav className="mobile-nav" aria-label="Navegación móvil">

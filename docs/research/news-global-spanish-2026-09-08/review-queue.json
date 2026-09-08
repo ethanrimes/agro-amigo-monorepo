@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "language": "es",
+  "generated_at": "2026-09-08T05:32:35+00:00",
+  "note": "Original sources must be opened by the reviewer. No article bodies or images stored. Deterministic tags are suggestions, not Luna classifications.",
+  "stories": [
+    {
+      "canonical_url": "https://public.wmo.int/es/resources/publication-series/el-ninola-nina-updates/agosto-de-2026",
+      "original_url": "https://public.wmo.int/es/resources/publication-series/el-ninola-nina-updates/agosto-de-2026",
+      "headline": "El Niño/La Niña Hoy (Agosto de 2026)",
+      "content_sha256": "e426470d93bb8f9384ed6ffdec1be4828562cdbe5010a36691e59d3692031f3f",
+      "headline_sha256": "e9ce5702bec4edeed0d1152586c312f11473b5cf227e679c2691ef5dd69a0024",
+      "published_at": null,
+      "date_precision": "unknown",
+      "publication_evidence": [
+        {
+          "value": "2026-09-01T10:23:54+02:00",
+          "precision": "second",
+          "timezone_assumed": false,
+          "evidence": "2026-09-01T10:23:54+02:00",
+          "method": "meta.article:published_time"
+        },
+        {
+          "value": "2026-09-03T00:00:00+02:00",
+          "precision": "date",
+          "timezone_assumed": true,
+          "evidence": "3 de septiembre de 2026",
+          "method": "source_visible_publication_date"
+        }
+      ],
+      "date_conflict": true,
+      "updated_at": "2026-09-01T16:52:18+02:00",
+      "language": {
+        "accepted": true,
+        "detected": "es",
+        "confidence": 1.0,
+        "declared": "es",
+        "method": "langdetect-1.0.9-seed-0",
+        "reason": "body_spanish"
+      },
+      "extraction_fallback": false,
+      "body_words": 157,
+      "crops": [],
+      "inputs": [],
+      "primary_category": "clima_y_riesgos",
+      "category_scores": {
+        "precios_y_mercados": 0,
+        "abastecimiento_y_cosechas": 1,
+        "insumos_y_costos": 0,
+        "clima_y_riesgos": 2,
+        "sanidad_agropecuaria": 0,
+        "transporte_y_logistica": 0,
+        "apoyos_y_normativa": 0,
+        "investigacion_y_cultivos": 0,
+        "eventos_y_formacion": 0
+      },
+      "agriculture_signal": false,
+      "relevance_kind": "indirect",
+      "transmission_channel": "clima",
+      "source_id": "omm-en-espanol",
+      "source_name": "OMM en español",
+      "source_group": "internacional_oficial",
+      "publisher_id": "omm-en-espanol",
+      "rights_status": "unverified",
+      "source_language": "es",
+      "title": null,
+      "decision": "review",
+      "status": "review",
+      "classification_method": "deterministic_triage_not_luna",
+      "review_reason": "conflicting_publication_dates",
+      "id": "71ea5e5e475ddcc2c1215ec4",
+      "first_seen_at": "2026-09-08T05:25:09+00:00",
+      "retrieved_at": "2026-09-08T05:25:09+00:00"
+    }
+  ],
+  "duplicate_suggestions": []
+}

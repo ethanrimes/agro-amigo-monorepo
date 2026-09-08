@@ -1,0 +1,75 @@
+{
+  "run_id": "2026-09-08T05:43:47+00:00",
+  "started_at": "2026-09-08T05:43:47+00:00",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:59:59.999999-05:00",
+  "language": "es",
+  "mode": "research_only",
+  "discovery_mode": "listings",
+  "coverage": [
+    {
+      "source_id": "ministerio-de-agricultura",
+      "source": "Ministerio de Agricultura",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 0,
+      "articles_attempted": 0,
+      "outcomes": {},
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:43:50+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "ica",
+      "source": "ICA",
+      "group": "oficiales_colombia",
+      "discovery_pages": 1,
+      "candidates_found": 4,
+      "articles_attempted": 2,
+      "outcomes": {
+        "publication_date_missing": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 2,
+      "checked_at": "2026-09-08T05:44:08+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "agrosavia",
+      "source": "AGROSAVIA",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 14,
+      "articles_attempted": 2,
+      "outcomes": {
+        "semantic_classification_pending": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 12,
+      "checked_at": "2026-09-08T05:44:12+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    }
+  ],
+  "errors": [],
+  "classified_with_luna": false,
+  "finished_at": "2026-09-08T05:44:12+00:00",
+  "totals": {
+    "stored": 4,
+    "decisions": {
+      "review": 4
+    },
+    "source_statuses": {
+      "checked": 3
+    }
+  }
+}

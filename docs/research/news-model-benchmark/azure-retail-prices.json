@@ -1,0 +1,122 @@
+[
+  {
+    "meterName": "gpt 4.1 nano Inp glbl Tokens",
+    "meterId": "4c589c44-ce68-5972-a41e-8a9ecff0b87e",
+    "retailPrice": 0.0001,
+    "unitOfMeasure": "1K",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-04-01T00:00:00Z",
+    "productName": "Azure OpenAI",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "gpt 4.1 nano Outp glbl Tokens",
+    "meterId": "add6ade7-2fe1-57aa-b94a-adaf767084c3",
+    "retailPrice": 0.0004,
+    "unitOfMeasure": "1K",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-04-01T00:00:00Z",
+    "productName": "Azure OpenAI",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "5.6 luna ShortCo Opt Std Gl 1M Tokens",
+    "meterId": "0edf673f-01f3-55db-b300-3aaf436652c8",
+    "retailPrice": 1.2,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2026-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "5.6 luna ShortCo Inp Std Gl 1M Tokens",
+    "meterId": "1e606a78-a5c9-5eaf-8d82-4144957c289d",
+    "retailPrice": 0.2,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2026-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "gpt 4.1 mini Inp glbl Tokens",
+    "meterId": "57521dfc-bef8-5487-b986-74c323006a82",
+    "retailPrice": 0.0004,
+    "unitOfMeasure": "1K",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-04-01T00:00:00Z",
+    "productName": "Azure OpenAI",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "gpt 4.1 mini Outp glbl Tokens",
+    "meterId": "9e3ce534-5dc7-5335-974b-9d0c96250659",
+    "retailPrice": 0.0016,
+    "unitOfMeasure": "1K",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-04-01T00:00:00Z",
+    "productName": "Azure OpenAI",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "GPT 5 Mini cchd Inpt DZone 1M Tokens",
+    "meterId": "81271040-74e6-50a5-892a-a7ff780c8b46",
+    "retailPrice": 0.0275,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "GPT 5 Mini Inpt DZone 1M Tokens",
+    "meterId": "98f1d5fa-d072-5c83-b642-14ee0dd9a28a",
+    "retailPrice": 0.275,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "GPT 5 Mini outpt Glbl 1M Tokens",
+    "meterId": "b9ce889d-2272-584c-a68c-c9f120813746",
+    "retailPrice": 2.0,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "GPT 5 Mini Inpt Glbl 1M Tokens",
+    "meterId": "c49bbc0f-4a04-5700-b71a-92aa11ab9cee",
+    "retailPrice": 0.25,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "GPT 5 Mini outpt DZone 1M Tokens",
+    "meterId": "cdcc3879-2b8b-5b38-ae60-241797699355",
+    "retailPrice": 2.2,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  },
+  {
+    "meterName": "GPT 5 Mini cchd Inpt Glbl 1M Tokens",
+    "meterId": "d3fde0bf-d04f-57d4-a8c8-1d8b19d2ca21",
+    "retailPrice": 0.025,
+    "unitOfMeasure": "1M",
+    "armRegionName": "eastus2",
+    "effectiveStartDate": "2025-08-01T00:00:00Z",
+    "productName": "Azure OpenAI GPT5",
+    "currencyCode": "USD"
+  }
+]

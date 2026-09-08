@@ -215,7 +215,7 @@ test("denied GPS leaves the map usable without inventing a pin", async ({
     }),
   );
   await page.goto("/farm");
-  await page.getByRole("button", { name: "Usar mi ubicación GPS" }).click();
+  await page.getByRole("button", { name: "Usar mi ubicación", exact: true }).click();
   await expect(
     page.getByText("El permiso de ubicación está desactivado.", {
       exact: false,
@@ -346,7 +346,9 @@ test("GPS pin persists and old farm records are preserved in the informational w
     longitude: -76.1,
     accuracy: 12,
   });
-  await page.addInitScript(() =>
+  await page.addInitScript(() => {
+    if (sessionStorage.getItem("legacy-farm-seeded")) return;
+    sessionStorage.setItem("legacy-farm-seeded", "1");
     localStorage.setItem(
       "agroamigo-farms-v2",
       JSON.stringify({
@@ -367,18 +369,23 @@ test("GPS pin persists and old farm records are preserved in the informational w
           },
         ],
       }),
-    ),
-  );
+    );
+  });
   await page.goto("/farm/old-farm");
   await expect(page.locator(".location-place")).toContainText("La Esperanza");
-  const before = await page.evaluate(() =>
-    localStorage.getItem("agroamigo-farms-v2"),
-  );
-  await page.getByRole("button", { name: "Usar mi ubicación GPS" }).click();
+  await page.getByRole("button", { name: "Usar mi ubicación", exact: true }).click();
   await expect(page.locator(".zone-map")).toHaveAttribute(
     "data-pin-lat",
     "1.9",
   );
+  const saved = await page.evaluate(() => localStorage.getItem("agroamigo-farms-v2"));
+  const profile = JSON.parse(saved!).farms[0].profile;
+  expect(profile).toMatchObject({
+    name: "La Esperanza", municipalityId: "41551", area: "3",
+    locationMethod: "gps",
+  });
+  expect(Number(profile.latitude)).toBeCloseTo(1.9, 6);
+  expect(Number(profile.longitude)).toBeCloseTo(-76.1, 6);
   await page.goto("/farm");
   await expect(page.locator(".zone-map")).toHaveAttribute(
     "data-pin-lat",
@@ -386,5 +393,5 @@ test("GPS pin persists and old farm records are preserved in the informational w
   );
   expect(
     await page.evaluate(() => localStorage.getItem("agroamigo-farms-v2")),
-  ).toBe(before);
+  ).toBe(saved);
 });

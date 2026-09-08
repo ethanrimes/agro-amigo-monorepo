@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "run_at": "2026-09-08T04:39:18Z",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:18:00-05:00",
+  "stories": [],
+  "url_outcomes": [
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/dolar-economistas-no-se-ponen-de-acuerdo-sobre-caida-ni-como-mitigar-efectos/",
+      "listing_date": "2026-08-25",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/buscan-eliminar-el-impuesto-saludable/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/esposa-y-otros-nuevos-reportes-en-declaracion-de-de-la-espriella/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/reforma-pensional-de-petro-supera-filtro-de-la-corte/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/estos-son-los-cuatro-pilares-del-nuevo-sistema-pensional-en-cual-se-ubica/",
+      "listing_date": "2026-08-27",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/al-gobierno-le-falta-plata-y-no-es-un-problema-pasajero/",
+      "listing_date": "2026-08-28",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/presupuesto-del-tigre-vs-el-de-petro-los-cambios-mas-polemicos/",
+      "listing_date": "2026-08-28",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/reforma-en-codigo-nacional-de-transito-incluiria-reducir-en-un-50-las-multas/",
+      "listing_date": "2026-08-31",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/del-118-al-98-bajo-el-desempleo-en-neiva-durante-el-gobierno-petro/",
+      "listing_date": "2026-09-01",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/no-le-vamos-a-firmar-un-cheque-en-blanco-ponente-de-presupuesto-del-tigre/",
+      "listing_date": "2026-09-02",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/si-no-ahorra-energia-pagara-cargo-adicional-recuerda-electrohuila/",
+      "listing_date": "2026-09-02",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/los-precios-del-arroz-estan-reaccionando-y-van-a-subir-mas/",
+      "listing_date": "2026-09-03",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/milagro-por-la-internacionalizacion-del-huila/",
+      "listing_date": "2026-09-03",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/el-comercio-electronico-alcanza-nuevo-record-de-transacciones/",
+      "listing_date": "2026-09-04",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/se-vienen-descuentos-para-morosos-del-predial-e-ica-en-neiva/",
+      "listing_date": "2026-09-04",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "La Nación",
+      "canonical_url": "https://www.lanacion.com.co/la-produccion-de-cafe-de-colombia-caera-por-segundo-ano-consecutivo/",
+      "listing_date": "2026-09-05",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "inaccessible_restriction",
+      "reason": "Apertura directa marcada como URL no segura/no accesible; fecha y relevancia no se pudieron verificar."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/escasez-de-mango-convencional-presiona-aun-mas-al-segmento-organico-iqf/",
+      "listing_date": "2026-08-25",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/inacal-actualiza-las-buenas-practicas-agricolas-para-el-cultivo-del-arandano-peruano/",
+      "listing_date": "2026-08-25",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/la-oferta-esta-creciendo-ahora-toca-hacer-crecer-el-mercado/",
+      "listing_date": "2026-08-25",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/mas-hectareas-menos-cajas-peru-proyecta-8265-millones-de-cajas-de-uva-para-2026-2027/",
+      "listing_date": "2026-08-25",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/el-gigante-de-los-berries-se-renueva-driscolls-anuncio-nuevo-ceo/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/grape-talks-benjamin-cilloniz-aborda-sin-tapujos-los-retos-de-la-uva-de-mesa/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/informacion-vital-sobre-plantacion-y-gestion-exitosa/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/palta-lo-que-decidira-la-campana-no-sera-el-volumen-sino-el-precio/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/tecnologias-innovativas-para-la-gestion-de-huertos-de-castano/",
+      "listing_date": "2026-08-26",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/aprueban-systems-approach-como-alternativa-de-exportacion-para-envio-de-cerezas-a-vietnam/",
+      "listing_date": "2026-08-27",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/camposol-duplica-su-capacidad-de-despacho-de-arandanos-en-chao/",
+      "listing_date": "2026-08-27",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/un-programa-profesional-de-abejas-puede-cubrir-por-completo-lo-que-el-cultivo-exige/",
+      "listing_date": "2026-08-27",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/exportadores-de-nueces-de-chile-llaman-a-acelerar-mejoras-arancelarias/",
+      "listing_date": "2026-08-28",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/peru-esta-viviendo-un-ano-historico-para-la-palta-en-europa/",
+      "listing_date": "2026-08-28",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    },
+    {
+      "source_name": "Redagrícola",
+      "canonical_url": "https://redagricola.com/guardianes-del-paisaje-llega-a-ica-el-adelanto-del-septimo-capitulo-con-grupo-vanguard-internacional/",
+      "listing_date": "2026-09-03",
+      "checked_at": "2026-09-08T04:39:18Z",
+      "outcome": "accessible_discard_no_colombia_relevance",
+      "reason": "Página original accesible; candidato trata mercados/cultivos de Chile o Perú sin vínculo concreto con Colombia."
+    }
+  ],
+  "counts": {
+    "attempted": 31,
+    "inaccessible": 16,
+    "discarded": 15,
+    "verified_included": 0
+  },
+  "notes": "Los 31 candidatos fueron intentados mediante aperturas directas. No se incluyeron historias."
+}

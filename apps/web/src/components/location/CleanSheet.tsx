@@ -17,7 +17,8 @@ import type {
   Seasonality,
   Evidence,
 } from "@/lib/planning-types";
-import type { Catalog, MarketPrice, Coffee } from "@/lib/market-types";
+import type { MarketPrice, Coffee } from "@/lib/market-types";
+import type { UnifiedCatalog } from "@/lib/catalog-types";
 import { number, money, dateLabel } from "@/lib/market-types";
 import { FULL_MONTHS } from "@/lib/location-types";
 import { fold, seasonalPrices } from "@/lib/planning-math";
@@ -144,10 +145,16 @@ function CropSheet({ crop, data }: { crop: CropReference; data: FarmData }) {
     [priceConfirmed, setPriceConfirmed] = useState(false),
     [uncertainty, setUncertainty] = useState("20"),
     [message, setMessage] = useState("");
-  const catalog = useData<Catalog>("/api/catalog"),
+  const catalog = useData<UnifiedCatalog>("/api/catalog"),
     products =
-      catalog.data?.products.filter((p) =>
-        comparableProduct(crop.crop, p.name),
+      catalog.data?.products.filter(
+        (p) =>
+          // This analysis multiplies kilos by COP/kg; no quote conversion is implied.
+          p.kind === "product" &&
+          p.currency === "COP" &&
+          p.unit === "kg" &&
+          p.series === "monthly" &&
+          comparableProduct(crop.crop, p.name),
       ) || [];
   const product = coffee
     ? "cafe-pergamino-seco"
@@ -159,13 +166,17 @@ function CropSheet({ crop, data }: { crop: CropReference; data: FarmData }) {
       products[0]?.id ||
       "";
   const detail = useData<{ markets: MarketPrice[] }>(
-      !coffee && product ? "/api/products/" + product : null,
+      !coffee && product
+        ? "/api/products/" + product + "?series=monthly"
+        : null,
     ),
-    markets = [...(detail.data?.markets || [])].sort(
-      (a, b) =>
-        Number(fold(b.region) === fold(data.municipality.department)) -
-        Number(fold(a.region) === fold(data.municipality.department)),
-    );
+    markets = (detail.data?.markets || [])
+      .filter((m) => m.unit === "kg")
+      .sort(
+        (a, b) =>
+          Number(fold(b.region) === fold(data.municipality.department)) -
+          Number(fold(a.region) === fold(data.municipality.department)),
+      );
   const market = coffee
     ? "fnc-national"
     : markets.find((m) => m.id === marketId)?.id || markets[0]?.id || "";
@@ -179,7 +190,9 @@ function CropSheet({ crop, data }: { crop: CropReference; data: FarmData }) {
     ? coffeeData.data?.document_id
     : markets.find((m) => m.id === market)?.document_id;
   const historyUnitValid =
-    history.data && ["kg", "kg de pergamino seco"].includes(history.data.unit);
+    // FNC seasonality explicitly converts the 125 kg carga to pergamino seco COP/kg.
+    history.data &&
+    history.data.unit === (coffee ? "kg de pergamino seco" : "kg");
   const projected =
     history.data && historyUnitValid
       ? seasonalPrices(history.data, month)
@@ -865,7 +878,7 @@ function CropSheet({ crop, data }: { crop: CropReference; data: FarmData }) {
         >
           DANE · variable de costos de EMICRON 2024 ↗
         </a>
-        {history.data && (
+        {history.data && historyUnitValid && (
           <>
             <p>
               Estacionalidad: por cada año completo dividimos el precio del mes

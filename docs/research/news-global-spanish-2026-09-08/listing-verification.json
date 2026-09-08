@@ -1,0 +1,151 @@
+{
+  "run_id": "2026-09-08T05:31:40+00:00",
+  "started_at": "2026-09-08T05:31:40+00:00",
+  "window_start": "2026-08-25T00:00:00-05:00",
+  "window_end": "2026-09-07T23:59:59.999999-05:00",
+  "language": "es",
+  "mode": "research_only",
+  "discovery_mode": "listings",
+  "coverage": [
+    {
+      "source_id": "agrosavia",
+      "source": "AGROSAVIA",
+      "group": "investigacion_y_gremios",
+      "discovery_pages": 1,
+      "candidates_found": 15,
+      "articles_attempted": 2,
+      "outcomes": {
+        "publication_date_missing": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 13,
+      "checked_at": "2026-09-08T05:31:43+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "diario-del-sur",
+      "source": "Diario del Sur",
+      "group": "medios_regionales",
+      "discovery_pages": 2,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "insufficient_article_text_for_language_check": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:31:52+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "fao",
+      "source": "FAO",
+      "group": "internacional_relevante",
+      "discovery_pages": 1,
+      "candidates_found": 1,
+      "articles_attempted": 1,
+      "outcomes": {
+        "semantic_classification_pending": 1
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 0,
+      "checked_at": "2026-09-08T05:31:55+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "efe-agro",
+      "source": "EFE Agro",
+      "group": "internacional_relevante",
+      "discovery_pages": 2,
+      "candidates_found": 15,
+      "articles_attempted": 2,
+      "outcomes": {
+        "semantic_classification_pending": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 11,
+      "checked_at": "2026-09-08T05:32:01+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "freshplaza-en-espanol",
+      "source": "FreshPlaza en español",
+      "group": "internacional_especializado",
+      "discovery_pages": 1,
+      "candidates_found": 94,
+      "articles_attempted": 2,
+      "outcomes": {
+        "publication_outside_window": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 92,
+      "checked_at": "2026-09-08T05:32:08+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "portal-fruticola",
+      "source": "Portal Frutícola",
+      "group": "internacional_especializado",
+      "discovery_pages": 2,
+      "candidates_found": 26,
+      "articles_attempted": 2,
+      "outcomes": {
+        "semantic_classification_pending": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "partial",
+      "backlog": 17,
+      "checked_at": "2026-09-08T05:32:15+00:00",
+      "listing_pages_remaining": 2,
+      "coverage_complete": false
+    },
+    {
+      "source_id": "bbc-mundo",
+      "source": "BBC Mundo",
+      "group": "internacional_general",
+      "discovery_pages": 2,
+      "candidates_found": 6,
+      "articles_attempted": 2,
+      "outcomes": {
+        "semantic_classification_pending": 2
+      },
+      "errors": [],
+      "window_start": "2026-08-25T00:00:00-05:00",
+      "status": "checked",
+      "backlog": 4,
+      "checked_at": "2026-09-08T05:32:19+00:00",
+      "listing_pages_remaining": 0,
+      "coverage_complete": false
+    }
+  ],
+  "errors": [],
+  "classified_with_luna": false,
+  "finished_at": "2026-09-08T05:32:19+00:00",
+  "totals": {
+    "stored": 12,
+    "decisions": {
+      "review": 10,
+      "discard": 2
+    },
+    "source_statuses": {
+      "checked": 4,
+      "partial": 3
+    }
+  }
+}

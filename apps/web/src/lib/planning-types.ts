@@ -129,6 +129,29 @@ export type Weather = {
     elevation: number;
     daily: WeatherDaily;
     daily_units: Record<string, string>;
+    timezone?: string;
+    current?: {
+      time: string;
+      interval: number;
+      temperature_2m: number | null;
+      apparent_temperature: number | null;
+      relative_humidity_2m: number | null;
+      precipitation: number | null;
+      weather_code: number | null;
+      wind_speed_10m: number | null;
+      wind_gusts_10m: number | null;
+      is_day: number | null;
+    };
+    current_units?: Record<string, string>;
+    hourly?: {
+      time: string[];
+      temperature_2m: (number | null)[];
+      precipitation_probability: (number | null)[];
+      precipitation: (number | null)[];
+      weather_code: (number | null)[];
+      wind_speed_10m: (number | null)[];
+    };
+    hourly_units?: Record<string, string>;
   };
 };
 export type Seasonality = {
@@ -143,6 +166,11 @@ export type Seasonality = {
   method: string;
 };
 export type InputPrice = {
+  municipality: string;
+  scope: string;
+  brand: string;
+  registration: string;
+  product_line: string;
   id: string;
   name: string;
   department: string;

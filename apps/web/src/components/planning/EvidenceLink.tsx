@@ -12,6 +12,9 @@ export function EvidenceLink({
   market,
   food,
   month,
+  locator,
+  sheet,
+  row,
 }: {
   id?: string;
   children?: React.ReactNode;
@@ -23,10 +26,17 @@ export function EvidenceLink({
   market?: string;
   food?: string;
   month?: string;
+  locator?: string;
+  sheet?: string;
+  row?: number;
 }) {
   const open = useEvidence();
   if (!id) return <span className="muted">Documento no disponible</span>;
   const q = new URLSearchParams();
+  if(locator) q.set("locator",locator);
+  const cell = locator?.match(/^(.*?)!(?:row\s+|[A-Z]+)?(\d+)/);
+  if (sheet || cell?.[1]) q.set("sheet", sheet || cell![1]);
+  if (row || cell?.[2]) q.set("row", String(row || cell![2]));
   if (page) q.set("page", String(page));
   if (municipality) q.set("municipality", municipality);
   if (department) q.set("department", department);

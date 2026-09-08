@@ -1,0 +1,33 @@
+{
+  "count_14_days": 86,
+  "mean_per_day": 6.142857142857143,
+  "daily_counts": {
+    "2026-08-24": 10,
+    "2026-08-25": 15,
+    "2026-08-26": 11,
+    "2026-08-27": 7,
+    "2026-08-28": 8,
+    "2026-08-29": 1,
+    "2026-08-30": 1,
+    "2026-08-31": 5,
+    "2026-09-01": 7,
+    "2026-09-02": 5,
+    "2026-09-03": 8,
+    "2026-09-04": 4,
+    "2026-09-05": 2,
+    "2026-09-06": 2
+  },
+  "smallest_day": 1,
+  "largest_day": 15,
+  "counts_are_before_cross_publisher_dedup_and_relevance": true,
+  "colombia_category_is_subset_not_added": true,
+  "la_nacion_whole_site_comparison": {
+    "request_url": "https://www.lanacion.com.co/wp-json/wp/v2/posts?after=2026-08-23T23%3A59%3A59&before=2026-09-07T00%3A00%3A00&per_page=1&_fields=id%2Cdate%2Clink",
+    "status": 200,
+    "api_total": "415",
+    "records_returned": 1,
+    "sample_dates": [
+      "2026-09-06T19:19:56"
+    ]
+  }
+}

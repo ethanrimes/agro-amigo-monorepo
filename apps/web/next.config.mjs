@@ -6,6 +6,7 @@ const root = path.resolve(
 );
 /** @type {import('next').NextConfig} */
 export default {
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   devIndicators: false,
   output: "standalone",
   outputFileTracingRoot: root,
