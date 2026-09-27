@@ -182,7 +182,7 @@ class WeeklyOCRRetirement(unittest.TestCase):
 
     def test_old_version_or_other_document_completion_does_not_skip_required_ocr(self):
         for checkpoint in (
-            ("doc", "official-v2:dane-weekly-v1"),
+            ("doc", "official-v2:dane-weekly-v2"),
             ("another-doc", worker.parser_version(KIND)),
         ):
             with self.subTest(checkpoint=checkpoint):

@@ -4,10 +4,11 @@ import io
 import math
 import re
 import unicodedata
+from collections import Counter
 from datetime import date
 from urllib.parse import unquote, urldefrag, urljoin, urlsplit
 
-VERSION = "dane-weekly-v2"
+VERSION = "dane-weekly-v3"
 WEEKLY = "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-semanal-1"
 ROOTS = ((WEEKLY, "dane-weekly-index"),)
 INDEX_KINDS = {"dane-weekly-index"}
@@ -719,6 +720,72 @@ def _native_column(
     return result
 
 
+def _column_headers(words, width):
+    minima = sorted(
+        (word for word in words if folded(word["text"]) == "minimo"),
+        key=lambda word: word["x0"],
+    )
+    if len(minima) != 2:
+        return None
+    columns = []
+    for side, minimum in enumerate(minima):
+        lo, hi = (0, width / 2) if side == 0 else (width / 2, width)
+        headers = sorted(
+            (
+                word
+                for word in words
+                if lo < word["x0"] < hi
+                and abs(word["top"] - minimum["top"]) < 3
+                and folded(word["text"]) in {"minimo", "maximo", "medio"}
+            ),
+            key=lambda word: word["x0"],
+        )
+        if [folded(word["text"]) for word in headers] != ["minimo", "maximo", "medio"]:
+            return None
+        columns.append(headers)
+    return columns
+
+
+def _overprint_column_headers(page, top, bottom):
+    """Recover exact overprinted headers; never repair monetary body text."""
+    deduped = page.dedupe_chars(
+        tolerance=0, extra_attrs=("fontname", "size", "x1", "bottom")
+    )
+    if len(deduped.chars) == len(page.chars):
+        return None
+    words = deduped.extract_words(extra_attrs=["fontname", "size"])
+    columns = _column_headers(
+        [word for word in words if top <= word["top"] < bottom], page.width
+    )
+    if columns is None:
+        return None
+    attrs = ("upright", "text", "fontname", "size", "doctop", "x0", "x1", "bottom")
+    remaining = Counter(tuple(char[attr] for attr in attrs) for char in deduped.chars)
+    repaired_header = False
+    for char in page.chars:
+        key = tuple(char[attr] for attr in attrs)
+        if remaining[key]:
+            remaining[key] -= 1
+            continue
+        for side, headers in enumerate(columns):
+            lo, hi = (0, page.width / 2) if side == 0 else (page.width / 2, page.width)
+            if not lo < char["x0"] < hi:
+                continue
+            if char["top"] > max(header["bottom"] for header in headers) + 2 and char[
+                "bottom"
+            ] < min(bottom, page.height - 22):
+                # Duplicated body digits/names need separate validation. Their
+                # existence must not turn a header repair into a guessed price.
+                return None
+            if any(
+                header["x0"] <= char["x0"] < header["x1"]
+                and header["top"] <= char["top"] < header["bottom"]
+                for header in headers
+            ):
+                repaired_header = True
+    return columns if repaired_header else None
+
+
 def parse_pdf(body, url, readings_by_page=None):
     import pdfplumber
 
@@ -785,29 +852,20 @@ def parse_pdf(body, url, readings_by_page=None):
                     flags=re.IGNORECASE,
                 ).strip()
                 local = [w for w in words if top <= w["top"] < bottom]
-                minima = [w for w in local if folded(w["text"]) == "minimo"]
-                if len(minima) != 2 or "pesos por kilogramo" not in folded(context):
+                columns = _column_headers(local, page.width)
+                recovered_headers = False
+                if columns is None:
+                    columns = _overprint_column_headers(page, top, bottom)
+                    recovered_headers = columns is not None
+                if columns is None or "pesos por kilogramo" not in folded(context):
                     failed.append(page_no)
                     continue
-                for side, minimum in enumerate(
-                    sorted(minima, key=lambda w: w["x0"]), 1
-                ):
+                for side, headers in enumerate(columns, 1):
                     lo, hi = (
                         (0, page.width / 2)
                         if side == 1
                         else (page.width / 2, page.width)
                     )
-                    headers = [
-                        w
-                        for w in local
-                        if lo < w["x0"] < hi
-                        and abs(w["top"] - minimum["top"]) < 3
-                        and folded(w["text"]) in {"minimo", "maximo", "medio"}
-                    ]
-                    if len(headers) != 3:
-                        failed.append(page_no)
-                        continue
-                    headers.sort(key=lambda w: w["x0"])
                     body_words = [
                         w
                         for w in local
@@ -819,18 +877,22 @@ def parse_pdf(body, url, readings_by_page=None):
                         and w["bottom"] < min(bottom, page.height - 22)
                     ]
                     try:
-                        result.extend(
-                            _native_column(
-                                _lines(body_words),
-                                headers,
-                                category,
-                                period,
-                                page_no,
-                                table_no,
-                                side,
-                                exceptions,
-                            )
+                        column_rows = _native_column(
+                            _lines(body_words),
+                            headers,
+                            category,
+                            period,
+                            page_no,
+                            table_no,
+                            side,
+                            exceptions,
                         )
+                        if recovered_headers:
+                            for row in column_rows:
+                                row["details"]["native_header_recovery"] = (
+                                    "exact_overprinted_glyphs"
+                                )
+                        result.extend(column_rows)
                     except ValueError as error:
                         if str(error).startswith(
                             (

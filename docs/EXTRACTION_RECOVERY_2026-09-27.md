@@ -11,6 +11,8 @@ This audit started from live failed/review/OCR asset records and downloaded the 
 
 Parser upgrades revalidate mutable URLs and retry stale OCR/review/failure records. Backfill prioritizes these repaired failures ahead of untouched files of the same family. Recent-file selection also retries outdated native parsers. Failures from the current parser retain cooldowns; a pending attempt interrupted during publication does not bypass its cooldown merely because its parser version is old.
 
+PDF retries reuse retained text and tables only for the exact document SHA, page and extraction version. Missing pages are still extracted, changed documents stay independent, and OCR eligibility retains its own scan version. Successful native weekly PDF publication retires obsolete pending OCR tasks with an explicit retained-evidence reason. The OCR worker also checks the exact current-version completion checkpoint before accessing readings or calling a provider. This guard is deliberately limited to weekly PDFs; input PDFs can contain image pages alongside successfully parsed native rows.
+
 ## Reproduced failures and results
 
 | Source family | Actual failure | Recovery and local evidence |
@@ -20,12 +22,15 @@ Parser upgrades revalidate mutable URLs and retry stale OCR/review/failure recor
 | Legacy electricity XLS | Provider/stratum headers were ignored | Three originals each retain 114 tariffs plus literal subsidy/contribution values. Zero and absence remain distinct. No municipality or monetary unit is invented. |
 | Insumo PDF | Mixed bold/plain headings, split words, missing comma whitespace | All eight failed originals now parse 60,790 rows natively. An 11-original stress set retains 71,982 rows: 71,975 valid and seven publisher-overprint reviews. Rendered pages verify unusual printed presentations. |
 | Weekly XLS/XLSX/PDF | Cross-month caption, blank product cell, conflicting duplicate identities | Four failed originals retain 17,727 rows: 17,302 publishable candidates and 425 reviews. All 39,717 workbook price cells reconcile; 4,427 common PDF/companion keys have no numeric differences. The previous 12-original corpus retains identical price/identity/review projections for all 49,006 rows. |
+| Weekly PDF overprinted headers | Exact overlapping glyphs yielded `MMíínniimmoo` instead of `Mínimo` | Native fallback recovers only header coordinates after normal detection fails. Body words remain untouched; overlapping body digits or incomplete headers still require OCR. The 4 September 2026 original yields 4,435 publishable prices and 132 unit reviews; all 130 recovered rows match 390 independent companion-workbook price cells. All 49,006 full records from the prior 12 originals remain identical. |
+| Porkcolombia PDF zero terciles | A positive-only decoder raised before the existing zero-review guard | Literal zero cells now reach review without preventing neighboring valid prices from publication. Quincena 16/2026 retains 280 publishable quotes and 15 reviews: nine zero cells and six existing chronological conflicts. Negative/malformed prices and printed date conflicts remain rejected or reviewed. |
 | Stale department/municipal OCR failures | Stored status referred to an older parser | Three freshly downloaded workbooks already parse natively. Scheduling/version checks make them eligible for native replay; extra OCR is unnecessary. |
 | XLS context fallback | OLE workbook reached a ZIP-only reader | Signature-based native reading preserves cells and hyperlinks for XLS and XLSX. Unknown formats still fail explicitly. |
 
 ## Boundaries retained
 
 - `Anexo-SipsaLeche_dic_2020.xlsx` literally prints November 2020. Its December archive association remains a date conflict.
+- The 29 November 2012 daily XLS contains positive prices under genuinely blank merged market headings. Sixty prices lack market labels; another 178 have explicit labels. The original is retained but this whole file remains unpublished. A neighboring file's different market roster cannot establish the missing identities. Partial publication of its labelled columns is not implemented in this patch.
 - Broken daily XLS links remain publisher download failures. Four corresponding PDF originals are readable prose: 13 pages, zero price grids, 113 dollar mentions. These are not 113 independently validated table observations. PDFs/text stay retained; OCR cannot replace a missing structured table. New zero-grid processing records an explicit coverage diagnostic.
 - This patch does not introduce a general narrative-price parser, infer missing units, or claim that every queued historical source has completed.
 - Original files and ambiguous rows remain retained. No database capacity or retention change is part of this deployment.
@@ -34,14 +39,22 @@ Parser upgrades revalidate mutable URLs and retry stale OCR/review/failure recor
 
 Evidence is under ignored `artifacts/extraction-robustness-2026-09-27/`: source hashes, literal-cell oracles, rendered pages, per-file counts, database tests and cloud replay results. Subdirectories `weekly`, `inputs-pdf`, `inputs-xls`, `monthly`, `references` and `daily` separate source evidence from operational reports.
 
-The first combined regression run executed 398 tests: 315 passed and 83 opt-in database tests were skipped. Separate private PostgreSQL runs passed the 12-test worker/scheduling suite and all three input-PDF version-precedence tests. Focused tests cover HTTP 304, changed bytes, parser upgrades, cooldowns, OCR eligibility, original retention and isolated deployment-package imports. Deployment and cloud publication results will be recorded after verification.
+The final combined ingestion/infra regression run executed 428 tests: 345 passed and 83 opt-in database tests were skipped. Separate private PostgreSQL runs passed the 12-test worker/scheduling suite and all three input-PDF version-precedence tests. Focused tests cover HTTP 304, changed bytes, parser upgrades, cooldowns, OCR eligibility, interrupted-page repair, original retention and isolated deployment-package imports.
+
+The first 27 real Azure replays completed successfully, including all 17 failed monthly annexes. Read-only reconciliation checked all 73,489 price rows against fresh native extraction, 425 retained weekly review rows, and 114 electricity tariffs. Each original downloaded through the public evidence endpoint matched its database SHA and Azure Blob bytes. Frontend history API samples matched stored prices and dates for every replay. Department values identical to an earlier retained source correctly kept that source attribution. Workbook evidence previews returned successfully.
+
+The 64-page March 2014 PDF exposed redundant retention work during its 405-second cloud replay. A subsequent local cache test of the same original completed the page-retention step in 0.054 seconds with zero native text/table extraction calls, while still dispatching OCR eligibility checks. This is a page-retention measurement, not a full pipeline benchmark.
+
+The 92-page June 2013 PDF completed in Azure with 9,860 retained rows in 342 seconds. Both long PDF requests exceeded the HTTP client's wait, but their durable cloud runs finished successfully; verification waited for the ingestion lock and checked the final run and asset records rather than treating the client timeout as a pipeline failure.
 
 ## Code navigation
 
 - `worker.parse_monthly_summary`: monthly matrix, dates and percentages.
 - `inputs.parse_inputs`: legacy/current input headers; `prepare_input_stage`: verified PDF version precedence.
 - `pdf_sources.parse_input_pdf`: native word geometry and review-only unresolved headings.
+- `pdf_sources.extract_pages`: immutable native-page cache and independent OCR scanning.
 - `dane_weekly`: weekly periods, workbook/PDF layouts and per-identity reviews.
+- `official_sources.process`, `ocr.drain`: obsolete weekly OCR retirement after verified completion.
 - `input_references`: electricity/context extraction with native format selection.
 - `queue_plan`: current/historical retry eligibility; `verify_scheduler`: real PostgreSQL queue checks.
 - `test_*fallbacks.py`, `test_input_pdf_recovery.py`, `test_daily_pdf_narrative.py`: evidence-based regressions.
