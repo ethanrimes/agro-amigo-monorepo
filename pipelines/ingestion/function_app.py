@@ -194,7 +194,7 @@ def source_workbook(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(status_code=400)
     with connect() as db:
         row = db.execute(
-            "SELECT content FROM source_document WHERE id=%s AND media_type IN ('application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') AND (publisher IN ('DANE','FNC') OR metadata->>'ingestion_kind' LIKE 'international-%%' OR metadata->>'ingestion_kind' LIKE 'colombia-%%')",
+            "SELECT content FROM source_document WHERE id=%s AND media_type IN ('application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') AND (publisher IN ('DANE','FNC') OR metadata->>'ingestion_kind' LIKE 'international-%%' OR metadata->>'ingestion_kind' LIKE 'colombia-%%' OR metadata->>'ingestion_kind'='dane-weekly-xlsx')",
             (did,),
         ).fetchone()
     if not row:

@@ -6,32 +6,42 @@ from psycopg.types.json import Jsonb
 
 
 def expected_versions():
-    from . import coffee_sources, colombia_sources, international_sources, worker
+    from . import (
+        coffee_sources,
+        colombia_sources,
+        dane_weekly,
+        international_sources,
+        worker,
+    )
 
     kinds = (
         set(worker.PARSER_VERSIONS)
         | set(colombia_sources.PUBLISHERS)
         | set(international_sources.PUBLISHERS)
         | set(coffee_sources.PUBLISHERS)
+        | set(dane_weekly.PUBLISHERS)
     )
     return Jsonb({kind: worker.parser_version(kind) for kind in kinds})
 
 
 def daily_candidates(db, today):
     from .colombia_sources import ROOTS as colombia
+    from .dane_weekly import ROOTS as weekly
     from .international_sources import ROOTS as international
 
-    roots = [url for url, _ in (*colombia, *international)]
+    roots = [url for url, _ in (*colombia, *international, *weekly)]
     return db.execute(
         """WITH fresh AS (
           SELECT url,row_number() OVER(PARTITION BY kind ORDER BY discovered_at DESC,url) AS turn
-          FROM ingestion_asset WHERE (kind LIKE 'colombia-%%' OR kind LIKE 'international-%%')
+          FROM ingestion_asset WHERE (kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' OR kind IN ('dane-weekly-xlsx','dane-weekly-pdf'))
           AND observed_on IS NULL AND status='pending'
           AND discovered_at>=now()-interval '48 hours'
         ), candidates AS (SELECT a.*,row_number() OVER(PARTITION BY kind ORDER BY
           CASE WHEN status='pending' THEN 0 ELSE 1 END, observed_on DESC NULLS LAST,
           checked_at ASC NULLS FIRST,url) turn FROM ingestion_asset a WHERE (
           a.url=ANY(%s::text[]) OR kind IN ('international-worldbank-monthly','colombia-fedegan-csv') OR
+          (kind='dane-weekly-index' AND url ~ %s) OR
+          (kind IN ('dane-weekly-xlsx','dane-weekly-pdf') AND observed_on>=%s) OR
           (kind NOT LIKE 'international-%%' AND kind NOT LIKE 'colombia-%%' AND (
             kind IN ('inputs','inputs-municipal','coffee','coffee-pdf','rice') OR
             (kind IN ('monthly','supply','supply-reference','supply-index') AND
@@ -51,6 +61,8 @@ def daily_candidates(db, today):
             observed_on DESC NULLS LAST,checked_at ASC NULLS FIRST,url""",
         (
             roots,
+            str(today.year) + "|" + str(today.year - 1),
+            today - timedelta(days=70),
             str(today.year) + "|" + str(today.year - 1),
             today.replace(month=1, day=1),
             # DANE revises this annual workbook in place, sometimes months
@@ -80,8 +92,8 @@ def backfill_candidates(db, limit):
         ), fair AS (
           SELECT *,row_number() OVER(PARTITION BY kind ORDER BY
             CASE WHEN status='pending' OR outdated THEN 0 WHEN status='failed' THEN 2 ELSE 1 END,
-            CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' THEN observed_on END DESC NULLS LAST,
-            CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' THEN discovered_at END DESC,
+            CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' OR kind IN ('dane-weekly-xlsx','dane-weekly-pdf') THEN observed_on END DESC NULLS LAST,
+            CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' OR kind IN ('dane-weekly-xlsx','dane-weekly-pdf') THEN discovered_at END DESC,
             coalesce(observed_on,'1900-01-01'),url) AS turn
           FROM eligible
         ) SELECT url,kind,observed_on FROM fair ORDER BY turn,

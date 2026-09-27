@@ -15,7 +15,21 @@ from psycopg.types.json import Jsonb
 VERSION = "official-v2"
 
 
+def is_reference_kind(kind):
+    """Source families handled wholly by the official-reference publisher."""
+    from . import dane_weekly
+
+    return (
+        kind.startswith(("international-", "colombia-"))
+        or kind in dane_weekly.PUBLISHERS
+    )
+
+
 def adapter(kind):
+    from . import dane_weekly
+
+    if kind in dane_weekly.PUBLISHERS:
+        return dane_weekly
     if kind in ("coffee", "coffee-pdf"):
         from . import coffee_sources
 
@@ -32,12 +46,21 @@ def adapter(kind):
 
 
 def discover_roots(db):
+    from . import dane_weekly
+
+    for module in (adapter("international-"), adapter("colombia-"), dane_weekly):
+        for url, kind in module.discover():
+            _queue_source(db, url, kind)
+
+
+def _queue_source(db, url, kind):
+    from . import dane_weekly
     from .worker import queue
 
-    for prefix in ("international-", "colombia-"):
-        module = adapter(prefix)
-        for url, kind in module.discover():
-            queue(db, url, kind)
+    if kind in dane_weekly.PUBLISHERS and kind not in dane_weekly.INDEX_KINDS:
+        queue(db, url, kind, dane_weekly.source_date(url))
+    else:
+        queue(db, url, kind)
 
 
 def publisher(kind):
@@ -45,15 +68,13 @@ def publisher(kind):
 
 
 def process(db, data, document_id, url, kind):
-    from .worker import queue
-
     module = adapter(kind)
     for child_url, child_kind in (
         module.discover(body=data, url=url, kind=kind)
         if kind not in ("coffee", "coffee-pdf")
         else ()
     ):
-        queue(db, child_url, child_kind)
+        _queue_source(db, child_url, child_kind)
     ocr_pages = ()
     try:
         rows = module.parse(data, url, kind)
