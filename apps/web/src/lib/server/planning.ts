@@ -362,6 +362,19 @@ export async function evidence(
     const dates = sourceReviews.map((review) => review.observed_on).filter(Boolean);
     r.metadata.review_note = `La fuente tiene referencias pendientes de verificación${dates.length ? ": " + dates.join(", ") : ""}. Conservamos el archivo original; la fecha del enlace no sustituye la fecha validada de cada precio.`;
   }
+  const reviewedRows = (await db.query<{ count: number }>(
+    `SELECT count(DISTINCT r.source_locator)::int AS count
+     FROM official_source_review r WHERE r.document_id=$1
+     AND NOT EXISTS(SELECT 1 FROM official_price_quote q
+       WHERE q.document_id=r.document_id AND q.source_locator=r.source_locator AND q.parsed_at>r.created_at)
+     AND NOT EXISTS(SELECT 1 FROM historical_price h
+       WHERE h.document_id=r.document_id AND h.source_locator=r.source_locator)`,
+    [r.id],
+  )).rows[0]?.count || 0;
+  if (reviewedRows) {
+    r.metadata.record_review_count = reviewedRows;
+    r.metadata.record_review_note = `Hay ${reviewedRows.toLocaleString("es-CO")} ${reviewedRows === 1 ? "registro de este archivo pendiente" : "registros de este archivo pendientes"} de verificación. Se conservan en el historial y no se usan como precios publicados.`;
+  }
   if (r.metadata.ingestion_kind === "daily") {
     let resolution = (await db.query<{
       resolution: {
@@ -482,7 +495,15 @@ export async function evidence(
   ) {
     r.records = (
       await db.query(
-        "SELECT product_name,market,observed_on,period_start,price,min_price,max_price,currency,unit,basis,source_locator FROM published_official_price WHERE document_id=$1 AND ($2='' OR source_locator=$2) ORDER BY observed_on DESC LIMIT 100",
+        `SELECT product_name,market,observed_on,period_start,price,min_price,max_price,currency,unit,basis,source_locator
+         FROM (SELECT DISTINCT ON(q.source_locator) q.* FROM official_price_quote q
+           WHERE q.document_id=$1 AND ($2='' OR q.source_locator=$2)
+           AND NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
+             AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
+           AND NOT EXISTS(SELECT 1 FROM official_source_review r
+             WHERE r.document_id=q.document_id AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
+           ORDER BY q.source_locator,q.parsed_at DESC) verified
+         ORDER BY observed_on DESC,source_locator LIMIT 100`,
         [r.id, (filters.get("locator") || "").slice(0, 500)],
       )
     ).rows;

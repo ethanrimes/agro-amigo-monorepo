@@ -106,6 +106,9 @@ export function EvidenceContent({
               {typeof data.metadata.review_note === "string" && (
                 <p className="inline-note">{data.metadata.review_note}</p>
               )}
+              {typeof data.metadata.record_review_note === "string" && (
+                <p className="inline-note">{data.metadata.record_review_note}</p>
+              )}
               {typeof data.metadata.price_disagreement_note === "string" && (
                 <p className="inline-note">{data.metadata.price_disagreement_note}</p>
               )}
