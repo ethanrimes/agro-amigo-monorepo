@@ -95,6 +95,41 @@ check('region selects its own historical date and retains city fallback despite 
   const result = await equivalent('Dos'); assert.equal(result.rows.length, 1); assert.equal(result.rows[0].price, '81.0000000000000000');
   assert.equal((await equivalent('absent')).rows.length, 0);
 });
+check('regional latest dates group only real pairs and preserve old local prices despite newer or future rows elsewhere', async () => {
+  await regional({ product: 'city', market: 'A', day: -1, price: 900 });
+  await regional({ product: 'city', market: 'B', day: -1500, price: 70 });
+  await regional({ product: 'city', market: 'B', day: 30, price: 800 });
+  await regional({ product: 'rice', market: 'A', day: -1, price: 50 });
+  await regional({ product: 'milk', market: 'B', day: -1, price: 60 });
+  // B is a valid regional market, but the candidate rice product has no B quote.
+  const result = await equivalent('Dos');
+  assert.equal(result.rows.find((row) => row.id === 'city').price, '71.0000000000000000');
+  assert.ok(!result.rows.some((row) => row.id === 'rice'));
+  assert.equal(result.rows.find((row) => row.id === 'milk').price, '61.0000000000000000');
+  assert.deepEqual((await equivalent('Vacía')).rows, []);
+  assert.deepEqual((await equivalent('absent')).rows, []);
+});
+check('sparse region with long unrelated histories never executes a per-product/per-market scalar date lookup', async () => {
+  await db.query(`INSERT INTO regional_price(document_id,source_locator,observed_on,product_id,product_name,market_name,category,presentation,quantity,source_unit,round,round_label,min_price,max_price,unit,source_page)
+    SELECT repeat('a',64),'sparse-'||n,CURRENT_DATE-20-(n%1000),CASE n%2 WHEN 0 THEN 'city' ELSE 'rice' END,
+      'Historical alias','A','Frutas','Bulto',25,'Kilogramo',1,'Ronda',10,12,'package',1 FROM generate_series(1,100000) n`);
+  await regional({ product: 'milk', market: 'B' });
+  await db.query('ANALYZE regional_price');
+  const candidates = JSON.stringify([{ product_id: 'city', latest_date: '2020-01-01' }, { product_id: 'rice', latest_date: '2020-01-01' }]);
+  assert.deepEqual((await db.query(sql.CITY_CATALOG_SQL, ['Dos', candidates])).rows, []);
+  const plan = (await db.query('EXPLAIN (ANALYZE,FORMAT JSON) '+sql.CITY_CATALOG_SQL, ['Dos', candidates])).rows[0]['QUERY PLAN'][0];
+  const serialized = JSON.stringify(plan);
+  assert.ok(!serialized.includes('"Parent Relationship":"SubPlan"'), 'No scalar date subquery for nonexistent product/market pairs');
+  let examined = 0;
+  function visit(node) {
+    if (node['Relation Name'] === 'regional_price') {
+      examined += (node['Actual Rows'] + (node['Rows Removed by Filter'] || 0)) * node['Actual Loops'];
+    }
+    for (const child of node.Plans || []) visit(child);
+  }
+  visit(plan.Plan);
+  assert.ok(examined <= 100001, `At most one pass over the fixture, not repeated history scans: ${examined}`);
+});
 check('all literal historical aliases survive; unknown markets and future-only dates do not win', async () => {
   await regional({ name: 'Antiguo*', day: -1000 }); await regional({ name: 'Nuevo', price: 50 });
   await regional({ name: 'No geografía', market: 'Unknown', day: 0 });

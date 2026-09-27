@@ -31,16 +31,15 @@ export const CITY_CATALOG_SQL = `WITH candidates AS MATERIALIZED (
   SELECT product_id,latest_date FROM jsonb_to_recordset($2::jsonb) AS n(product_id text,latest_date date)
 ), regional_markets AS MATERIALIZED (
   SELECT DISTINCT m.name FROM market m WHERE $1<>'' AND m.region=$1
-    AND EXISTS(SELECT 1 FROM regional_price r WHERE r.market_name=m.name AND r.observed_on<=${today})
+), regional_dates AS MATERIALIZED (
+  SELECT r.product_id,max(r.observed_on) AS day
+  FROM regional_price r JOIN candidates n ON n.product_id=r.product_id
+  JOIN regional_markets m ON m.name=r.market_name
+  WHERE $1<>'' AND r.observed_on<=${today}
+  GROUP BY r.product_id
 ), dates AS MATERIALIZED (
-  SELECT n.product_id,CASE WHEN $1='' THEN n.latest_date ELSE (
-    SELECT max(day) FROM (
-      SELECT (SELECT r.observed_on FROM regional_price r
-        WHERE r.product_id=n.product_id AND r.market_name=m.name AND r.observed_on<=${today}
-        ORDER BY r.observed_on DESC LIMIT 1) AS day
-      FROM regional_markets m
-    ) regional_dates
-  ) END AS day FROM candidates n
+  SELECT n.product_id,CASE WHEN $1='' THEN n.latest_date ELSE r.day END AS day
+  FROM candidates n LEFT JOIN regional_dates r ON r.product_id=n.product_id
 ), quotes AS (
   SELECT DISTINCT ON(r.product_id,m.id,lower(btrim(r.presentation)),r.quantity,lower(btrim(r.source_unit)))
     r.product_id,m.id AS market_id,r.observed_on,r.min_price,r.max_price,
