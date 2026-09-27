@@ -145,7 +145,7 @@ function CropSheet({ crop, data }: { crop: CropReference; data: FarmData }) {
     [priceConfirmed, setPriceConfirmed] = useState(false),
     [uncertainty, setUncertainty] = useState("20"),
     [message, setMessage] = useState("");
-  const catalog = useData<UnifiedCatalog>("/api/catalog"),
+  const catalog = useData<UnifiedCatalog>("/api/catalog?view=canonical"),
     products =
       catalog.data?.products.filter(
         (p) =>

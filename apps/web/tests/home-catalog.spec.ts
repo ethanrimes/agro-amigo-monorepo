@@ -1,6 +1,22 @@
 import { test, expect } from "@playwright/test";
 import type { UnifiedCatalog } from "../src/lib/catalog-types";
 
+test("home loads bounded cards and searches the complete catalog remotely", async ({ page }) => {
+  const requests: { method: string; body: any }[] = [];
+  page.on("request", request => {
+    if (new URL(request.url()).pathname === "/api/catalog")
+      requests.push({ method: request.method(), body: request.postDataJSON() });
+  });
+  await page.goto("/");
+  await expect(page.locator(".product-grid > .product-card")).toHaveCount(4);
+  await page.getByRole("combobox", { name: "Buscar un producto" }).fill("rosas");
+  await expect(page.getByRole("option").first()).toContainText(/Rosa/i);
+  expect(requests.every(r => r.method === "POST")).toBe(true);
+  expect(requests.some(r => r.body?.limit === 4)).toBe(true);
+  expect(requests.some(r => r.body?.q === "rosas" && r.body?.limit === 24)).toBe(true);
+  await expect(page.locator(".product-grid > .product-card")).toHaveCount(4);
+});
+
 test("home suggestions open the exact official quote and city selection", async ({ page, request }) => {
   test.setTimeout(90_000);
   const response = await request.get("/api/catalog", { timeout: 90_000 });

@@ -17,12 +17,11 @@ import {
   LoadingCards,
   SectionTitle,
 } from "@/components/marketplace/Shared";
-import { useData } from "@/components/marketplace/useData";
+import { useCatalogPage } from "@/components/marketplace/useCatalogPage";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { useFarm } from "@/components/planning/FarmContext";
 import { photoFor } from "@/lib/images";
-import type { UnifiedCatalog } from "@/lib/catalog-types";
-import { catalogHref, catalogMatches } from "@/lib/catalog-display";
+import { catalogHref, catalogIdentity } from "@/lib/catalog-display";
 import sourceStyles from "./source-links.module.css";
 
 function SectionPhoto({ src, icon: Icon }: { src: string; icon: IconType }) {
@@ -41,7 +40,16 @@ export default function Home() {
   const { farm } = useFarm(),
     router = useRouter();
   const [search, setSearch] = useState("");
-  const catalog = useData<UnifiedCatalog>("/api/catalog");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(search), 250);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+  const catalog = useCatalogPage('{"limit":4}');
+  const suggestions = useCatalogPage(debouncedSearch.trim()
+    ? JSON.stringify({ q: debouncedSearch, limit: 24 }) : null);
+  const suggestionProducts = search === debouncedSearch
+    ? suggestions.data?.products || [] : [];
   const sections = [
     {
       href: "/products",
@@ -89,19 +97,22 @@ export default function Home() {
           value={search}
           onChange={setSearch}
           filterOptions={false}
-          options={(catalog.data?.products || []).filter((p) => catalogMatches(p, search)).map((p) => ({
-            id: p.id,
+          options={suggestionProducts.map((p) => ({
+            id: catalogIdentity(p),
             label: p.name,
             detail: [p.category, p.currency, p.basis].filter(Boolean).join(" · "),
           }))}
           onSelect={(option) => {
-            const product = catalog.data?.products.find((p) => p.id === option.id);
+            const product = suggestionProducts.find((p) => catalogIdentity(p) === option.id);
             if (product) router.push(catalogHref(product, "/products?q=" + encodeURIComponent(search)));
           }}
           onSubmit={() =>
             router.push("/products?q=" + encodeURIComponent(search))
           }
         />
+        {search === debouncedSearch && suggestions.error && (
+          <ErrorState message={suggestions.error} retry={suggestions.retry} />
+        )}
       </div>
       <div className="home-sections">
         {sections.map(({ href, label, detail, photo, icon: Icon }) => (
@@ -142,7 +153,7 @@ export default function Home() {
       ) : (
         <div className="product-grid">
           {catalog.data?.products.slice(0, 4).map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={catalogIdentity(p)} product={p} />
           ))}
         </div>
       )}

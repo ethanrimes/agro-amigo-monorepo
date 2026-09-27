@@ -53,8 +53,8 @@ export async function coffee(): Promise<Coffee | null> {
     db.query<{ factor: number; price: number; date: string }>(
       `SELECT factor, price, observed_on AS date FROM coffee_factor WHERE observed_on=(SELECT max(observed_on) FROM coffee_factor WHERE ${WINDOW}) ORDER BY factor`,
     ),
-    db.query<{ price: number; date: string; source_url: string }>(
-      `SELECT price, observed_on AS date, source_url FROM exchange_rate WHERE ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
+    db.query<{ price: number; date: string; source_url: string; document_id: string }>(
+      `SELECT price, observed_on AS date, source_url, document_id FROM exchange_rate WHERE ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
     ),
   ]);
   const latest = reference.rows.at(-1);

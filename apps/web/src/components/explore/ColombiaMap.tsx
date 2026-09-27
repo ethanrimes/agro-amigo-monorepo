@@ -84,7 +84,9 @@ function MapView({
   const showPopup = useRef<
     (points: MapPoint[], title: string, coords: [number, number]) => void
   >(() => {});
-  const catalog = useData<Catalog>(kind === "input" ? null : "/api/catalog");
+  const catalog = useData<Catalog>(
+    kind === "input" ? null : "/api/catalog?view=canonical",
+  );
   const inputs = useData<InputPrice[]>(
     kind === "input"
       ? "/api/planning/inputs?" +

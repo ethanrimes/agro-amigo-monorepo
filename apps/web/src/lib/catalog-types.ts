@@ -24,3 +24,21 @@ export type UnifiedCatalog = Omit<Catalog, "products"> & {
     excluded_nonregional_reason: string | null;
   };
 };
+
+export type CatalogPageRequest = {
+  region?: string;
+  q?: string;
+  category?: string;
+  currency?: string;
+  offset?: number;
+  limit?: number;
+  saved?: string[];
+};
+
+export type CatalogPage = UnifiedCatalog & {
+  total: number;
+  categories: string[];
+  currencies: string[];
+  pagination: { offset: number; limit: number; has_more: boolean };
+  map_product: CatalogProduct | null;
+};
