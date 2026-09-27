@@ -133,3 +133,15 @@ check('unspecified same-date source/unit ties resolve to one eligible whole quot
     (foo.price === '999' && foo.unit === 'litre' && foo.document_id === 'doc' && foo.source_locator === 'other:1'),
   );
 });
+
+check('two-stage directory counts exclude null products while retaining their latest date', async () => {
+  await db.query(`INSERT INTO regional_price VALUES('doc','null-product','2026-09-27',NULL,'Unmapped','Armenia Mercar','Frutas','Bulto',24,'Kilogramo',1,100,120,'kg',1)`);
+  const previous = (await db.query(`WITH quotes AS (${PRICE_QUOTES})
+    SELECT count(DISTINCT product_id) AS product_count,max(observed_on) AS date FROM quotes
+    WHERE market_id='market-1' AND ${window}`)).rows[0];
+  const actual = (await db.query(marketsQuery(window))).rows.find((row) => row.id === 'market-1');
+  assert.equal(actual.product_count, previous.product_count);
+  assert.equal(actual.product_count, '3');
+  assert.equal(actual.date, previous.date);
+  assert.equal(actual.date, '2026-09-27');
+});

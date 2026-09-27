@@ -46,9 +46,18 @@ export const officialDetailLabels: Record<string, string> = {
   published_unit: "Unidad publicada",
   quality: "Calidad",
   statistic: "Medida publicada",
+  trend: "Tendencia publicada",
   methodology_change: "Fecha de cambio de método",
   grade: "Clasificación",
   mostly_min: "Precio habitual mínimo",
   mostly_max: "Precio habitual máximo",
   market_description: "Descripción del mercado",
 };
+
+export function officialDetailValue(key: string, value: unknown): string {
+  if (key === "period_type") {
+    const frequencies: Record<string, string> = { daily: "Diaria", weekly: "Semanal", monthly: "Mensual", annual: "Anual" };
+    return frequencies[String(value)] || String(value);
+  }
+  return String(value);
+}

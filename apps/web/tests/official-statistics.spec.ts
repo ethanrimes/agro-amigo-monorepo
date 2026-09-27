@@ -11,7 +11,7 @@ for (const statistic of ["published_mean", "range_midpoint", undefined]) {
       price: statistic === "range_midpoint" ? 110 : 100, min_price: 90, max_price: 130,
       document_id: "b".repeat(64), source_locator: "Precios!A8:F8",
       source_url: "https://www.dane.gov.co/weekly.xlsx",
-      details: { period_end: "2026-09-25", ...(statistic ? { price_statistic: statistic } : {}) },
+      details: { period_type: "weekly", period_end: "2026-09-25", trend: "++", ...(statistic ? { price_statistic: statistic } : {}) },
     };
     await page.route("**/api/references?*", route => route.fulfill({ json: { reference: quote, history: [quote] } }));
     await page.goto(`/references/${quote.quote_key}`);
@@ -30,5 +30,9 @@ for (const statistic of ["published_mean", "range_midpoint", undefined]) {
       await expect(card).not.toContainText("Punto medio calculado");
       await expect(card).not.toContainText("Precio medio publicado");
     }
+    await page.getByText("Fuente y método del precio", { exact: true }).click();
+    await expect(page.locator(".reference-metadata")).toContainText("Semanal");
+    await expect(page.locator(".reference-metadata")).toContainText("Tendencia publicada");
+    await expect(page.locator(".reference-metadata")).toContainText("++");
   });
 }

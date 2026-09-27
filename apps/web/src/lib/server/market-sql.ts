@@ -7,13 +7,16 @@ export function marketsQuery(dateWindow: string) {
     SELECT r.product_id,m.id AS market_id,r.observed_on FROM regional_price r
     JOIN market m ON m.name=r.market_name JOIN source_document d ON d.id=r.document_id
     WHERE ${dateWindow}
+  ), product_dates AS (
+    SELECT market_id,product_id,max(observed_on) AS date FROM identities
+    GROUP BY market_id,product_id
   )
   SELECT m.*,u.latitude,u.longitude,u.department_id,
     coalesce(p.product_count,0) AS product_count,p.date,s.supply_date
   FROM market m LEFT JOIN municipality u ON u.id=m.municipality_id
   LEFT JOIN (
-    SELECT market_id,count(DISTINCT product_id) AS product_count,max(observed_on) AS date
-    FROM identities GROUP BY market_id
+    SELECT market_id,count(product_id) AS product_count,max(date) AS date
+    FROM product_dates GROUP BY market_id
   ) p ON p.market_id=m.id
   LEFT JOIN (
     SELECT market_id,max(observed_on) AS supply_date FROM supply_observation

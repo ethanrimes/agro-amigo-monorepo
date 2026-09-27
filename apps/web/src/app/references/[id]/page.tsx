@@ -12,6 +12,7 @@ import { CatalogBackLink } from "@/components/marketplace/CatalogBackLink";
 import {
   officialMoney,
   officialDetailLabels,
+  officialDetailValue,
   type OfficialPrice,
 } from "@/lib/official-types";
 export default function Reference({
@@ -217,7 +218,7 @@ export default function Reference({
             .map(([k, v]) => (
               <div key={k}>
                 <dt>{officialDetailLabels[k]}</dt>
-                <dd>{String(v)}</dd>
+                <dd>{officialDetailValue(k, v)}</dd>
               </div>
             ))}
         </dl>
