@@ -84,20 +84,19 @@ class CityZipReview(unittest.TestCase):
         self.assertEqual(archive.call_count, 3)
         self.assertEqual(native.call_count, 3)
         self.assertEqual(classify.call_count, 2)
-        inserts = (
-            db.cursor.return_value.__enter__.return_value.executemany.call_args_list
-        )
+        inserts = db.cursor.return_value.__enter__.return_value.copy.return_value.__enter__.return_value.write_row.call_args_list
         self.assertEqual(
-            [call.args[1] for call in inserts],
+            [call.args[0] for call in inserts],
             [
-                [(sha256(name.encode()).hexdigest(), *row)]
+                (sha256(name.encode()).hexdigest(), *row)
                 for name in (names[0], names[2])
             ],
         )
         reviews = [
             call
             for call in db.execute.call_args_list
-            if "ingestion_checkpoint" in call.args[0]
+            if "INSERT INTO ingestion_checkpoint" in call.args[0]
+            and call.args[1][2].startswith("review:")
         ]
         self.assertEqual(len(reviews), 1)
         self.assertEqual(reviews[0].args[1][:2], ("archive-sha", "city-v4"))
@@ -118,11 +117,14 @@ class CityZipReview(unittest.TestCase):
             ["one.pdf", "two.pdf"], lambda *args: [("native",)]
         )
         self.assertEqual(result, 2)
-        self.assertFalse(
-            any(
-                "ingestion_checkpoint" in call.args[0]
-                for call in db.execute.call_args_list
-            )
+        checkpoints = [
+            call
+            for call in db.execute.call_args_list
+            if "INSERT INTO ingestion_checkpoint" in call.args[0]
+        ]
+        self.assertEqual(len(checkpoints), 2)
+        self.assertTrue(
+            all(call.args[1][2].startswith("city-member:") for call in checkpoints)
         )
 
     def test_every_conflict_stays_review_with_no_regional_rows(self):
@@ -132,7 +134,7 @@ class CityZipReview(unittest.TestCase):
         db, result, _, _, _ = self.publish(["one.pdf", "two.pdf"], parser)
         self.assertEqual(result.count, 0)
         self.assertEqual(len(result.failures), 2)
-        db.cursor.return_value.__enter__.return_value.executemany.assert_not_called()
+        db.cursor.return_value.__enter__.return_value.copy.assert_not_called()
 
     def test_unexpected_failure_is_not_reclassified_or_swallowed(self):
         def parser(*args):
@@ -145,8 +147,9 @@ class CityZipReview(unittest.TestCase):
         db = MagicMock()
 
         def execute(sql, *args):
-            if "ingestion_checkpoint" in sql:
+            if "INSERT INTO ingestion_checkpoint" in sql:
                 raise RuntimeError("Checkpoint unavailable")
+            return MagicMock()
 
         def parser(*args):
             raise SourceDateMismatch("Conflicting date")

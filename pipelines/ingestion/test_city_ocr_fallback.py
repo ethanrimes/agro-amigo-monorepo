@@ -141,8 +141,9 @@ class CityOCRFallback(unittest.TestCase):
         with patch("pipelines.ingestion.city_reports.save_classifications"):
             count = publish_ocr_page(db, "fixture", 2, READ)
         self.assertEqual(count, 2)
-        rows = db.cursor.return_value.__enter__.return_value.executemany.call_args.args[
-            1
+        rows = [
+            call.args[0]
+            for call in db.cursor.return_value.__enter__.return_value.copy.return_value.__enter__.return_value.write_row.call_args_list
         ]
         self.assertEqual([row[-1] for row in rows], [1, 2])
         self.assertTrue(all("verified image OCR" not in row[1] for row in rows))
