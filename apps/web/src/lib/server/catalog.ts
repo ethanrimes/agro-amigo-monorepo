@@ -2,7 +2,7 @@ import "server-only";
 import type { CatalogProduct, UnifiedCatalog } from "../catalog-types";
 import type { OfficialPrice } from "../official-types";
 import type { Product } from "../market-types";
-import { database } from "./db";
+import { cityCatalogNames } from "./city-catalog-names";
 import { catalog } from "./queries";
 import { latestSummaryReferences } from "./summary-references";
 import { latestOfficialReferences } from "./official-references";
@@ -13,7 +13,7 @@ const values = new Map<string, { expires: number; value: unknown }>();
 const pending = new Map<string, Promise<unknown>>();
 
 /** Bound both completed entries and concurrent work; failed reads are not cached. */
-async function cached<T>(key: string, read: () => Promise<T>): Promise<T> {
+async function cached<T>(key: string, read: () => Promise<T>, expiresAt?: () => number): Promise<T> {
   const hit = values.get(key);
   if (hit && hit.expires > Date.now()) return hit.value as T;
   const active = pending.get(key);
@@ -21,7 +21,7 @@ async function cached<T>(key: string, read: () => Promise<T>): Promise<T> {
   if (pending.size >= MAX_CACHE_KEYS) throw new Error("CATALOG_BUSY");
   const work = read().then((value) => {
     values.delete(key);
-    values.set(key, { value, expires: Date.now() + TTL });
+    values.set(key, { value, expires: Math.min(Date.now() + TTL, expiresAt?.() ?? Infinity) });
     while (values.size > MAX_CACHE_KEYS) values.delete(values.keys().next().value!);
     return value;
   }).finally(() => pending.delete(key));
@@ -111,22 +111,21 @@ async function allReferences(): Promise<CatalogProduct[]> {
 }
 
 async function cityNames(): Promise<Map<string, string[]>> {
-  return cached("city-names", async () => {
-    const { rows } = await database().query<{ product_id: string; names: string[] }>(`
-      SELECT product_id,array_agg(DISTINCT product_name ORDER BY product_name) AS names
-      FROM regional_price WHERE observed_on <= (CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
-      GROUP BY product_id
-    `);
-    return new Map(rows.map((r) => [r.product_id, r.names]));
-  });
+  const names = new Map<string, string[]>();
+  for (const row of await cityCatalogNames()) {
+    names.set(row.product_id, [...(names.get(row.product_id) || []), row.product_name]);
+  }
+  return names;
 }
 
 export async function unifiedCatalog(region = ""): Promise<UnifiedCatalog> {
   region = region.slice(0, 100).trim();
+  let sourceExpiresAt = Infinity;
   return cached("catalog:" + region, async () => {
     const [base, references, names, summaries] = await Promise.all([
       catalog(region), allReferences(), cityNames(), latestSummaryReferences(),
     ]);
+    sourceExpiresAt = base.cacheExpiresAt;
     const canonical = new Map<string, CatalogProduct>();
     for (const product of base.products) {
       if (region && product.id === "cafe-pergamino-seco") continue;
@@ -158,5 +157,5 @@ export async function unifiedCatalog(region = ""): Promise<UnifiedCatalog> {
           : null,
       },
     };
-  });
+  }, () => sourceExpiresAt);
 }
