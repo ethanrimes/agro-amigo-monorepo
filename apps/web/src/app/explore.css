@@ -1602,6 +1602,10 @@
 }
 
 /* Read-only original workbooks, with bounded row windows for large archives. */
+.evidence-heading h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 .workbook-toolbar {
   flex-wrap: wrap;
   gap: 12px;
