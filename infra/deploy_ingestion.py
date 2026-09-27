@@ -81,6 +81,16 @@ def database():
     return worker
 
 
+def write_runtime_archive(archive):
+    """Package the same complete runtime manifest used for release verification."""
+    from pipelines.ingestion.worker import RELEASE_FILES
+
+    host_files = {"function_app.py", "host.json", "requirements.txt"}
+    for name in RELEASE_FILES:
+        target = Path(name).name if Path(name).name in host_files else name
+        archive.write(ROOT / name, target)
+
+
 def deploy(code_only=False):
     # Build a complete Linux/Python 3.11 package even when deploying from macOS.
     # Remote Oryx builds and run-from-package conflict on Dedicated Linux plans.
@@ -116,31 +126,7 @@ def deploy(code_only=False):
             for path in target.rglob("*"):
                 if path.is_file():
                     archive.write(path, path.relative_to(stage))
-            for name in ["function_app.py", "host.json", "requirements.txt"]:
-                archive.write(ROOT / "pipelines/ingestion" / name, name)
-            for name in [
-                "pipelines/ingestion/resumable_inputs.py",
-                "pipelines/ingestion/retained_replays.py",
-                "pipelines/ingestion/coffee_sources.py",
-                "pipelines/ingestion/seasonality.py",
-                "pipelines/ingestion/dane_context.py",
-                "pipelines/ingestion/workbook_preview.py",
-                "pipelines/ingestion/queue_plan.py",
-                "pipelines/ingestion/official_sources.py",
-                "pipelines/ingestion/official_catalog.py",
-                "pipelines/ingestion/international_sources.py",
-                "pipelines/ingestion/colombia_sources.py",
-                "pipelines/ingestion/ocr.py",
-                "pipelines/ingestion/special_prices.py",
-                "pipelines/ingestion/input_references.py",
-                "pipelines/ingestion/city_reports.py",
-                "pipelines/ingestion/worker.py",
-                "pipelines/ingestion/inputs.py",
-                "pipelines/ingestion/pdf_sources.py",
-                "pipelines/ingestion/supply.py",
-                "pipelines/demo/import_data.py",
-            ]:
-                archive.write(ROOT / name, name)
+            write_runtime_archive(archive)
         from pipelines.ingestion.worker import RELEASE_FILES, release_fingerprint
 
         with zipfile.ZipFile(bundle) as packaged:
