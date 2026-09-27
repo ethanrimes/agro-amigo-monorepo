@@ -1065,5 +1065,16 @@
     "description": "",
     "sha256": "70958c0c3a8266260d137a2e02d824e7090666b70145ea935b6cc838cf194d7f",
     "illustrative": true
+  },
+  "input-neutral": {
+    "src": "/images/illustrations/input-neutral.svg",
+    "title": "Insumos y servicios agrícolas · ilustración general",
+    "source": "https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations",
+    "author": "AgroAmigo",
+    "license": "Ilustración propia",
+    "licenseUrl": "",
+    "description": "Ilustración general de agricultura; no representa un producto, equipo, animal ni servicio específico.",
+    "sha256": "538402e631f5a2e489e38b497ba50fa760304379f51ca9b9d83ede75e7ed3472",
+    "illustrative": true
   }
 }

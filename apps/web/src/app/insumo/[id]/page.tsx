@@ -157,8 +157,7 @@ function Input({ id }: { id: string }) {
               </div>
             </div>
             <p className="photo-note">
-              Fotografía ilustrativa del material. No representa el empaque ni
-              certifica el producto comercial.
+              {photo!.alt} No certifica el producto comercial.
             </p>
             {filterControls}
             <DetailTabs mode={mode} onChange={setMode} />
