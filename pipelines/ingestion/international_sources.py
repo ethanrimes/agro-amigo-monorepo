@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v4"
+VERSION = "official-international-v5"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -161,13 +161,16 @@ def discover(body=None, url=None, kind=None):
     if kind in {"international-usda-miami-index", "international-usda-boston-index"}:
         soup = BeautifulSoup(body, "html.parser")
         links = []
-        report_name = "MH_FV221.PDF" if "miami" in kind else "BH_FV201.PDF"
+        report_name = "MH_FV221" if "miami" in kind else "BH_FV201"
         for a in soup.select("a[href]"):
             child = urljoin(url, a["href"])
             parsed = urlparse(child)
             if parsed.hostname != "esmis.nal.usda.gov":
                 continue
-            if parsed.path.upper().endswith("/" + report_name):
+            child = parsed._replace(fragment="").geturl()
+            if parsed.path.upper().endswith(
+                ("/" + report_name + ".PDF", "/" + report_name + ".TXT")
+            ):
                 links.append((child, kind.replace("-index", "-flowers")))
             elif parsed.path == urlparse(url).path and re.fullmatch(
                 r"page=\d+", parsed.query
@@ -325,8 +328,12 @@ def parse(body, url, kind):
     if kind == "international-worldbank-monthly":
         return parse_world_bank(body, url)
     if kind == "international-usda-miami-flowers":
+        if urlparse(url).path.lower().endswith(".txt"):
+            return parse_text_flowers(body, url, "Miami")
         return parse_miami_flowers(body, url)
     if kind == "international-usda-boston-flowers":
+        if urlparse(url).path.lower().endswith(".txt"):
+            return parse_text_flowers(body, url, "Boston")
         return parse_boston_flowers(body, url)
     raise ValueError("Unknown international source kind: " + kind)
 
@@ -431,7 +438,9 @@ def _flower_row(
         "price": (low + high) / 2,
         "min": low,
         "max": high,
-        "source_page": int(re.search(r"PDF page (\d+)", locator)[1]),
+        "source_page": int(re.search(r"PDF page (\d+)", locator)[1])
+        if locator.startswith("PDF page")
+        else None,
         "identity_dimensions": {
             "flower": name,
             "variant": variant,
@@ -874,4 +883,276 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
     keys = [(r["product_id"], r["market"], r["date"]) for r in found]
     if len(keys) != len(set(keys)):
         raise ValueError("Ambiguous duplicate Boston flower identity")
+    return found
+
+
+# The old text files print origin codes rather than country names. Preserve the
+# exact code; CA/CD/CB must never be guessed from ISO country abbreviations.
+TEXT_ORIGIN = re.compile(
+    r"^(NENG|CB|CD|CA|CL|CR|EC|ET|FL|GU|HI|IS|IT|KE|MX|NJ|NL|NZ|PE|SF|TH|TL|VN)\b"
+)
+TEXT_UNIT = re.compile(UNIT.pattern + r"|per spray", re.I)
+TEXT_SIZE = re.compile(
+    r"(?:\d+\s*cm|extra long|exlong|long|short|medium|med|large|lge|small|sml)$", re.I
+)
+TEXT_GRADE = re.compile(
+    r"^(?:Sup Sel|Sel|Fcy|Std|Super Select|Select|Fancy|Standard)\b", re.I
+)
+TEXT_COLORS = {
+    "purple",
+    "white",
+    "blue",
+    "pink",
+    "red",
+    "yellow",
+    "green",
+    "assorted",
+    "assorted colors",
+}
+
+
+def _text_review(row, reason):
+    row["price"] = None
+    previous = row["details"].get("quality_issue")
+    row["details"]["quality_issue"] = previous + "; " + reason if previous else reason
+
+
+def _text_blocks(body, market):
+    if len(body) > 5_000_000 or b"\x00" in body:
+        raise ValueError("USDA native text report is not a bounded text document")
+    try:
+        text = body.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        text = body.decode("cp1252")
+    lines = text.splitlines()
+    heading = re.search(
+        r"^"
+        + market.upper()
+        + r" Ornamental (?:Shipping Point|Terminal) Prices as of (\d{1,2}-[A-Z]{3}-\d{4})\s*$",
+        lines[0] if lines else "",
+    )
+    if (
+        not heading
+        or "Specialty Crops Market News" not in text[:1500]
+        or "USDA" not in text[:1500]
+    ):
+        raise ValueError("Unexpected USDA native text report header")
+    day = datetime.strptime(heading[1], "%d-%b-%Y").date()
+    if day > date.today():
+        raise ValueError("USDA native text report is in the future")
+    starts = [i for i, line in enumerate(lines) if line.startswith("---")]
+    if not starts:
+        raise ValueError("USDA native text report contains no commodity blocks")
+    return (
+        day,
+        text,
+        [
+            (
+                " ".join(line.strip() for line in lines[start:stop] if line.strip()),
+                start + 1,
+                stop,
+            )
+            for start, stop in zip(starts, starts[1:] + [len(lines)])
+        ],
+    )
+
+
+def parse_text_flowers(body, url, market):
+    """Publish explicit native TXT identities; isolate uncertain continuations.
+
+    Unlike PDFs, text reports serialize type/grade/size hierarchies inline. We
+    only inherit an unambiguous trailing size or a flat color. Other implicit
+    parent relationships remain review records with every literal price intact.
+    """
+    if market not in {"Miami", "Boston"}:
+        raise ValueError("Unsupported USDA text market")
+    day, report, blocks = _text_blocks(body, market)
+    found = []
+    for block, start, stop in blocks:
+        if ":" not in block:
+            raise ValueError("USDA native text commodity lacks its heading boundary")
+        title, text = block[3:].split(":", 1)
+        commodity_origin = re.search(r"\bMostly ([^.]+)\.", text)
+        default_origin = "Imports through Miami; " + (
+            commodity_origin[0]
+            if commodity_origin
+            else "country not specified per quote"
+        )
+        unit, origin, variant, last = None, None, "", None
+        matches = list(PRICE.finditer(text))
+        for index, match in enumerate(matches):
+            prefix = text[
+                (matches[index - 1].end() if index else 0) : match.start()
+            ].strip(" ,;.")
+            low, high = float(match["low"]), float(match["high"] or match["low"])
+            locator = f"Text lines {start}-{stop}, commodity {title}, quote {index + 1}"
+            if re.search(r"\bmostly\s*$", prefix, re.I) and last is not None:
+                if not (last["min"] <= low <= high <= last["max"]):
+                    last["details"].setdefault("out_of_range_mostly_quotes", []).append(
+                        {"min": low, "max": high, "source_locator": locator}
+                    )
+                    _text_review(
+                        last,
+                        "Printed mostly range is outside the full native text quote",
+                    )
+                else:
+                    _record_mostly(last, low, high, locator)
+                continue
+            if (
+                re.fullmatch(
+                    r"(?:few|occas|occasional)(?: (?:higher|lower))?", prefix, re.I
+                )
+                and last is not None
+            ):
+                last["details"].setdefault("exceptional_prices", []).append(
+                    {
+                        "qualifier": prefix,
+                        "min": low,
+                        "max": high,
+                        "source_locator": locator,
+                    }
+                )
+                continue
+            prefix = re.sub(
+                r"^(?:(?:few|occas|occasional) (?:higher|lower)\s*[,;]?\s*)+",
+                "",
+                prefix,
+                flags=re.I,
+            )
+            units = list(TEXT_UNIT.finditer(prefix))
+            reset_unit = bool(units)
+            if reset_unit:
+                unit = units[-1][0].lower()
+                prefix = prefix[units[-1].end() :].strip(" ,;.")
+            issue = None
+            if not unit:
+                issue = "Price precedes its first explicit package in native text"
+            explicit_origin = False
+            if market == "Boston":
+                code = TEXT_ORIGIN.match(prefix)
+                if code:
+                    origin = "USDA origin code " + code[1]
+                    prefix = prefix[code.end() :].strip(" ,;.")
+                    explicit_origin = True
+                elif reset_unit:
+                    # The next explicit package can omit an origin only when
+                    # the previous origin remains in the same commodity block.
+                    issue = issue or (
+                        None if origin else "Native text origin code is not recognized"
+                    )
+            else:
+                country = re.match(
+                    r"^(?:Ecuador|Colombia|Costa Rica|Mexico|Guatemala)\b", prefix, re.I
+                )
+                if country:
+                    origin = country[0]
+                    prefix = prefix[country.end() :].strip(" ,;.")
+                    explicit_origin = True
+                elif last is not None and last["details"].get("inline_origin"):
+                    issue = (
+                        issue
+                        or "Origin after an inline country comparison is not explicit"
+                    )
+                    origin = default_origin
+                else:
+                    origin = default_origin
+            if not origin:
+                issue = issue or "Native text origin is not explicit"
+            qualifier = None
+            qualified = re.search(r"\b(few|occas|occasional)\s*$", prefix, re.I)
+            if qualified:
+                qualifier = qualified[1]
+                prefix = prefix[: qualified.start()].strip(" ,;.")
+            previous_variant = variant
+            if (
+                reset_unit
+                or explicit_origin
+                or last is None
+                or TEXT_GRADE.match(prefix)
+            ):
+                variant = prefix or (
+                    previous_variant if explicit_origin and not reset_unit else ""
+                )
+            elif TEXT_SIZE.fullmatch(prefix) and previous_variant:
+                variant = TEXT_SIZE.sub("", previous_variant).strip() + " " + prefix
+                variant = variant.strip()
+                if last["details"].get("quality_issue"):
+                    issue = (
+                        issue
+                        or "Size continuation inherits an unresolved native text identity"
+                    )
+            elif (
+                prefix.lower() in TEXT_COLORS
+                and previous_variant.lower() in TEXT_COLORS
+            ):
+                variant = prefix
+            else:
+                variant = prefix
+                issue = (
+                    issue or "Implicit native text variety/grade parent requires review"
+                )
+            # A no-market notice may precede the next actual price. Its implied
+            # scope is not safe to inherit as a product variant.
+            if re.search(
+                r"insufficient|no offerings|too few hands|to quote", prefix, re.I
+            ):
+                issue = (
+                    issue or "Unquoted variant scope crosses the next native text price"
+                )
+            row = _flower_row(
+                title,
+                variant,
+                unit or "unspecified package",
+                1,
+                1,
+                day,
+                market,
+                locator,
+                block,
+                url,
+                origin or "unspecified origin",
+            )
+            row.update(price=(low + high) / 2, min=low, max=high)
+            row["details"].update(
+                native_format="TXT",
+                literal_prefix=prefix,
+                previous_variant=previous_variant,
+                inline_origin=explicit_origin and market == "Miami",
+                line_start=start,
+                line_end=stop,
+            )
+            if market == "Miami":
+                row["basis"] = (
+                    "EE. UU. · FOB sur de Florida; derechos y empaque incluidos"
+                    if re.search(r"SALES F\.O\.B\. SOUTH\s+FLORIDA", report)
+                    and "PACKING CHARGES INCLUDED" in report
+                    else "EE. UU. · importación en Miami; base del informe original"
+                )
+                row["details"]["commodity_origin_note"] = (
+                    commodity_origin[0] if commodity_origin else None
+                )
+            else:
+                row["details"]["origin_code_note"] = (
+                    "Original USDA code retained without an inferred country mapping"
+                )
+            if qualifier:
+                row["details"]["quote_qualifier"] = qualifier
+            if low <= 0 or high < low:
+                issue = issue or "Invalid literal native text price range"
+            if issue:
+                _text_review(row, issue)
+            found.append(row)
+            last = row
+    if not found:
+        raise ValueError("No native USDA flower prices found")
+    identities = {}
+    for row in found:
+        key = (row["product_id"], row["unit"], row["basis"], row["date"])
+        if key in identities:
+            prior = identities[key]
+            if (prior["min"], prior["max"]) != (row["min"], row["max"]):
+                _text_review(prior, "Conflicting duplicate native text quote identity")
+                _text_review(row, "Conflicting duplicate native text quote identity")
+        else:
+            identities[key] = row
     return found

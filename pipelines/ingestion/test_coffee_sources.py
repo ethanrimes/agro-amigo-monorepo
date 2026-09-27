@@ -112,6 +112,13 @@ class CoffeeSourceTests(unittest.TestCase):
         self.assertEqual(
             official_sources.publish_rows(MagicMock(), rows, "fixture", "coffee"), 20
         )
+        publication = coffee.publication_rows(rows)
+        self.assertEqual(len(publication), 19)
+        self.assertEqual(
+            len(rows), 20
+        )  # Full extraction remains independently auditable.
+        self.assertTrue(all(r["series"] != "fnc-internal-daily" for r in publication))
+        self.assertEqual(coffee.discover(body=b"original", url=URL, kind="coffee"), [])
 
     def test_missing_zero_and_structural_notices_are_not_prices(self):
         def edit(book):
