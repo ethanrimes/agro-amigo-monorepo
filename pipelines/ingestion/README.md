@@ -433,3 +433,10 @@ batch_size=100)`, which commits independently resumable batches. Run boundaries
 refresh up to100 dirty identities; each completed official source refreshes its
 affected identities and completion marker together. A reviewed identity with no
 eligible quote becomes a tombstone. Raw observations and evidence are retained.
+
+Native extraction recovery and its evidence are documented in
+`docs/EXTRACTION_RECOVERY_2026-09-27.md`. The order is native file cells,
+verified alternate headers/PDF geometry, then rendered-image OCR only when
+native extraction fails. Contradictory or absent source evidence stays in
+review. Parser upgrades retry stale OCR/error records before untouched files
+within the same backfill family, while preserving current-parser cooldowns.

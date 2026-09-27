@@ -31,14 +31,17 @@ def daily_candidates(db, today):
 
     roots = [url for url, _ in (*colombia, *international, *weekly)]
     return db.execute(
-        """WITH fresh AS (
+        """WITH versions AS (
+          SELECT *,processor_version IS DISTINCT FROM coalesce(%s::jsonb->>kind,'source-v1') AS outdated
+          FROM ingestion_asset
+        ), fresh AS (
           SELECT url,row_number() OVER(PARTITION BY kind ORDER BY discovered_at DESC,url) AS turn
           FROM ingestion_asset WHERE (kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' OR kind IN ('dane-weekly-xlsx','dane-weekly-pdf'))
           AND observed_on IS NULL AND status='pending'
           AND discovered_at>=now()-interval '48 hours'
         ), candidates AS (SELECT a.*,row_number() OVER(PARTITION BY kind ORDER BY
           CASE WHEN status='pending' THEN 0 ELSE 1 END, observed_on DESC NULLS LAST,
-          checked_at ASC NULLS FIRST,url) turn FROM ingestion_asset a WHERE (
+          checked_at ASC NULLS FIRST,url) turn FROM versions a WHERE (
           a.url=ANY(%s::text[]) OR kind IN ('international-worldbank-monthly','colombia-fedegan-csv') OR
           (kind='dane-weekly-index' AND url ~ %s) OR
           (kind IN ('dane-weekly-xlsx','dane-weekly-pdf') AND observed_on>=%s) OR
@@ -51,8 +54,8 @@ def daily_candidates(db, today):
             (kind IN ('daily','daily-pdf','city-zip') AND observed_on>=%s)
           )) OR ((kind LIKE 'international-%%' OR kind LIKE 'colombia-%%') AND observed_on>=%s)
           OR a.url IN (SELECT url FROM fresh WHERE turn<=3))
-          AND status<>'awaiting-ocr' AND (status<>'review' OR checked_at<now()-interval '1 day')
-          AND (checked_at IS NULL OR checked_at<now()-interval '6 hours')
+          AND (outdated OR (status<>'awaiting-ocr' AND (status<>'review' OR checked_at<now()-interval '1 day')))
+          AND ((outdated AND status<>'pending') OR checked_at IS NULL OR checked_at<now()-interval '6 hours')
         ) SELECT url,kind,observed_on FROM candidates
           ORDER BY CASE WHEN url=ANY(%s::text[]) THEN 0 ELSE 1 END,turn,
             CASE WHEN kind='coffee-pdf' THEN 0 WHEN kind='coffee' THEN 1
@@ -60,6 +63,7 @@ def daily_candidates(db, today):
                  WHEN kind IN ('inputs','inputs-municipal','supply') THEN 4 ELSE 3 END,
             observed_on DESC NULLS LAST,checked_at ASC NULLS FIRST,url""",
         (
+            expected_versions(),
             roots,
             str(today.year) + "|" + str(today.year - 1),
             today - timedelta(days=70),
@@ -80,7 +84,7 @@ def daily_candidates(db, today):
 def backfill_candidates(db, limit):
     return db.execute(
         """WITH versions AS (
-          SELECT *,processor_version<>coalesce(%s::jsonb->>kind,'source-v1') AS outdated
+          SELECT *,processor_version IS DISTINCT FROM coalesce(%s::jsonb->>kind,'source-v1') AS outdated
           FROM ingestion_asset
         ), eligible AS (
           SELECT * FROM versions WHERE
@@ -88,10 +92,12 @@ def backfill_candidates(db, limit):
              (outdated AND status IN ('complete','processed','archived','review','awaiting-ocr')) OR
              (status IN ('complete','processed','archived','review') AND checked_at<now()-interval '30 days'))
             AND (checked_at IS NULL OR checked_at<now()-interval '6 hours' OR
-                 (outdated AND status IN ('complete','processed','archived','review','awaiting-ocr')))
+                 (outdated AND status IN ('complete','processed','archived','review','awaiting-ocr','failed')))
         ), fair AS (
           SELECT *,row_number() OVER(PARTITION BY kind ORDER BY
-            CASE WHEN status='pending' OR outdated THEN 0 WHEN status='failed' THEN 2 ELSE 1 END,
+            CASE WHEN outdated AND status IN ('failed','review','awaiting-ocr') THEN 0
+                 WHEN status='pending' THEN 1 WHEN outdated THEN 2
+                 WHEN status='failed' THEN 4 ELSE 3 END,
             CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' OR kind IN ('dane-weekly-xlsx','dane-weekly-pdf') THEN observed_on END DESC NULLS LAST,
             CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' OR kind IN ('dane-weekly-xlsx','dane-weekly-pdf') THEN discovered_at END DESC,
             coalesce(observed_on,'1900-01-01'),url) AS turn

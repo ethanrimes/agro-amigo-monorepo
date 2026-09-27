@@ -321,6 +321,54 @@ class WeeklyPostgresWiring(unittest.TestCase):
         )
         self.assertNotIn(URL + "?cooldown", backfill)
 
+    def test_new_native_parser_retries_stale_ocr_before_pending_backlog(self):
+        kind = "inputs-annex"
+        for status in ("awaiting-ocr", "failed", "review"):
+            self.seed(
+                "https://example.invalid/stale-" + status,
+                kind,
+                day=DAY,
+                status=status,
+                checked="now()",
+                version="old-native-parser",
+            )
+            self.seed(
+                "https://example.invalid/current-" + status,
+                kind,
+                day=DAY,
+                status=status,
+                checked="now()",
+            )
+        self.seed(
+            "https://example.invalid/old-pending",
+            kind,
+            day=date(2012, 1, 31),
+            status="pending",
+        )
+        self.seed(
+            "https://example.invalid/interrupted-pending",
+            kind,
+            day=DAY,
+            status="pending",
+            checked="now()",
+            version="old-native-parser",
+        )
+        fresh = {r[0] for r in queue_plan.daily_candidates(self.db, date(2026, 9, 27))}
+        backfill = [r[0] for r in queue_plan.backfill_candidates(self.db, 100)]
+        self.assertNotIn("https://example.invalid/interrupted-pending", fresh)
+        self.assertNotIn("https://example.invalid/interrupted-pending", backfill)
+        for status in ("awaiting-ocr", "failed", "review"):
+            stale = "https://example.invalid/stale-" + status
+            current = "https://example.invalid/current-" + status
+            self.assertIn(stale, fresh)
+            self.assertIn(stale, backfill)
+            self.assertNotIn(current, fresh)
+            self.assertNotIn(current, backfill)
+            self.assertLess(
+                backfill.index(stale),
+                backfill.index("https://example.invalid/old-pending"),
+            )
+
     def test_weekly_publication_keeps_period_range_and_official_only_identity(self):
         self.seed(URL, KIND)
         self.db.execute(

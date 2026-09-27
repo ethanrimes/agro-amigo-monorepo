@@ -9,6 +9,7 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from pipelines.ingestion import dane_weekly
 from pipelines.ingestion.worker import release_fingerprint
 
 from .deploy_ingestion import write_runtime_archive
@@ -39,7 +40,7 @@ class WorkerPackage(unittest.TestCase):
                 check=True,
             )
             version, fingerprint = json.loads(result.stdout)
-            self.assertEqual(version, "dane-weekly-v1")
+            self.assertEqual(version, dane_weekly.VERSION)
             self.assertEqual(fingerprint, release_fingerprint())
 
 

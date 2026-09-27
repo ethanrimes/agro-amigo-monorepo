@@ -27,6 +27,37 @@ CATEGORIES = {
     "3.7": "Servicios agrícolas",
 }
 
+# Literal sheet families observed in DANE's 2015–2018 native XLS annexes.
+# Keep agricultural insecticides separate from the explicitly pecuary family.
+LEGACY_CATEGORIES = {
+    "fertilizantes": "1.3",
+    "fungicidas": "1.4",
+    "insecticidas": "1.6",
+    "insecticidas-agricolas": "1.6",
+    "herbicidas": "1.5",
+    "coadyudantes-agricolas": "1.2",
+    "coadyuvantes-agricolas": "1.2",
+    "coadyudantes": "1.2",
+    "alimentos": "2.1",
+    "alimentos-pecuarios": "2.1",
+    "medicamentos": "2.6",
+    "antibioticos": "2.2",
+    "vitaminas": "2.7",
+    "hormonales": "2.4",
+    "antisepticos": "2.3",
+    "insecticidas-pecuarios": "2.5",
+    "insecticida-pecuario": "2.5",
+    "servicios-agricolas": "3.7",
+    "distritos-de-riego": "3.7",
+    "arriendos": "3.1",
+    "material-propagacion": "3.6",
+    "material-de-propagacion": "3.6",
+    "empaques": "3.3",
+    "elementos-pecuarios": "3.2",
+    "especie-productiva": "3.4",
+    "jornales": "3.5",
+}
+
 
 def parse_inputs(data):
     from .worker import (
@@ -50,7 +81,25 @@ def parse_inputs(data):
         legacy_product = None
         for rownum, row in enumerate(rows, 1):
             normalized = [clean(v) for v in row]
-            if "Productos y mercados" in normalized:
+            legacy_heading = next(
+                (
+                    value
+                    for value in normalized
+                    if value
+                    in (
+                        "Productos y mercados",
+                        "Tipo de jornal y mercados",
+                        "Tipo de pago, mercado",
+                    )
+                ),
+                None,
+            )
+            if not legacy_heading and any(
+                re.fullmatch(r"Precio medio \w+", value, re.IGNORECASE)
+                for value in normalized
+            ):
+                raise ValueError(f"Unmapped legacy input table header: {sheet}")
+            if legacy_heading:
                 prices = [
                     (i, re.fullmatch(r"Precio medio (\w+)", value, re.IGNORECASE))
                     for i, value in enumerate(normalized)
@@ -63,54 +112,55 @@ def parse_inputs(data):
                     stamp = re.search(
                         r"\b([A-ZÁÉÍÓÚ]+)\s?(\d{2}|20\d{2})$", sheet, re.IGNORECASE
                     )
-                    if len(prices) != 1 or not stamp:
+                    if not stamp:
                         raise ValueError(f"Unverified legacy input period: {sheet}")
                     month = MONTH_NUM.get(stamp[1].lower())
                     year = int(stamp[2]) + (2000 if len(stamp[2]) == 2 else 0)
+                    current_prices = [
+                        (i, match)
+                        for i, match in prices
+                        if MONTH_NUM.get(match[1].lower()) == month
+                    ]
                     if (
                         not month
-                        or month != MONTH_NUM.get(prices[0][1][1].lower())
+                        or not current_prices
                         or not 2012 <= year <= today().year
                     ):
                         raise SourceDateMismatch(
                             f"Conflicting legacy input sheet/header period: {sheet}"
                         )
+                    if len(current_prices) != 1:
+                        raise ValueError(
+                            f"Ambiguous legacy input price columns: {sheet}"
+                        )
                     day = date(year, month, calendar.monthrange(year, month)[1])
-                    category_key = {
-                        "fertilizantes": "1.3",
-                        "fungicidas": "1.4",
-                        "insecticidas-agricolas": "1.6",
-                        "herbicidas": "1.5",
-                        "coadyudantes-agricolas": "1.2",
-                        "coadyuvantes-agricolas": "1.2",
-                        "alimentos": "2.1",
-                        "medicamentos": "2.6",
-                        "antibioticos": "2.2",
-                        "vitaminas": "2.7",
-                        "hormonales": "2.4",
-                        "antisepticos": "2.3",
-                        "insecticidas-pecuarios": "2.5",
-                        "servicios-agricolas": "3.7",
-                        "arriendos": "3.1",
-                        "material-propagacion": "3.6",
-                    }.get(slug(sheet[: stamp.start()]))
+                    category_key = LEGACY_CATEGORIES.get(slug(sheet[: stamp.start()]))
                     if category_key is None:
                         raise ValueError(f"Unmapped legacy input category: {sheet}")
+                    if legacy_heading == "Tipo de pago, mercado" and (
+                        slug(sheet[: stamp.start()]) != "distritos-de-riego"
+                        or "Distrito de riego" not in normalized
+                    ):
+                        raise ValueError(f"Unmapped legacy irrigation header: {sheet}")
                     category = CATEGORIES[category_key]
                     legacy = (
-                        prices[0][0],
+                        current_prices[0][0],
                         day,
-                        normalized.index("Productos y mercados"),
-                        normalized[prices[0][0]],
+                        normalized.index(legacy_heading),
+                        normalized[current_prices[0][0]],
+                        normalized.index("Distrito de riego")
+                        if legacy_heading == "Tipo de pago, mercado"
+                        else None,
                     )
                     legacy_product = None
                     continue
+                raise ValueError(f"Unverified legacy input price header: {sheet}")
             if legacy:
                 from .special_prices import DEPARTMENTS
 
-                col, day, place_col, printed_price_header = legacy
+                col, day, place_col, printed_price_header, district_col = legacy
                 price = row[col] if col < len(row) else None
-                place = normalized[place_col]
+                place = normalized[place_col] if place_col < len(normalized) else ""
                 if not positive(price):
                     if place and not any(positive(v) for v in row[1:]):
                         legacy_product = place
@@ -130,11 +180,26 @@ def parse_inputs(data):
                     raise ValueError(
                         f"Unmapped legacy input identity/location: {sheet}, row {rownum}"
                     )
-                if category == CATEGORIES["3.1"]:
+                if district_col is not None:
+                    name = (
+                        normalized[district_col]
+                        if district_col < len(normalized)
+                        else ""
+                    )
+                    presentation = legacy_product
+                    if not name:
+                        raise ValueError(
+                            f"Missing legacy irrigation district: {sheet}, row {rownum}"
+                        )
+                elif category == CATEGORIES["3.1"]:
                     name, presentation = legacy_product, legacy_product
                 elif "," in legacy_product:
                     name, presentation = map(clean, legacy_product.rsplit(",", 1))
                 else:
+                    raise ValueError(
+                        f"Missing legacy input presentation: {sheet}, row {rownum}"
+                    )
+                if not name or not presentation:
                     raise ValueError(
                         f"Missing legacy input presentation: {sheet}, row {rownum}"
                     )
@@ -215,12 +280,13 @@ def parse_inputs(data):
             if header is None:
                 continue
 
-            def get(*names):
+            def get(*names, current_row=row, current_header=header):
                 return next(
                     (
-                        row[header[name]]
+                        current_row[current_header[name]]
                         for name in names
-                        if name in header and header[name] < len(row)
+                        if name in current_header
+                        and current_header[name] < len(current_row)
                     ),
                     None,
                 )
@@ -354,6 +420,8 @@ def identity(name, meta):
 def prepare_input_stage(db, did, observed_on=None, *, preserve=False):
     """Stage a complete immutable period before grouping its publication work."""
 
+    from .pdf_sources import INPUT_PDF_VERSION
+
     columns = "id,department,observed_on,name,category,presentation,price,document_id,source_locator,brand,registration,product_line,municipality"
     with db.cursor() as cur:
         cur.execute(
@@ -363,8 +431,16 @@ def prepare_input_stage(db, did, observed_on=None, *, preserve=False):
         with db.cursor(name="input_source_rows") as source:
             source.itersize = 2000
             source.execute(
-                "SELECT source_locator,series,observed_on,product_name,market_name,unit,price,details FROM historical_price WHERE document_id=%s AND (%s::date IS NULL OR observed_on=%s) AND series IN ('dane-inputs','dane-inputs-municipal','dane-inputs-pdf') AND (series<>'dane-inputs-pdf' OR details->>'parser_version'='inputs-pdf-v4' OR NOT EXISTS(SELECT 1 FROM historical_price newer WHERE newer.document_id=%s AND newer.details->>'parser_version'='inputs-pdf-v4')) AND NOT (series='dane-inputs' AND details->>'sheet'='3.2' AND NOT details ? 'category')",
-                (did, observed_on, observed_on, did),
+                "SELECT source_locator,series,observed_on,product_name,market_name,unit,price,details FROM historical_price WHERE document_id=%s AND (%s::date IS NULL OR observed_on=%s) AND series IN ('dane-inputs','dane-inputs-municipal','dane-inputs-pdf') AND (series<>'dane-inputs-pdf' OR details->>'parser_version'=%s OR (NOT EXISTS(SELECT 1 FROM historical_price newer WHERE newer.document_id=%s AND newer.details->>'parser_version'=%s) AND (details->>'parser_version'='inputs-pdf-v4' OR NOT EXISTS(SELECT 1 FROM historical_price newer WHERE newer.document_id=%s AND newer.details->>'parser_version'='inputs-pdf-v4')))) AND NOT (series='dane-inputs' AND details->>'sheet'='3.2' AND NOT details ? 'category')",
+                (
+                    did,
+                    observed_on,
+                    observed_on,
+                    INPUT_PDF_VERSION,
+                    did,
+                    INPUT_PDF_VERSION,
+                    did,
+                ),
             )
             while batch := source.fetchmany(2000):
                 with cur.copy(f"COPY input_stage({columns}) FROM STDIN") as cp:

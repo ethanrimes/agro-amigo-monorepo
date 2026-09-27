@@ -7,7 +7,7 @@ import unicodedata
 from datetime import date
 from urllib.parse import unquote, urldefrag, urljoin, urlsplit
 
-VERSION = "dane-weekly-v1"
+VERSION = "dane-weekly-v2"
 WEEKLY = "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-semanal-1"
 ROOTS = ((WEEKLY, "dane-weekly-index"),)
 INDEX_KINDS = {"dane-weekly-index"}
@@ -71,6 +71,22 @@ def _period(text):
         if not 1 <= (last - first).days <= 7:
             raise ValueError("Weekly printed range is not a supported weekly period")
         return first, last
+    # A single printed year applies to both months of an ordinary cross-month
+    # week: 2021 (27 de febrero al 5 de marzo). A December/January range needs
+    # explicit two-year evidence handled above, not an inferred year change.
+    year_first = re.search(
+        rf"\b(20\d{{2}})\s*\(\s*(\d{{1,2}})\s+de\s+({MONTH})\s+al\s+(\d{{1,2}})\s+de\s+({MONTH})\s*\)",
+        text,
+    )
+    if year_first:
+        year, first, m1, last, m2 = year_first.groups()
+        result = (
+            date(int(year), MONTH_NUM[m1], int(first)),
+            date(int(year), MONTH_NUM[m2], int(last)),
+        )
+        if not 1 <= (result[1] - result[0]).days <= 7:
+            raise ValueError("Weekly printed range is not a supported weekly period")
+        return result
     # Explicit years on both sides of a New Year week.
     cross = re.search(
         rf"\b(\d{{1,2}})\s*(?:de\s*)?({MONTH})\s*(?:de\s*)?(20\d{{2}})\s*(?:al|a|-)\s*(\d{{1,2}})\s*(?:de\s*)?({MONTH})\s*(?:de\s*)?(20\d{{2}})\b",
@@ -137,7 +153,8 @@ def _period(text):
 def _url_period(url):
     text = folded(unquote(urlsplit(url).path.rsplit("/", 1)[-1]))
     explicit = re.search(
-        rf"(\d{{1,2}})({MONTH})(20\d{{2}})[_-]?(\d{{1,2}})({MONTH})(20\d{{2}})", text
+        rf"(\d{{1,2}})({MONTH})[_-]?(20\d{{2}})[_-]?(\d{{1,2}})({MONTH})[_-]?(20\d{{2}})",
+        text,
     )
     if explicit:
         first = date(int(explicit[3]), MONTH_NUM[explicit[2]], int(explicit[1]))
@@ -244,6 +261,7 @@ def _row(
     *,
     page=None,
     exceptions=None,
+    allow_missing_identity=False,
 ):
     from .worker import slug, today
 
@@ -256,9 +274,10 @@ def _row(
     ):
         raise ValueError(f"Weekly mean is outside the printed min/max at {locator}")
     name, market = clean(name), clean(market)
-    if not name or not market:
+    missing_identity = not name or not market
+    if missing_identity and not allow_missing_identity:
         raise ValueError("Weekly price lacks a literal product or market")
-    unit = _unit(name, exceptions or {})
+    unit = _unit(name, exceptions or {}) if name else None
     row = {
         "product_id": slug(name),
         "product_name": name,
@@ -298,7 +317,53 @@ def _row(
                 "literal_unit_heading": "Pesos por kilogramo",
             }
         )
+    if missing_identity:
+        row["price"] = None
+        row["details"].update(
+            {
+                "quality_issue": "La fila monetaria tiene una celda de producto o mercado vacía; no se arrastra una identidad de filas vecinas.",
+                "literal_product_name": name or None,
+                "literal_market_name": market or None,
+                "literal_min": numbers[0],
+                "literal_max": numbers[1],
+                "literal_mean": numbers[2],
+            }
+        )
     return row
+
+
+def _review_workbook_conflicts(rows):
+    """A named workbook row is independent; withhold only conflicting keys."""
+    groups = {}
+    for row in rows:
+        if row.get("price") is None:
+            continue
+        key = (
+            row["product_id"],
+            row["product_name"],
+            row["market"],
+            row["currency"],
+            row["unit"],
+            row["basis"],
+            row["date"],
+        )
+        groups.setdefault(key, []).append(row)
+    for group in groups.values():
+        if len({(r["min"], r["max"], r["price"]) for r in group}) <= 1:
+            continue
+        locators = [r["source_locator"] for r in group]
+        for row in group:
+            row["details"].update(
+                {
+                    "quality_issue": "El anexo publica precios distintos para el mismo producto, mercado, unidad y semana; todas las filas en conflicto se conservan para revisión.",
+                    "literal_min": row["min"],
+                    "literal_max": row["max"],
+                    "literal_mean": row["price"],
+                    "conflicting_source_locators": locators,
+                }
+            )
+            row["price"] = None
+    return rows
 
 
 def _verify_url(period, url):
@@ -456,13 +521,14 @@ def parse_workbook(body, url):
                     period,
                     f"{name}!row {row_no},cols C:E",
                     exceptions=exceptions,
+                    allow_missing_identity=True,
                 )
             )
     if not result:
         raise ValueError(
             "Weekly workbook native extraction failed: no supported monetary tables; original requires layout/OCR review"
         )
-    return result
+    return _review_workbook_conflicts(result)
 
 
 def _lines(words):
@@ -535,6 +601,12 @@ def _native_column(
                 anchor = prior[-1]
             elif following:
                 anchor = following[0]
+            elif prior and 0 < top - prior[-1]["top"] <= 28:
+                # Readable text can contain an orphan heading at a page end.
+                # Keep its literal evidence and withhold the adjacent quote;
+                # neither a guessed product nor repeated OCR resolves it.
+                prior[-1].setdefault("unbound_tail_labels", []).append(label)
+                continue
             else:
                 raise ValueError(
                     f"Weekly PDF unresolved final market line at page {page_no}: {label}"
@@ -549,19 +621,29 @@ def _native_column(
                 float(w["text"].replace(".", "").replace(",", "."))
                 for w in anchor["values"]
             ]
-            result.append(
-                _row(
-                    product,
-                    " ".join(anchor["labels"]),
-                    *values,
-                    anchor["trend"],
-                    category,
-                    period,
-                    f"PDF page {page_no},table {table_no},column {side},line {anchor['number']}",
-                    page=page_no,
-                    exceptions=exceptions,
-                )
+            record = _row(
+                product,
+                " ".join(anchor["labels"]),
+                *values,
+                anchor["trend"],
+                category,
+                period,
+                f"PDF page {page_no},table {table_no},column {side},line {anchor['number']}",
+                page=page_no,
+                exceptions=exceptions,
             )
+            if anchor.get("unbound_tail_labels"):
+                record["details"].update(
+                    {
+                        "quality_issue": "El final del bloque contiene texto sin una fila monetaria vinculable; se conserva el texto literal y la cotización adyacente para revisión.",
+                        "literal_unbound_tail_labels": anchor["unbound_tail_labels"],
+                        "literal_min": values[0],
+                        "literal_max": values[1],
+                        "literal_mean": values[2],
+                    }
+                )
+                record["price"] = None
+            result.append(record)
 
     column_left = min(
         (w["x0"] for line in lines for w in line if w["x0"] < boundary), default=0
@@ -600,7 +682,10 @@ def _native_column(
             and not follows_centered_price
             and not numeric
             and not bold
-            and not re.search(r"[,.(]", label)
+            and not re.search(
+                r"[,.(]",
+                re.sub(r"\((?:bolsita|caja)\)", "", label, flags=re.IGNORECASE),
+            )
             and label_words[0]["x0"] <= column_left + 3
             and max(w["x1"] for w in label_words)
             < column_left + (boundary - column_left) * 0.85
@@ -620,7 +705,7 @@ def _native_column(
             flush()
             block = []
             label = re.sub(
-                r"\s*\((?:continuaci[oó]n|conclusi[oó]n)\)",
+                r"\s*\(?(?:continuaci[oó]n|conclusi[oó]n)\)$",
                 "",
                 label,
                 flags=re.IGNORECASE,
@@ -768,6 +853,11 @@ def parse_pdf(body, url, readings_by_page=None):
     # block. Preserve every row as review; never invent the absent heading.
     seen = {}
     ambiguous = set()
+    orphaned_products = {
+        row["product_name"]
+        for row in result
+        if row["details"].get("literal_unbound_tail_labels")
+    }
     for row in result:
         identity = (row["product_name"], row["market"], row["date"], row["unit"])
         values = (
@@ -779,10 +869,15 @@ def parse_pdf(body, url, readings_by_page=None):
             ambiguous.add(row["product_name"])
         seen[identity] = values
     for row in result:
-        if row["product_name"] in ambiguous:
+        if row["product_name"] in ambiguous or row["product_name"] in orphaned_products:
+            issue = (
+                "El bloque contiene un encabezado final sin filas vinculables; las cotizaciones con ese producto, incluidas sus continuaciones, se conservan para revisión."
+                if row["product_name"] in orphaned_products
+                else "El bloque repite mercados con precios distintos y no permite verificar un encabezado de producto único; se conservan las cifras literales para revisión."
+            )
             row["details"].update(
                 {
-                    "quality_issue": "El bloque repite mercados con precios distintos y no permite verificar un encabezado de producto único; se conservan las cifras literales para revisión.",
+                    "quality_issue": issue,
                     "literal_min": row["min"],
                     "literal_max": row["max"],
                     "literal_mean": row["price"] or row["details"].get("literal_mean"),

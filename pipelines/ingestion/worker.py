@@ -60,14 +60,14 @@ LOCK = 914070912
 RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
     "daily-index": "source-v2",
-    "inputs": "inputs-v3",
-    "inputs-municipal": "inputs-v3",
-    "inputs-annex": "inputs-v3",
-    "inputs-pdf": "inputs-pdf-v4",
-    "inputs-reference": "inputs-reference-v4",
+    "inputs": "inputs-v4",
+    "inputs-municipal": "inputs-v4",
+    "inputs-annex": "inputs-v4",
+    "inputs-pdf": "inputs-pdf-v5",
+    "inputs-reference": "inputs-reference-v5",
     "city-zip": "city-v4",
     "monthly": "monthly-units-v2",
-    "monthly-annex": "monthly-annex-v2",
+    "monthly-annex": "monthly-annex-v3",
     "daily": "daily-units-v2",
     "daily-pdf": "daily-pdf-v4",
     "monthly-pdf": "monthly-pdf-v3",
@@ -861,6 +861,15 @@ def parse_monthly_summary(data, expected_day):
             book.release_resources()
 
     def percent(value, sheet_name, row_number, column_number):
+        # Several native 2015 annexes mix numeric cells and literal decimal
+        # strings in the same variation column. Text is already percent points;
+        # applying a cell's percent format to it would multiply it twice.
+        if isinstance(value, str):
+            text = clean(value)
+            if re.fullmatch(r"[+-]?\d+(?:[.,]\d+)?", text):
+                number = float(text.replace(",", "."))
+                return number if math.isfinite(number) else None
+            return None
         if not isinstance(value, (int, float)) or not math.isfinite(value):
             return None
         return value * (
@@ -886,14 +895,14 @@ def parse_monthly_summary(data, expected_day):
             pair = re.search(
                 r"\b("
                 + "|".join(MONTHS)
-                + r")\s*/\s*(?:"
+                + r")(?:\s+(?:de\s+)?(20\d{2}))?\s*/\s*(?:"
                 + "|".join(MONTHS)
-                + r")\s+(20\d{2})\b",
+                + r")\s+(?:de\s+)?(20\d{2})\b",
                 heading,
                 re.IGNORECASE,
             )
             if pair:
-                year, month = int(pair[2]), MONTH_NUM[pair[1].lower()]
+                year, month = int(pair[2] or pair[3]), MONTH_NUM[pair[1].lower()]
                 day = date(year, month, calendar.monthrange(year, month)[1])
             else:
                 day = publication_month(heading, "")
@@ -910,7 +919,7 @@ def parse_monthly_summary(data, expected_day):
                     if not market or not name:
                         raise ValueError("Missing monthly summary label")
                     observations[(name, market)] = [
-                        f"{sheet}!row {row_no},col {col + 1}; monthly-annex-v2",
+                        f"{sheet}!row {row_no},col {col + 1}; monthly-annex-v3",
                         "dane-monthly-summary",
                         day,
                         name,
@@ -920,10 +929,18 @@ def parse_monthly_summary(data, expected_day):
                         percent(row[col + 1], sheet, row_no, col + 2),
                         {
                             "variation_basis": "monthly",
-                            "parser_version": "monthly-annex-v2",
+                            "parser_version": "monthly-annex-v3",
+                            "extraction_method": "native-workbook-price-matrix",
                         },
                     ]
-        elif "Variación año corrido" in heading or "Variación anual" in heading:
+        elif any(
+            label in heading
+            for label in (
+                "Variación año corrido",
+                "Variación anual",
+                "Variación 12 meses",
+            )
+        ):
             field = (
                 "year_to_date_percent"
                 if "año corrido" in heading
@@ -940,8 +957,7 @@ def parse_monthly_summary(data, expected_day):
                     if (
                         clean(market)
                         and col < len(row)
-                        and isinstance(row[col], (int, float))
-                        and math.isfinite(row[col])
+                        and percent(row[col], sheet, row_no, col + 1) is not None
                     ):
                         changes.setdefault((name, clean(market)), {})[field] = percent(
                             row[col], sheet, row_no, col + 1
@@ -1590,6 +1606,8 @@ def _process_asset(db, url, kind, day):
                 "Conflicting source keys retained but excluded from app: "
                 + str(conflicts)
                 if conflicts
+                else "No supported monetary price grid; original and extracted text retained. Narrative price mentions are not published as table observations."
+                if kind in ("daily-pdf", "monthly-pdf") and not count
                 else None,
                 url,
             ),
