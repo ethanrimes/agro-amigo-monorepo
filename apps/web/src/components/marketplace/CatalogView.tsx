@@ -4,33 +4,27 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IoHeartOutline } from "react-icons/io5";
 import { usePreferences } from "./Preferences";
-import { useData } from "./useData";
+import { useCatalogPage } from "./useCatalogPage";
 import { ProductCard, ErrorState, LoadingCards, Notice } from "./Shared";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { MapButton } from "@/components/explore/ColombiaMap";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
-import type { UnifiedCatalog } from "@/lib/catalog-types";
+import type { CatalogPage, CatalogProduct } from "@/lib/catalog-types";
 import {
   catalogCurrency,
   catalogHref,
   catalogIdentity,
-  catalogMatches,
   catalogReturnTo,
-  catalogSavedKey,
   catalogUnit,
 } from "@/lib/catalog-display";
 import styles from "./catalog.module.css";
 
 export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
-  const { region, saved, setRegion } = usePreferences(),
+  const { region, saved, setRegion, ready } = usePreferences(),
     router = useRouter();
-  const { data, loading, error, retry } = useData<UnifiedCatalog>(
-    "/api/catalog?region=" + encodeURIComponent(region),
-  );
   const [query, setQuery] = useState(""),
     [category, setCategory] = useState("Todos"),
     [currency, setCurrency] = useState(""),
-    [limit, setLimit] = useState(24),
     [filtersReady, setFiltersReady] = useState(false);
   useEffect(() => {
     const restore = () => {
@@ -57,31 +51,42 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
     )
       window.history.replaceState(window.history.state, "", returnTo);
   }, [filtersReady, returnTo]);
-  useEffect(() => setLimit(24), [query, category, currency, region]);
-
-  const rows = data?.products || [];
-  const candidates = rows.filter(
-    (product) =>
-      (!savedOnly || saved.includes(catalogSavedKey(product))) &&
-      (category === "Todos" || product.category === category) &&
-      (!currency || catalogCurrency(product) === currency),
+  const [search, setSearch] = useState("");
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearch(query), 250);
+    return () => window.clearTimeout(timer);
+  }, [query]);
+  const criteria = { region, q: search, category, currency, ...(savedOnly ? { saved } : {}) };
+  const criteriaKey = JSON.stringify(criteria);
+  const [position, setPosition] = useState({ key: "", offset: 0 });
+  const offset = position.key === criteriaKey ? position.offset : 0;
+  const { data, loading: fetching, error, retry } = useCatalogPage(
+    ready && filtersReady ? JSON.stringify({ ...criteria, offset, limit: 24 }) : null,
   );
-  const products = candidates.filter((product) =>
-    catalogMatches(product, query),
-  );
-  const categories = [
-    ...new Set([
-      ...rows.map((p) => p.category),
-      ...(category !== "Todos" ? [category] : []),
-    ]),
-  ].sort((a, b) => a.localeCompare(b, "es"));
-  const currencies = [
-    ...new Set([...rows.map(catalogCurrency), ...(currency ? [currency] : [])]),
-  ].sort();
-  const mapProduct =
-    products.find(
-      (p) => p.map_supported !== false && p.id === "aguacate-hass",
-    ) || products.find((p) => p.map_supported !== false);
+  const [loaded, setLoaded] = useState<{ key: string; products: CatalogProduct[]; metadata: CatalogPage | null }>({ key: "", products: [], metadata: null });
+  useEffect(() => {
+    if (!data) return;
+    setLoaded((old) => ({
+      key: criteriaKey,
+      products: [...new Map([
+        ...(data.pagination.offset > 0 && old.key === criteriaKey ? old.products : []),
+        ...data.products,
+      ].map((product) => [catalogIdentity(product), product])).values()],
+      metadata: data,
+    }));
+  }, [data, criteriaKey]);
+  const loading = fetching || query !== search || !ready || !filtersReady;
+  const metadata = data || (loaded.key === criteriaKey ? loaded.metadata : null);
+  const products = loaded.key === criteriaKey ? loaded.products : data?.products || [];
+  const total = metadata?.total || 0;
+  const categories = [...new Set([
+    ...(metadata?.categories || []), ...(category !== "Todos" ? [category] : []),
+  ])].sort((a, b) => a.localeCompare(b, "es"));
+  const currencies = [...new Set([
+    ...(metadata?.currencies || []), ...(currency ? [currency] : []),
+  ])].sort();
+  const mapProduct = metadata?.map_product;
+  const addingPage = offset > 0 && loaded.key === criteriaKey && products.length > 0;
 
   return (
     <>
@@ -97,7 +102,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
               : "Busca tu producto o variedad y consulta sus precios."}
           </p>
         </div>
-        {!savedOnly && mapProduct && (
+        {!savedOnly && !loading && mapProduct && (
           <MapButton
             kind="product"
             id={mapProduct.id}
@@ -145,7 +150,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
             <option value="">Sin filtro de departamento</option>
             {[
               ...new Set([
-                ...(data?.regions || []),
+                ...(metadata?.regions || []),
                 ...(region ? [region] : []),
               ]),
             ]
@@ -188,9 +193,9 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
           </select>
         </label>
       </div>
-      {data?.filters?.excluded_nonregional_reason && (
+      {metadata?.filters?.excluded_nonregional_reason && (
         <p className={styles.regionNote}>
-          {data.filters.excluded_nonregional_reason}
+          {metadata.filters.excluded_nonregional_reason}
         </p>
       )}
       <div className={styles.activeFilters}>
@@ -220,15 +225,15 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
           ]}
         />
       </div>
-      {loading ? (
+      {loading && !addingPage ? (
         <LoadingCards />
-      ) : error ? (
+      ) : error && !addingPage ? (
         <ErrorState message={error} retry={retry} />
       ) : (
         <>
           <div className="results-label">
             <span>
-              {products.length} resultados
+              {total} resultados
               {region ? " en " + region : ""}
             </span>
             <Link href={savedOnly ? "/products" : "/saved"}>
@@ -237,7 +242,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
           </div>
           {products.length ? (
             <div className="product-grid">
-              {products.slice(0, limit).map((p) => (
+              {products.map((p) => (
                 <ProductCard
                   key={catalogIdentity(p)}
                   product={p}
@@ -263,13 +268,14 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
               </Link>
             </div>
           )}
-          {products.length > limit && (
+          {metadata?.pagination.has_more && (
             <div className="load-more">
               <button
                 className="button secondary"
-                onClick={() => setLimit((v) => v + 24)}
+                disabled={loading}
+                onClick={() => error ? retry() : setPosition({ key: criteriaKey, offset: metadata.pagination.offset + metadata.pagination.limit })}
               >
-                Ver más productos ({products.length - limit})
+                {loading ? "Cargando productos…" : error ? "Reintentar cargar más" : `Ver más productos (${Math.max(0, total - products.length)})`}
               </button>
             </div>
           )}

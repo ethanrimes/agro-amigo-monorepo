@@ -149,7 +149,8 @@ async function fixtures(page: Page, historyUnit: string) {
           reference_year,
           monthly_prices: Array(12).fill(5000),
           document_id: "fixture",
-          source_rows: [],
+          source_rows: Array(12).fill("Fixture monthly source"),
+          source_documents: Array.from({ length: 12 }, () => ["fixture"]),
         })),
         method: "Fixture for price-basis compatibility",
       });

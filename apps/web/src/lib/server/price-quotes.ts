@@ -1,4 +1,5 @@
 import "server-only";
+import { currentClassifications } from "../price-classification";
 import { database, WINDOW } from "./db";
 import { summaryReferencesForProduct } from "./summary-references";
 
@@ -131,7 +132,7 @@ export async function filteredProduct(
   const historical = requested.history === "all";
   const filter = `product_id=$1 AND ($2='' OR region=$2) AND series=$3 AND presentation=$4 AND units=$5 AND ($6='' OR market_id=$6) AND ${historical ? "observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date" : WINDOW}`;
   const args = [id, region, series, presentation, units, market];
-  const [markets, history, classification, additionalReferences] = await Promise.all([
+  const [markets, history, additionalReferences] = await Promise.all([
     db.query(
       `WITH quotes AS (${PRICE_QUOTES}) SELECT DISTINCT ON(market_id) *,market_id AS id,market_name AS name,observed_on AS date FROM quotes WHERE ${filter} ORDER BY market_id,observed_on DESC`,
       args,
@@ -139,10 +140,6 @@ export async function filteredProduct(
     db.query(
       `WITH quotes AS (${PRICE_QUOTES}) SELECT observed_on AS date,avg(price) AS price,count(DISTINCT market_id) AS market_count FROM quotes WHERE ${filter} GROUP BY observed_on ORDER BY observed_on`,
       args,
-    ),
-    db.query(
-      PRODUCT_CLASSIFICATIONS_SQL,
-      [id],
     ),
     region ? Promise.resolve([]) : summaryReferencesForProduct(product.name),
   ]);
@@ -152,7 +149,7 @@ export async function filteredProduct(
     markets: markets.rows,
     history: history.rows,
     current: latest || null,
-    classification: classification.rows.map((r) => r.category_path),
+    classification: currentClassifications(markets.rows, product.category, latest?.date),
     additional_references: additionalReferences,
     filters: {
       region,

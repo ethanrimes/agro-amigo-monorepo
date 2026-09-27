@@ -119,12 +119,24 @@ async function cityNames(): Promise<Map<string, string[]>> {
   return names;
 }
 
-export async function unifiedCatalog(region = ""): Promise<UnifiedCatalog> {
+async function catalogSource<T>(name: string, read: Promise<T>): Promise<T> {
+  try { return await read; }
+  catch (error) {
+    // Operational label only: never emit database URLs, query parameters or keys.
+    console.error("Catalog source read failed", name, (error as { code?: string }).code || "unknown");
+    throw error;
+  }
+}
+
+export async function unifiedCatalog(region = "", canonicalOnly = false): Promise<UnifiedCatalog> {
   region = region.slice(0, 100).trim();
   let sourceExpiresAt = Infinity;
-  return cached("catalog:" + region, async () => {
+  return cached((canonicalOnly ? "canonical:" : "catalog:") + region, async () => {
     const [base, references, names, summaries] = await Promise.all([
-      catalog(region), allReferences(), cityNames(), latestSummaryReferences(),
+      catalogSource("canonical", catalog(region)),
+      canonicalOnly ? Promise.resolve([]) : catalogSource("official", allReferences()),
+      catalogSource("city-aliases", cityNames()),
+      canonicalOnly ? Promise.resolve([]) : catalogSource("monthly-summaries", latestSummaryReferences()),
     ]);
     sourceExpiresAt = base.cacheExpiresAt;
     const canonical = new Map<string, CatalogProduct>();

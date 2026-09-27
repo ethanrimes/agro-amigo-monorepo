@@ -10,6 +10,7 @@ import {
   catalogSavedKey,
   catalogUnit,
 } from "../src/lib/catalog-display";
+import { paginateCatalog } from "../src/lib/catalog-page";
 import { officialMoney } from "../src/lib/official-types";
 
 const product = (extra: Partial<CatalogProduct> = {}): CatalogProduct => ({
@@ -96,7 +97,7 @@ test.describe("unified catalog browser coverage", () => {
     // Use the captured live API response for deterministic UI checks. Detail
     // pages below still read the actual source-backed API.
     await page.route("**/api/catalog*", (route) =>
-      route.fulfill({ json: catalog }),
+      route.fulfill({ json: route.request().method() === "POST" ? paginateCatalog(catalog, route.request().postDataJSON()) : catalog }),
     );
   });
 
@@ -170,8 +171,7 @@ test.describe("unified catalog browser coverage", () => {
     await expect(
       page.getByRole("button", { name: "Ver mapa", exact: true }),
     ).toHaveCount(0);
-    await page.getByRole("combobox", { name: "Buscar producto" }).click();
-    await page.getByRole("option").first().click();
+    await card.getByRole("link", { name: "Ver producto", exact: true }).click();
     await expect(page).toHaveURL(/\/references\//);
     const sourceResponse = await request.get(
       "/api/references?id=" + row.quote_key,

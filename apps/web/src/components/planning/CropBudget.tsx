@@ -1,4 +1,5 @@
 "use client";
+import { comparableProduct } from "@/lib/cleansheet";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -94,7 +95,7 @@ export function CropBudget({
     [days, setDays] = useState(""),
     [status, setStatus] = useState(""),
     [saved, setSaved] = useState<Record<string, unknown>[]>([]);
-  const catalog = useData<UnifiedCatalog>("/api/catalog");
+  const catalog = useData<UnifiedCatalog>("/api/catalog?view=canonical");
   const products = useMemo(
     () =>
       catalog.data?.products.filter((p) => {
@@ -107,20 +108,7 @@ export function CropBudget({
           p.series !== "monthly"
         )
           return false;
-        const name = fold(p.name),
-          c = fold(crop.crop);
-        if (c === "arroz" || c === "cana panelera") return false; // Paddy / cane cannot be priced as milled rice / panela.
-        if (c === "frijol")
-          return name.startsWith("frijol") && !/verde|enlatad/.test(name);
-        if (c === "maiz")
-          return (
-            name.startsWith("maiz") &&
-            /cascara|seco/.test(name) &&
-            !name.includes("trillado")
-          );
-        if (c === "cebolla de rama") return name.includes("cebolla junca");
-        if (c === "cebolla de bulbo") return name.includes("cebolla cabezona");
-        return name === c || name.startsWith(c + " ");
+        return comparableProduct(crop.crop, p.name);
       }) || [],
     [catalog.data, crop.crop],
   );
