@@ -354,6 +354,14 @@ export async function evidence(
     )
   ).rows[0];
   if (!r) return null;
+  const sourceReviews = (await db.query<{ observed_on: string | null }>(
+    "SELECT DISTINCT observed_on::text FROM ingestion_asset WHERE document_id=$1 AND status='review' ORDER BY 1",
+    [r.id],
+  )).rows;
+  if (sourceReviews.length) {
+    const dates = sourceReviews.map((review) => review.observed_on).filter(Boolean);
+    r.metadata.review_note = `La fuente tiene referencias pendientes de verificación${dates.length ? ": " + dates.join(", ") : ""}. Conservamos el archivo original; la fecha del enlace no sustituye la fecha validada de cada precio.`;
+  }
   r.parents = (
     await db.query(
       "SELECT id,title FROM source_document WHERE id=ANY($1::text[])",
@@ -444,7 +452,7 @@ export async function evidence(
   }
   if (r.metadata?.ingestion_kind === "ocr-image") r.kind = "extract";
   if (
-    String(r.metadata?.ingestion_kind || "").match(/^(international|colombia)-/)
+    String(r.metadata?.ingestion_kind || "").match(/^(international|colombia|dane)-/)
   ) {
     r.records = (
       await db.query(

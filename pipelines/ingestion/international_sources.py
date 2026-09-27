@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v5"
+VERSION = "official-international-v6"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -925,11 +925,14 @@ def _text_blocks(body, market):
     except UnicodeDecodeError:
         text = body.decode("cp1252")
     lines = text.splitlines()
+    # Archived USDA TXT files can begin with empty CRLF lines. Check the
+    # first actual heading without removing lines from source locators.
+    first_content = next((line.strip() for line in lines if line.strip()), "")
     heading = re.search(
         r"^"
         + market.upper()
         + r" Ornamental (?:Shipping Point|Terminal) Prices as of (\d{1,2}-[A-Z]{3}-\d{4})\s*$",
-        lines[0] if lines else "",
+        first_content,
     )
     if (
         not heading

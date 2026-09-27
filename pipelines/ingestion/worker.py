@@ -68,7 +68,7 @@ PARSER_VERSIONS = {
     "city-zip": "city-v4",
     "monthly": "monthly-units-v2",
     "monthly-annex": "monthly-annex-v3",
-    "daily": "daily-units-v2",
+    "daily": "daily-units-v3",
     "daily-pdf": "daily-pdf-v4",
     "monthly-pdf": "monthly-pdf-v3",
     "milk": "milk-v4",
@@ -111,6 +111,9 @@ def today():
 
 
 RELEASE_FILES = [
+    "pipelines/ingestion/daily_recovery.py",
+    "pipelines/ingestion/daily_publication.py",
+    "pipelines/ingestion/source_link_recovery.py",
     "pipelines/ingestion/workbook_preview.py",
     "pipelines/ingestion/queue_plan.py",
     "pipelines/ingestion/resumable_inputs.py",
@@ -733,88 +736,10 @@ def parse_monthly(data):
 
 
 def parse_daily(data, expected_day):
-    found = 0
-    for sheet, source in workbooks(data):
-        rows = list(source)
-        if not rows or not any(clean(v) for row in rows for v in row):
-            continue
-        heading = " ".join(clean(v) for row in rows[:4] for v in row)
-        day = next(
-            (
-                v.date() if isinstance(v, datetime) else v
-                for row in rows[:4]
-                for v in row
-                if isinstance(v, (date, datetime))
-            ),
-            None,
-        ) or date_from_text(heading)
-        if not day:
-            raise ValueError("Daily workbook has no verifiable publication date")
-        if day != expected_day:
-            raise SourceDateMismatch(
-                f"Daily link date {expected_day} differs from workbook {day}"
-            )
-        headers = next(
-            (
-                i
-                for i, r in enumerate(rows[:12])
-                if sum(clean(x).lower() == "precio" for x in r) >= 3
-            ),
-            None,
-        )
-        if headers is None:
-            raise ValueError("Daily price matrix header not found")
-        price_columns = [
-            i
-            for i, value in enumerate(rows[headers])
-            if clean(value).lower() == "precio"
-        ]
-        market_header = next(
-            (
-                i
-                for i, r in enumerate(rows[:headers])
-                if r and "precio" in clean(r[0]).lower()
-            ),
-            headers - 1,
-        )
-        markets = {
-            col: ", ".join(
-                dict.fromkeys(
-                    clean(rows[i][col])
-                    for i in range(market_header, headers)
-                    if clean(rows[i][col])
-                )
-            )
-            for col in price_columns
-        }
-        for rownum, row in enumerate(rows[headers + 1 :], headers + 2):
-            name = clean(row[0])
-            for col in price_columns:
-                if not positive(row[col]):
-                    continue
-                market = clean(markets[col])
-                if not market:
-                    raise ValueError("Missing daily market header")
-                variation = row[col + 1] if col + 1 < len(row) else None
-                variation = (
-                    float(variation) * 100
-                    if isinstance(variation, (int, float)) and math.isfinite(variation)
-                    else None
-                )
-                found += 1
-                yield record(
-                    "dane-daily",
-                    day,
-                    name,
-                    market,
-                    unit_for(name),
-                    row[col],
-                    f"{sheet}!row {rownum},col {col + 1}",
-                    variation,
-                    {"predominant_variety": "*" in name},
-                )
-    if not found:
-        raise ValueError("No daily prices parsed")
+    """Compatibility iterator; publication also persists cell-level reviews."""
+    from .daily_recovery import parse_daily as materialize
+
+    yield from materialize(data, expected_day)["rows"]
 
 
 def parse_monthly_summary(data, expected_day):
@@ -1251,8 +1176,16 @@ def project(db, did, url, kind):
                     for value in daily_values:
                         copy.write_row(value)
                 cur.execute("""INSERT INTO daily_price(observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit) SELECT observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit FROM pg_temp.ingestion_daily_projection_stage WHERE true ON CONFLICT(observed_on,product_name,market_name) DO UPDATE SET price=excluded.price,change_percent=excluded.change_percent,document_id=excluded.document_id,source_locator=excluded.source_locator,source_page=excluded.source_page,unit=excluded.unit WHERE (daily_price.price,daily_price.document_id,daily_price.change_percent) IS DISTINCT FROM (excluded.price,excluded.document_id,excluded.change_percent)
-                    AND ((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=excluded.document_id)='daily'
-                     OR coalesce((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=daily_price.document_id),'')<>'daily')""")
+                    AND (
+                      ((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=excluded.document_id)='daily'
+                       AND coalesce((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=daily_price.document_id),'')<>'daily')
+                      OR (
+                        (coalesce((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=excluded.document_id),'')='daily')
+                        = (coalesce((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=daily_price.document_id),'')='daily')
+                        AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)
+                          >= coalesce((SELECT retrieved_at FROM source_document WHERE id=daily_price.document_id),'-infinity'::timestamptz)
+                      )
+                    )""")
             if coffee:
                 cur.execute(
                     "CREATE TEMP TABLE IF NOT EXISTS ingestion_coffee_projection_stage ON COMMIT DROP AS SELECT observed_on,price,source_url,document_id FROM coffee_reference WITH NO DATA"
@@ -1381,11 +1314,21 @@ def _process_asset(db, url, kind, day):
         ).fetchone()
     # Finish the exact retained revision before downloading a newer mutable
     # workbook. The following regular refresh checks the publisher again.
-    data = (
-        bytes(resume[0])
-        if resume
-        else fetch_asset(db, url, force=outdated or coffee_rollover)
-    )
+    recovered = None
+    try:
+        data = (
+            bytes(resume[0])
+            if resume
+            else fetch_asset(db, url, force=outdated or coffee_rollover)
+        )
+    except requests.HTTPError as exc:
+        from .source_link_recovery import recover_link
+
+        status = exc.response.status_code if exc.response is not None else None
+        recovered = recover_link(url, status, day, fetch) if kind == "daily" else None
+        if recovered is None:
+            raise
+        data = recovered.body
     if data is None and coffee_rollover:
         # Some upstream caches answer 304 even without request validators. The
         # forced HTTP check still happened; evaluate its retained original today.
@@ -1396,7 +1339,18 @@ def _process_asset(db, url, kind, day):
         data = bytes(retained[0]) if retained else None
     if data is None:
         return 0
-    did = archive(db, url, data, kind, day)
+    did = archive(db, recovered.canonical_url if recovered else url, data, kind, day)
+    if recovered:
+        from .daily_publication import retain_resolution
+
+        retain_resolution(
+            db,
+            "source_link_resolution",
+            {
+                "document_id": did,
+                **recovered.evidence,
+            },
+        )
     prior = db.execute(
         "SELECT document_id,status,records FROM ingestion_asset WHERE url=%s", (url,)
     ).fetchone()
@@ -1435,6 +1389,10 @@ def _process_asset(db, url, kind, day):
         from .ocr import scan_document
 
         scan_document(db, data, did, kind)
+    if kind == "daily":
+        from .daily_publication import publish
+
+        return publish(db, data, did, url, day)
     if kind == "inputs-reference":
         from pipelines.ingestion.input_references import (
             extract_context,

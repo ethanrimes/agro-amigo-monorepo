@@ -102,6 +102,9 @@ export function EvidenceContent({
               <p>
                 {data.publisher} · Referencia: {data.reference_period}
               </p>
+              {typeof data.metadata.review_note === "string" && (
+                <p className="inline-note">{data.metadata.review_note}</p>
+              )}
               <div className="evidence-actions">
                 <a
                   className="button primary"
