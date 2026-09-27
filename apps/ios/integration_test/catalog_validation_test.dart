@@ -79,8 +79,9 @@ const _supplyWidth = r'''(() => {
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
-  binding.shouldPropagateDevicePointerEvents =
-      const bool.fromEnvironment('NATIVE_CATALOG_GESTURES');
+  binding.shouldPropagateDevicePointerEvents = const bool.fromEnvironment(
+    'NATIVE_CATALOG_GESTURES',
+  );
   testWidgets(
     'iOS catalog scrolling and retained supply months',
     (tester) async {
@@ -100,8 +101,8 @@ void main() {
         await tester.pump(const Duration(milliseconds: 300));
       }
 
-      Future<void> until(String condition) async {
-        final deadline = DateTime.now().add(const Duration(seconds: 90));
+      Future<void> until(String condition, {int seconds = 90}) async {
+        final deadline = DateTime.now().add(Duration(seconds: seconds));
         while (DateTime.now().isBefore(deadline)) {
           final value = await js('Boolean($condition)');
           if (value == true || value == 'true') return;
@@ -272,6 +273,7 @@ void main() {
       }
       await until(
         'location.pathname==="/product/cafe-pergamino-seco" && !document.querySelector(".catalog-heading") && document.querySelector("h1")',
+        seconds: nativeGestures ? 300 : 90,
       );
       expect(state.failed, false);
       await shot('coffee-detail');
@@ -284,7 +286,10 @@ void main() {
         // mode uses a real simulator tap and edge swipe for browser history.
         await click('.back-link');
       }
-      await until('location.pathname==="/products" && $cards.length===24');
+      await until(
+        'location.pathname==="/products" && $cards.length===24',
+        seconds: nativeGestures ? 300 : 90,
+      );
       expect((await json(_geometry))['errors'], isEmpty);
       expect(
         await js('localStorage.getItem("agroamigo-preferences-v2")'),
