@@ -12,17 +12,9 @@ import { inputs } from "./planning";
 import { PRICE_QUOTES, filteredProduct } from "./price-quotes";
 import type { MapFilters } from "../explore-types";
 import { supplyQueries } from "./supply-sql";
-import { marketDetailQuery, marketProductsQuery } from "./market-sql";
+import { marketsQuery, marketDetailQuery, marketProductsQuery } from "./market-sql";
 export async function markets(): Promise<Market[]> {
-  return (
-    await database()
-      .query(`WITH quotes AS (${PRICE_QUOTES}) SELECT m.*,u.latitude,u.longitude,u.department_id,
-    coalesce(p.product_count,0) AS product_count,p.date,s.supply_date
-    FROM market m LEFT JOIN municipality u ON u.id=m.municipality_id
-    LEFT JOIN (SELECT market_id,count(DISTINCT product_id) product_count,max(observed_on) date FROM quotes WHERE ${WINDOW} GROUP BY market_id) p ON p.market_id=m.id
-    LEFT JOIN (SELECT market_id,max(observed_on) supply_date FROM supply_observation WHERE ${WINDOW} GROUP BY market_id) s ON s.market_id=m.id
-    WHERE p.market_id IS NOT NULL OR s.market_id IS NOT NULL ORDER BY product_count DESC,m.name`)
-  ).rows;
+  return (await database().query(marketsQuery(WINDOW))).rows;
 }
 export async function marketDetail(id: string): Promise<MarketDetail | null> {
   const market = (await database().query(marketDetailQuery(WINDOW), [id])).rows[0];
