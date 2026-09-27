@@ -104,6 +104,16 @@ export type PriceFilters = {
   units?: string;
   history?: string;
 };
+type ProductMarketQuote = {
+  id: string; name: string; region: string; city: string;
+  market_id: string; market_name: string; product_id: string;
+  date: string; observed_on: string; price: number;
+  min_price: number | null; max_price: number | null;
+  series: string; unit: string; units: string; presentation: string;
+  document_id: string; source_locator: string; source_url: string;
+  source_page: number; category_path: string[];
+};
+type ProductHistoryPoint = { date: string; price: number; market_count: number };
 export async function filteredProduct(
   id: string,
   region: string,
@@ -160,7 +170,7 @@ export async function filteredProduct(
     (!market || option.market_id === market)).map((option) => option.market_id))];
   const args = [id, region, series, presentation, units, market, marketIds];
   const [quotes, additionalReferences] = await Promise.all([
-    db.query(
+    db.query<{ markets: ProductMarketQuote[]; history: ProductHistoryPoint[] }>(
       `WITH selected AS MATERIALIZED (
         SELECT selected_market_quotes.* FROM unnest($7::text[]) AS selected_market(id)
         CROSS JOIN LATERAL (
