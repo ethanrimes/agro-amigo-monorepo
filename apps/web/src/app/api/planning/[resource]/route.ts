@@ -59,7 +59,12 @@ export async function GET(
     else if (resource === "library")
       result = (
         await database().query(
-          `SELECT a.alias,d.id,d.title,d.publisher,d.reference_period,d.kind,d.media_type FROM document_alias a JOIN source_document d ON d.id=a.document_id WHERE a.alias NOT LIKE 'price-%' ORDER BY d.publisher,d.title`,
+          `SELECT a.alias,d.id,d.title,d.publisher,d.reference_period,d.kind,d.media_type
+          FROM document_alias a JOIN source_document d ON d.id=a.document_id
+          WHERE a.alias NOT LIKE 'price-%' AND NOT EXISTS (
+            SELECT 1 FROM ingestion_asset i WHERE i.document_id=d.id AND i.status='review'
+              AND i.kind='daily' AND a.alias='daily-' || i.observed_on::text || '-workbook'
+          ) ORDER BY d.publisher,d.title`,
         )
       ).rows;
     else

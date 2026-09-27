@@ -187,6 +187,80 @@ class PriceRevisionPostgresTests(unittest.TestCase):
             self.db.execute("SELECT count(*) FROM historical_price").fetchone()[0], 2
         )
 
+    def publish_daily_revision(self, key, price, kind, *, variation=None):
+        """Exercise the actual raw COPY and publication SQL, including metadata."""
+        did = key * 64
+        locator = "Prices!row 4,col 2" if kind == "daily" else "PDF page 2, row 4"
+        self.db.execute(
+            "UPDATE source_document SET metadata=jsonb_build_object('ingestion_kind',%s::text) WHERE id=%s",
+            (kind, did),
+        )
+        with self.db.transaction():
+            worker.save_rows(
+                self.db,
+                did,
+                [
+                    worker.record(
+                        "dane-daily",
+                        self.day,
+                        "Tomate",
+                        "Bogotá",
+                        "kg",
+                        price,
+                        locator,
+                        variation,
+                    )
+                ],
+            )
+            worker.project(self.db, did, f"https://example.org/{key}", kind)
+
+    def test_daily_older_xls_cannot_replace_newer_xls(self):
+        self.publish_daily_revision("b", 3100, "daily", variation=2)
+        self.publish_daily_revision("a", 2900, "daily", variation=-3)
+        self.assert_price("daily_price", "b", 3100)
+        self.assertEqual(
+            self.db.execute("SELECT change_percent FROM daily_price").fetchone(),
+            (2,),
+        )
+        self.assertEqual(
+            self.db.execute("SELECT count(*) FROM historical_price").fetchone(), (2,)
+        )
+
+    def test_daily_older_pdf_cannot_replace_newer_pdf(self):
+        self.publish_daily_revision("b", 3100, "daily-pdf")
+        self.publish_daily_revision("a", 2900, "daily-pdf")
+        self.assert_price("daily_price", "b", 3100)
+        self.assertEqual(
+            self.db.execute("SELECT source_page,source_locator FROM daily_price").fetchone(),
+            (2, "PDF page 2, row 4"),
+        )
+
+    def test_daily_older_xls_still_supersedes_newer_pdf(self):
+        self.publish_daily_revision("b", 3100, "daily-pdf")
+        self.publish_daily_revision("a", 2900, "daily")
+        self.assert_price("daily_price", "a", 2900)
+        # Even another newer PDF cannot undo the authoritative workbook choice.
+        self.publish_daily_revision("c", 3200, "daily-pdf")
+        self.assert_price("daily_price", "a", 2900)
+        self.assertEqual(
+            self.db.execute("SELECT source_page,source_locator FROM daily_price").fetchone(),
+            (None, "Prices!row 4,col 2"),
+        )
+
+    def test_daily_equal_price_newer_xls_updates_provenance_and_blocks_old_replay(self):
+        self.publish_daily_revision("b", 3100, "daily", variation=2)
+        self.publish_daily_revision("d", 3100, "daily", variation=2)
+        self.assert_price("daily_price", "d", 3100)
+        self.publish_daily_revision("c", 3050, "daily", variation=1)
+        self.assert_price("daily_price", "d", 3100)
+
+    def test_daily_equal_price_newer_pdf_updates_provenance_and_blocks_old_replay(self):
+        self.publish_daily_revision("b", 3100, "daily-pdf")
+        self.publish_daily_revision("d", 3100, "daily-pdf")
+        self.assert_price("daily_price", "d", 3100)
+        self.publish_daily_revision("c", 3050, "daily-pdf")
+        self.assert_price("daily_price", "d", 3100)
+
     def test_current_fnc_workbook_all_8667_dates_bulk_projection(self):
         fixture = (
             Path(__file__).resolve().parents[2]
