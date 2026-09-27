@@ -337,3 +337,19 @@ See `artifacts/supply-2020-cloud-verification.json`,
 `artifacts/supply-2020-cloud-memory-final.json`,
 `artifacts/supply-2020-plan-metrics-final.json`, and
 `artifacts/final-memory-layout-state.json`. Earlier proof files remain intact.
+
+### Source review and resumable official quotes
+
+`coffee_sources.py` extracts explicit FNC price columns with separate currencies,
+periods and price bases; national daily values retain their existing projection.
+`dane_context.py` discovers audited explanatory PDFs without inventing monetary
+observations from charts or percentages. `seasonality.py` requires compatible
+complete years and preserves original documents for each month.
+
+Official quote sources validate every row before publishing 2,000-row batches.
+Immutable primary keys make interrupted batches idempotent. The durable
+`official:complete` checkpoint is written only after the entire source succeeds;
+a superseded original with partial rows remains eligible for retained replay.
+Review-aware publication views withhold ambiguous observations without deleting
+them. See the dated DANE, Colombia and international coverage matrices in `docs/`
+for actual source tests and boundaries between structured prices and context.

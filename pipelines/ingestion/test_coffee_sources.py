@@ -210,3 +210,16 @@ class CoffeeSourceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CoffeeScheduledVersion(unittest.TestCase):
+    def test_scheduler_and_retained_replay_use_the_same_coffee_version(self):
+        from .queue_plan import expected_versions
+        from .retained_replays import leaf_versions
+        from .worker import parser_version
+
+        queued = expected_versions().obj
+        retained = dict(leaf_versions())
+        for kind in ("coffee", "coffee-pdf"):
+            self.assertEqual(queued[kind], parser_version(kind))
+            self.assertEqual(retained[kind], parser_version(kind))

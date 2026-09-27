@@ -35,6 +35,7 @@ def parse_inputs(data):
         clean,
         positive,
         record,
+        slug,
         today,
         workbooks,
     )
@@ -45,8 +46,123 @@ def parse_inputs(data):
         header = None
         fixed_period = None
         category = CATEGORIES.get(sheet)
+        legacy = None
+        legacy_product = None
         for rownum, row in enumerate(rows, 1):
             normalized = [clean(v) for v in row]
+            if "Productos y mercados" in normalized:
+                prices = [
+                    (i, re.fullmatch(r"Precio medio (\w+)", value, re.IGNORECASE))
+                    for i, value in enumerate(normalized)
+                ]
+                prices = [(i, match) for i, match in prices if match]
+                if prices:
+                    # These original XLS sheets print e.g. FERTILIZANTES FEB15.
+                    # The independently printed column month must agree; never
+                    # use the preceding comparison column as the current price.
+                    stamp = re.search(
+                        r"\b([A-ZÁÉÍÓÚ]+)\s?(\d{2}|20\d{2})$", sheet, re.IGNORECASE
+                    )
+                    if len(prices) != 1 or not stamp:
+                        raise ValueError(f"Unverified legacy input period: {sheet}")
+                    month = MONTH_NUM.get(stamp[1].lower())
+                    year = int(stamp[2]) + (2000 if len(stamp[2]) == 2 else 0)
+                    if (
+                        not month
+                        or month != MONTH_NUM.get(prices[0][1][1].lower())
+                        or not 2012 <= year <= today().year
+                    ):
+                        raise SourceDateMismatch(
+                            f"Conflicting legacy input sheet/header period: {sheet}"
+                        )
+                    day = date(year, month, calendar.monthrange(year, month)[1])
+                    category_key = {
+                        "fertilizantes": "1.3",
+                        "fungicidas": "1.4",
+                        "insecticidas-agricolas": "1.6",
+                        "herbicidas": "1.5",
+                        "coadyudantes-agricolas": "1.2",
+                        "coadyuvantes-agricolas": "1.2",
+                        "alimentos": "2.1",
+                        "medicamentos": "2.6",
+                        "antibioticos": "2.2",
+                        "vitaminas": "2.7",
+                        "hormonales": "2.4",
+                        "antisepticos": "2.3",
+                        "insecticidas-pecuarios": "2.5",
+                        "servicios-agricolas": "3.7",
+                        "arriendos": "3.1",
+                        "material-propagacion": "3.6",
+                    }.get(slug(sheet[: stamp.start()]))
+                    if category_key is None:
+                        raise ValueError(f"Unmapped legacy input category: {sheet}")
+                    category = CATEGORIES[category_key]
+                    legacy = (
+                        prices[0][0],
+                        day,
+                        normalized.index("Productos y mercados"),
+                        normalized[prices[0][0]],
+                    )
+                    legacy_product = None
+                    continue
+            if legacy:
+                from .special_prices import DEPARTMENTS
+
+                col, day, place_col, printed_price_header = legacy
+                price = row[col] if col < len(row) else None
+                place = normalized[place_col]
+                if not positive(price):
+                    if place and not any(positive(v) for v in row[1:]):
+                        legacy_product = place
+                    continue
+                match = re.fullmatch(r"(.+?)\s*\(([^()]+)\)", place)
+                departments = {slug(d): d for d in DEPARTMENTS}
+                if match:
+                    municipality, department = (
+                        clean(match[1]),
+                        departments.get(slug(match[2])),
+                    )
+                elif slug(place) in {"bogota", "bogota-d-c"}:
+                    municipality, department = "Bogotá, D.C.", "Bogotá D.C."
+                else:
+                    municipality, department = "", None
+                if not legacy_product or not department or not municipality:
+                    raise ValueError(
+                        f"Unmapped legacy input identity/location: {sheet}, row {rownum}"
+                    )
+                if category == CATEGORIES["3.1"]:
+                    name, presentation = legacy_product, legacy_product
+                elif "," in legacy_product:
+                    name, presentation = map(clean, legacy_product.rsplit(",", 1))
+                else:
+                    raise ValueError(
+                        f"Missing legacy input presentation: {sheet}, row {rownum}"
+                    )
+                if day > today():
+                    continue
+                found += 1
+                yield record(
+                    "dane-inputs-municipal",
+                    day,
+                    name,
+                    municipality,
+                    presentation,
+                    price,
+                    f"{sheet}!row {rownum},col {col + 1}; legacy-inputs-v1",
+                    details={
+                        "sheet": sheet,
+                        "category": category,
+                        "presentation": presentation,
+                        "department": department,
+                        "municipality": municipality,
+                        "printed_heading": legacy_product,
+                        "printed_price_header": printed_price_header,
+                        "parser_version": "legacy-inputs-v1",
+                        "brand": "",
+                        "ica": "",
+                    },
+                )
+                continue
             if header is None:
                 for v in normalized:
                     annex_heading = re.fullmatch(
@@ -63,7 +179,10 @@ def parse_inputs(data):
                             year, month, calendar.monthrange(year, month)[1]
                         )
                         if annex_heading:
-                            if monthly_annex_period and monthly_annex_period != candidate:
+                            if (
+                                monthly_annex_period
+                                and monthly_annex_period != candidate
+                            ):
                                 raise SourceDateMismatch(
                                     f"Conflicting native department annex periods: {sheet}, row {rownum}; "
                                     f"{candidate} disagrees with {monthly_annex_period}"

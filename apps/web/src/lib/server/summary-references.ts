@@ -35,7 +35,7 @@ function observation(row: SummaryRow, productId: string | null): SummaryReferenc
     category: "Productos mayoristas",
     publisher: "DANE · SIPSA",
     series: "dane-monthly-summary",
-    basis: "Promedio mensual publicado por ciudad",
+    basis: typeof row.details.published_basis === "string" ? row.details.published_basis : "Precio mensual publicado por ciudad",
     currency: "COP",
     unit: row.unit,
     market: row.market_name,
@@ -53,7 +53,7 @@ function observation(row: SummaryRow, productId: string | null): SummaryReferenc
       original_price: row.price,
       published_unit: row.unit,
       change_percent: row.change_percent,
-      source_note: "Nombre y ciudad literales del anexo. Los asteriscos de la fuente se conservan; no se asigna una variedad ni un mercado individual por inferencia.",
+      source_note: "Nombre y ciudad literales de la publicación. Los asteriscos de la fuente se conservan; no se asigna una variedad ni un mercado individual por inferencia.",
     },
   };
 }
@@ -68,7 +68,7 @@ export async function latestSummaryReferences(): Promise<SummaryReference[]> {
     const [data, products] = await Promise.all([
       database().query<SummaryRow>(`
         SELECT DISTINCT ON(h.product_name,h.market_name,h.unit) h.*,d.source_url
-        FROM historical_price h JOIN source_document d ON d.id=h.document_id
+        FROM published_historical_price h JOIN source_document d ON d.id=h.document_id
         WHERE ${validSource}
         ORDER BY h.product_name,h.market_name,h.unit,h.observed_on DESC,d.retrieved_at DESC,h.document_id,h.source_locator
       `),
@@ -95,7 +95,7 @@ export async function summaryReference(id: string) {
   if (!latest) return null;
   const { rows } = await database().query<SummaryRow>(`
     SELECT DISTINCT ON(h.observed_on) h.*,d.source_url
-    FROM historical_price h JOIN source_document d ON d.id=h.document_id
+    FROM published_historical_price h JOIN source_document d ON d.id=h.document_id
     WHERE ${validSource} AND h.product_name=$1 AND h.market_name=$2 AND h.unit=$3
     ORDER BY h.observed_on,d.retrieved_at DESC,h.document_id,h.source_locator
   `, [latest.product_name, latest.market, latest.unit]);

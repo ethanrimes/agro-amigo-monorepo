@@ -152,9 +152,9 @@ class MatrixOCRFallback(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.table = [
+            ["Precio $/Kg", "07 sep 2026", "", "", "", "", ""],
             ["Producto", "Bogotá", "Medellín", "Cali", "", "", ""],
             ["Limón tahití", "3.500", "3.600", "3.700", "", "", ""],
-            ["", "", "", "", "", "", ""],
             ["", "", "", "", "", "", ""],
             ["", "", "", "", "", "", ""],
         ]
@@ -186,7 +186,7 @@ class MatrixOCRFallback(unittest.TestCase):
             )
         )
         self.assertEqual(len(rows), 6)
-        self.assertEqual({row[1] for row in rows}, {"dane-monthly-bulletin"})
+        self.assertEqual({row[1] for row in rows}, {"dane-monthly-summary"})
         self.assertEqual([row[6] for row in rows], [3500, 3600, 3700] * 2)
         self.assertEqual(len({row[0] for row in rows}), 6)
 

@@ -76,11 +76,11 @@ export async function seasonality(
           `SELECT price/125 AS price, observed_on AS date,'FNC nacional' AS market FROM coffee_reference WHERE ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
         )
       : db.query(
-          `SELECT o.price,o.unit,o.observed_on AS date,m.name AS market FROM published_price_observation o JOIN market m ON m.id=o.market_id WHERE product_id=$1 AND market_id=$2 AND ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
+          `SELECT o.price,o.unit,o.observed_on AS date,m.name AS market FROM published_price_observation o JOIN market m ON m.id=o.market_id WHERE product_id=$1 AND market_id=$2 AND o.unit='kg' AND o.period='monthly' AND ${WINDOW} ORDER BY observed_on DESC LIMIT 1`,
           [product, market],
         ),
     db.query(
-      "SELECT reference_year,monthly_prices,document_id,source_rows FROM seasonal_year WHERE product_id=$1 AND market_id=$2 AND reference_year BETWEEN EXTRACT(YEAR FROM CURRENT_DATE)-5 AND EXTRACT(YEAR FROM CURRENT_DATE)-1 ORDER BY reference_year",
+      "SELECT reference_year,monthly_prices,document_id,source_rows,source_documents FROM seasonal_year WHERE validation_version='seasonality-kg-v2' AND review_reason IS NULL AND product_id=$1 AND market_id=$2 AND reference_year BETWEEN EXTRACT(YEAR FROM CURRENT_DATE)-5 AND EXTRACT(YEAR FROM CURRENT_DATE)-1 ORDER BY reference_year",
       [product, coffee ? "fnc-national" : market],
     ),
   ]);

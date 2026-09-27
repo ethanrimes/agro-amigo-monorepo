@@ -161,6 +161,7 @@ export type Seasonality = {
     monthly_prices: number[];
     document_id: string;
     source_rows: string[];
+    source_documents: string[][];
   }[];
   unit: string;
   method: string;

@@ -17,7 +17,6 @@ import tempfile
 import time
 import unicodedata
 import uuid
-from collections import defaultdict
 from contextvars import ContextVar
 from datetime import date, datetime, timedelta
 from decimal import Decimal
@@ -65,13 +64,13 @@ PARSER_VERSIONS = {
     "inputs-municipal": "inputs-v3",
     "inputs-annex": "inputs-v3",
     "inputs-pdf": "inputs-pdf-v4",
-    "inputs-reference": "inputs-reference-v3",
+    "inputs-reference": "inputs-reference-v4",
     "city-zip": "city-v4",
     "monthly": "monthly-units-v2",
-    "monthly-annex": "monthly-annex-v1",
+    "monthly-annex": "monthly-annex-v2",
     "daily": "daily-units-v2",
-    "daily-pdf": "daily-pdf-v3",
-    "monthly-pdf": "monthly-pdf-v2",
+    "daily-pdf": "daily-pdf-v4",
+    "monthly-pdf": "monthly-pdf-v3",
     "milk": "milk-v3",
     "milk-pdf": "milk-pdf-v4",
     "rice": "rice-v1",
@@ -82,7 +81,9 @@ PARSER_VERSIONS = {
 
 
 def parser_version(kind):
-    if kind.startswith(("international-", "colombia-")):
+    if kind in ("coffee", "coffee-pdf") or kind.startswith(
+        ("international-", "colombia-")
+    ):
         from .official_sources import VERSION, adapter
 
         return VERSION + ":" + adapter(kind).VERSION
@@ -116,6 +117,9 @@ RELEASE_FILES = [
     "pipelines/ingestion/queue_plan.py",
     "pipelines/ingestion/resumable_inputs.py",
     "pipelines/ingestion/retained_replays.py",
+    "pipelines/ingestion/coffee_sources.py",
+    "pipelines/ingestion/seasonality.py",
+    "pipelines/ingestion/dane_context.py",
     "pipelines/ingestion/official_sources.py",
     "pipelines/ingestion/international_sources.py",
     "pipelines/ingestion/colombia_sources.py",
@@ -350,9 +354,11 @@ def discover_special(db):
         for _, u in milk
         if u.endswith("/boletin-mensual-precios-de-leche-en-finca-historicos")
     ]
-    for label, u in (
-        links(root) + milk + [entry for u in archives for entry in links(u)]
-    ):
+    found = links(root) + milk + [entry for u in archives for entry in links(u)]
+    from .dane_context import queue_context_sources
+
+    queue_context_sources(db, found)
+    for label, u in found:
         path = urlparse(u).path.lower()
         if "/files/" not in path:
             continue
@@ -377,7 +383,11 @@ def discover_monthly(db):
     for u in sorted(set(books)):
         queue(db, u, "monthly")
     archive = next(u for label, u in found if "mensual-sipsa-historicos" in u)
-    for label, u in found + links(archive):
+    found += links(archive)
+    from .dane_context import queue_context_sources
+
+    queue_context_sources(db, found)
+    for label, u in found:
         day = publication_month(label, u)
         if u.lower().endswith((".xls", ".xlsx")) and day and "mensual" in u.lower():
             queue(db, u, "monthly-annex", day)
@@ -488,7 +498,15 @@ def archive(
     digest = hashlib.sha256(data).hexdigest()
     suffix = Path(filename or urlparse(url).path).suffix.lower()
     official = kind.startswith(("international-", "colombia-"))
-    if official and suffix not in (".xlsx", ".xls", ".csv", ".pdf", ".json", ".html"):
+    if official and suffix not in (
+        ".xlsx",
+        ".xls",
+        ".csv",
+        ".txt",
+        ".pdf",
+        ".json",
+        ".html",
+    ):
         if data.lstrip().startswith(b"%PDF"):
             suffix = ".pdf"
         elif data.lstrip().startswith((b"{", b"[")):
@@ -504,6 +522,7 @@ def archive(
         ".png": "image/png",
         ".html": "text/html",
         ".csv": "text/csv",
+        ".txt": "text/plain",
         ".zip": "application/zip",
         ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         ".xls": "application/vnd.ms-excel",
@@ -542,39 +561,48 @@ def archive(
         publisher = official_publisher(kind)
     if publisher_override:
         publisher = publisher_override
-    pages = None
-    if suffix == ".pdf":
-        from pypdf import PdfReader
+    # Reprocessing an identical original must not retransmit a large bytea
+    # value to PostgreSQL. Blob retention above still verifies/repairs its copy.
+    if not db.execute(
+        "SELECT 1 FROM source_document WHERE id=%s", (digest,)
+    ).fetchone():
+        pages = None
+        if suffix == ".pdf":
+            from pypdf import PdfReader
 
-        pages = len(PdfReader(io.BytesIO(data)).pages)
-    db.execute(
-        """INSERT INTO source_document(id,title,publisher,source_url,media_type,kind,reference_period,page_count,content,metadata)
-        VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING""",
-        (
-            digest,
-            publisher + " - " + Path(filename or urlparse(url).path).name,
-            publisher,
-            url,
-            media,
-            "extract" if kind == "ocr-image" else "original",
-            str(day or "Serie histórica completa"),
-            pages,
-            data,
-            Jsonb(
-                {
-                    "ingestion_kind": kind,
-                    "retention": "permanent",
-                    "original_filename": Path(filename or urlparse(url).path).name,
-                    **(
-                        {"parents": parents, "archive_entry": filename}
-                        if parents
-                        else {}
-                    ),
-                    **({"dataset": "supply", "unit": "kg"} if kind == "supply" else {}),
-                }
+            pages = len(PdfReader(io.BytesIO(data)).pages)
+        db.execute(
+            """INSERT INTO source_document(id,title,publisher,source_url,media_type,kind,reference_period,page_count,content,metadata)
+            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING""",
+            (
+                digest,
+                publisher + " - " + Path(filename or urlparse(url).path).name,
+                publisher,
+                url,
+                media,
+                "extract" if kind == "ocr-image" else "original",
+                str(day or "Serie histórica completa"),
+                pages,
+                data,
+                Jsonb(
+                    {
+                        "ingestion_kind": kind,
+                        "retention": "permanent",
+                        "original_filename": Path(filename or urlparse(url).path).name,
+                        **(
+                            {"parents": parents, "archive_entry": filename}
+                            if parents
+                            else {}
+                        ),
+                        **(
+                            {"dataset": "supply", "unit": "kg"}
+                            if kind == "supply"
+                            else {}
+                        ),
+                    }
+                ),
             ),
-        ),
-    )
+        )
     alias = (
         ("daily-" + str(day) + ("-bulletin" if kind == "daily-pdf" else "-workbook"))
         if kind in ("daily", "daily-pdf")
@@ -789,6 +817,54 @@ def parse_daily(data, expected_day):
 
 def parse_monthly_summary(data, expected_day):
     """Eight-city annex: price matrix plus monthly/YTD/annual variations."""
+    percentage_cells = set()
+
+    def scaled_percent_format(fmt):
+        # Escaped/quoted percent symbols are literal text, not Excel scaling.
+        return "%" in re.sub(r'"[^"]*"|\\.', "", fmt)
+
+    if data[:2] == b"PK":
+        book = openpyxl.load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+        try:
+            for worksheet in book:
+                for row in worksheet.iter_rows():
+                    for cell in row:
+                        if isinstance(
+                            cell.value, (int, float)
+                        ) and scaled_percent_format(cell.number_format):
+                            percentage_cells.add(
+                                (worksheet.title, cell.row, cell.column)
+                            )
+        finally:
+            book.close()
+    else:
+        import xlrd
+
+        book = xlrd.open_workbook(file_contents=data, formatting_info=True)
+        try:
+            for worksheet in book.sheets():
+                for row_no in range(worksheet.nrows):
+                    for col_no in range(worksheet.ncols):
+                        cell = worksheet.cell(row_no, col_no)
+                        fmt = book.format_map[
+                            book.xf_list[cell.xf_index].format_key
+                        ].format_str
+                        if cell.ctype == xlrd.XL_CELL_NUMBER and scaled_percent_format(
+                            fmt
+                        ):
+                            percentage_cells.add(
+                                (worksheet.name, row_no + 1, col_no + 1)
+                            )
+        finally:
+            book.release_resources()
+
+    def percent(value, sheet_name, row_number, column_number):
+        if not isinstance(value, (int, float)) or not math.isfinite(value):
+            return None
+        return value * (
+            100 if (sheet_name, row_number, column_number) in percentage_cells else 1
+        )
+
     observations = {}
     changes = {}
     for sheet, source in workbooks(data):
@@ -803,7 +879,22 @@ def parse_monthly_summary(data, expected_day):
             None,
         )
         if headers is not None:
-            day = publication_month(heading, "")
+            # Old annexes explicitly print current/comparison, e.g.
+            # "Marzo/febrero 2015". Only the first month dates the price cells.
+            pair = re.search(
+                r"\b("
+                + "|".join(MONTHS)
+                + r")\s*/\s*(?:"
+                + "|".join(MONTHS)
+                + r")\s+(20\d{2})\b",
+                heading,
+                re.IGNORECASE,
+            )
+            if pair:
+                year, month = int(pair[2]), MONTH_NUM[pair[1].lower()]
+                day = date(year, month, calendar.monthrange(year, month)[1])
+            else:
+                day = publication_month(heading, "")
             if not day or (expected_day and day != expected_day):
                 raise SourceDateMismatch("Monthly annex period differs from its link")
             columns = [i for i, v in enumerate(rows[headers]) if clean(v) == "Precio"]
@@ -817,17 +908,18 @@ def parse_monthly_summary(data, expected_day):
                     if not market or not name:
                         raise ValueError("Missing monthly summary label")
                     observations[(name, market)] = [
-                        f"{sheet}!row {row_no},col {col + 1}",
+                        f"{sheet}!row {row_no},col {col + 1}; monthly-annex-v2",
                         "dane-monthly-summary",
                         day,
                         name,
                         market,
                         unit_for(name),
                         float(row[col]),
-                        float(row[col + 1])
-                        if isinstance(row[col + 1], (int, float))
-                        else None,
-                        {"variation_basis": "monthly"},
+                        percent(row[col + 1], sheet, row_no, col + 2),
+                        {
+                            "variation_basis": "monthly",
+                            "parser_version": "monthly-annex-v2",
+                        },
                     ]
         elif "Variación año corrido" in heading or "Variación anual" in heading:
             field = (
@@ -840,7 +932,7 @@ def parse_monthly_summary(data, expected_day):
             )
             if h is None:
                 continue
-            for row in rows[h + 1 :]:
+            for row_no, row in enumerate(rows[h + 1 :], h + 2):
                 name = clean(row[0])
                 for col, market in enumerate(rows[h][1:], 1):
                     if (
@@ -849,7 +941,9 @@ def parse_monthly_summary(data, expected_day):
                         and isinstance(row[col], (int, float))
                         and math.isfinite(row[col])
                     ):
-                        changes.setdefault((name, clean(market)), {})[field] = row[col]
+                        changes.setdefault((name, clean(market)), {})[field] = percent(
+                            row[col], sheet, row_no, col + 1
+                        )
     if not observations:
         raise ValueError("No monthly annex prices found")
     for key, row in observations.items():
@@ -867,6 +961,8 @@ def parse_pdf(data, day, monthly=False):
 
 def parse_pdf_pages(pages, day, monthly=False, *, allow_empty=False):
     """Shared literal-cell parser for native PDF grids and verified OCR grids."""
+    from .pdf_sources import price_grid_evidence
+
     found = 0
     for page_no, page in enumerate(pages, 1):
         for table_no, table in enumerate(page.extract_tables(), 1):
@@ -896,6 +992,11 @@ def parse_pdf_pages(pages, day, monthly=False, *, allow_empty=False):
             )
             if market_row is None:
                 continue
+            evidence = price_grid_evidence(
+                page, table, table_no, market_row, day, monthly
+            )
+            if evidence is None:
+                continue
             header = table[market_row]
             markets = [
                 (i, clean(v))
@@ -922,6 +1023,16 @@ def parse_pdf_pages(pages, day, monthly=False, *, allow_empty=False):
                 ):
                     continue
                 for col, market in markets:
+                    # Monetary matrices often alternate Precio / Var% columns.
+                    # A city header must never authorize its variation column.
+                    subheader = (
+                        clean(table[market_row + 1][col]).lower()
+                        if market_row + 1 < len(table)
+                        and col < len(table[market_row + 1])
+                        else ""
+                    )
+                    if re.search(r"var(?:iaci[oó]n)?|%|porcent", subheader):
+                        continue
                     if col >= len(row):
                         raise ValueError("PDF matrix width changed")
                     token = clean(row[col])
@@ -932,16 +1043,16 @@ def parse_pdf_pages(pages, day, monthly=False, *, allow_empty=False):
                         continue
                     found += 1
                     yield record(
-                        "dane-monthly-bulletin" if monthly else "dane-daily",
+                        "dane-monthly-summary" if monthly else "dane-daily",
                         day,
                         name,
                         market,
                         unit_for(name),
                         price,
-                        f"PDF page {page_no},table {table_no},row {rownum},col {col + 1}",
+                        f"PDF page {page_no},table {table_no},row {rownum},col {col + 1}; {evidence['parser_version']}",
                         details={
                             "predominant_variety": "*" in name,
-                            "source_header": "Precio por kilogramo; preserve SIPSA unit exceptions",
+                            **evidence,
                         },
                     )
     if not found and not allow_empty:
@@ -1064,51 +1175,72 @@ def project(db, did, url, kind):
             )
         elif series == "fnc-daily":
             coffee[d] = (d, price, url, did)
-    with db.cursor() as cur:
-        if products:
-            cur.executemany(
-                "INSERT INTO product(id,name,category) VALUES(%s,%s,%s) ON CONFLICT(id) DO NOTHING",
-                products.values(),
-            )
-            cur.executemany(
-                "INSERT INTO market(id,name,city,region) VALUES(%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING",
-                markets.values(),
-            )
-            cur.executemany(
-                """INSERT INTO price_observation(product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator)
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id,source_locator=excluded.source_locator WHERE (price_observation.price,price_observation.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id)""",
-                [v for k, v in prices.items() if k not in conflicts],
-            )
-        if daily:
-            product_ids = {
-                x[0] for x in cur.execute("SELECT id FROM product").fetchall()
-            }
-            daily_values = [
-                (
-                    d,
-                    n,
-                    m,
-                    slug(n) if "*" not in n and slug(n) in product_ids else None,
-                    p,
-                    v,
-                    doc,
-                    page,
-                    loc,
-                    unit,
+    with db.transaction():
+        with db.cursor() as cur:
+            if products:
+                cur.executemany(
+                    "INSERT INTO product(id,name,category) VALUES(%s,%s,%s) ON CONFLICT(id) DO NOTHING",
+                    products.values(),
                 )
-                for d, n, m, _, p, v, doc, page, loc, unit in daily.values()
-            ]
-            cur.executemany(
-                """INSERT INTO daily_price(observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(observed_on,product_name,market_name) DO UPDATE SET price=excluded.price,change_percent=excluded.change_percent,document_id=excluded.document_id,source_locator=excluded.source_locator,source_page=excluded.source_page,unit=excluded.unit WHERE (daily_price.price,daily_price.document_id,daily_price.change_percent) IS DISTINCT FROM (excluded.price,excluded.document_id,excluded.change_percent)
-                AND ((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=excluded.document_id)='daily'
-                 OR coalesce((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=daily_price.document_id),'')<>'daily')""",
-                daily_values,
-            )
-        if coffee:
-            cur.executemany(
-                """INSERT INTO coffee_reference(observed_on,price,source_url,document_id) VALUES(%s,%s,%s,%s) ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id WHERE (coffee_reference.price,coffee_reference.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id)""",
-                coffee.values(),
-            )
+                cur.executemany(
+                    "INSERT INTO market(id,name,city,region) VALUES(%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING",
+                    markets.values(),
+                )
+                cur.execute(
+                    "CREATE TEMP TABLE IF NOT EXISTS ingestion_price_projection_stage ON COMMIT DROP AS SELECT product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator FROM price_observation WITH NO DATA"
+                )
+                cur.execute("TRUNCATE pg_temp.ingestion_price_projection_stage")
+                with cur.copy(
+                    "COPY pg_temp.ingestion_price_projection_stage (product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator) FROM STDIN"
+                ) as copy:
+                    for value in [v for k, v in prices.items() if k not in conflicts]:
+                        copy.write_row(value)
+                cur.execute("""INSERT INTO price_observation(product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator)
+                SELECT product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator FROM pg_temp.ingestion_price_projection_stage WHERE true ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id,source_locator=excluded.source_locator WHERE (price_observation.price,price_observation.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id) AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)>=coalesce((SELECT retrieved_at FROM source_document WHERE id=price_observation.document_id),'-infinity'::timestamptz)""")
+            if daily:
+                product_ids = {
+                    x[0] for x in cur.execute("SELECT id FROM product").fetchall()
+                }
+                daily_values = [
+                    (
+                        d,
+                        n,
+                        m,
+                        slug(n) if "*" not in n and slug(n) in product_ids else None,
+                        p,
+                        v,
+                        doc,
+                        page,
+                        loc,
+                        unit,
+                    )
+                    for d, n, m, _, p, v, doc, page, loc, unit in daily.values()
+                ]
+                cur.execute(
+                    "CREATE TEMP TABLE IF NOT EXISTS ingestion_daily_projection_stage ON COMMIT DROP AS SELECT observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit FROM daily_price WITH NO DATA"
+                )
+                cur.execute("TRUNCATE pg_temp.ingestion_daily_projection_stage")
+                with cur.copy(
+                    "COPY pg_temp.ingestion_daily_projection_stage (observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit) FROM STDIN"
+                ) as copy:
+                    for value in daily_values:
+                        copy.write_row(value)
+                cur.execute("""INSERT INTO daily_price(observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit) SELECT observed_on,product_name,market_name,product_id,price,change_percent,document_id,source_page,source_locator,unit FROM pg_temp.ingestion_daily_projection_stage WHERE true ON CONFLICT(observed_on,product_name,market_name) DO UPDATE SET price=excluded.price,change_percent=excluded.change_percent,document_id=excluded.document_id,source_locator=excluded.source_locator,source_page=excluded.source_page,unit=excluded.unit WHERE (daily_price.price,daily_price.document_id,daily_price.change_percent) IS DISTINCT FROM (excluded.price,excluded.document_id,excluded.change_percent)
+                    AND ((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=excluded.document_id)='daily'
+                     OR coalesce((SELECT metadata->>'ingestion_kind' FROM source_document WHERE id=daily_price.document_id),'')<>'daily')""")
+            if coffee:
+                cur.execute(
+                    "CREATE TEMP TABLE IF NOT EXISTS ingestion_coffee_projection_stage ON COMMIT DROP AS SELECT observed_on,price,source_url,document_id FROM coffee_reference WITH NO DATA"
+                )
+                cur.execute("TRUNCATE pg_temp.ingestion_coffee_projection_stage")
+                with cur.copy(
+                    "COPY pg_temp.ingestion_coffee_projection_stage (observed_on,price,source_url,document_id) FROM STDIN"
+                ) as copy:
+                    for value in coffee.values():
+                        copy.write_row(value)
+                cur.execute(
+                    """INSERT INTO coffee_reference(observed_on,price,source_url,document_id) SELECT observed_on,price,source_url,document_id FROM pg_temp.ingestion_coffee_projection_stage WHERE true ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id WHERE (coffee_reference.price,coffee_reference.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id) AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)>=coalesce((SELECT retrieved_at FROM source_document WHERE id=coffee_reference.document_id),'-infinity'::timestamptz)"""
+                )
     return len(conflicts)
 
 
@@ -1390,6 +1522,13 @@ def _process_asset(db, url, kind, day):
 
             extract_reference_rows(db, data, did, day)
         conflicts = project(db, did, url, kind) if count else 0
+        if kind in ("coffee", "coffee-pdf"):
+            from . import coffee_sources, official_sources
+
+            extra_rows = coffee_sources.publication_rows(
+                coffee_sources.parse(data, url, kind)
+            )
+            count += official_sources.publish_rows(db, extra_rows, did, kind)
         db.execute(
             "UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
             (
@@ -1434,7 +1573,11 @@ def refresh_coffee_bulletin(db, data, did, url):
         excel.write_bytes(workbook[0])
         pdf.write_bytes(data)
         history, factors, markets, observations = parse_fnc(
-            excel, pdf, "https://federaciondecafeteros.org/history.xlsx", url
+            excel,
+            pdf,
+            "https://federaciondecafeteros.org/history.xlsx",
+            url,
+            historical=True,
         )
     # Workbook rows were already imported with their real source URL and locators.
     latest = [r for r in history if r[2] == url]
@@ -1445,20 +1588,20 @@ def refresh_coffee_bulletin(db, data, did, url):
                 markets.values(),
             )
             cur.executemany(
-                "INSERT INTO coffee_reference(observed_on,price,source_url,document_id) VALUES(%s,%s,%s,%s) ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id WHERE coffee_reference.document_id IS DISTINCT FROM excluded.document_id",
+                "INSERT INTO coffee_reference(observed_on,price,source_url,document_id) VALUES(%s,%s,%s,%s) ON CONFLICT(observed_on) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id WHERE (coffee_reference.price,coffee_reference.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id) AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)>=coalesce((SELECT retrieved_at FROM source_document WHERE id=coffee_reference.document_id),'-infinity'::timestamptz)",
                 [(*r, did) for r in latest],
             )
             cur.executemany(
-                "INSERT INTO coffee_factor(observed_on,factor,price,source_url,document_id) VALUES(%s,%s,%s,%s,%s) ON CONFLICT(observed_on,factor) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id WHERE coffee_factor.document_id IS DISTINCT FROM excluded.document_id",
+                "INSERT INTO coffee_factor(observed_on,factor,price,source_url,document_id) VALUES(%s,%s,%s,%s,%s) ON CONFLICT(observed_on,factor) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id WHERE (coffee_factor.price,coffee_factor.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id) AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)>=coalesce((SELECT retrieved_at FROM source_document WHERE id=coffee_factor.document_id),'-infinity'::timestamptz)",
                 [(*r, did) for r in factors],
             )
             cur.executemany(
-                """INSERT INTO price_observation(product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,'PDF page 2; Almacafé') ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit) DO UPDATE SET price=excluded.price,document_id=excluded.document_id WHERE price_observation.document_id IS DISTINCT FROM excluded.document_id""",
+                """INSERT INTO price_observation(product_id,market_id,source_id,observed_on,period,unit,price,source_url,document_id,source_locator) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,'PDF page 2; Almacafé') ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit) DO UPDATE SET price=excluded.price,source_url=excluded.source_url,document_id=excluded.document_id,source_locator=excluded.source_locator WHERE (price_observation.price,price_observation.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id) AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)>=coalesce((SELECT retrieved_at FROM source_document WHERE id=price_observation.document_id),'-infinity'::timestamptz)""",
                 [(*r, did) for r in observations],
             )
             cur.execute(
-                "INSERT INTO document_alias VALUES('fnc-price',%s) ON CONFLICT(alias) DO UPDATE SET document_id=excluded.document_id",
-                (did,),
+                "INSERT INTO document_alias SELECT 'fnc-price',%s WHERE EXISTS(SELECT 1 FROM coffee_factor WHERE document_id=%s AND observed_on=(SELECT max(observed_on) FROM coffee_factor)) ON CONFLICT(alias) DO UPDATE SET document_id=excluded.document_id",
+                (did, did),
             )
 
 
@@ -1500,62 +1643,9 @@ def refresh_trm(db):
 
 
 def refresh_seasons(db):
-    # Rebuild comparable COMPLETE market-years; retained versions preserve changes.
-    rows = db.execute(
-        "SELECT product_id,market_id,extract(year from observed_on)::int,extract(month from observed_on)::int,price,document_id,source_locator FROM price_observation WHERE source_id='dane-sipsa' AND period='monthly' AND extract(year from observed_on)<%s ORDER BY product_id,market_id,observed_on",
-        (today().year,),
-    ).fetchall()
-    years = defaultdict(dict)
-    for pid, mid, year, month, price, did, loc in rows:
-        years[(pid, mid, year)][month] = (price, did, loc)
-    vals = []
-    for (pid, mid, year), months in years.items():
-        if len(months) == 12:
-            vals.append(
-                (
-                    pid,
-                    mid,
-                    year,
-                    Jsonb([float(months[m][0]) for m in range(1, 13)]),
-                    months[12][1],
-                    Jsonb([months[m][2] for m in range(1, 13)]),
-                )
-            )
-    coffee = db.execute(
-        "SELECT observed_on,price,document_id FROM coffee_reference WHERE extract(year from observed_on)<%s ORDER BY observed_on",
-        (today().year,),
-    ).fetchall()
-    coffee_years = defaultdict(lambda: defaultdict(list))
-    for day, price, did in coffee:
-        coffee_years[day.year][day.month].append((float(price) / 125, did))
-    for year, months in coffee_years.items():
-        if len(months) == 12:
-            vals.append(
-                (
-                    "cafe-pergamino-seco",
-                    "fnc-national",
-                    year,
-                    Jsonb(
-                        [
-                            sum(v for v, _ in months[m]) / len(months[m])
-                            for m in range(1, 13)
-                        ]
-                    ),
-                    months[12][-1][1],
-                    Jsonb(
-                        [
-                            f"FNC daily references for {year}-{m:02d}; {len(months[m])} observations; COP/125kg divided by 125"
-                            for m in range(1, 13)
-                        ]
-                    ),
-                )
-            )
-    with db.transaction():
-        with db.cursor() as cur:
-            cur.executemany(
-                """INSERT INTO seasonal_year VALUES(%s,%s,%s,%s,%s,%s) ON CONFLICT(product_id,market_id,reference_year) DO UPDATE SET monthly_prices=excluded.monthly_prices,document_id=excluded.document_id,source_rows=excluded.source_rows WHERE (seasonal_year.monthly_prices,seasonal_year.document_id) IS DISTINCT FROM (excluded.monthly_prices,excluded.document_id)""",
-                vals,
-            )
+    from .seasonality import refresh
+
+    return refresh(db, today().year)
 
 
 def run(

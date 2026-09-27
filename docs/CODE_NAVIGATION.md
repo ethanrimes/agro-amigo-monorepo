@@ -114,3 +114,10 @@ Production settings live in Azure. [infra/app_settings.py](../infra/app_settings
 For missing data, trace one source URL through `ingestion_asset` → `source_document` → parsed/history rows → published view → API response. Inspect `ingestion_run`, `source_ocr_task`, `official_source_review` and the selected filters before changing a parser. A queued URL proves discovery; an archived original proves download; a published row and corresponding API response prove delivery to the app. Historical discovery and backfill are ongoing work, not an assertion that every published file has already been loaded.
 
 Keep pure format parsers separate from networking, persistence and UI calculations. For a future worker cleanup, extract discovery/archive/project responsibilities behind their existing call signatures one at a time, retaining the real-source and revision tests. Avoid a broad rewrite while the historical queue is running.
+
+Price-source adapters: `coffee_sources.py` preserves FNC period/currency/basis distinctions;
+`dane_context.py` limits explanatory-PDF discovery to audited official families.
+`seasonality.py` derives complete comparable years with document evidence for every
+month. `official_sources.py` validates all rows before bounded immutable publication.
+The dated source coverage/audit documents distinguish extracted rows, review-only
+evidence and cloud publication checks.

@@ -121,6 +121,9 @@ def deploy(code_only=False):
             for name in [
                 "pipelines/ingestion/resumable_inputs.py",
                 "pipelines/ingestion/retained_replays.py",
+                "pipelines/ingestion/coffee_sources.py",
+                "pipelines/ingestion/seasonality.py",
+                "pipelines/ingestion/dane_context.py",
                 "pipelines/ingestion/workbook_preview.py",
                 "pipelines/ingestion/queue_plan.py",
                 "pipelines/ingestion/official_sources.py",

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { database } from "@/lib/server/db";
+import { latestRegionalPrices } from "@/lib/server/regional-prices";
 import {
   farmData,
   inputs,
@@ -48,10 +49,7 @@ export async function GET(
         );
       result = await weatherFor(lat, lon);
     } else if (resource === "regional")
-      result = (await database().query(`WITH latest AS (SELECT market_name,max(observed_on) AS day FROM regional_price WHERE observed_on<=CURRENT_DATE GROUP BY market_name), ranked AS (
-       SELECT r.*,m.id AS market_id,coalesce(c.category_path,string_to_array(r.category,' > ')) AS category_path,row_number() OVER(PARTITION BY r.market_name,r.product_name,r.presentation,r.quantity,r.source_unit,r.round ORDER BY d.retrieved_at DESC,r.document_id) rn
-       FROM regional_price r JOIN latest l ON l.market_name=r.market_name AND l.day=r.observed_on JOIN source_document d ON d.id=r.document_id LEFT JOIN regional_classification c ON c.document_id=r.document_id AND c.source_locator=r.source_locator LEFT JOIN market m ON m.name=r.market_name
-      ) SELECT * FROM ranked WHERE rn=1 ORDER BY product_name,market_name,quantity,round`)).rows;
+      result = await latestRegionalPrices();
     else if (resource === "daily")
       result = (
         await database().query(

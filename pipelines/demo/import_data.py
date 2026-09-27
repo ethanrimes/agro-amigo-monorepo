@@ -69,20 +69,20 @@ def parse_dane(paths):
  if not observations: raise ValueError('DANE import returned no in-window observations')
  return products,markets,list(observations.values())
 
-def parse_fnc(excel,pdf,excel_url,pdf_url):
+def parse_fnc(excel,pdf,excel_url,pdf_url,*,historical=False):
  df=pd.read_excel(excel,sheet_name='1. Precio Interno Diario ',header=5)
  history={}
  for _,r in df.iterrows():
   d=r.iloc[1]
   if isinstance(d,(date,datetime)) and finite(r.iloc[2]):
    day=d.date() if isinstance(d,datetime) else d
-   if in_window(day): history[day]=(day,float(r.iloc[2]),excel_url)
+   if (day<=TODAY if historical else in_window(day)): history[day]=(day,float(r.iloc[2]),excel_url)
  reader=PdfReader(pdf);text='\n'.join(p.extract_text() for p in reader.pages)
  months={m:i+1 for i,m in enumerate(['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'])}
  match=re.search(r'([A-Za-z]+)\s+(\d{1,2})\s*/\s*(20\d{2})',text)
  if not match: raise ValueError('FNC publication date missing')
  day=date(int(match[3]),months[match[1].lower()],int(match[2]))
- if not in_window(day): raise ValueError('FNC bulletin outside demo window')
+ if not (day<=TODAY if historical else in_window(day)): raise ValueError('FNC bulletin outside permitted date range')
  price=re.search(r'125\s*Kg.*?FR\s*94\s+([\d,]+)\s+COP',text)
  if not price: raise ValueError('FNC 125kg FR94 reference missing')
  history[day]=(day,float(price[1].replace(',','')),pdf_url)
