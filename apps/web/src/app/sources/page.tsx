@@ -78,9 +78,9 @@ const sources = [
   {
     name: "DANE · Abastecimiento",
     subtitle: "Cuánto producto llega a los mercados",
-    status: "Boletín archivado",
+    status: "Integrado",
     description:
-      "Volúmenes de entrada y procedencias. Es útil para compradores que quieren entender la oferta de los mercados. Un ingreso reportado no equivale a inventario disponible para comprar.",
+      "Llegadas reportadas por producto, mercado y mes, con historia y documentos de origen. Los boletines agregados se conservan por separado. Un ingreso reportado no equivale a inventario disponible para comprar.",
     url: "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/componente-abastecimiento-1",
   },
   {
@@ -172,10 +172,14 @@ export default function Sources() {
           <summary>¿Por qué algunos precios no son de hoy?</summary>
           <p>
             Las fuentes tienen distintas frecuencias y demoras de publicación.
-            DANE se presenta aquí como promedio mensual; FNC, como referencia
-            diaria. Mostramos siempre el período real del dato. Esta demo
-            conserva las observaciones recientes dentro de los últimos 12 meses.
-            La historia estacional se guarda por separado: cinco años completos,
+            DANE publica precios diarios, semanales y mensuales, además de
+            informes por ciudad, precios de leche en finca y arroz en molino.
+            FNC publica una referencia diaria. Cada dato conserva su período y
+            unidad. La historia incorporada y sus documentos se mantienen:
+            algunas vistas muestran los últimos 12 meses por defecto y permiten
+            seleccionar todo el histórico disponible. La carga de archivos
+            históricos continúa. La historia estacional se guarda por separado:
+            cinco años completos,
             con al menos tres años comparables para calcular escenarios. Las
             referencias técnicas conservan su año de publicación. No inventa
             registros para completar períodos faltantes.
@@ -216,8 +220,9 @@ export default function Sources() {
       <p className="privacy-note">
         <Link href="/android">Instalar AgroAmigo en Android →</Link>
         <br />
-        Fotografías ilustrativas de Unsplash. AgroAmigo no está afiliado a las
-        entidades que publican los datos.
+        Imágenes ilustrativas. Consulta el autor, el origen y la licencia de
+        cada imagen en <Link href="/credits">Créditos de imágenes</Link>.
+        AgroAmigo no está afiliado a las entidades que publican los datos.
       </p>
     </>
   );

@@ -7,21 +7,22 @@ import { summaryReferencesForProduct } from "./summary-references";
  * City prices are per original package; monthly references keep their base unit.
  * Latest round / publisher revision wins within the same dated quote identity.
  */
-export const CITY_PRICE_QUOTES = `
+function cityPriceQuotes(classify: boolean) { return `
   SELECT product_id,market_id,market_name,city,region,product_name,category,category_path,
     observed_on,(min_price+max_price)/2 AS price,min_price,max_price,unit,upper(left(presentation,1)) || lower(substr(presentation,2)) AS presentation,units,
     'city'::text AS series,document_id,source_locator,source_url,'daily'::text AS period,source_page FROM (
     SELECT DISTINCT ON(r.product_id,m.id,r.observed_on,lower(btrim(r.presentation)),r.quantity,lower(btrim(r.source_unit)))
       r.*,m.id AS market_id,m.city,m.region,
-      coalesce(c.category_path,string_to_array(r.category,' > ')) AS category_path,
+      ${classify ? "coalesce(c.category_path,string_to_array(r.category,' > '))" : "string_to_array(r.category,' > ')"} AS category_path,
       r.quantity::float8::text || ' ' || upper(left(r.source_unit,1)) || lower(substr(r.source_unit,2)) AS units,d.source_url
     FROM regional_price r JOIN market m ON m.name=r.market_name
     JOIN source_document d ON d.id=r.document_id
-    LEFT JOIN regional_classification c ON c.document_id=r.document_id AND c.source_locator=r.source_locator
+    ${classify ? "LEFT JOIN regional_classification c ON c.document_id=r.document_id AND c.source_locator=r.source_locator" : ""}
     ORDER BY r.product_id,m.id,r.observed_on,lower(btrim(r.presentation)),r.quantity,lower(btrim(r.source_unit)),r.round DESC,d.retrieved_at DESC,r.source_locator
-  ) city`;
+  ) city`; }
+export const CITY_PRICE_QUOTES = cityPriceQuotes(true);
 
-export const PRICE_QUOTES = `
+function priceQuotes(city: string) { return `
   SELECT o.product_id,m.id AS market_id,m.name AS market_name,m.city,m.region,
     p.name AS product_name,p.category,ARRAY[p.category]::text[] AS category_path,
     o.observed_on,o.price,o.min_price,o.max_price,o.unit,
@@ -31,7 +32,30 @@ export const PRICE_QUOTES = `
     o.document_id,o.source_locator,o.source_url,o.period,1::integer AS source_page
   FROM published_price_observation o JOIN market m ON m.id=o.market_id JOIN product p ON p.id=o.product_id
   UNION ALL
-${CITY_PRICE_QUOTES}`;
+${city}`; }
+export const PRICE_QUOTES = priceQuotes(CITY_PRICE_QUOTES);
+// Dates, prices and revision winners do not depend on classification metadata.
+// Fetch that metadata only for the selected display rows, not each historical
+// observation feeding an aggregate or a picker.
+export const PRICE_QUOTE_VALUES = priceQuotes(cityPriceQuotes(false));
+
+export async function withQuoteClassifications<T extends {
+  series: string; document_id: string; source_locator: string; category_path: string[];
+}>(rows: T[]): Promise<T[]> {
+  const city = rows.filter((row) => row.series === "city");
+  if (!city.length) return rows;
+  const paths = (await database().query(`
+    SELECT selected.document_id,selected.source_locator,c.category_path
+    FROM unnest($1::text[],$2::text[]) AS selected(document_id,source_locator)
+    CROSS JOIN LATERAL (
+      SELECT category_path FROM regional_classification c
+      WHERE c.document_id=selected.document_id AND c.source_locator=selected.source_locator OFFSET 0
+    ) c`, [city.map((row) => row.document_id), city.map((row) => row.source_locator)])).rows;
+  const bySource = new Map(paths.map((row) => [JSON.stringify([row.document_id, row.source_locator]), row.category_path]));
+  return rows.map((row) => ({ ...row, category_path: row.series === "city"
+    ? bySource.get(JSON.stringify([row.document_id, row.source_locator])) || row.category_path
+    : row.category_path }));
+}
 
 /** Filter availability depends on retained dimensions, not dated price winners.
  * Ordinary parser output normalizes case; differing whitespace spellings of the
@@ -92,7 +116,7 @@ export async function filteredProduct(
   let options = (await db.query(PRODUCT_FILTER_OPTIONS_SQL, [id, region])).rows;
   if (options.some((option) => option.requires_revision_resolution)) {
     options = (await db.query(
-      `WITH quotes AS (${PRICE_QUOTES}) SELECT DISTINCT series,market_id,market_name,presentation,units FROM quotes WHERE product_id=$1 AND ($2='' OR region=$2) AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY series,market_name,presentation,units`,
+      `WITH quotes AS (${PRICE_QUOTE_VALUES}) SELECT DISTINCT series,market_id,market_name,presentation,units FROM quotes WHERE product_id=$1 AND ($2='' OR region=$2) AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY series,market_name,presentation,units`,
       [id, region],
     )).rows;
   }
@@ -131,25 +155,40 @@ export async function filteredProduct(
   const market = requested.market || "";
   const historical = requested.history === "all";
   const filter = `product_id=$1 AND ($2='' OR region=$2) AND series=$3 AND presentation=$4 AND units=$5 AND ($6='' OR market_id=$6) AND ${historical ? "observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date" : WINDOW}`;
-  const args = [id, region, series, presentation, units, market];
-  const [markets, history, additionalReferences] = await Promise.all([
+  const marketIds = [...new Set(options.filter((option) =>
+    option.series === series && option.presentation === presentation && option.units === units &&
+    (!market || option.market_id === market)).map((option) => option.market_id))];
+  const args = [id, region, series, presentation, units, market, marketIds];
+  const [quotes, additionalReferences] = await Promise.all([
     db.query(
-      `WITH quotes AS (${PRICE_QUOTES}) SELECT DISTINCT ON(market_id) *,market_id AS id,market_name AS name,observed_on AS date FROM quotes WHERE ${filter} ORDER BY market_id,observed_on DESC`,
-      args,
-    ),
-    db.query(
-      `WITH quotes AS (${PRICE_QUOTES}) SELECT observed_on AS date,avg(price) AS price,count(DISTINCT market_id) AS market_count FROM quotes WHERE ${filter} GROUP BY observed_on ORDER BY observed_on`,
+      `WITH selected AS MATERIALIZED (
+        SELECT selected_market_quotes.* FROM unnest($7::text[]) AS selected_market(id)
+        CROSS JOIN LATERAL (
+          WITH quotes AS (${PRICE_QUOTE_VALUES})
+          SELECT * FROM quotes WHERE ${filter} AND market_id=selected_market.id OFFSET 0
+        ) selected_market_quotes
+      ), latest AS (
+        SELECT DISTINCT ON(market_id) *,market_id AS id,market_name AS name,observed_on AS date
+        FROM selected ORDER BY market_id,observed_on DESC
+      ), history AS (
+        SELECT observed_on AS date,avg(price) AS price,count(DISTINCT market_id) AS market_count
+        FROM selected GROUP BY observed_on
+      ) SELECT
+        coalesce((SELECT jsonb_agg(latest ORDER BY market_id) FROM latest),'[]'::jsonb) AS markets,
+        coalesce((SELECT jsonb_agg(history ORDER BY date) FROM history),'[]'::jsonb) AS history`,
       args,
     ),
     region ? Promise.resolve([]) : summaryReferencesForProduct(product.name),
   ]);
-  const latest = history.rows.at(-1);
+  const history = quotes.rows[0].history;
+  const classifiedMarkets = await withQuoteClassifications(quotes.rows[0].markets);
+  const latest = history.at(-1);
   return {
     product,
-    markets: markets.rows,
-    history: history.rows,
+    markets: classifiedMarkets,
+    history,
     current: latest || null,
-    classification: currentClassifications(markets.rows, product.category, latest?.date),
+    classification: currentClassifications(classifiedMarkets, product.category, latest?.date),
     additional_references: additionalReferences,
     filters: {
       region,

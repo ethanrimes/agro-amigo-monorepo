@@ -125,20 +125,27 @@ export function photoFor(
         : category === "Carnes"
           ? "beef"
           : "produce");
-  if (kind === "input")
-    key = /cal |caliza|carbonato|dolomita/.test(n)
+  if (kind === "input") {
+    const c = fold(category);
+    // Material photos only describe fertilizers/amendments. Equipment, animals,
+    // services and medicines must never inherit the generic DAP photograph.
+    const material = /fertilizante|enmienda|abono/.test(c);
+    key = material && /\bcal\b|caliza|carbonato|dolomita/.test(n)
       ? "limestone"
-      : /organico|abonaza|compost/.test(n)
+      : material && /organico|abonaza|compost/.test(n)
         ? "compost"
-        : /azufre/.test(n)
+        : material && /azufre/.test(n)
           ? "sulphur"
-          : /potasio/.test(n)
+          : material && /potasio/.test(n)
             ? "potassium"
             : /bioinsumos/i.test(category)
               ? "bioinput"
-              : /litro|cubicos/.test(fold(category))
+              : /fertilizante|fungicida|herbicida|insecticida|acaricida|coadyuvante|medicamento|antibiotico|antiparasitario/.test(c) && /litro|cubicos/.test(c)
                 ? "liquid-input"
-                : "fertilizer";
+                : material
+                  ? "fertilizer"
+                  : "input-neutral";
+  }
   if (kind === "market")
     key = n.includes("corabastos")
       ? "corabastos"
@@ -161,7 +168,7 @@ export function photoFor(
       ? `/images/${key}.jpg`
       : imageLibrary[
           kind === "input"
-            ? "fertilizer"
+            ? "input-neutral"
             : kind === "market"
               ? "market"
               : "produce"
@@ -169,7 +176,9 @@ export function photoFor(
   const visual = src.endsWith(".svg") ? "Ilustración" : "Foto ilustrativa";
   const alt =
     kind === "input"
-      ? `${visual} del tipo de insumo; no corresponde al empaque comercial de ${name}.`
+      ? key === "input-neutral"
+        ? `Ilustración general de insumos y servicios agrícolas; no representa ${name}.`
+        : `${visual} del tipo de insumo; no corresponde al empaque comercial de ${name}.`
       : kind === "market"
         ? key === "market" || key.startsWith("market-")
           ? "Imagen ilustrativa de una plaza o centro de acopio."
