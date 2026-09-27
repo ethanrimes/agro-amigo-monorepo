@@ -1,0 +1,44 @@
+{
+  "retired_on": "2026-09-27",
+  "reason": "Manual budget and flowering-date calculators removed; original source obligations retained in read-only farm-reference-cases and seasonal history case. Prior native/browser reports remain evidence of former UI.",
+  "cases": [
+    {
+      "name": "planning-coffee-calendar-and-complete-seasonal-provenance",
+      "route": "/plan?tab=budget",
+      "ready": "!!document.querySelector('.planning-tabs')||!!document.querySelector('.farm-editor')",
+      "steps": [
+        {
+          "action": "localStorage.setItem('agroamigo-farms-v2',\"{\\\"version\\\": 2, \\\"farms\\\": [{\\\"id\\\": \\\"qa-planning-oracle\\\", \\\"profile\\\": {\\\"municipalityId\\\": \\\"41551\\\", \\\"name\\\": \\\"QA source audit Pitalito\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"latitude\\\": \\\"1.912345\\\", \\\"longitude\\\": \\\"-76.123456\\\", \\\"elevation\\\": \\\"1800\\\", \\\"locationMethod\\\": \\\"manual\\\", \\\"locationAccuracy\\\": \\\"\\\"}, \\\"crops\\\": [{\\\"id\\\": \\\"qa-coffee\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"name\\\": \\\"Caf\\u00e9\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"yieldKgHa\\\": \\\"\\\", \\\"planYear\\\": \\\"2026\\\", \\\"physicalState\\\": \\\"Pergamino o seco de trilla\\\"}], \\\"selectedCropId\\\": \\\"qa-coffee\\\"}], \\\"activeId\\\": \\\"qa-planning-oracle\\\"}\");localStorage.removeItem('agroamigo-location-v1');window.__qaReloadPending=true;location.reload();",
+          "ready": "!window.__qaReloadPending&&(!!document.querySelector('.calendar-table')&&document.querySelector('.budget-header')?.textContent.includes('PITALITO'))",
+          "checks": []
+        },
+        {
+          "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+          "ready": "!!document.querySelector('.seasonal-bars')||document.body.textContent.includes('No hay al menos 3 años completos y comparables')||document.body.textContent.includes('La referencia disponible no corresponde al precio por kg')||!!document.querySelector('.error-state')",
+          "checks": [
+            {
+              "id": "CAL-01",
+              "condition": "(()=>{const expected=[{\"department_id\": \"41\", \"crop\": \"Café\", \"activity\": \"Cosechas\", \"reference_year\": 2024, \"percentages\": [10.51, 15.68, 0, 17.97, 21.18, 6.27, 0, 0, 4.8, 8.28, 6.54, 8.77], \"document_id\": \"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\", \"source_row\": 503}];const rows=[...document.querySelectorAll('.calendar-table tbody tr')];return rows.length===expected.length&&rows.every(row=>{const r=expected.find(x=>x.activity===row.querySelector('th').textContent);return r&&[...row.querySelectorAll('td')].every((td,i)=>td.textContent===__pn(r.percentages[i]))})})()",
+              "expected": "All12monthly Huila coffee percentages/activity match immutable source row"
+            },
+            {
+              "id": "CAL-07",
+              "condition": "!!document.querySelector('a[href*=\"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\"][href*=\"department=41\"]')",
+              "expected": "Historical2024department41 source"
+            },
+            {
+              "id": "CAL-04",
+              "condition": "document.body.textContent.includes('27 de septiembre de 2026')&&document.body.textContent.includes('11 de octubre de 2026')",
+              "expected": "FloweringFeb1 +238/252days at1800m; visible source guide"
+            },
+            {
+              "id": "FIN-10",
+              "condition": "document.querySelectorAll('.seasonal-bars button').length===12",
+              "expected": "Fivecomplete coffee years allow12month seasonal pattern"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
