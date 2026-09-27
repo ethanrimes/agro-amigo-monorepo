@@ -89,7 +89,8 @@ function officialSelection(quote: OfficialPrice & { previous_price: number | nul
     source: quote.publisher,
     // Kept for legacy consumers. Reference cards display their exact basis,
     // rather than interpreting this field as a publisher frequency guarantee.
-    period: quote.series.includes("monthly") ? "monthly" : "daily",
+    period: quote.series.includes("monthly") ? "monthly"
+      : quote.details.period_type === "weekly" || quote.series.includes("weekly") ? "weekly" : "daily",
     series: quote.series,
     currency: quote.currency,
     basis: quote.basis,

@@ -9,7 +9,7 @@ export type Product = {
   market_count: number;
   unit: string;
   source: string;
-  period: "daily" | "monthly";
+  period: "daily" | "weekly" | "monthly";
   series?: string;
   presentation?: string;
   units?: string;
