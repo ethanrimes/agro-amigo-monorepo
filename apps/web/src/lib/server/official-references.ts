@@ -8,60 +8,14 @@ type LatestOfficialPrice = OfficialPrice & { previous_price: number | null };
 const latestSnapshot = snapshotCache<LatestOfficialPrice[]>();
 const historySnapshot = snapshotCache<{ reference: OfficialPrice; history: OfficialPrice[] } | null>();
 
-/** Match published_official_price eligibility and revision order. First seek
- * the newest eligible date through official_quote_identity, then compare only
- * revisions on that date. Indexed review lookups avoid rescanning a materialized
- * review list for every historical quote. Previous price uses a distinct date.
- */
+/** Ingestion owns revision selection; request reads stay proportional to catalog size. */
 export const LATEST_OFFICIAL_REFERENCES_SQL = `
-  WITH RECURSIVE identities(quote_key) AS (
-    (SELECT quote_key FROM official_price_quote ORDER BY quote_key LIMIT 1)
-    UNION ALL
-    SELECT n.quote_key FROM identities i CROSS JOIN LATERAL (
-      SELECT quote_key FROM official_price_quote WHERE quote_key>i.quote_key
-      ORDER BY quote_key LIMIT 1
-    ) n
-  )
-  SELECT p.*,previous.price AS previous_price FROM identities i CROSS JOIN LATERAL (
-    SELECT q.observed_on FROM official_price_quote q
-    WHERE q.quote_key=i.quote_key
-      AND q.observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
-      AND NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
-        AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
-      AND NOT EXISTS(SELECT 1 FROM official_source_review r WHERE r.document_id=q.document_id
-        AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-    ORDER BY q.observed_on DESC LIMIT 1
-  ) latest_day CROSS JOIN LATERAL (
-    SELECT q.*,d.source_url FROM official_price_quote q
-    JOIN source_document d ON d.id=q.document_id
-    WHERE q.quote_key=i.quote_key AND q.observed_on=latest_day.observed_on
-      AND NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
-        AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
-      AND NOT EXISTS(SELECT 1 FROM official_source_review r WHERE r.document_id=q.document_id
-        AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-    ORDER BY d.retrieved_at DESC,q.parsed_at DESC,q.source_locator LIMIT 1
-  ) p LEFT JOIN LATERAL (
-    SELECT prior.price FROM (
-      SELECT q.observed_on FROM official_price_quote q
-      WHERE q.quote_key=p.quote_key AND q.observed_on<p.observed_on
-        AND NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
-          AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
-        AND NOT EXISTS(SELECT 1 FROM official_source_review r WHERE r.document_id=q.document_id
-          AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-      ORDER BY q.observed_on DESC LIMIT 1
-    ) previous_day CROSS JOIN LATERAL (
-      SELECT q.price FROM official_price_quote q JOIN source_document d ON d.id=q.document_id
-      WHERE q.quote_key=p.quote_key AND q.observed_on=previous_day.observed_on
-        AND NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
-          AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
-        AND NOT EXISTS(SELECT 1 FROM official_source_review r WHERE r.document_id=q.document_id
-          AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-      ORDER BY d.retrieved_at DESC,q.parsed_at DESC,q.source_locator LIMIT 1
-    ) prior
-  ) previous ON true`;
+  SELECT payload FROM official_catalog_current
+  WHERE payload IS NOT NULL AND NOT dirty AND version='official-catalog-v1'
+    AND (payload->>'observed_on')::date <= (CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date`;
 
 export function latestOfficialReferences(): Promise<LatestOfficialPrice[]> {
-  return latestSnapshot("all", async () => (await database().query<LatestOfficialPrice>(LATEST_OFFICIAL_REFERENCES_SQL)).rows);
+  return latestSnapshot("all", async () => (await database().query<{ payload: LatestOfficialPrice }>(LATEST_OFFICIAL_REFERENCES_SQL)).rows.map((row) => row.payload));
 }
 
 export async function officialReferences(q: URLSearchParams) {

@@ -127,6 +127,7 @@ def deploy(code_only=False):
                 "pipelines/ingestion/workbook_preview.py",
                 "pipelines/ingestion/queue_plan.py",
                 "pipelines/ingestion/official_sources.py",
+                "pipelines/ingestion/official_catalog.py",
                 "pipelines/ingestion/international_sources.py",
                 "pipelines/ingestion/colombia_sources.py",
                 "pipelines/ingestion/ocr.py",

@@ -25,6 +25,13 @@ def image_workbook():
 
 
 class Runtime(unittest.TestCase):
+    def setUp(self):
+        # Catalog SQL has its own PostgreSQL integration suite. These fixtures
+        # exercise orchestration and intentionally provide no cache tables.
+        self.catalog = patch.object(worker, "refresh_catalog", return_value=0)
+        self.catalog.start()
+        self.addCleanup(self.catalog.stop)
+
     def test_failed_input_publication_resumes_retained_bytes_before_mutable_url(self):
         db = MagicMock()
         did = "a" * 64
@@ -50,6 +57,31 @@ class Runtime(unittest.TestCase):
         self.assertIn(
             "a.status IN ('pending','failed')", db.execute.call_args_list[1].args[0]
         )
+
+    def test_catalog_failure_is_visible_and_ocr_still_runs_then_refreshes(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        events = []
+
+        def refresh(_db):
+            events.append("catalog")
+            if len(events) == 1:
+                raise ValueError("Temporary catalog failure")
+            return 7
+
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker, "refresh_catalog", side_effect=refresh),
+            patch(
+                "pipelines.ingestion.ocr.drain",
+                side_effect=lambda *args, **kwargs: events.append("ocr") or {},
+            ),
+        ):
+            connect.return_value.__enter__.return_value = db
+            result = worker.run("ocr", limit=0, time_budget=600)
+        self.assertEqual(events, ["catalog", "ocr", "catalog"])
+        self.assertEqual(result["errors"][0]["source"], "official_catalog")
+        self.assertEqual(result["catalog_after_publication"], 7)
 
     def test_targeted_operational_check_only_processes_registered_sources(self):
         url = "https://www.dane.gov.co/retained-source.xlsx"

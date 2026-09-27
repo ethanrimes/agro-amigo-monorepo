@@ -44,6 +44,13 @@ def quotes(count):
 )
 class OfficialBatchPostgresTests(unittest.TestCase):
     def setUp(self):
+        # This suite isolates raw batching/routing; dedicated catalog tests cover
+        # the derived refresh hook against the actual migration and SQL.
+        self.enterContext(
+            patch(
+                "pipelines.ingestion.official_catalog.refresh_document", return_value=0
+            )
+        )
         self.db = worker.connect()
         self.addCleanup(self.db.close)
         self.assertTrue(self.db.autocommit)
