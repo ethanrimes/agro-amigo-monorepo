@@ -15,7 +15,10 @@ For the path from a source adapter to its API and screen, see
   settings; `function_app.py` reads `DAILY_SCHEDULE` / `BACKFILL_SCHEDULE`.
 - `HistoricalBackfill`: every hour at minute 15 UTC. Processes up to 100 queued
   assets and resumes from database checkpoints. A run stops starting new assets
-  after 35 minutes. The Functions execution timeout is 45 minutes.
+  after 35 minutes. The Functions execution timeout is 45 minutes. Seasonal
+  refresh has its own five-minute budget so it yields to fresh source files.
+  Budget checks occur between atomic batches; an executing SQL statement still
+  has the normal statement timeout.
   `queue_plan.py` gives each source kind its own slot, so archive indexes cannot
   starve PDF/workbook leaves. Fresh official files with an unknown observation
   date receive a bounded daily slot; parsing records their actual latest date.
@@ -48,11 +51,12 @@ For the path from a source adapter to its API and screen, see
 | `inputs.py`, `input_references.py`, `pdf_sources.py` | Department and municipality input prices, input PDF grids, summaries and ancillary production-factor annexes. Non-price context remains reference data. |
 | `city_reports.py` | All discovered informes por ciudades ZIPs, individual PDF members, source package/quantity/unit, rounds and category paths. |
 | `special_prices.py` | DANE raw milk at farm and rice/mill byproducts, with distinct physical products and price bases. |
-| `supply.py` | Source-grounded monthly reported arrivals. |
+| `supply.py` | Full-source validation and resumable 250-identity batches of reported arrivals, newest month first. |
 | `colombia_sources.py` | AgroNET cacao, Fedepalma statutory palm references, Fedegán cattle/milk, Porkcolombia and Corabastos. |
 | `international_sources.py` | World Bank commodity benchmarks and USDA published flower market reports. |
 | `official_sources.py` | Trusted adapter dispatch, child discovery, quote validation, separate official-price revisions/reviews and OCR publication bridge. |
-| `resumable_inputs.py` | Full native validation, bounded source-row batches, atomic monthly input publication and durable resume checkpoints. |
+| `official_catalog.py` | Persistent current official quotes, review invalidation, bounded recovery and resumable initial bootstrap; keeps full-history work out of frontend requests. |
+| `resumable_inputs.py` | Full native validation, bounded source-row and exact-identity publication batches, with durable month/source completion checkpoints. |
 | `retained_replays.py` | Bounded replay of superseded official originals after parser upgrades without changing the current URL pointer. |
 | `audit_automation.py` | Read-only execution, source queue, retention, overlap and OCR diagnostics. |
 | `ocr.py` | Detect failed native extraction, persist images, compare independent Gemini readings and publish only recognized literal layouts. |
@@ -87,13 +91,36 @@ reselects once after source roots, allowing newly linked files into the same run
 Discovery errors are isolated by source family and reported without abandoning
 unrelated queued work.
 
+Expected deadline deferrals keep their checkpoints and are eligible for the next
+automatic invocation. They do not inherit the six-hour cooldown used for source
+errors. The per-run processed set still prevents retrying the same URL twice.
+
+FNC workbooks and PDFs are also evaluated once per Colombia calendar day. An
+unchanged original can contain a price that becomes eligible tomorrow. An
+`as-of:YYYY-MM-DD` checkpoint is written only after successful publication; HTTP
+checks still detect a changed file later on the same day.
+
+Current and previous-year annual milk workbooks are revalidated even when their
+last imported observation is older than the recent monthly-file window. DANE
+updates these URLs in place; an old observation date does not mean an old file.
+
 Large input workbooks validate fully before committing native observations in
-25,000-row batches. Each month's application prices and completion checkpoint
-commit together, newest month first. A time-limited run resumes the exact original
+25,000-row batches. Each month is staged once, newest month first, then published
+in batches of 250 exact input/location/date identities. Duplicate source rows
+for an identity stay together; conflicting prices remain withheld. Each batch
+and its checkpoint commit together. The month/source completion marker waits
+until every group completes. A time-limited run resumes the exact original
 before checking that mutable URL again. An unchanged business price keeps its
 existing valid evidence; a newer corrected value retains both original versions.
 Successful native publication closes only pending/deferred OCR tasks for that
 document and source kind. Existing OCR readings and review decisions remain.
+Supply validates the entire native workbook before publishing any values. It then
+commits at most 250 complete market/food/month identities with each checkpoint,
+newest month first. Reporting days, quantities and exact source rows stay together.
+A pending validated source resumes its retained original; only all completed
+batches permit `supply:complete`. Unchanged and stale values are excluded before
+INSERT, while equal-valued newer revisions still advance provenance safely.
+
 The bounded retained-original pass recovers older official reports overwritten
 at a publisher URL. It processes at most two originals per recurring run, with
 versioned completion/review checkpoints and retry cooldowns.
@@ -106,6 +133,9 @@ image. Only failed pages with a substantial image are added to this fallback;
 readable price pages and small logos stay on native extraction. City OCR rebuilds
 the complete document so continuation tables inherit its verified date, market
 and preceding classification, while retaining their original page numbers.
+Queued DANE daily/monthly pages recheck the same native-failure predicate before
+using cached readings or calling Gemini. Obsolete decorative/non-price pages move
+to review with an explicit no-OCR-needed reason; their original evidence stays.
 Spreadsheet embedded images / failed native cells use the same persistent OCR
 queue. `source_ocr_task` records pending, deferred, verified, published or review
 work; two independent literal readings must agree. The daily request allowance is
@@ -210,6 +240,11 @@ tables during health polling. `?coverage=1` requests cached coverage with a
 five-second database timeout; unavailable coverage is null. Protected
 `POST /api/run-check` runs at most four queued assets, stops starting work after
 two minutes and skips provider OCR requests, for bounded deployment validation.
+For a registered `asset_url`, an explicit `time_budget` of up to 2100 seconds
+allows validation of a large annual workbook through the same checkpoint path.
+The HTTP caller can time out before that job finishes; use the durable run and
+source-completion state to determine its outcome. Unscoped checks stay bounded
+to 120 seconds, and provider OCR remains disabled for these checks.
 Never put the function key in a committed file or public URL.
 
 Connectivity and automation health are separate: `status.automation` is degraded
@@ -357,6 +392,18 @@ for actual source tests and boundaries between structured prices and context.
 The scheduled `OcrRecovery` job runs at minute05 each hour (`OCR_SCHEDULE`),
 with a ten-minute budget, at most two OCR tasks and the existing daily provider
 request cap. It uses the same ingestion lock. Due exchange-rate and seasonal
-refreshes run before large native assets, so a permanent backlog cannot starve
-these datasets. Daily discovery and historical catch-up remain independently
+refreshes run before large native assets. Seasonal work yields after its
+independent five-minute allowance, retaining committed complete-year batches.
+This protects fresh sources; eventual completion of every seasonal year still
+requires observing that repeated comparison work fits the available allowance. Daily discovery and historical catch-up remain independently
 scheduled; all schedules are configured remotely in Azure App Settings.
+
+Current official references are computed during ingestion into
+`official_catalog_current`; request handlers do not reconstruct the catalog from
+all historical revisions. Migration `20260927_007_official_catalog.sql` adds the
+derived table, review/quote invalidation triggers and missing identity stubs.
+Initialize an existing database with `official_catalog.bootstrap(db,
+batch_size=100)`, which commits independently resumable batches. Run boundaries
+refresh up to100 dirty identities; each completed official source refreshes its
+affected identities and completion marker together. A reviewed identity with no
+eligible quote becomes a tombstone. Raw observations and evidence are retained.

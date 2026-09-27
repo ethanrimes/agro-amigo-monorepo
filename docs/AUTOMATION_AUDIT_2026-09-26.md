@@ -43,8 +43,8 @@ by Git). Counts below are dated observations, not a claim of complete archives.
    overlap attempts are visible, and SQL/idle transaction timeouts limit stalls.
 2. Source-specific errors are isolated. They no longer make Azure rerun the
    entire daily ingestion every five minutes.
-3. Inputs validate completely, save 25,000-row source batches, then publish each
-   month atomically with a durable checkpoint. Resume uses the exact retained
+3. Inputs validate completely, save 25,000-row source batches, then publish in batches of250 complete input/location/date identities, with
+   month completion recorded only after all groups finish. Resume uses the exact retained
    original, including after a transient failed publication. Identical values
    keep their existing valid evidence. A narrow per-key revision watermark
    prevents an older intermediate revision from undoing a newer equal-value
@@ -172,3 +172,163 @@ Several pages also contain chart/prose prices and aggregate supply figures that
 remain retained context, not structured quotes. Weekly SIPSA bulletins are a
 separate uncovered family. The source inventory and known limits are documented
 in [the DANE coverage matrix](DANE_SOURCE_COVERAGE_2026-09-27.md).
+
+### Follow-up live findings and publication checks
+
+The automatic run `659b6d01-e198-425c-9581-d2929355c312` started at06:08UTC
+without a manual invocation. It fetched the new TRM original, completed the FNC
+workbook and additional city reports. The FNC supplement reconciles all11,551
+additional observations exactly. The unchanged workbook contains one national
+price that becomes eligible on27September, increasing the validated total to
+20,219; a daily Colombia-date checkpoint now prevents HTTP304/same-hash checks
+from hiding newly eligible dates.
+
+This live run also reproduced five-minute SQL timeouts while publishing a whole
+seasonal set, a municipal input month and the current supply workbook. Those
+failed attempts were recorded as failures. Subsequent supply catch-up completed,
+as detailed below. Seasonal publication commits250 complete years per batch;
+input and supply publication now commit250 complete source identities per batch.
+Seasonal refresh also has a separate five-minute budget before yielding to fresh
+files, with explicit deferral reporting. Completing all seasonal history remains
+unproven if repeated comparison of the unchanged prefix consumes that allowance. The database remains on its
+existing capacity. Original documents and committed historical rows are retained
+through timeout/retry paths.
+
+The previous official-reference request computed latest/previous quotes from all
+historical revisions and exceeded the web query timeout. Migration007 and
+`official_catalog.py` move that computation into ingestion. The Azure bootstrap
+completed all1,217 identities with zero dirty entries. Quote/review invalidation,
+concurrent refresh, withdrawal, bootstrap and revision selection have separate
+PostgreSQL tests. Web release `5764d5c8a9a54c5295c897c8d75ee00f` returned HTTP200
+for cacao, pork, Corabastos, cattle and palm samples in0.265–1.671seconds. DANE
+daily, regional, scoped inputs and input detail also returned HTTP200; the scoped
+Antioquia catalog contains966 inputs. This checks those endpoints independently:
+the broader unified catalog still timed out in the first follow-up test and is
+being investigated separately.
+
+Runtime regression evidence at this checkpoint:307 tests collected,242 passed,
+65 opt-in PostgreSQL tests skipped. Dedicated actual PostgreSQL runs separately
+covered the cache, coffee date rollover, supply, milk/rice, seasonal batches,
+retained replay and input revision behavior. Test artifacts distinguish local
+database correctness from live Azure timing and publication.
+
+
+### Verified current-source catch-up and durable supply publication
+
+On27September, the registered2026 supply workbook completed in cloud run
+`f0b18f47-7f53-43f7-aef7-d951519cef46`,06:56:44–07:13:43UTC. It published30,260
+monthly groups with zero errors. The independent check reconciled18 groups across
+nine months, including quantities, reporting days, dates, original IDs and source
+row ranges. The full81,111,242-byte original downloaded from Azure Blob matches
+its SHA-256 document ID. The new annual supply summary is also archived as context.
+
+The current annual milk workbook published all1,456 observations across January–
+July2026; all1,456 historical values and six June/July application projections
+matched the source. The current FNC PDF's pasilla and New York references both
+match their printed values, explicit normalization and original IDs. All four
+current-source originals match their complete Blob byte hashes. Verification was
+read-only and did not redownload official sources or invoke OCR providers.
+
+The August municipal input workbook validated38,248 native observations and
+committed seven250-identity groups during its short operational check. Its asset
+correctly remained pending with no source-complete marker; this is durable partial
+progress, not a claim that all August prices finished. Checkpoint deferrals are
+now eligible on the next automatic invocation instead of waiting another hour.
+
+Supply-v5 validates the entire original and rejects malformed late rows before
+any publication. It then saves250 complete market/food/month identities and each
+checkpoint atomically, newest month first. Pending validated supply resumes the
+same retained bytes before checking a mutable URL again. All30,260 current groups
+and metadata reconciled under local publication/revision stress; fourteen
+PostgreSQL/deadline checks covered interruptions, rollback, stale/equal revisions,
+metadata corrections and source-completion markers. Local timings are separate
+from the observed cloud runtime above.
+
+Real Gemini checks used four provider requests for two paired page readings.
+The broken-font Porkcolombia page remained reviewable because its transcriptions
+were not safely publishable. An old queued monthly cover exposed an obsolete OCR
+candidate; queued DANE daily/monthly pages now recheck native eligibility before
+using cached readings or requesting OCR. Originals, images and readings remain
+retained. This verifies provider execution and conservative publication, not a
+claim that the OCR backlog has completed.
+
+
+### Live source delivery and frontend read paths
+
+Migrations008–010 were built concurrently and verified valid/ready. They cover
+catalog dates/names, narrow supply-history totals, and historical product filter
+identities. Supply endpoints for Armenia/Mercar and Bogotá/Corabastos changed from
+HTTP503 to HTTP200 in2.7–2.9seconds, retaining165 months fromJanuary2013 through
+September2026. September detail sums match the historical totals and current
+original IDs. Four local PostgreSQL parity tests cover118,802 fixture rows,
+scopes, metadata, unmapped foods, zero quantities and future exclusion.
+
+The Palmira raw-milk filter-options query changed from a15-second timeout to
+0.274seconds using the covering index. The full local service check returned166
+historical points; a public request returned HTTP200 with July2026 COP2,120.54
+per litre and the selected market/unit/series filters.
+
+The source-content API served the current88,645-byte FNC PDF and124,057-byte milk
+Excel with `X-Source-Storage: azure-blob`. Both complete response bodies matched
+their immutable document SHA-256 values. This checks delivery through the actual
+application, in addition to the separate storage integrity checks.
+
+The monthly catalog shares one recent-row snapshot across department requests,
+aggregating with integer cents and PostgreSQL-compatible numeric rounding. It
+retains the SQL oracle's identities, units, date windows and prior-month rules.
+All reads share a read-only repeatable-read transaction; failures cannot publish
+partial snapshots, and outer caches honor the snapshot expiry. Eleven tests
+cover real PostgreSQL parity, large retained history, decimal edge cases, failed
+refresh and expiry behavior. Source dates and historical aliases are retained.
+
+
+### Automatic execution and final frontend regression repair
+
+Worker release `0a7d2d94c963c387b60a512768910c28f885b2df6c1f3438320d1c443abf8eb3`
+started run `8ab92e97-d575-477f-8b58-b2afd576c437` automatically at
+07:27:40 UTC on 27 September. By 08:00:22 UTC it had processed 41 assets and
+86,047 rows, including city reports, input annexes, milk and historical rice.
+Those are processed-row counts, not a claim that every row was newly inserted.
+The run continued source ingestion after recording a seasonal SQL timeout. It
+finished at 08:02:41 UTC at the intended 35-minute budget, retaining 1,709 rows
+from the next city ZIP for continuation. Its status is correctly partial, not
+failed or fully complete.
+
+The final market browser checks exposed another real failure: both supply-history
+UI tests encountered HTTP503 while loading the market page, before the supply
+tab was available. Exact-market metadata now counts eligible identities without
+building every market's full price payload. Product lists select complete winning
+quote keys first, then load their payloads. The market directory likewise counts
+identities without classifying every historical quote. Six real PostgreSQL tests
+cover parity, source eligibility, missing references, supply-only markets and
+complete winning quote identities. These fixes are in commit `03add73`.
+
+The product regression exposed a separate avocado detail timeout in filter
+options and classification reads. Narrow option reads retain an exact fallback
+for ambiguous whitespace/case identities; classification still comes from the
+stored source classification, including overrides and absent classifications.
+Four real PostgreSQL cases and TypeScript validation passed. Additive indexes
+011–013 support these reads; index validity and the deployed regression results
+are recorded separately from successful builds.
+
+The independent five-minute seasonal allowance protects fresh source work, but
+the observed 300-second seasonal SQL timeout remains unresolved. Bounded actual
+PostgreSQL plan and retention metadata checks found no broad anti-join scan,
+recursive retention trigger, missing primary key, or missing worker permission.
+They do not prove that execution-time contention or retention-write cost caused
+the timeout. No database capacity upgrade or speculative SQL rewrite was made.
+
+
+The September17 city ZIP subsequently completed its valid-member publication in
+cloud run `e7179191-c2e2-4287-b104-682c9ec956d5` at 08:05:09 UTC: 2,379
+observations, zero execution errors. Its asset remains explicitly `review` for
+the two PDFs whose internal date is September18. The hourly OCR trigger fired
+at 08:05 and recorded `skipped_overlap`, proving the shared lock prevented a
+second writer. This manual targeted catch-up is separate from the preceding
+automatic run.
+
+A follow-up UI correction labels calculated range midpoints only when the
+source metadata explicitly identifies that statistic. Published weekly means
+retain their literal value and a distinct label. Six desktop/mobile browser
+checks passed with deliberately unequal mean/midpoint fixtures; build and
+TypeScript also passed. Browser emulation is not a native simulator run.

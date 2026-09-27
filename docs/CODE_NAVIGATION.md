@@ -31,7 +31,7 @@ The worker archives originals before parsing. A changed file at the same URL rec
 | Shared application | [apps/web/src/app](../apps/web/src/app), [apps/web/src/components](../apps/web/src/components) | Next.js routes and React screens used by all three clients. |
 | Server boundary | [apps/web/src/lib/server/db.ts](../apps/web/src/lib/server/db.ts) | Certificate-verified database connections and the default recent-date window. Other files in this directory contain server-only queries. |
 | Recurring ingestion | [pipelines/ingestion/function_app.py](../pipelines/ingestion/function_app.py), [worker.py](../pipelines/ingestion/worker.py), [queue_plan.py](../pipelines/ingestion/queue_plan.py) | Azure timers, persistent source queue, HTTP revalidation, source archival, parser dispatch and bounded scheduling. |
-| Ingestion recovery and audit | [resumable_inputs.py](../pipelines/ingestion/resumable_inputs.py), [retained_replays.py](../pipelines/ingestion/retained_replays.py), [audit_automation.py](../pipelines/ingestion/audit_automation.py) | Durable input batches/months, replay of superseded official originals, and read-only automation diagnostics. See the [September audit](AUTOMATION_AUDIT_2026-09-26.md). |
+| Ingestion recovery and audit | [resumable_inputs.py](../pipelines/ingestion/resumable_inputs.py), [retained_replays.py](../pipelines/ingestion/retained_replays.py), [audit_automation.py](../pipelines/ingestion/audit_automation.py) | Durable input identity batches with month/source completion, replay of superseded official originals, and read-only automation diagnostics. See the [September audit](AUTOMATION_AUDIT_2026-09-26.md). |
 | Initial/manual imports | [pipelines/demo](../pipelines/demo), [pipelines/market](../pipelines/market), [pipelines/planning](../pipelines/planning), [pipelines/spatial](../pipelines/spatial) | Initial catalog, supply, dated planning publications and territorial layers. The recurring worker is the unattended refresh path. |
 | Schema | [pipelines/demo/schema.sql](../pipelines/demo/schema.sql), [pipelines/market/schema.sql](../pipelines/market/schema.sql), [pipelines/planning/schema.sql](../pipelines/planning/schema.sql), [pipelines/spatial/schema.sql](../pipelines/spatial/schema.sql), [pipelines/ingestion/schema.sql](../pipelines/ingestion/schema.sql) | Application tables, evidence, regional observations, official references, retention triggers and published views. |
 | Azure deployment | [infra/provision.py](../infra/provision.py), [infra/deploy.py](../infra/deploy.py), [infra/deploy_ingestion.py](../infra/deploy_ingestion.py), [infra/app_settings.py](../infra/app_settings.py) | Resource setup, web/worker packaging, release verification and preservation of remote operator settings. |
@@ -50,6 +50,7 @@ The worker archives originals before parsing. A changed file at the same URL rec
 | Supply | [supply.py](../pipelines/ingestion/supply.py) | Source-grounded monthly `supply_observation`; reported arrivals are not inventory. |
 | Official Colombian alternatives | [colombia_sources.py](../pipelines/ingestion/colombia_sources.py), [official_sources.py](../pipelines/ingestion/official_sources.py) | `official_price_quote`, `official_source_review`, `published_official_price`. See [verified Colombian sources](OFFICIAL_COLOMBIA_SOURCES.md). |
 | Official international references | [international_sources.py](../pipelines/ingestion/international_sources.py), [official_sources.py](../pipelines/ingestion/official_sources.py) | Same explicit reference schema, keeping currency, origin, destination market and basis. See [international sources](OFFICIAL_INTERNATIONAL_SOURCES.md). |
+| Current official catalog | [official_catalog.py](../pipelines/ingestion/official_catalog.py), [migration 007](../pipelines/ingestion/migrations/20260927_007_official_catalog.sql) | Ingestion computes reviewed, revision-ordered latest quotes and previous dates into `official_catalog_current`. Quote/review changes invalidate affected identities; bounded recovery refreshes them. The frontend reads this small projection while original history remains intact. |
 | OCR | [ocr.py](../pipelines/ingestion/ocr.py), adapter `parse_with_ocr` methods | `source_ocr_scan/task/result/attempt`, immutable rendered images, supported validated observations; uncertainty stays reviewable. |
 | Original workbook display | [workbook_preview.py](../pipelines/ingestion/workbook_preview.py) | Read-only paginated XLS/XLSX cells, worksheet names and source dimensions. No editing or formula execution. |
 
@@ -121,3 +122,15 @@ Price-source adapters: `coffee_sources.py` preserves FNC period/currency/basis d
 month. `official_sources.py` validates all rows before bounded immutable publication.
 The dated source coverage/audit documents distinguish extracted rows, review-only
 evidence and cloud publication checks.
+
+
+Recent catalog work is isolated in `apps/web/src/lib/server/monthly-catalog.ts`
+(snapshot and exact decimal aggregation), `catalog-sql.ts` (city date selection),
+and `city-catalog-names.ts` (shared historical aliases). `supply-sql.ts` builds
+parameterized supply scopes while preserving every retained month. Their
+PostgreSQL parity tests live beside the web tests; additive read indexes are in
+`pipelines/ingestion/migrations/20260927_008_catalog_reads.sql` through
+`20260927_013_market_prices.sql`. `market-sql.ts` counts eligible market
+identities before fetching winning quote payloads. `price-quotes.ts` keeps
+product filter choices and stored classifications consistent with the selected
+quote; migrations011–013 cover those exact read paths without deleting history.
