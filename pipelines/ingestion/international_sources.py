@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v3"
+VERSION = "official-international-v4"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -702,7 +702,12 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             if re.search(r"\bmostly\s*$", prefix, re.I):
                 if last is None or lo < last["min"] or hi > last["max"] or hi < lo:
                     raise ValueError("USDA mostly range is outside full quote")
-                last["details"].update(mostly_min=lo, mostly_max=hi)
+                _record_mostly(
+                    last,
+                    lo,
+                    hi,
+                    f"PDF page {page}, col {column}, text row {locator_rows}, quote {j + 1}",
+                )
                 continue
             prefix = re.sub(
                 r"^(?:occasional|few) (?:higher|lower)(?: and (?:higher|lower))?\s*;?\s*",
@@ -776,6 +781,33 @@ ORIGIN = re.compile(
 )
 
 
+def _record_mostly(row, low, high, locator):
+    """Keep a contradictory printed qualifier in review without losing siblings."""
+    details = row["details"]
+    incoming = {"min": low, "max": high, "source_locator": locator}
+    if "conflicting_mostly_quotes" in details:
+        details["conflicting_mostly_quotes"].append(incoming)
+    elif "mostly_min" in details and (details["mostly_min"], details["mostly_max"]) != (
+        low,
+        high,
+    ):
+        details["conflicting_mostly_quotes"] = [
+            {
+                "min": details.pop("mostly_min"),
+                "max": details.pop("mostly_max"),
+                "source_locator": row["source_locator"],
+            },
+            incoming,
+        ]
+    else:
+        details.update(mostly_min=low, mostly_max=high)
+        return
+    details["quality_issue"] = (
+        "Conflicting repeated USDA mostly qualifiers for the same printed quote"
+    )
+    row["price"] = None
+
+
 def parse_boston_flowers(body, url=USDA_BOSTON):
     day, lines = _pdf_parts(body, "BH_FV201", 1)
     blocks = []
@@ -803,7 +835,9 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
             if re.search(r"\bmostly\s*$", prefix, re.I):
                 if last is None or not (last["min"] <= lo <= hi <= last["max"]):
                     raise ValueError("Boston mostly range is outside the full range")
-                last["details"].update(mostly_min=lo, mostly_max=hi)
+                _record_mostly(
+                    last, lo, hi, f"PDF page {page}, commodity {title}, quote {j + 1}"
+                )
                 continue
             prefix = re.sub(r"^(?:(?:occasional|few) (?:higher|lower)\s*)+", "", prefix)
             units = list(UNIT.finditer(prefix))
