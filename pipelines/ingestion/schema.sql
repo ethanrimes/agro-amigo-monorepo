@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS input_municipal_price (
 );
 CREATE INDEX IF NOT EXISTS input_price_recent ON input_price(observed_on,id,department);
 CREATE INDEX IF NOT EXISTS input_municipal_recent ON input_municipal_price(observed_on,id,department,municipality);
+CREATE INDEX IF NOT EXISTS input_municipal_location_options
+ ON input_municipal_price(department,municipality,observed_on DESC);
 CREATE TABLE IF NOT EXISTS source_pdf_page (
  document_id text REFERENCES source_document(id), page integer, text_content text NOT NULL,
  tables jsonb NOT NULL, extraction_version text NOT NULL, PRIMARY KEY(document_id,page,extraction_version)
