@@ -257,8 +257,15 @@ def date_from_text(text):
 
 def queue(db, url, kind, day=None):
     db.execute(
-        "INSERT INTO ingestion_asset(url,kind,observed_on) VALUES(%s,%s,%s) ON CONFLICT(url) DO UPDATE SET kind=excluded.kind,observed_on=coalesce(ingestion_asset.observed_on,excluded.observed_on)",
-        (url, kind, day),
+        """INSERT INTO ingestion_asset(url,kind,observed_on)
+        SELECT %s,%s,%s::date WHERE NOT EXISTS(
+          SELECT 1 FROM ingestion_asset WHERE url=%s AND kind=%s
+          AND (observed_on IS NOT NULL OR %s::date IS NULL))
+        ON CONFLICT(url) DO UPDATE SET kind=excluded.kind,
+          observed_on=coalesce(ingestion_asset.observed_on,excluded.observed_on)
+        WHERE (ingestion_asset.kind,ingestion_asset.observed_on) IS DISTINCT FROM
+          (excluded.kind,coalesce(ingestion_asset.observed_on,excluded.observed_on))""",
+        (url, kind, day, url, kind, day),
     )
 
 
