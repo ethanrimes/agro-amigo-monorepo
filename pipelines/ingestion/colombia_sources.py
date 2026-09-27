@@ -22,7 +22,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-VERSION = "colombia-prices-v3"
+VERSION = "colombia-prices-v4"
 AGRONET_CACAO = "https://agronet.gov.co/noticias/precio-de-referencia-semanal-de-compra-de-cacao-fuente-industria-nacional-exportadores-0"
 FEDEPALMA_FFP = "https://fedepalma.org/fondo-de-fomento-palmero-ffp/"
 FEDEGAN_PRICES = "https://estadisticas.fedegan.org.co/Indicadores/13"
@@ -293,6 +293,7 @@ def _row(
                 "published_unit",
                 "quality",
                 "statistic",
+                "price_segment",
             )
             if details.get(key) is not None
         },
@@ -933,6 +934,117 @@ def _corabastos_printed(pdf, day):
     return output
 
 
+def _corabastos_compact(pdf, day):
+    """Compact exports keep two quality prices, with no printed per-unit price.
+
+    Column positions come from the literal native header. Overprinted labels are
+    review evidence; the adapter never completes them from another day's report.
+    """
+    boundaries = None
+    output = []
+    for page_no, page in enumerate(pdf.pages, 1):
+        for y, _, text in _pdf_lines(page, upright_only=True):
+            chars = [
+                c
+                for c in page.chars
+                if c.get("upright", True) and abs(c["top"] - y) < 2
+            ]
+            if "Grupo" in text and "Producto" in text and "Precio extra" in text:
+                letters = [c for c in chars if not c["text"].isspace()]
+                literal = "".join(c["text"] for c in letters)
+                labels = (
+                    "Grupo",
+                    "Producto",
+                    "Precioextra",
+                    "Precioprimera",
+                    "Cantidad",
+                    "Presentación",
+                    "Variación",
+                )
+                if not all(label in literal for label in labels):
+                    raise ValueError("Compact Corabastos header is incomplete")
+                boundaries = [
+                    letters[literal.index(label)]["x0"] - 1 for label in labels
+                ] + [page.width]
+                continue
+            if boundaries is None or not re.match(
+                r"^(?:\d+\.\s+[A-ZÁÉÍÓÚ]|HUEVOS )", text
+            ):
+                continue
+            fields = []
+            overlapping = False
+            for left, right in pairwise(boundaries):
+                selected = sorted(
+                    [c for c in chars if left <= (c["x0"] + c["x1"]) / 2 < right],
+                    key=lambda c: c["x0"],
+                )
+                ink = [c for c in selected if not c["text"].isspace()]
+                if any(a["x1"] > b["x0"] + 0.7 for a, b in pairwise(ink)):
+                    overlapping = True
+                fields.append(clean("".join(c["text"] for c in selected)))
+            group, name, extra_raw, first_raw, quantity, presentation, variation = (
+                fields
+            )
+            issue = (
+                "Publisher compact table has overlapping/clipped labels or prices"
+                if overlapping
+                else None
+            )
+            if (
+                not name
+                or not presentation
+                or not re.fullmatch(r"\d+(?:[.,]\d+)?", quantity)
+            ):
+                issue = (
+                    "Publisher compact table has incomplete product/package alignment"
+                )
+            amounts = []
+            for value in (extra_raw, first_raw):
+                value = value.replace(" ", "")
+                if not re.fullmatch(r"\$?\d+(?:\.\d{3})*", value):
+                    issue = "Publisher compact table has overlapping/clipped labels or prices"
+                    amounts.append(None)
+                else:
+                    amounts.append(float(value.removeprefix("$").replace(".", "")))
+            for col, (quality, value, raw) in enumerate(
+                zip(("extra", "primera"), amounts, (extra_raw, first_raw)), 1
+            ):
+                row_issue = issue or (
+                    "Publisher zero price; no positive quote available"
+                    if value == 0
+                    else None
+                )
+                output.append(
+                    _row(
+                        name.title() or "Producto sin identificar",
+                        "Corabastos S.A.",
+                        "corabastos-quality-" + quality,
+                        "Precio en bodega · calidad " + quality,
+                        f"{presentation} · cantidad {quantity} · {presentation}",
+                        "Bogotá · Corabastos",
+                        day,
+                        None if row_issue else value,
+                        f"PDF page {page_no}, compact table y {y:.1f}; price column {col}",
+                        category=_corabastos_category(name),
+                        presentation=presentation,
+                        quantity=float(quantity.replace(",", "."))
+                        if re.fullmatch(r"\d+(?:[.,]\d+)?", quantity)
+                        else None,
+                        published_unit=presentation,
+                        quality=quality,
+                        source_page=page_no,
+                        original_product=name,
+                        original_price=raw,
+                        original_row=text,
+                        original_group=group,
+                        variation_label=variation,
+                        quality_issue=row_issue,
+                        source_note="Presentación y cantidad literales; el original no publica precio por unidad. No se convierten cajas o bultos a kg.",
+                    )
+                )
+    return output
+
+
 def parse_corabastos(body, url):
     import pdfplumber
 
@@ -1007,6 +1119,8 @@ def parse_corabastos(body, url):
                     )
         if not output:
             output.extend(_corabastos_printed(pdf, day))
+        if not output:
+            output.extend(_corabastos_compact(pdf, day))
     if not output:
         raise ValueError(
             "No known Corabastos price table extracted; preserve PDF for review"
@@ -1297,11 +1411,140 @@ def _pork_native_matrix(page, page_no, report_day):
     return output
 
 
+def _pork_legacy_terciles(page, page_no, day):
+    """Older current-price matrix prints live-pig tiers across five regions."""
+    text = page.extract_text() or ""
+    if not re.search(r"Terc(?:i[lo]s|iles|ios)\s+Precio en Pie", text, re.IGNORECASE):
+        return []
+    lines = _pdf_lines(page)
+    price_top = next((y for y, _, t in lines if t == "Precio en Pie"), None)
+    header_words = [
+        w
+        for y, ws, _ in lines
+        if price_top is not None and price_top - 55 < y < price_top
+        for w in ws
+    ]
+    anchors = [
+        next((w["x0"] for w in header_words if w["text"] == label), None)
+        for label in ("Antioquia", "Eje", "Valle", "Caribe", "Bogotá")
+    ]
+    if any(x is None for x in anchors) or anchors != sorted(anchors):
+        raise ValueError("Porkcolombia legacy tercile regions are incomplete")
+    output = []
+    for y, _, line in _pdf_lines(page):
+        m = re.fullmatch(
+            r"Tercil\s+(Superior|Medio|Inferior)\s+(.+)", line, re.IGNORECASE
+        )
+        if not m:
+            continue
+        raw = m[2].replace("$", "").split()
+        if len(raw) != 5 or not all(re.fullmatch(PORK_NUMBER, x) for x in raw):
+            raise ValueError(
+                "Porkcolombia legacy tercile row has ambiguous price columns"
+            )
+        for market, value in zip(PORK_MARKETS[:5], raw):
+            price = _pork_native_number(value)
+            if price is None:
+                continue
+            segment = m[1].lower()
+            output.append(
+                _row(
+                    PORK_NAMES[0],
+                    "Porkcolombia / FNP",
+                    "porkcolombia-tercile",
+                    "Promedio simple del tercio "
+                    + segment
+                    + " pagado al porcicultor · encuesta",
+                    "kg en pie",
+                    market,
+                    day,
+                    price,
+                    f"PDF page {page_no}, legacy tercile {segment}, y {y:.1f}, market {market}",
+                    category="Porcinos",
+                    price_segment=segment,
+                    statistic="promedio simple del tercio",
+                    source_page=page_no,
+                    original_price=value,
+                    source_note="Promedio de las observaciones de cada tercio de la muestra; no mínimo/máximo ni oferta individual.",
+                )
+            )
+    return output
+
+
+def _pork_terciles(page, page_no, day):
+    """Printed tercile means are separate survey prices, never quote min/max."""
+    lines = _pdf_lines(page)
+    section = next((y for y, _, t in lines if t.startswith("PRECIOS PROMEDIOS")), None)
+    if section is None:
+        return []
+    header = next(
+        (
+            (y, ws)
+            for y, ws, t in lines
+            if y > section and t.replace(" ", "").count("Mercado") == 3
+        ),
+        None,
+    )
+    if not header:
+        raise ValueError("Porkcolombia tercile table has no explicit market columns")
+    top, words = header
+    anchors = [left for left, _ in _word_spans(words, "Mercado")]
+    bottom = next(
+        (y for y, _, t in lines if y > top and t.startswith(("*Precio", "Fuente:"))),
+        top + page.height * 0.12,
+    )
+    output = []
+    for product, name in enumerate(PORK_NAMES):
+        left = max(0, anchors[product] - 15)
+        right = anchors[product + 1] - 25 if product < 2 else page.width
+        for y, _, text in _pdf_lines(page, (left, top, right, bottom)):
+            m = re.fullmatch(
+                rf"({PORK_REGION})\s+({PORK_NUMBER})\s+({PORK_NUMBER})\s+({PORK_NUMBER})",
+                clean(text),
+                re.IGNORECASE,
+            )
+            if not m:
+                continue
+            market = _pork_market(m[1])
+            if not market:
+                raise ValueError("Unidentified Porkcolombia tercile market")
+            for segment, raw in zip(("superior", "medio", "inferior"), m.groups()[1:]):
+                if raw == "-":
+                    continue
+                value = _pork_native_number(raw)
+                zero = value is None or value <= 0
+                output.append(
+                    _row(
+                        name,
+                        "Porkcolombia / FNP",
+                        "porkcolombia-tercile",
+                        "Promedio simple del tercio "
+                        + segment
+                        + " pagado al porcicultor · encuesta",
+                        "kg en pie" if product == 0 else "kg canal",
+                        market,
+                        day,
+                        None if zero else value,
+                        f"PDF page {page_no}, tercile {segment}, product {product + 1}, y {y:.1f}",
+                        category="Porcinos",
+                        source_page=page_no,
+                        price_segment=segment,
+                        statistic="promedio simple del tercio",
+                        original_price=raw,
+                        quality_issue="Publisher zero price; no positive quote available"
+                        if zero
+                        else None,
+                        source_note="Promedio de las observaciones de cada tercio de la muestra; no mínimo/máximo ni oferta individual.",
+                    )
+                )
+    return output
+
+
 def parse_pork(body):
     """Read current native-text weighted survey quotes and monthly history.
 
-    Scope is national/regional COP/kg pork, never the adjacent international feed
-    quotes, animal counts, live weights or simple averages by sample third.
+    Current and historical national/regional COP/kg survey averages and printed
+    tercile means remain separate from feed quotes, animal counts and live weights.
     """
     import pdfplumber
 
@@ -1347,6 +1590,7 @@ def parse_pork(body):
                 matrix = _pork_native_matrix(pdf.pages[1], 2, day)
                 if matrix:
                     matrix.extend(_pork_native_matrix(pdf.pages[2], 3, day))
+                    matrix.extend(_pork_legacy_terciles(pdf.pages[1], 2, day))
                     return _pork_deduplicate(matrix)
             image_pages = []
             for pn, pg in enumerate(pdf.pages[:3], 1):
@@ -1490,6 +1734,7 @@ def parse_pork(body):
                         source_note="Promedio ponderado de la muestra; no oferta individual ni garantía de precio",
                     )
                 )
+        output.extend(_pork_terciles(first, 1, day))
         # Historical tables are selected by their explicit title and period header.
         for page_no, page in enumerate(pdf.pages[1:], 2):
             output.extend(_pork_legacy_monthly(page, page_no, day))
@@ -1619,7 +1864,9 @@ def _pork_deduplicate(output):
     # The same current survey is also repeated on the report's historical page.
     unique = {}
     for row in output:
-        key = tuple(row[k] for k in ("product_id", "series", "market", "date", "unit"))
+        key = tuple(
+            row[k] for k in ("product_id", "series", "market", "date", "unit")
+        ) + tuple(sorted(row.get("identity_dimensions", {}).items()))
         group = unique.setdefault(key, [])
         if any(prior["price"] != row["price"] for prior in group):
             issue = "Publisher repeats same period with different values"
@@ -1768,6 +2015,117 @@ def _pork_vertical_ocr(table, page_no, table_no, day, reading):
     return rows
 
 
+def _pork_ocr_terciles(table, page_no, table_no, day, reading):
+    """Literal OCR tiers require explicit product, segment and market labels."""
+    if not all(
+        isinstance(row, list) and all(isinstance(v, str) for v in row) for row in table
+    ):
+        return None
+    joined = " ".join(" ".join(row) for row in table)
+    vertical = next(
+        (
+            i
+            for i, row in enumerate(table)
+            if {"superior", "medio", "inferior"}.issubset({slug(v) for v in row})
+        ),
+        None,
+    )
+    horizontal = any(
+        re.match(r"tercil-(superior|medio|inferior)$", slug(row[0]))
+        for row in table
+        if row
+    )
+    if vertical is None and not horizontal:
+        return None
+    title = joined if vertical is not None else joined + " " + reading.get("text", "")
+    if horizontal:
+        if not re.search(r"terc(?:iles|ios)-precio-en-pie", slug(title)):
+            raise ValueError(
+                "OCR tercile table needs its explicit price product heading"
+            )
+        product = 0
+    else:
+        products = {_pork_heading(" ".join(row)) for row in table[:vertical]}
+        products.discard(None)
+        products.discard(-1)
+        if len(products) != 1:
+            raise ValueError(
+                "OCR tercile table needs one explicit price product heading"
+            )
+        product = products.pop()
+    literal = []
+    if vertical is not None:
+        header = [slug(v) for v in table[vertical]]
+        if "mercado" not in header:
+            raise ValueError("OCR tercile table lacks market column")
+        mc = header.index("mercado")
+        for rn, row in enumerate(table[vertical + 1 :], vertical + 2):
+            if len(row) != len(header):
+                continue
+            market = _pork_market(row[mc])
+            if market:
+                for segment in ("superior", "medio", "inferior"):
+                    col = header.index(segment)
+                    literal.append((rn, col + 1, market, segment, row[col]))
+    else:
+        header = next(
+            (
+                row
+                for row in table
+                if sum(_pork_market(v) is not None for v in row) >= 3
+            ),
+            None,
+        )
+        if header is None:
+            raise ValueError("OCR tercile matrix lacks explicit market headings")
+        markets = [_pork_market(v) for v in header]
+        for rn, row in enumerate(table, 1):
+            m = (
+                re.fullmatch(r"tercil-(superior|medio|inferior)", slug(row[0]))
+                if row
+                else None
+            )
+            if not m:
+                continue
+            offset = 1 if len(row) == len(header) + 1 else 0
+            if len(row) != len(header) + offset:
+                raise ValueError("OCR tercile matrix has unmatched market columns")
+            for col, market in enumerate(markets):
+                if market:
+                    literal.append(
+                        (rn, col + offset + 1, market, m[1], row[col + offset])
+                    )
+    output = []
+    for rn, col, market, segment, raw in literal:
+        value = _pork_ocr_number(raw)
+        if value is None:
+            continue
+        output.append(
+            _row(
+                PORK_NAMES[product],
+                "Porkcolombia / FNP",
+                "porkcolombia-tercile",
+                "Promedio simple del tercio "
+                + segment
+                + " pagado al porcicultor · encuesta",
+                "kg en pie" if product == 0 else "kg canal",
+                market,
+                day,
+                value,
+                f"PDF page {page_no}, OCR table {table_no}, row {rn}, column {col}",
+                category="Porcinos",
+                source_page=page_no,
+                price_segment=segment,
+                statistic="promedio simple del tercio",
+                original_price=raw,
+                extraction="ocr",
+                ocr_model=reading.get("model"),
+                ocr_version=reading.get("version"),
+            )
+        )
+    return output
+
+
 def parse_with_ocr(body, url, kind, readings_by_page):
     """Use agreed literal OCR only for image tables that native extraction failed.
 
@@ -1819,6 +2177,9 @@ def parse_with_ocr(body, url, kind, readings_by_page):
             pending_heading = None
             if not isinstance(table, list):
                 raise TypeError("OCR table is malformed")
+            terciles = _pork_ocr_terciles(table, page_no, table_no, day, reading)
+            if terciles is not None:
+                output.extend(terciles)
             vertical = _pork_vertical_ocr(table, page_no, table_no, day, reading)
             if vertical is not None:
                 output.extend(vertical)
@@ -1889,6 +2250,7 @@ def parse_with_ocr(body, url, kind, readings_by_page):
                             for row in output
                             if row["product_name"] == name
                             and row["date"] == day.isoformat()
+                            and row["series"] == "porkcolombia-current"
                         }
                         if (
                             known == signature
@@ -2019,7 +2381,9 @@ def parse_with_ocr(body, url, kind, readings_by_page):
     # Cross-check duplicated current observations appearing in the historical page.
     groups = {}
     for row in output:
-        key = tuple(row[k] for k in ("product_id", "series", "market", "date", "unit"))
+        key = tuple(
+            row[k] for k in ("product_id", "series", "market", "date", "unit")
+        ) + tuple(sorted(row.get("identity_dimensions", {}).items()))
         prior = groups.get(key)
         if prior and prior["price"] != row["price"]:
             raise ValueError("OCR current and historical tables disagree")

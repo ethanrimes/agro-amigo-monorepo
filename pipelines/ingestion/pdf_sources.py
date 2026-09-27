@@ -8,6 +8,105 @@ from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
 
+# A price mention elsewhere on a page is not evidence that a city matrix is
+# monetary: modern monthly bulletins contain almost identical percentage grids.
+PRICE_GRID_VERSIONS = {False: "daily-pdf-v4", True: "monthly-pdf-v3"}
+_MONEY_KG = re.compile(
+    r"precio(?:s)?\s*(?:\(\s*)?(?:\$|cop|pesos)\s*(?:/|por)\s*(?:kg|kilogramo(?:s)?)",
+    re.IGNORECASE,
+)
+
+
+def legacy_pdf_price_needs_review(series, details):
+    """Pure predicate for append-only quarantine; never changes original rows."""
+    return series == "dane-monthly-bulletin" and (
+        not isinstance(details, dict)
+        or details.get("parser_version") != PRICE_GRID_VERSIONS[True]
+    )
+
+
+def price_grid_header(table, market_row):
+    """Require currency/unit proof within this table's own header cells."""
+    header = " ".join(
+        " ".join(str(value or "").split())
+        for row in table[: market_row + 1]
+        for value in row
+    )
+    return header if _MONEY_KG.search(header) else None
+
+
+def price_grid_evidence(page, table, table_no, market_row, day, monthly):
+    """Verify unit and printed reference period before accepting numeric cells."""
+    from .worker import MONTH_NUM, SourceDateMismatch, date_from_text
+
+    header = price_grid_header(table, market_row)
+    if header is None:
+        return None
+    # Native geometry gives the local caption, never an unrelated page title.
+    # OCR must include the literal reference period in the table itself.
+    caption = ""
+    if hasattr(page, "find_tables"):
+        native = page.find_tables()
+        if table_no <= len(native):
+            bounds = native[table_no - 1].bbox
+            caption = (
+                page.crop(
+                    (
+                        bounds[0],
+                        max(page.bbox[1], bounds[1] - 130),
+                        bounds[2],
+                        bounds[1],
+                    )
+                ).extract_text()
+                or ""
+            )
+            # Keep only the nearest table caption when more than one is visible.
+            headings = list(
+                re.finditer(r"(?:Cuadro|Anexo)\s+\d+", caption, re.IGNORECASE)
+            )
+            if headings:
+                caption = caption[headings[-1].start() :]
+    context = header + "\n" + caption
+    if re.search(
+        r"(?:cuadro|tabla)[^\n]*variaci[oó]n\s+porcentual", caption, re.IGNORECASE
+    ):
+        return None
+    if monthly:
+        periods = {
+            (int(year), MONTH_NUM[month.lower()])
+            for month, year in re.findall(
+                r"\b(" + "|".join(MONTH_NUM) + r")\s+(?:de\s+)?(20\d{2})\b",
+                context,
+                re.IGNORECASE,
+            )
+        }
+        if not periods:
+            return None
+        if periods != {(day.year, day.month)}:
+            raise SourceDateMismatch(
+                f"PDF monetary table period {sorted(periods)} disagrees with {day}"
+            )
+    else:
+        printed_day = date_from_text(context)
+        if printed_day is None:
+            return None
+        if printed_day != day:
+            raise SourceDateMismatch(
+                f"PDF monetary table date {printed_day} disagrees with {day}"
+            )
+    return {
+        "parser_version": PRICE_GRID_VERSIONS[monthly],
+        "source_type": "pdf",
+        "source_header": header,
+        "source_caption": caption,
+        "published_basis": (
+            "Precio mensual publicado por ciudad"
+            if monthly
+            else "Precio diario publicado por ciudad"
+        ),
+        "unit_basis": "Printed Precio $/Kg; SIPSA product unit exceptions preserved",
+    }
+
 
 def has_table_sized_image(page):
     """Exclude banners/logos when a supported price page has no parsed cells."""
@@ -73,21 +172,45 @@ def parse_archived_price_pdf(db, data, did, day, kind):
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         pages = list(pdf.pages)
         pending = []
+        previous_price_grid = False
         for number, page in enumerate(pages, 1):
             text = page.extract_text() or ""
+            native_prices = list(
+                parse_pdf_pages([page], day, monthly, allow_empty=True)
+            )
             failed = needs_ocr(page, text)
             if not failed and has_table_sized_image(page):
-                price_heading = re.search(r"precios?", text, re.IGNORECASE) and (
-                    re.search(r"kilogramo|mayorista", text, re.IGNORECASE)
-                    or sum(
-                        city in text
-                        for city in ("Bogotá", "Medellín", "Cali", "Armenia", "Pereira")
+                # A readable percentage table/chart is a successful native
+                # extraction of non-price information, not an OCR failure.
+                percentage_heading = re.search(
+                    r"(?:cuadro|gr[aá]fico)[^\n]*variaci[oó]n\s+porcentual",
+                    text,
+                    re.IGNORECASE,
+                )
+                price_heading = not percentage_heading and (
+                    (
+                        _MONEY_KG.search(text)
+                        and sum(
+                            city in text
+                            for city in (
+                                "Bogotá",
+                                "Medellín",
+                                "Cali",
+                                "Armenia",
+                                "Pereira",
+                            )
+                        )
+                        >= 3
                     )
-                    >= 3
+                    or (
+                        previous_price_grid
+                        and re.search(
+                            r"precios?[^\n]*continuaci[oó]n", text, re.IGNORECASE
+                        )
+                    )
                 )
-                failed = bool(price_heading) and not list(
-                    parse_pdf_pages([page], day, monthly, allow_empty=True)
-                )
+                failed = bool(price_heading) and not native_prices
+            previous_price_grid = bool(native_prices)
             if not failed:
                 continue
             verified = verified_page(db, page, did, kind, number)

@@ -52,7 +52,9 @@ class RetainedReplayTests(unittest.TestCase):
         self.assertNotIn("historical_price", sql)
         self.assertIn("d.source_url=a.url", sql)
         self.assertIn("d.retrieved_at<current.retrieved_at", sql)
-        self.assertIn("q.parser_version=v.processor_version", sql)
+        self.assertIn("c.processor_version=v.processor_version", sql)
+        self.assertIn("'official:complete'", sql)
+        self.assertNotIn("FROM official_price_quote", sql)
         self.assertIn("LIMIT %s", sql)
         self.assertEqual(params[-1], 2)
 
@@ -160,6 +162,7 @@ class RetainedReplayPostgresTests(unittest.TestCase):
         )
         self.db.execute("CREATE TEMP TABLE replay_probe(value text)")
         self.db.execute("CREATE INDEX ON source_document(source_url,retrieved_at DESC)")
+        self.db.execute("SET search_path=pg_temp")
         self.version = worker.parser_version(KIND)
         self.latest = self.add_document(b"new current bytes", "2026-09-26", KIND)
         self.db.execute(
@@ -209,9 +212,25 @@ class RetainedReplayPostgresTests(unittest.TestCase):
             (self.latest, "complete"),
         )
         self.assertEqual(replay.drain(self.db)["selected"], 0)
-        # Existing publication footprint alone also prevents repeated parsing.
-        self.db.execute("DELETE FROM pg_temp.ingestion_checkpoint")
+        # The official completion marker alone avoids unnecessary replay, but
+        # a partial footprint without either marker must remain recoverable.
+        self.db.execute(
+            "DELETE FROM pg_temp.ingestion_checkpoint WHERE step=%s", (replay.COMPLETE,)
+        )
         self.assertEqual(replay.drain(self.db)["selected"], 0)
+        before = self.db.execute(
+            "SELECT document_id,source_locator,parser_version,parsed_at FROM official_price_quote ORDER BY 1,2,3"
+        ).fetchall()
+        self.db.execute("DELETE FROM pg_temp.ingestion_checkpoint")
+        result = replay.drain(self.db)
+        self.assertEqual((result["selected"], result["completed"]), (2, 2))
+        self.assertEqual(result["errors"], [])
+        self.assertEqual(
+            self.db.execute(
+                "SELECT document_id,source_locator,parser_version,parsed_at FROM official_price_quote ORDER BY 1,2,3"
+            ).fetchall(),
+            before,
+        )
 
     def test_failure_rolls_back_partial_work_and_version_upgrade_retries_review(self):
         bad = self.add_document(b"malformed source", "2026-09-09")

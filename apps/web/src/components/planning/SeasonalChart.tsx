@@ -94,10 +94,15 @@ export function SeasonalChart({
                   {y.monthly_prices.map((p, i) => (
                     <td key={i} title={y.source_rows[i]}>
                       {money(p)}
+                      {y.source_documents[i].map((id, n) => (
+                        <EvidenceLink key={id} id={id}>
+                          {y.source_documents[i].length > 1 ? `Fuente ${n + 1}` : "Fuente"}
+                        </EvidenceLink>
+                      ))}
                     </td>
                   ))}
                   <td>
-                    <EvidenceLink id={y.document_id}>Original</EvidenceLink>
+                    {new Set(y.source_documents.flat()).size} originales; ver cada mes
                   </td>
                 </tr>
               ))}

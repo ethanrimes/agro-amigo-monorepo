@@ -19,12 +19,12 @@ MAX_PER_RUN = 2
 
 
 def leaf_versions():
-    from . import colombia_sources, international_sources, worker
+    from . import coffee_sources, colombia_sources, international_sources, worker
 
     excluded = colombia_sources.INDEX_KINDS | {"colombia-evidence"}
     kinds = sorted(
         kind
-        for module in (colombia_sources, international_sources)
+        for module in (coffee_sources, colombia_sources, international_sources)
         for kind in module.PUBLISHERS
         if kind not in excluded and not kind.endswith("-index")
     )
@@ -37,6 +37,8 @@ def candidate_query(versions, limit, cooldown_seconds):
     source_document(source_url,retrieved_at) narrows each registered URL to its
     retained versions. Quote/checkpoint probes use their document-prefixed PKs.
     There is no historical_price scan, aggregate, or content read in this query.
+    A partial quote footprint is not completion: a mutable URL can supersede an
+    interrupted source after its first durable batch.
     """
     values = ",".join("(%s,%s)" for _ in versions)
     sql = f"""
@@ -49,13 +51,9 @@ def candidate_query(versions, limit, cooldown_seconds):
         WHERE d.id<>a.document_id AND d.retrieved_at<current.retrieved_at
           AND d.kind='original' AND d.metadata->>'ingestion_kind'=a.kind
           AND NOT EXISTS (
-              SELECT 1 FROM official_price_quote q
-              WHERE q.document_id=d.id AND q.parser_version=v.processor_version
-          )
-          AND NOT EXISTS (
               SELECT 1 FROM ingestion_checkpoint c
               WHERE c.document_id=d.id AND c.processor_version=v.processor_version
-                AND (c.step IN (%s,%s) OR (
+                AND (c.step IN (%s,%s,'official:complete') OR (
                     c.step LIKE %s
                     AND c.completed_at>now()-(%s * interval '1 second')
                 ))
@@ -150,7 +148,7 @@ def drain(db, *, limit=MAX_PER_RUN, deadline=None, cooldown_seconds=COOLDOWN_SEC
                     continue
                 if db.execute(
                     "SELECT 1 FROM ingestion_checkpoint WHERE document_id=%s "
-                    "AND processor_version=%s AND step IN (%s,%s) LIMIT 1",
+                    "AND processor_version=%s AND step IN (%s,%s,'official:complete') LIMIT 1",
                     (did, version, COMPLETE, REVIEW),
                 ).fetchone():
                     continue

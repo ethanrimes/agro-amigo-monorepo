@@ -30,7 +30,11 @@ def discover_supply_sources(db, url):
 
     count = 0
     seen = set()
-    for label, link in links(url):
+    from .dane_context import queue_context_sources
+
+    entries = links(url)
+    count += queue_context_sources(db, entries)
+    for label, link in entries:
         parsed = urlparse(link)
         if parsed.hostname not in ("www.dane.gov.co", "dane.gov.co"):
             continue

@@ -6,12 +6,13 @@ from psycopg.types.json import Jsonb
 
 
 def expected_versions():
-    from . import colombia_sources, international_sources, worker
+    from . import coffee_sources, colombia_sources, international_sources, worker
 
     kinds = (
         set(worker.PARSER_VERSIONS)
         | set(colombia_sources.PUBLISHERS)
         | set(international_sources.PUBLISHERS)
+        | set(coffee_sources.PUBLISHERS)
     )
     return Jsonb({kind: worker.parser_version(kind) for kind in kinds})
 

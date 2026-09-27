@@ -186,11 +186,6 @@ DROP TRIGGER IF EXISTS immutable_history ON official_price_quote;
 CREATE TRIGGER immutable_history BEFORE UPDATE ON official_price_quote FOR EACH STATEMENT EXECUTE FUNCTION prevent_history_removal();
 DROP TRIGGER IF EXISTS demo_window ON official_price_quote;
 CREATE TRIGGER demo_window BEFORE INSERT ON official_price_quote FOR EACH ROW EXECUTE FUNCTION enforce_demo_window();
-CREATE OR REPLACE VIEW published_official_price AS
- SELECT DISTINCT ON(q.quote_key,q.observed_on) q.* FROM official_price_quote q JOIN source_document d ON d.id=q.document_id
- WHERE NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
- ORDER BY q.quote_key,q.observed_on,d.retrieved_at DESC,q.parsed_at DESC,q.source_locator;
-GRANT SELECT ON official_price_quote,published_official_price TO agro_reader;
 CREATE TABLE IF NOT EXISTS official_source_review (
  document_id text REFERENCES source_document(id),source_locator text,parser_version text,
  record jsonb NOT NULL,reason text NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),
@@ -201,6 +196,18 @@ CREATE TRIGGER retain_history BEFORE DELETE OR TRUNCATE ON official_source_revie
 DROP TRIGGER IF EXISTS immutable_history ON official_source_review;
 CREATE TRIGGER immutable_history BEFORE UPDATE ON official_source_review FOR EACH STATEMENT EXECUTE FUNCTION prevent_history_removal();
 GRANT SELECT ON official_source_review TO agro_reader;
+-- A later parser can withdraw an ambiguous quote without changing its evidence.
+-- A subsequent corrected parse can publish again, preserving all revisions.
+CREATE OR REPLACE VIEW published_official_price AS
+ SELECT DISTINCT ON(q.quote_key,q.observed_on) q.*
+ FROM official_price_quote q JOIN source_document d ON d.id=q.document_id
+ WHERE NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
+   AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
+ AND NOT EXISTS(SELECT 1 FROM official_source_review r
+   WHERE r.document_id=q.document_id AND r.source_locator=q.source_locator
+     AND r.created_at>=q.parsed_at)
+ ORDER BY q.quote_key,q.observed_on,d.retrieved_at DESC,q.parsed_at DESC,q.source_locator;
+GRANT SELECT ON published_official_price TO agro_reader;
 CREATE INDEX IF NOT EXISTS input_municipal_locations_recent ON input_municipal_price(observed_on,department,municipality,id);
 CREATE INDEX IF NOT EXISTS input_department_locations_recent ON input_price(observed_on,department,id);
 CREATE INDEX IF NOT EXISTS ingestion_asset_document ON ingestion_asset(document_id);

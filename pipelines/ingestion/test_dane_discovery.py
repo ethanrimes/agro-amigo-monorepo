@@ -82,7 +82,7 @@ class SupplyDiscovery(unittest.TestCase):
                 ("Boletín", FILES + "bol-SIPSAabastecimiento-1raquinsep2026.pdf"),
                 ("Future", FILES + "bol-SIPSAabastecimiento-oct2026.pdf"),
                 (
-                    "Unrelated",
+                    "Technical context",
                     FILES + "Nota-tecnica-certificacion-SIPSA-abastecimiento.pdf",
                 ),
                 (
@@ -91,7 +91,15 @@ class SupplyDiscovery(unittest.TestCase):
                 ),
             ],
         )
-        self.assertEqual(len(calls), 4)
+        self.assertEqual(len(calls), 5)
+        self.assertIn(
+            (
+                FILES + "Nota-tecnica-certificacion-SIPSA-abastecimiento.pdf",
+                "context-pdf",
+                None,
+            ),
+            calls,
+        )
         self.assertTrue(all(day is None for _, _, day in calls))
         self.assertTrue(all(kind != "supply" for _, kind, _ in calls))
 
@@ -116,10 +124,8 @@ class SupplyDiscovery(unittest.TestCase):
         for url, snapshot in pages.items():
             for label, link in snapshot["links"]:
                 p = urlparse(link)
-                if (
-                    "/files/" in p.path
-                    and p.path.lower().endswith((".xlsx", ".xls", ".pdf"))
-                    and not p.path.rsplit("/", 1)[-1].startswith("Nota-tecnica")
+                if "/files/" in p.path and p.path.lower().endswith(
+                    (".xlsx", ".xls", ".pdf")
                 ):
                     expected.add(link)
             for link, kind, day in self.capture(url, snapshot["links"]):

@@ -212,7 +212,8 @@ class PriceSemantics(unittest.TestCase):
 
     def test_native_pork_prices_and_out_of_sequence_months(self):
         rows = source.parse_pork(fixture("pork-2026-18.pdf"))
-        self.assertEqual(len(rows), 239)
+        self.assertEqual(sum(r["series"] != "porkcolombia-tercile" for r in rows), 239)
+        self.assertEqual(sum(r["series"] == "porkcolombia-tercile" for r in rows), 36)
         self.assertEqual(len({r["source_locator"] for r in rows}), len(rows))
         self.assertEqual(sum(bool(r["details"].get("quality_issue")) for r in rows), 6)
         current = [
@@ -341,7 +342,8 @@ class OcrFallback(unittest.TestCase):
         url = "https://porkcolombia.co/wp-content/uploads/2023/12/Semana12de2020.pdf"
         readings = self.actual_readings()
         rows = source.parse_with_ocr(body, url, "colombia-pork-pdf", readings)
-        self.assertEqual(len(rows), 108)
+        self.assertEqual(sum(r["series"] != "porkcolombia-tercile" for r in rows), 108)
+        self.assertEqual(sum(r["series"] == "porkcolombia-tercile" for r in rows), 15)
         self.assertEqual(sum(r["series"] == "porkcolombia-monthly" for r in rows), 36)
         national = {
             (r["date"], r["product_name"]): r["price"]

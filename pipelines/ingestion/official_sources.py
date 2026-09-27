@@ -7,6 +7,7 @@ validation and immutable revisions. Local wholesale projections remain separate.
 import hashlib
 import json
 import math
+import time
 from datetime import date
 
 from psycopg.types.json import Jsonb
@@ -15,6 +16,10 @@ VERSION = "official-v2"
 
 
 def adapter(kind):
+    if kind in ("coffee", "coffee-pdf"):
+        from . import coffee_sources
+
+        return coffee_sources
     if kind.startswith("international-"):
         from . import international_sources
 
@@ -43,7 +48,11 @@ def process(db, data, document_id, url, kind):
     from .worker import queue
 
     module = adapter(kind)
-    for child_url, child_kind in module.discover(body=data, url=url, kind=kind):
+    for child_url, child_kind in (
+        module.discover(body=data, url=url, kind=kind)
+        if kind not in ("coffee", "coffee-pdf")
+        else ()
+    ):
         queue(db, child_url, child_kind)
     ocr_pages = ()
     try:
@@ -84,6 +93,8 @@ def process(db, data, document_id, url, kind):
             return None
         rows = module.parse_with_ocr(data, url, kind, readings)
         ocr_pages = tuple(readings)
+    if kind in ("coffee", "coffee-pdf"):
+        rows = module.publication_rows(rows)
     count = publish_rows(db, rows, document_id, kind)
     if ocr_pages:
         db.execute(
@@ -111,8 +122,10 @@ def publish_rows(db, rows, document_id, kind=None):
     seen = {}
     locators = {}
     for row in rows:
-        literal = json.dumps(row, sort_keys=True, default=str)
+        literal = json.dumps(row, sort_keys=True, default=str, allow_nan=False)
         locator = row["source_locator"]
+        if not isinstance(locator, str) or not locator.strip():
+            raise ValueError("Official source locator must be nonempty text")
         if locator in locators and locators[locator] != literal:
             raise ValueError(
                 "Source locator maps to multiple official observations; include the exact market or column"
@@ -130,9 +143,40 @@ def publish_rows(db, rows, document_id, kind=None):
                 )
             )
             continue
+        for field in (
+            "product_id",
+            "product_name",
+            "category",
+            "publisher",
+            "series",
+            "basis",
+            "currency",
+            "unit",
+            "market",
+        ):
+            if not isinstance(row.get(field), str) or not row[field].strip():
+                raise ValueError(f"Official {field} must be nonempty text")
+        if row["currency"] not in {"COP", "USD", "EUR", "GBP"}:
+            raise ValueError("Unsupported official currency")
         day = row["date"]
         if isinstance(day, str):
             day = date.fromisoformat(day)
+        if not isinstance(day, date):
+            raise ValueError("Official observation date is invalid")
+        period_start = row.get("period_start")
+        if isinstance(period_start, str):
+            period_start = date.fromisoformat(period_start)
+        if period_start is not None and (
+            not isinstance(period_start, date) or period_start > day
+        ):
+            raise ValueError("Official period starts after its observation date")
+        source_page = row.get("source_page") or row.get("details", {}).get(
+            "source_page"
+        )
+        if source_page is not None and (
+            type(source_page) is not int or not 1 <= source_page <= 2147483647
+        ):
+            raise ValueError("Official source page is invalid")
         if day > today():
             raise ValueError("Official observation is in the future")
         price = float(row["price"])
@@ -168,6 +212,7 @@ def publish_rows(db, rows, document_id, kind=None):
             **row.get("details", {}),
             "identity_dimensions": identity["dimensions"],
         }
+        json.dumps(details, allow_nan=False)
         values.append(
             (
                 document_id,
@@ -184,11 +229,11 @@ def publish_rows(db, rows, document_id, kind=None):
                 row["unit"],
                 row["market"],
                 day,
-                row.get("period_start"),
+                period_start,
                 price,
                 low,
                 high,
-                row.get("source_page") or details.get("source_page"),
+                source_page,
                 Jsonb(details),
             )
         )
@@ -200,20 +245,42 @@ def publish_rows(db, rows, document_id, kind=None):
             )
     if values:
         columns = "document_id,source_locator,parser_version,quote_key,product_id,product_name,category,publisher,series,basis,currency,unit,market,observed_on,period_start,price,min_price,max_price,source_page,details"
-        with db.transaction():
-            db.execute(
-                "CREATE TEMP TABLE official_stage (LIKE official_price_quote INCLUDING DEFAULTS) ON COMMIT DROP"
-            )
-            with db.cursor().copy(
-                f"COPY official_stage ({columns}) FROM STDIN"
-            ) as copy:
-                for value in values:
-                    copy.write_row(value)
-            db.execute(
-                f"INSERT INTO official_price_quote ({columns}) SELECT {columns} FROM official_stage ON CONFLICT DO NOTHING"
-            )
+        # Validate the entire source first, then retain bounded batches. Existing
+        # immutable rows make a resumed asset idempotent without firing insert
+        # triggers for every already-published quote. A caller's outer transaction
+        # still preserves its own atomicity (for example a retained PDF replay).
+        from .resumable_inputs import WorkDeferred
+        from .worker import RUN_DEADLINE
+
+        for start in range(0, len(values), 2000):
+            deadline = RUN_DEADLINE.get()
+            if deadline is not None and time.monotonic() >= deadline:
+                raise WorkDeferred(
+                    "Official source validated; committed quote batches will resume"
+                )
+            with db.transaction():
+                db.execute(
+                    "CREATE TEMP TABLE IF NOT EXISTS official_stage (LIKE official_price_quote INCLUDING DEFAULTS) ON COMMIT DROP"
+                )
+                db.execute("TRUNCATE pg_temp.official_stage")
+                with db.cursor().copy(
+                    f"COPY official_stage ({columns}) FROM STDIN"
+                ) as copy:
+                    for value in values[start : start + 2000]:
+                        copy.write_row(value)
+                db.execute(
+                    f"INSERT INTO official_price_quote ({columns}) SELECT {columns} FROM official_stage s "
+                    "WHERE NOT EXISTS(SELECT 1 FROM official_price_quote q "
+                    "WHERE q.document_id=s.document_id AND q.source_locator=s.source_locator "
+                    "AND q.parser_version=s.parser_version) ON CONFLICT DO NOTHING"
+                )
         db.execute(
             "UPDATE ingestion_asset SET observed_on=%s WHERE document_id=%s",
             (max(value[13] for value in values), document_id),
         )
+    db.execute(
+        "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) "
+        "VALUES(%s,%s,'official:complete',%s) ON CONFLICT DO NOTHING",
+        (document_id, revision, len(values)),
+    )
     return len(values)

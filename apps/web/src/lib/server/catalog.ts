@@ -5,6 +5,7 @@ import type { Product } from "../market-types";
 import { database } from "./db";
 import { catalog } from "./queries";
 import { latestSummaryReferences } from "./summary-references";
+import { latestOfficialReferences } from "./official-references";
 
 const TTL = 5 * 60 * 1000;
 const MAX_CACHE_KEYS = 36;
@@ -105,17 +106,8 @@ function officialSelection(quote: OfficialPrice & { previous_price: number | nul
 }
 
 async function allReferences(): Promise<CatalogProduct[]> {
-  return cached("official", async () => {
-    const { rows } = await database().query<OfficialPrice & { previous_price: number | null }>(`
-      SELECT DISTINCT ON(quote_key) quote_key,product_id,product_name,category,
-        publisher,series,basis,currency,unit,market,observed_on,price,details,
-        lead(price) OVER(PARTITION BY quote_key ORDER BY observed_on DESC) AS previous_price
-      FROM published_official_price
-      WHERE observed_on <= (CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
-      ORDER BY quote_key,observed_on DESC
-    `);
-    return rows.map(officialSelection);
-  });
+  const rows = await latestOfficialReferences();
+  return rows.map(officialSelection);
 }
 
 async function cityNames(): Promise<Map<string, string[]>> {

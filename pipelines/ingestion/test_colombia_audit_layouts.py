@@ -125,7 +125,8 @@ class NativeLayoutRegressions(unittest.TestCase):
 
     def test_2020_native_matrix_keeps_publisher_period_conflict(self):
         rows = source.parse_pork(original("d9e3e3f08084"))
-        self.assertEqual(len(rows), 288)
+        self.assertEqual(sum(r["series"] != "porkcolombia-tercile" for r in rows), 288)
+        self.assertEqual(sum(r["series"] == "porkcolombia-tercile" for r in rows), 15)
         reviews = [r for r in rows if r["details"].get("quality_issue")]
         self.assertEqual(len(reviews), 18)
         self.assertEqual({r["date"] for r in reviews}, {"2020-12-25"})

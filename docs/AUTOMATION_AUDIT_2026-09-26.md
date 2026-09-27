@@ -75,7 +75,7 @@ by Git). Counts below are dated observations, not a claim of complete archives.
   preservation of both original revisions and retry after extraction failure.
 - Colombia: 184 original files with matching SHA-256; 149 parse natively into
   37,482 records, 643 source-quality records remain reviewable, 32 require OCR,
-  and three retain explicit source/layout exceptions. Eleven current September
+  and three retained explicit source/layout exceptions at that checkpoint. Eleven current September
   originals produce unchanged identities, dates, values, units and locators.
 - International: 119 real documents replayed, 92 accepted and 27 rejected with
   explicit reasons. Of 116 previously failed reports, 89 now recover 6,539
@@ -88,9 +88,7 @@ by Git). Counts below are dated observations, not a claim of complete archives.
 The historical queue is still substantial. Native recovery counts above are
 parser validation results; cloud publication must be verified independently.
 Scanned or broken-font PDFs still need actual provider OCR. The blank Corabastos
-18 February 2025 template cannot supply prices; two compact March 2025 exports
-retain overlapping text/layout exceptions. USDA ESMIS stops at older archives,
-and access to the alternate MyMarketNews archive has not been verified. Two
+18 February 2025 template cannot supply prices; two compact March 2025 exports now parse their legible rows with individual clipped-name reviews. Native USDA TXT discovery now reaches November 2018; access to the alternate MyMarketNews archive remains unverified. Two
 September 17 city PDFs print September 18, and the January 2026 input annex has
 mixed printed years. These exceptions retain their originals and precise errors.
 
@@ -113,3 +111,64 @@ For operational checks, `POST /api/run-check?asset_url=<registered URL>` uses th
 same real archive/parser/lock path, with no provider OCR requests. A caller
 timeout alone does not establish failure: inspect the durable `ingestion_run`
 record, final asset status, published rows and original Blob hash.
+
+## Expanded audit and automatic recovery (27 September UTC)
+
+Both Azure timer-disable overrides were removed and verified absent. The daily
+schedule is `0 0 23 * * *` (18:00 Colombia), with hourly backfill at minute15 and
+an automation watchdog at minute45. Always On is enabled. Restoring the timers
+triggered the automatic run `12d74425-28cc-4ab5-a9b2-b91f372c59df` at04:59UTC;
+by05:27 it had completed32 assets and retained24,887 rows. The current public
+coffee and daily APIs then returned HTTP200 with COP2,105,000 and431 Sep25 DANE
+prices. A large World Bank insertion hit the300-second SQL timeout, motivating
+bounded, prevalidated official quote batches with durable progress. These are
+observed checkpoints, not a claim that the complete historical queue has finished.
+
+Further source checks found and fixed:
+
+- Monthly PDF percentage matrices were misidentified as monetary prices.
+  The previous `dane-monthly-bulletin` output is now withheld by an additive
+  publication view;26,589 legacy rows and all originals remain stored. Only
+  table-local monetary evidence permits new PDF prices. These legacy bulletin
+  rows were not the canonical product price projection used by the frontend.
+- February2015 input workbooks now yield all6,394 independently counted current
+  prices across15 categories. March2015 monthly annexes yield398 prices with the
+  correct current month. Excel percentage formats are normalized per cell;
+  corrected metadata receives versioned provenance instead of overwriting rows.
+- FNC's six price sheets contain20,218 observations,11,551 beyond the existing
+  national daily series; ex-dock prices extend to1913. Additional PDF references
+  include pasilla and the separately labeled New York futures quote. Monthly,
+  annual, bonus, futures and producer prices retain their distinct units/bases.
+- All209 registered international originals were checked:180 parsed reports,
+  43,176 valid observations, one ambiguous quote reviewed,29 rejected/unavailable
+  files. Older official TXT reports add187 valid observations and88 review rows
+  in two2018 fixtures. All396 printed primary/mostly/exceptional ranges reconcile.
+- All184 previously failing Colombian originals were retested:151 now parse,
+  32 need OCR, one is a blank template. Existing149 native-file value digests
+  match exactly. New Colombian coverage includes compact Corabastos reports and
+  separately identified Porkcolombia tercile averages.
+- A previously published USDA SOLIDAGO quote with contradictory repeated
+  `mostly` qualifiers is withdrawn by the publication view; its original row
+  remains intact. Newer review findings suppress only the same document/locator;
+  a later corrected extraction can publish a new immutable revision.
+- Seasonal comparisons use complete COP/kg years only and retain actual original
+  document IDs for each individual month. Mixed-unit or ambiguous years remain
+  stored with explicit review reasons. FNC monthly means use reported days only.
+
+The expanded native/runtime suite passed239 tests (ten opt-in database tests
+skipped in that invocation). Separate real PostgreSQL TEMP tests verify revision
+chronology, atomic rollback, review withdrawal/correction and seasonal provenance.
+Bulk FNC projection retained8,667 source rows as8,666 unique daily dates; its
+source repeats one date with the same price. Publication took2.773s in isolation
+and21.673s under concurrent database pressure.
+
+Actual visual PDF checks cover13 DANE pages and9 FNC/USDA pages, plus the
+Colombian audit samples. These include units, package sizes, minimum/maximum,
+classifications, dates, percentages, page continuations and unreadable headings.
+Representative sampling is distinguished from full independent cell reconciliation
+and from actual cloud publication in the source matrices.
+
+Several pages also contain chart/prose prices and aggregate supply figures that
+remain retained context, not structured quotes. Weekly SIPSA bulletins are a
+separate uncovered family. The source inventory and known limits are documented
+in [the DANE coverage matrix](DANE_SOURCE_COVERAGE_2026-09-27.md).
