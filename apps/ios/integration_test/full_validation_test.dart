@@ -16,6 +16,14 @@ void main() {
         find.byType(app.FarmBrowser),
       );
       final web = state.controller;
+      final completed = <String>[];
+      final report = <String, dynamic>{
+        'platform': 'IOS',
+        'started_at': DateTime.now().toUtc().toIso8601String(),
+        'completed': completed,
+        'settings_restored': false,
+      };
+      binding.reportData = report;
       Future<dynamic> js(String code) => web.runJavaScriptReturningResult(code);
       Future<void> until(String condition) async {
         final end = DateTime.now().add(const Duration(seconds: 90));
@@ -65,19 +73,9 @@ void main() {
         );
       }
 
-      Future<void> fill(String label, String value) async {
-        await run('''(() => {
-          const label=[...document.querySelectorAll('label')].find(l=>l.textContent.trim().startsWith(${jsonEncode(label)}));
-          const field=[...document.querySelectorAll('input')].find(f=>f.getAttribute('aria-label')===${jsonEncode(label)}) || label?.querySelector('input') || (label && document.getElementById(label.htmlFor));
-          if(!field)throw Error('Missing field');
-          field.focus();
-          Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(field,${jsonEncode(value)});
-          field.dispatchEvent(new Event('input',{bubbles:true}));
-        })()''');
-      }
-
       Future<void> shot(String name) async {
         await binding.takeScreenshot('ios-full-$name');
+        completed.add(name);
         debugPrint('PASS $name');
       }
 
@@ -132,6 +130,16 @@ void main() {
         await run(
           '''(()=>{const old=JSON.parse(${jsonEncode(storage.toString())});localStorage.clear();for(const [k,v] of Object.entries(old))localStorage.setItem(k,v);})()''',
         );
+        expect(
+          await js(
+            'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))',
+          ),
+          storage,
+          reason: 'Native QA must restore every original setting byte',
+        );
+        report['settings_restored'] = true;
+        report['finished_at'] = DateTime.now().toUtc().toIso8601String();
+        binding.reportData = report;
       });
       await run(
         '''(()=>{const p=JSON.parse(localStorage.getItem("agroamigo-preferences-v2")||"{}");p.region="";localStorage.setItem("agroamigo-preferences-v2",JSON.stringify(p));})()''',
@@ -321,6 +329,17 @@ void main() {
           true,
         );
         await shot('14-official-usd-references');
+        final historicalPublisher = (await js(
+          '[...document.querySelectorAll(".price-filter-grid label:nth-child(3) select option")].find(o=>/world bank|banco mundial/i.test(o.textContent))?.value || ""',
+        )).toString();
+        expect(historicalPublisher, isNotEmpty);
+        await select(
+          '.price-filter-grid label:nth-child(3) select',
+          historicalPublisher,
+        );
+        await until(
+          '[...document.querySelectorAll(".official-reference")].length>0 && [...document.querySelectorAll(".official-reference")].every(x=>x.textContent.includes(${jsonEncode(historicalPublisher)}))',
+        );
         await click('.official-reference h2 a');
         await until(
           'document.querySelector(".current-product-price")?.textContent.includes("USD")',
@@ -432,50 +451,61 @@ void main() {
         '''document.querySelector('[aria-label="Tiempo y pronóstico de mi finca"]').scrollIntoView({block:"start"})''',
       );
       await shot('22-current-weather-seven-day-forecast');
-      await fill('Buscar municipio', 'Pitalito');
-      await until(
-        '''[...document.querySelectorAll('[role="option"]')].some(o=>o.textContent.toLowerCase().includes("pitalito"))''',
+      expect(
+        await js(
+          '!document.querySelector("#clean-tab, #clean-panel, .clean-workspace")',
+        ),
+        true,
+      );
+      await shot('23-farm-retains-weather-without-manual-calculators');
+      final beforeReferences = await js(
+        'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))',
+      );
+      await go(
+        '/plan?tab=budget&municipality=41551&crop=2030300',
+        'document.querySelector(".crop-references") && document.querySelector(".calendar-table tbody tr")',
+      );
+      expect(
+        await js(
+          'document.body.innerText.includes("Cultivos, calendarios y fuentes")',
+        ),
+        true,
+      );
+      expect(
+        await js(
+          'document.body.innerText.includes("presupuestos y registros anteriores se conservan")',
+        ),
+        true,
+      );
+      expect(
+        await js(
+          '!document.querySelector(".crop-references input, .clean-workspace, .budget-summary")',
+        ),
+        true,
+      );
+      expect(
+        await js(
+          'document.querySelector(".calendar-table").textContent.includes("UPRA")',
+        ),
+        true,
+      );
+      expect(
+        await js(
+          'document.querySelectorAll(".crop-references a[href*=evidence]").length>0',
+        ),
+        true,
       );
       await run(
-        '''[...document.querySelectorAll('[role="option"]')].find(o=>o.textContent.toLowerCase().includes("pitalito")).click()''',
+        'document.querySelector(".harvest-panel").scrollIntoView({block:"start"})',
       );
-      await click('[role="tab"][aria-controls="clean-panel"]');
-      await until(
-        '''document.querySelector(".clean-workspace input[type=number]")''',
-      );
-      await fill('Área que quieres analizar (ha)', '2');
-      await fill('Rendimiento esperado (kg/ha)', '1000');
-      await fill('Pérdidas antes de vender (%)', '10');
-      await run(
-        "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Mi precio').click()",
-      );
-      await fill('Mi precio esperado (COP/kg)', '2000');
-      await fill('Labores antes de cosecha (COP/ha)', '200000');
-      await fill('Semilla e insumos (COP/ha)', '300000');
-      await fill('Mano de obra de cosecha (COP/ha)', '100000');
-      await fill('Otros rubros del total publicado (COP/ha)', '0');
-      await fill('Transporte, empaque y venta (COP totales)', '100000');
-      await fill('Comisión sobre la venta (%)', '10');
-      await until(
-        '''document.querySelector(".clean-kpis .profit strong")?.textContent.includes("1.940.000")''',
-      );
-      await run(
-        '''document.activeElement.blur();document.querySelector(".clean-results").scrollIntoView({block:"start"})''',
-      );
-      await shot('23-cleansheet-waterfall-and-profit');
-      await run(
-        "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Tabla').click()",
-      );
-      await until(
-        '''document.querySelector(".clean-result-table tr.total")?.textContent.includes("1.940.000")''',
-      );
-      await run(
-        '''document.querySelector(".clean-table-wrap").scrollIntoView({block:"start"});document.querySelector(".clean-table-wrap").scrollLeft=260''',
-      );
-      await shot('24-cleansheet-table');
-      await fill('Área que quieres analizar (ha)', '-1');
-      await until(
-        '''!document.querySelector(".clean-kpis") && document.querySelector(".clean-incomplete")''',
+      await shot('24-read-only-calendar-and-source-references');
+      expect(
+        await js(
+          'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))',
+        ),
+        beforeReferences,
+        reason:
+            'Reading source references must preserve saved farm and scenario bytes',
       );
       await go('/', 'document.querySelector(".mobile-nav")');
       debugPrint('PASS native iOS full price/source/navigation suite');

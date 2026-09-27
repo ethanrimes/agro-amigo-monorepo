@@ -1,0 +1,28 @@
+# Run against the normal lib/main.dart build, not a Flutter integration-test
+# executable. Every route transition here has real user activation in WKWebView.
+appId: com.ethankallett.agroamigo.native
+---
+- launchApp:
+    stopApp: true
+- extendedWaitUntil:
+    visible: "Productos"
+    timeout: 30000
+- tapOn:
+    point: "30%,94%"
+- extendedWaitUntil:
+    visible: "Todos los productos"
+    timeout: 30000
+- scrollUntilVisible:
+    element: "Café pergamino seco"
+    direction: DOWN
+- tapOn: "Café pergamino seco"
+- extendedWaitUntil:
+    visible: "REFERENCIA OFICIAL · FNC"
+    timeout: 30000
+- swipe:
+    start: "1%,50%"
+    end: "90%,50%"
+    duration: 600
+- extendedWaitUntil:
+    visible: "Todos los productos"
+    timeout: 30000
