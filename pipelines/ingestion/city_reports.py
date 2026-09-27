@@ -3,8 +3,10 @@
 import io
 import json
 import re
+import time
 import zipfile
 from decimal import Decimal
+from hashlib import sha256
 
 import pdfplumber
 
@@ -221,9 +223,70 @@ def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False
         raise ValueError("No city price ranges parsed")
 
 
+_BULK_TABLES = {
+    "regional_price": (
+        (
+            "document_id,source_locator,observed_on,product_id,product_name,market_name,category,"
+            "presentation,quantity,source_unit,round,round_label,min_price,max_price,unit,"
+            "min_unit_price,max_unit_price,source_page"
+        ),
+        ("document_id", "source_locator"),
+    ),
+    "product": ("id,name,category", ("id",)),
+    "market": ("id,name,city,region,municipality_id", ("id",)),
+    "regional_classification": (
+        "document_id,source_locator,category_path",
+        ("document_id", "source_locator"),
+    ),
+}
+
+
+def _bulk_insert(db, table, rows):
+    """COPY one PDF's rows, then publish in a single bounded SQL statement.
+
+    The caller owns the transaction. Identifiers come only from this fixed map;
+    source text is sent through COPY parameters. Existing immutable rows never
+    reach insertion/retention triggers when a PDF is replayed after an upgrade.
+    """
+    columns, keys = _BULK_TABLES[table]
+    stage = "city_stage_" + table
+    db.execute(
+        f"CREATE TEMP TABLE IF NOT EXISTS {stage} ON COMMIT DROP AS "
+        f"SELECT {columns} FROM {table} WITH NO DATA"
+    )
+    db.execute(f"TRUNCATE pg_temp.{stage}")
+    with (
+        db.cursor() as cur,
+        cur.copy(f"COPY pg_temp.{stage} ({columns}) FROM STDIN") as copy,
+    ):
+        for row in rows:
+            copy.write_row(row)
+    selected = ",".join("s." + column for column in columns.split(","))
+    matches = " AND ".join(f"existing.{key}=s.{key}" for key in keys)
+    db.execute(
+        f"INSERT INTO {table} ({columns}) SELECT {selected} FROM pg_temp.{stage} s "
+        f"WHERE NOT EXISTS (SELECT 1 FROM {table} existing WHERE {matches}) "
+        "ON CONFLICT DO NOTHING"
+    )
+
+
+def _member_step(member, day):
+    # Archive hash + member identity + supplied date context uniquely identify
+    # the work. Hashing keeps long Unicode entry names out of B-tree keys.
+    identity = [
+        member.filename,
+        member.header_offset,
+        member.CRC,
+        member.file_size,
+        str(day),
+    ]
+    return "city-member:" + sha256(json.dumps(identity).encode()).hexdigest()
+
+
 def publish_city_zip(db, data, zip_id, url, day, *, processor_version="city-v4"):
     from .pdf_sources import extract_pages
-    from .worker import archive
+    from .resumable_inputs import WorkDeferred
+    from .worker import RUN_DEADLINE, archive
 
     total = 0
     failures = []
@@ -239,7 +302,22 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version="city-v4")
             or sum(m.file_size for m in members) > 512 * 1024 * 1024
         ):
             raise ValueError("Unexpected city archive contents or size")
+        completed = dict(
+            db.execute(
+                "SELECT step,records FROM ingestion_checkpoint WHERE document_id=%s AND processor_version=%s AND step LIKE 'city-member:%%'",
+                (zip_id, processor_version),
+            ).fetchall()
+        )
         for member in members:
+            step = _member_step(member, day)
+            if step in completed:
+                total += completed[step]
+                continue
+            deadline = RUN_DEADLINE.get()
+            if deadline is not None and time.monotonic() >= deadline:
+                raise WorkDeferred(
+                    f"City ZIP deferred before {member.filename[:200]}; {total} committed price rows will resume"
+                )
             # Read bytes without extracting paths supplied by the ZIP to disk.
             content = bundle.read(member)
             did = archive(
@@ -259,15 +337,16 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version="city-v4")
                 with db.transaction():
                     extract_pages(db, content, did)
                 rows = list(parse_archived_city_pdf(db, content, did, day))
-                save_classifications(db, did, rows)
                 with db.transaction():
-                    with db.cursor() as cur:
-                        cur.executemany(
-                            """INSERT INTO regional_price(document_id,source_locator,observed_on,product_id,product_name,market_name,category,
-                            presentation,quantity,source_unit,round,round_label,min_price,max_price,unit,min_unit_price,max_unit_price,source_page)
-                            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
-                            [(did, *r) for r in rows],
-                        )
+                    save_classifications(db, did, rows)
+                    _bulk_insert(db, "regional_price", ((did, *r) for r in rows))
+                    # Completion is committed with all prices and categories.
+                    # A crash can leave archived evidence but never a false
+                    # success marker that skips an unpublished member.
+                    db.execute(
+                        "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
+                        (zip_id, processor_version, step, len(rows)),
+                    )
                 total += len(rows)
             except ValueError as exc:
                 failure = {
@@ -309,19 +388,13 @@ def publish_ocr_page(db, did, page, result):
         (did, *row)
         for row in parse_archived_city_pdf(db, bytes(data), did, archive_day)
     ]
-    save_classifications(db, did, [r[1:] for r in rows])
     with db.transaction():
-        with db.cursor() as cur:
-            cur.executemany(
-                """INSERT INTO regional_price(document_id,source_locator,observed_on,product_id,product_name,market_name,category,
-                presentation,quantity,source_unit,round,round_label,min_price,max_price,unit,min_unit_price,max_unit_price,source_page)
-                VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
-                rows,
-            )
-    db.execute(
-        "UPDATE source_ocr_task SET status='published',checked_at=now(),error=NULL WHERE document_id=%s AND source_kind='city-pdf'",
-        (did,),
-    )
+        save_classifications(db, did, [r[1:] for r in rows])
+        _bulk_insert(db, "regional_price", rows)
+        db.execute(
+            "UPDATE source_ocr_task SET status='published',checked_at=now(),error=NULL WHERE document_id=%s AND source_kind='city-pdf'",
+            (did,),
+        )
     return len(rows)
 
 
@@ -333,14 +406,14 @@ def save_classifications(db, did, rows):
     names = {r[4] for r in rows}
     existing = {r[0] for r in db.execute("SELECT name FROM market").fetchall()}
     missing = names - existing
+    markets = []
     if missing:
         places = db.execute("SELECT id,name,department FROM municipality").fetchall()
         for name in missing:
             city = name.split(",")[0].strip()
             matches = [p for p in places if slug(p[1]) == slug(city)]
             place = matches[0] if len(matches) == 1 else None
-            db.execute(
-                "INSERT INTO market(id,name,city,region,municipality_id) VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING",
+            markets.append(
                 (
                     "dane-city-" + slug(name),
                     name,
@@ -349,13 +422,13 @@ def save_classifications(db, did, rows):
                     place[0] if place else None,
                 ),
             )
-    with db.cursor() as cur:
+    with db.transaction():
+        if markets:
+            _bulk_insert(db, "market", markets)
         products = {r[2]: (r[2], r[3], r[5].split(" > ")[0]) for r in rows}
-        cur.executemany(
-            "INSERT INTO product(id,name,category) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING",
-            products.values(),
-        )
-        cur.executemany(
-            "INSERT INTO regional_classification(document_id,source_locator,category_path) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING",
-            [(did, r[0], r[5].split(" > ")) for r in rows],
+        _bulk_insert(db, "product", products.values())
+        _bulk_insert(
+            db,
+            "regional_classification",
+            ((did, r[0], r[5].split(" > ")) for r in rows),
         )
