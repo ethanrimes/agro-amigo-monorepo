@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'edge_back_gesture.dart';
 
 const appOrigin = 'https://agroamigo-demo-9a04.azurewebsites.net';
 const brandGreen = Color(0xff22643f);
@@ -279,7 +280,11 @@ class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            WebViewWidget(controller: controller),
+            EdgeBackGesture(
+              enabled: canGoBack && !failed,
+              onBack: () => unawaited(controller.goBack()),
+              child: WebViewWidget(controller: controller),
+            ),
             if (loading)
               const Positioned(
                 top: 0,
