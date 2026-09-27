@@ -106,6 +106,9 @@ DO $$ DECLARE tab text; BEGIN
  END LOOP;
 END $$;
 GRANT SELECT ON historical_price,ingestion_run,ingestion_asset TO agro_reader;
+-- Public source corrections and prior public price versions power source notes.
+-- The application remains read-only; immutable-history protection is unchanged.
+GRANT SELECT ON retained_record TO agro_reader;
 
 GRANT SELECT ON input_municipal_price,source_pdf_page TO agro_reader;
 
