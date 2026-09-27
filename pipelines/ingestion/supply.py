@@ -8,6 +8,7 @@ from collections import defaultdict
 from collections.abc import Sequence
 from datetime import date, datetime
 from functools import lru_cache
+from urllib.parse import urlparse
 from xml.etree.ElementTree import iterparse
 
 import openpyxl
@@ -15,6 +16,71 @@ from openpyxl.worksheet._reader import WorkSheetParser
 from psycopg.types.json import Jsonb
 
 from pipelines.ingestion.worker import clean, slug, today
+
+
+def discover_supply_sources(db, url):
+    """Queue microdata and retain published summaries without double-counting them.
+
+    Year pages are independent bounded index jobs, so routine discovery never
+    downloads fourteen archive pages before it can reach current publications.
+    Summary workbooks/PDFs describe market totals, groups, shares and vehicles;
+    they must not be projected as individual-food microdata observations.
+    """
+    from .worker import SUPPLY, links, publication_month, queue
+
+    count = 0
+    seen = set()
+    for label, link in links(url):
+        parsed = urlparse(link)
+        if parsed.hostname not in ("www.dane.gov.co", "dane.gov.co"):
+            continue
+        path = parsed.path.lower()
+        index = re.search(
+            r"/componente-abastecimientos-boletin-quincenal-(20\d{2})(?:-\d+)*$",
+            path,
+        )
+        if index:
+            # Joomla exposes the same year page under several parent routes.
+            # The main supply page's canonical parent prevents duplicate jobs.
+            link = SUPPLY + "/" + parsed.path.rsplit("/", 1)[-1]
+        if link in seen:
+            continue
+        seen.add(link)
+        if index:
+            year = int(index[1])
+            if (
+                year <= today().year
+                and parsed.path.rsplit("/", 1)[-1]
+                != urlparse(url).path.rsplit("/", 1)[-1]
+            ):
+                queue(db, link, "supply-index", date(year, 1, 1))
+                count += 1
+            continue
+        if "/files/" not in path or not path.endswith((".xlsx", ".xls", ".pdf")):
+            continue
+        if re.search(r"microdato-abastecimiento-20\d{2}\.xlsx$", path):
+            kind, day = "supply", None
+        elif "series-historicas-abastecimiento" in path and path.endswith(
+            (".xlsx", ".xls")
+        ):
+            kind, day = "supply-reference", None
+        else:
+            filename = path.rsplit("/", 1)[-1]
+            if not (filename.startswith(("bol", "anex")) and "abas" in filename):
+                continue
+            kind = (
+                "supply-reference-pdf" if path.endswith(".pdf") else "supply-reference"
+            )
+            # Quincenal files are partial periods; do not label them with an
+            # invented month-end observation date (or a guessed two-digit year).
+            day = None if "quin" in filename else publication_month(label, link)
+            if day and day > today():
+                day = None
+        queue(db, link, kind, day)
+        count += 1
+    if not count:
+        raise ValueError("No supported supply publications discovered: " + url)
+    return count
 
 
 class _RowRanges(Sequence):

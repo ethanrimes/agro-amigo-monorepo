@@ -468,8 +468,12 @@ def publish_workbook_reading(db, did, locator, kind, result):
     return True
 
 
-def drain(db, limit=5, scan_limit=3, document_id=None):
+def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
     """A small persistent daily budget prevents OCR backlog from blocking ingestion."""
+    import time
+
+    if deadline is not None and time.monotonic() >= deadline - 360:
+        return {"deferred": "Insufficient run budget for two provider readings"}
     if not os.environ.get("GEMINI_API_KEY"):
         return {"configured": False}
     for did, data, kind in db.execute(
@@ -479,6 +483,8 @@ def drain(db, limit=5, scan_limit=3, document_id=None):
         ORDER BY retrieved_at DESC LIMIT %s""",
         (VERSION, scan_limit),
     ).fetchall():
+        if deadline is not None and time.monotonic() >= deadline - 360:
+            break
         scan_document(db, bytes(data), did, kind)
     count = db.execute(
         "SELECT count(*) FROM source_ocr_attempt WHERE started_at >= date_trunc('day',now())"
@@ -494,6 +500,9 @@ def drain(db, limit=5, scan_limit=3, document_id=None):
             limit,
         ),
     ).fetchall():
+        if deadline is not None and time.monotonic() >= deadline - 360:
+            summary["deferred"] += 1
+            break
         if count + 2 > budget:
             summary["deferred"] += 1
             break

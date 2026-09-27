@@ -25,6 +25,32 @@ def image_workbook():
 
 
 class Runtime(unittest.TestCase):
+    def test_failed_input_publication_resumes_retained_bytes_before_mutable_url(self):
+        db = MagicMock()
+        did = "a" * 64
+        url = "https://www.dane.gov.co/series-inputs.xlsx"
+        db.execute.return_value.fetchone.side_effect = [
+            (worker.parser_version("inputs-municipal"),),
+            (b"validated retained original",),
+            (did, "failed", 0),
+        ]
+        with (
+            patch.object(worker, "fetch_asset") as fetch,
+            patch.object(worker, "archive", return_value=did),
+            patch("pipelines.ingestion.ocr.scan_document"),
+            patch(
+                "pipelines.ingestion.resumable_inputs.publish", return_value=(42, 0)
+            ) as publish,
+        ):
+            self.assertEqual(
+                worker.process_asset(db, url, "inputs-municipal", None), 42
+            )
+        fetch.assert_not_called()
+        self.assertEqual(publish.call_args.args[1], b"validated retained original")
+        self.assertIn(
+            "a.status IN ('pending','failed')", db.execute.call_args_list[1].args[0]
+        )
+
     def test_targeted_operational_check_only_processes_registered_sources(self):
         url = "https://www.dane.gov.co/retained-source.xlsx"
         for registered in (False, True):
@@ -82,13 +108,107 @@ class Runtime(unittest.TestCase):
         db = MagicMock()
         db.execute.return_value.fetchall.return_value = []
         req = MagicMock(params={})
-        with patch.object(function_app, "connect") as connect:
+        with (
+            patch.object(function_app, "connect") as connect,
+            patch.object(
+                function_app, "automation_health", return_value={"status": "ok"}
+            ),
+        ):
             connect.return_value.__enter__.return_value = db
             response = function_app.status.build().get_user_function()(req)
         self.assertEqual(response.status_code, 200)
         sql = " ".join(call.args[0] for call in db.execute.call_args_list)
         self.assertIn("SELECT 1", sql)
         self.assertNotIn("FROM historical_price", sql)
+
+    def test_automation_health_reports_stall_and_stale_discovery(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (None, None, 1)
+        db.execute.return_value.fetchall.return_value = []
+        result = function_app.automation_health(db)
+        self.assertEqual(result["status"], "degraded")
+        self.assertEqual(len(result["issues"]), 3)
+
+    def test_current_run_does_not_hide_overdue_recent_sources(self):
+        from datetime import datetime, timezone
+
+        db = MagicMock()
+        now = datetime.now(timezone.utc)
+        db.execute.return_value.fetchone.return_value = (now, now, 0)
+        db.execute.return_value.fetchall.return_value = [
+            ("city-zip", now, now.date(), 0, 7, 4)
+        ]
+        result = function_app.automation_health(db)
+        self.assertEqual(result["status"], "degraded")
+        self.assertIn("city-zip", result["issues"][0])
+
+    def test_retained_replay_errors_are_visible_in_run_summary(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        with (
+            patch.object(worker, "connect") as connect,
+            patch("pipelines.ingestion.queue_plan.daily_candidates", return_value=[]),
+            patch(
+                "pipelines.ingestion.queue_plan.backfill_candidates", return_value=[]
+            ),
+            patch("pipelines.ingestion.ocr.drain", return_value={}),
+            patch(
+                "pipelines.ingestion.retained_replays.drain",
+                return_value={
+                    "errors": [{"phase": "selection", "error": "statement timeout"}]
+                },
+            ) as replay,
+        ):
+            connect.return_value.__enter__.return_value = db
+            result = worker.run("backfill", limit=4, time_budget=120)
+        replay.assert_called_once()
+        self.assertEqual(result["errors"][0]["source"], "retained_replay")
+        final = [
+            call
+            for call in db.execute.call_args_list
+            if call.args[0].startswith("UPDATE ingestion_run SET status=%s")
+        ][-1]
+        self.assertEqual(final.args[1][0], "partial")
+
+    def test_daily_source_failure_keeps_progress_and_does_not_repeat_entire_run(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        sources = [
+            ("https://example.invalid/bad", "daily", None),
+            ("https://example.invalid/good", "daily", None),
+        ]
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker, "discover", return_value=[]),
+            patch("pipelines.ingestion.official_sources.discover_roots"),
+            patch(
+                "pipelines.ingestion.queue_plan.daily_candidates", return_value=sources
+            ),
+            patch.object(
+                worker,
+                "process_asset",
+                side_effect=[ValueError("Unsupported source layout"), 12],
+            ),
+            patch("pipelines.ingestion.ocr.drain", return_value={}),
+            patch("pipelines.ingestion.retained_replays.drain", return_value={}),
+        ):
+            connect.return_value.__enter__.return_value = db
+            summary = worker.run("daily", limit=2)
+        self.assertEqual(summary["assets"], 1)
+        self.assertEqual(summary["rows"], 12)
+        self.assertEqual(len(summary["errors"]), 1)
+        self.assertEqual(summary["phase"], "finished")
+        self.assertNotIn("active_asset", summary)
+
+    def test_overlap_is_durable_instead_of_silent(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (False,)
+        with patch.object(worker, "connect") as connect:
+            connect.return_value.__enter__.return_value = db
+            self.assertEqual(worker.run("daily"), {"status": "skipped_overlap"})
+        self.assertIn(
+            "skipped_overlap", " ".join(c.args[0] for c in db.execute.call_args_list)
+        )
 
     def test_discovery_failure_does_not_skip_other_sources(self):
         names = [

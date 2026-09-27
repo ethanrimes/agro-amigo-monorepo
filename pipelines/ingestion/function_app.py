@@ -1,6 +1,7 @@
 """UTC timers; 23:00 UTC is 18:00 Colombia, year-round."""
 
 import json
+import logging
 import time
 
 import azure.functions as func
@@ -10,7 +11,62 @@ from pipelines.ingestion import worker
 from pipelines.ingestion.worker import connect, run
 
 app = func.FunctionApp()
+LOG = logging.getLogger(__name__)
 _coverage_cache = {"at": 0.0, "rows": None}
+
+
+def automation_health(db):
+    """Report execution freshness separately from database connectivity."""
+    finished, discovery, stalled = db.execute(
+        """SELECT max(finished_at) FILTER(WHERE status IN ('succeeded','partial')),
+        max((summary->>'discovery_finished_at')::timestamptz),
+        count(*) FILTER(WHERE status='running' AND started_at<now()-interval '50 minutes')
+        FROM ingestion_run WHERE started_at>now()-interval '7 days'"""
+    ).fetchone()
+    sources = db.execute(
+        """SELECT kind,max(checked_at),max(observed_on) FILTER(WHERE status IN ('complete','processed')),
+        count(*) FILTER(WHERE status='failed' AND (observed_on>=CURRENT_DATE-14 OR observed_on IS NULL)),
+        count(*) FILTER(WHERE status='pending' AND observed_on>=CURRENT_DATE-14),
+        count(*) FILTER(WHERE status IN ('pending','failed','awaiting-ocr')
+          AND observed_on>=CURRENT_DATE-14 AND discovered_at<now()-interval '1 day')
+        FROM ingestion_asset GROUP BY kind ORDER BY kind"""
+    ).fetchall()
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc)
+    issues = []
+    if finished is None or (now - finished).total_seconds() > 3 * 3600:
+        issues.append("No completed ingestion run in three hours")
+    if discovery is None or (now - discovery).total_seconds() > 8 * 3600:
+        issues.append("Official source discovery is over eight hours old")
+    if stalled:
+        issues.append("An ingestion run has exceeded its execution window")
+    overdue = {row[0]: row[5] for row in sources if row[5]}
+    if overdue:
+        issues.append(
+            f"Recent published source files remain unprocessed after one day: {overdue}"
+        )
+    return {
+        "status": "degraded" if issues else "ok",
+        "issues": issues,
+        "last_completed_run": finished,
+        "last_discovery": discovery,
+        "sources": sources,
+    }
+
+
+@app.function_name(name="PipelineWatchdog")
+@app.timer_trigger(
+    schedule="0 45 * * * *", arg_name="timer", run_on_startup=False, use_monitor=True
+)
+def pipeline_watchdog(timer: func.TimerRequest):
+    with connect() as db:
+        db.execute("SET statement_timeout='5s'")
+        health = automation_health(db)
+    if health["issues"]:
+        LOG.error("INGESTION_AUTOMATION_DEGRADED %s", json.dumps(health, default=str))
+    else:
+        LOG.info("Ingestion automation heartbeat is current")
 
 
 @app.function_name(name="DailyRefresh")
@@ -70,6 +126,7 @@ def status(req: func.HttpRequest) -> func.HttpResponse:
         ocr = db.execute(
             "SELECT status,count(*) FROM source_ocr_task GROUP BY status"
         ).fetchall()
+        health = automation_health(db)
         coverage = _coverage_cache["rows"]
         if (
             req.params.get("coverage") == "1"
@@ -92,6 +149,7 @@ def status(req: func.HttpRequest) -> func.HttpResponse:
                 "queue": queue,
                 "coverage": coverage,
                 "ocr": ocr,
+                "automation": health,
             },
             default=str,
         ),

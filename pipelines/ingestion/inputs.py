@@ -29,9 +29,18 @@ CATEGORIES = {
 
 
 def parse_inputs(data):
-    from .worker import MONTH_NUM, clean, positive, record, today, workbooks
+    from .worker import (
+        MONTH_NUM,
+        SourceDateMismatch,
+        clean,
+        positive,
+        record,
+        today,
+        workbooks,
+    )
 
     found = 0
+    monthly_annex_period = None
     for sheet, rows in workbooks(data):
         header = None
         fixed_period = None
@@ -40,13 +49,31 @@ def parse_inputs(data):
             normalized = [clean(v) for v in row]
             if header is None:
                 for v in normalized:
-                    period = re.search(r"\((\w+) (20\d{2})\)", v)
+                    annex_heading = re.fullmatch(
+                        r"Insumos y factores asociados a la producción agropecuaria"
+                        r"(?:: precio promedio)? por departamento - (\w+) (20\d{2})",
+                        v,
+                        re.IGNORECASE,
+                    )
+                    period = annex_heading or re.search(r"\((\w+) (20\d{2})\)", v)
                     if period and period[1].lower() in MONTH_NUM:
                         year = int(period[2])
                         month = MONTH_NUM[period[1].lower()]
-                        fixed_period = date(
+                        candidate = date(
                             year, month, calendar.monthrange(year, month)[1]
                         )
+                        if annex_heading:
+                            if monthly_annex_period and monthly_annex_period != candidate:
+                                raise SourceDateMismatch(
+                                    f"Conflicting native department annex periods: {sheet}, row {rownum}; "
+                                    f"{candidate} disagrees with {monthly_annex_period}"
+                                )
+                            monthly_annex_period = candidate
+                        if fixed_period and fixed_period != candidate:
+                            raise SourceDateMismatch(
+                                f"Conflicting native input periods: {sheet}, row {rownum}"
+                            )
+                        fixed_period = candidate
                 title = next(
                     (
                         re.match(r"^\d+\.\d+\.\s+(.+)", v)
@@ -128,6 +155,7 @@ def parse_inputs(data):
                     "Tipo de jornal",
                     "Tipo de arriendo",
                     "Distrito de riego",
+                    "Nombre del servicio agrícola",
                     "Nombre del servicio",
                 )
             )
@@ -204,7 +232,7 @@ def identity(name, meta):
     return base
 
 
-def project_inputs(db, did):
+def project_inputs(db, did, observed_on=None):
     """Stream into COPY staging: avoid holding millions of municipal rows in RAM."""
 
     columns = "id,department,observed_on,name,category,presentation,price,document_id,source_locator,brand,registration,product_line,municipality"
@@ -215,8 +243,8 @@ def project_inputs(db, did):
         with db.cursor(name="input_source_rows") as source:
             source.itersize = 2000
             source.execute(
-                "SELECT source_locator,series,observed_on,product_name,market_name,unit,price,details FROM historical_price WHERE document_id=%s AND series IN ('dane-inputs','dane-inputs-municipal','dane-inputs-pdf') AND (series<>'dane-inputs-pdf' OR details->>'parser_version'='inputs-pdf-v4' OR NOT EXISTS(SELECT 1 FROM historical_price newer WHERE newer.document_id=%s AND newer.details->>'parser_version'='inputs-pdf-v4')) AND NOT (series='dane-inputs' AND details->>'sheet'='3.2' AND NOT details ? 'category')",
-                (did,did),
+                "SELECT source_locator,series,observed_on,product_name,market_name,unit,price,details FROM historical_price WHERE document_id=%s AND (%s::date IS NULL OR observed_on=%s) AND series IN ('dane-inputs','dane-inputs-municipal','dane-inputs-pdf') AND (series<>'dane-inputs-pdf' OR details->>'parser_version'='inputs-pdf-v4' OR NOT EXISTS(SELECT 1 FROM historical_price newer WHERE newer.document_id=%s AND newer.details->>'parser_version'='inputs-pdf-v4')) AND NOT (series='dane-inputs' AND details->>'sheet'='3.2' AND NOT details ? 'category')",
+                (did, observed_on, observed_on, did),
             )
             while batch := source.fetchmany(2000):
                 with cur.copy(f"COPY input_stage({columns}) FROM STDIN") as cp:
@@ -243,9 +271,25 @@ def project_inputs(db, did):
         cur.execute(
             "CREATE INDEX ON input_stage(id,department,municipality,observed_on)"
         )
+        cur.execute("ANALYZE input_stage")
         conflicts = cur.execute(
             "SELECT count(*) FROM (SELECT 1 FROM input_stage GROUP BY id,department,municipality,observed_on HAVING min(price)<>max(price)) c"
         ).fetchone()[0]
+        # Advance a narrow per-key watermark even if the value is unchanged.
+        # Keeping original attribution for an equal value must not let an
+        # intermediate older revision overwrite the latest validated value.
+        # Ambiguous staged keys never publish or advance their watermark.
+        cur.execute(
+            """INSERT INTO input_revision(id,department,municipality,observed_on,retrieved_at)
+            SELECT id,department,municipality,observed_on,
+                (SELECT retrieved_at FROM source_document WHERE id=%s)
+            FROM input_stage GROUP BY id,department,municipality,observed_on
+            HAVING min(price)=max(price)
+            ON CONFLICT(id,department,municipality,observed_on) DO UPDATE
+            SET retrieved_at=excluded.retrieved_at
+            WHERE input_revision.retrieved_at<excluded.retrieved_at""",
+            (did,),
+        )
         for table, municipal in [
             ("input_price", False),
             ("input_municipal_price", True),
@@ -256,12 +300,24 @@ def project_inputs(db, did):
                 if municipal
                 else "id,department,observed_on"
             )
-            cur.execute(f"""INSERT INTO {table}({cols})
+            # Existing rows may predate watermarks, so also check their original
+            # timestamp. Equal business values retain their source attribution.
+            # Retrieval order does not infer different sources' publication dates.
+            cur.execute(
+                f"""INSERT INTO {table}({cols})
                 SELECT {cols} FROM (SELECT s.*,row_number() OVER(PARTITION BY id,department,municipality,observed_on ORDER BY source_locator) rn,
                 min(price) OVER(PARTITION BY id,department,municipality,observed_on) low,max(price) OVER(PARTITION BY id,department,municipality,observed_on) high
                 FROM input_stage s WHERE municipality {"<>" if municipal else "="} '') x WHERE rn=1 AND low=high
                 ON CONFLICT({keys}) DO UPDATE SET name=excluded.name,category=excluded.category,price=excluded.price,document_id=excluded.document_id,
                 source_locator=excluded.source_locator,brand=excluded.brand,registration=excluded.registration,product_line=excluded.product_line
-                WHERE ({table}.price,{table}.document_id,{table}.name,{table}.category,{table}.brand,{table}.registration,{table}.product_line,{table}.source_locator)
-                IS DISTINCT FROM (excluded.price,excluded.document_id,excluded.name,excluded.category,excluded.brand,excluded.registration,excluded.product_line,excluded.source_locator)""")
+                WHERE ({table}.price,{table}.name,{table}.category,{table}.brand,{table}.registration,{table}.product_line)
+                IS DISTINCT FROM (excluded.price,excluded.name,excluded.category,excluded.brand,excluded.registration,excluded.product_line)
+                AND (SELECT retrieved_at FROM source_document WHERE id=%s)
+                    >= (SELECT retrieved_at FROM source_document WHERE id={table}.document_id)
+                AND (SELECT retrieved_at FROM source_document WHERE id=%s)
+                    >= (SELECT retrieved_at FROM input_revision r WHERE r.id=excluded.id
+                        AND r.department=excluded.department AND r.observed_on=excluded.observed_on
+                        AND r.municipality={"excluded.municipality" if municipal else "''"})""",
+                (did, did),
+            )
     return conflicts

@@ -19,13 +19,17 @@ For the path from a source adapter to its API and screen, see
   `queue_plan.py` gives each source kind its own slot, so archive indexes cannot
   starve PDF/workbook leaves. Fresh official files with an unknown observation
   date receive a bounded daily slot; parsing records their actual latest date.
-  Discovery and
+  Discovery is retried by the hourly job when its last recorded completion is
+  more than six hours old, independently of the nightly trigger. Discovery and
   historical loading are ongoing: a URL in the queue is not evidence that all its
   observations are already available in the app.
-- A PostgreSQL advisory lock prevents concurrent imports. Each source file
-  commits independently. Daily failures get two five-minute retries; failed
-  historical assets become eligible again after six hours. Failed schemas remain
-  visible in the queue with their originals retained.
+- A PostgreSQL advisory lock prevents concurrent imports; overlap attempts and
+  progress heartbeats are recorded. Source-specific failures do not restart the
+  whole daily run. Fatal invocation failures retain Azure's two five-minute
+  retries; failed assets become eligible again after six hours. Database
+  statements time out after five minutes, lock waits after ten seconds, and idle
+  transactions after three minutes. Failed schemas remain visible with originals
+  retained. Current sources and historical backfill have separate queue slots.
 - A publisher workbook whose internal date disagrees with its link is retained
   with `status='review'`. Its prices are not assigned to an unverified date;
   reviewed originals can be explicitly requeued if the publisher corrects them.
@@ -48,6 +52,9 @@ For the path from a source adapter to its API and screen, see
 | `colombia_sources.py` | AgroNET cacao, Fedepalma statutory palm references, Fedegán cattle/milk, Porkcolombia and Corabastos. |
 | `international_sources.py` | World Bank commodity benchmarks and USDA published flower market reports. |
 | `official_sources.py` | Trusted adapter dispatch, child discovery, quote validation, separate official-price revisions/reviews and OCR publication bridge. |
+| `resumable_inputs.py` | Full native validation, bounded source-row batches, atomic monthly input publication and durable resume checkpoints. |
+| `retained_replays.py` | Bounded replay of superseded official originals after parser upgrades without changing the current URL pointer. |
+| `audit_automation.py` | Read-only execution, source queue, retention, overlap and OCR diagnostics. |
 | `ocr.py` | Detect failed native extraction, persist images, compare independent Gemini readings and publish only recognized literal layouts. |
 | `workbook_preview.py` | Read-only paginated original Excel display for the app's source viewer. |
 
@@ -80,6 +87,17 @@ reselects once after source roots, allowing newly linked files into the same run
 Discovery errors are isolated by source family and reported without abandoning
 unrelated queued work.
 
+Large input workbooks validate fully before committing native observations in
+25,000-row batches. Each month's application prices and completion checkpoint
+commit together, newest month first. A time-limited run resumes the exact original
+before checking that mutable URL again. An unchanged business price keeps its
+existing valid evidence; a newer corrected value retains both original versions.
+Successful native publication closes only pending/deferred OCR tasks for that
+document and source kind. Existing OCR readings and review decisions remain.
+The bounded retained-original pass recovers older official reports overwritten
+at a publisher URL. It processes at most two originals per recurring run, with
+versioned completion/review checkpoints and retry cooldowns.
+
 OCR runs only after normal extraction fails. PDFs with native headings but image
 price tables are supported where the adapter can identify the required pages.
 City reports and supported daily/monthly price matrices check actual parsed price
@@ -111,7 +129,8 @@ complete years from a permanently retained seasonal table.
 `source_document` stores immutable source bytes keyed by SHA-256. The private
 `source-archive` container in `agroamigodata9a04` also holds downloaded originals
 under SHA-256 filenames. There is no expiration lifecycle policy.
-PostgreSQL storage autogrow is enabled; the current allocation is 32 GiB.
+PostgreSQL storage autogrow is enabled; the audited allocation on 26 September
+2026 is 64 GiB.
 Additional capacity can increase storage charges as the permanent archive grows.
 
 `historical_price` preserves source-level observations, original product/market
@@ -192,6 +211,17 @@ five-second database timeout; unavailable coverage is null. Protected
 `POST /api/run-check` runs at most four queued assets, stops starting work after
 two minutes and skips provider OCR requests, for bounded deployment validation.
 Never put the function key in a committed file or public URL.
+
+Connectivity and automation health are separate: `status.automation` is degraded
+when no run has completed for three hours, discovery is over eight hours old,
+a running job exceeds fifty minutes, or recent dated publications remain
+unprocessed for more than a day. `PipelineWatchdog` checks this at minute 45
+hourly and emits `INGESTION_AUTOMATION_DEGRADED` to Azure logs. This is a log
+signal, not a configured email/SMS alert. Run a read-only audit with
+`python -m pipelines.ingestion.audit_automation --output /tmp/agro-audit.json`;
+`--since YYYY-MM-DD` narrows run history. The default is the last thirty days.
+See the [September automation audit](../../docs/AUTOMATION_AUDIT_2026-09-26.md)
+for observed failures, validation evidence and unresolved publisher exceptions.
 
 ```sql
 SELECT mode,status,started_at,finished_at,summary

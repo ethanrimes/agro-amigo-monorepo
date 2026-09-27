@@ -276,12 +276,48 @@ def project_special(db, did, url):
     return len(conflicts)
 
 
+class MilkNarrativeOnly(ValueError):
+    """Readable modern bulletin with labelled figures, without a price table."""
+
+
+def _milk_narrative_month(texts, native_pages):
+    """Recognize the explicit modern report structure, never an unreadable grid."""
+    from .worker import MONTH_NUM
+
+    if not texts or not native_pages:
+        return None
+    text = "\n".join(texts)
+    if not all(
+        marker in text.casefold()
+        for marker in ("boletín técnico", "introducción", "ficha metodológica")
+    ):
+        return None
+    if re.search(
+        r"\b(?:cuadro|tabla)\s+\d|departamentos\s+y\s+municipios"
+        r"|m[ií]nimo\s+m[aá]ximo\s+(?:medio|promedio)",
+        text,
+        re.IGNORECASE,
+    ):
+        return None
+    stamp = re.search(
+        r"Precios?\s+de\s+Leche\s+Cruda\s+en\s+Finca\s*\(SIPSA-L\)"
+        r"\s+([a-záéíóú]+)\s+de\s+(20\d{2})",
+        texts[0],
+        re.IGNORECASE,
+    )
+    if not stamp or stamp[1].lower() not in MONTH_NUM:
+        return None
+    month, year = MONTH_NUM[stamp[1].lower()], int(stamp[2])
+    return date(year, month, calendar.monthrange(year, month)[1])
+
+
 def parse_milk_pdf(data, day):
     """Read the two newspaper-style columns in historical milk bulletins."""
     import io
 
     import pdfplumber
 
+    from .pdf_sources import has_table_sized_image
     from .worker import MONTH_NUM, SourceDateMismatch, clean, record, slug, today
 
     if day is not None and day > today():
@@ -289,9 +325,28 @@ def parse_milk_pdf(data, day):
     lookup = {slug(d): d for d in DEPARTMENTS}
     found = 0
     department = ""
+    texts = []
+    native_pages = True
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for number, page in enumerate(pdf.pages, 1):
             text = page.extract_text() or ""
+            texts.append(text)
+            # Do not turn a scan or an unlabelled substantial image into a
+            # successful zero-row report. Modern bulletins label each large
+            # illustration as a graph or map in readable native text.
+            native_pages = (
+                native_pages
+                and len(text.strip()) >= 100
+                and (
+                    not getattr(page, "images", [])
+                    or not has_table_sized_image(page)
+                    or bool(
+                        re.search(
+                            r"Gr[aá]fico\s+\d+|siguiente\s+mapa", text, re.IGNORECASE
+                        )
+                    )
+                )
+            )
             if not (
                 "Departamentos" in text
                 and "municipios" in text
@@ -409,4 +464,13 @@ def parse_milk_pdf(data, day):
                     )
             page.close()
     if not found:
+        narrative_month = _milk_narrative_month(texts, native_pages)
+        if narrative_month:
+            if narrative_month > today() or (day and day != narrative_month):
+                raise SourceDateMismatch(
+                    "Milk PDF report month differs from archive link or is future"
+                )
+            raise MilkNarrativeOnly(
+                "Native milk bulletin contains narrative and labelled figures, no municipal price table"
+            )
         raise ValueError("No milk PDF price rows parsed")

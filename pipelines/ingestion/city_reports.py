@@ -1,11 +1,38 @@
 """City-report ZIPs: individual dated PDFs, package sizes, and both price rounds."""
 
 import io
+import json
 import re
 import zipfile
 from decimal import Decimal
 
 import pdfplumber
+
+
+class CityZipPartialReview(ValueError):
+    """Valid members were published; identified members still need review."""
+
+    def __init__(self, count, failures):
+        self.count = count
+        self.failures = failures
+        details = "; ".join(f"{item['filename']}: {item['error']}" for item in failures)
+        super().__init__(
+            f"{len(failures)} city PDF members retained for review: {details[:1500]}"
+        )
+
+
+def _review_step(failure):
+    # `step` belongs to a B-tree primary key. Bound UTF-8 bytes as well as
+    # characters so a long Unicode ZIP filename/error remains insertable.
+    details = dict(failure)
+    for key, limit in (("filename", 500), ("error", 1000), ("error_type", 80)):
+        details[key] = details[key].encode("utf-8")[:limit].decode("utf-8", "ignore")
+    step = "review:" + json.dumps(details, ensure_ascii=False, sort_keys=True)
+    while len(step.encode("utf-8")) > 2000:
+        key = max(("filename", "error"), key=lambda key: len(details[key]))
+        details[key] = details[key][: len(details[key]) // 2]
+        step = "review:" + json.dumps(details, ensure_ascii=False, sort_keys=True)
+    return step
 
 
 def parse_city_pdf(data, archive_day=None):
@@ -194,7 +221,7 @@ def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False
         raise ValueError("No city price ranges parsed")
 
 
-def publish_city_zip(db, data, zip_id, url, day):
+def publish_city_zip(db, data, zip_id, url, day, *, processor_version="city-v4"):
     from .pdf_sources import extract_pages
     from .worker import archive
 
@@ -243,11 +270,27 @@ def publish_city_zip(db, data, zip_id, url, day):
                         )
                 total += len(rows)
             except ValueError as exc:
-                failures.append(member.filename + ": " + str(exc))
+                failure = {
+                    "filename": member.filename[:500],
+                    "document_id": did,
+                    "error": str(exc)[:1500],
+                    "error_type": type(exc).__name__,
+                }
+                # The ZIP/date context matters: the same original may be valid
+                # in another archive. Keep this review evidence additive and
+                # separate from immutable original document metadata.
+                db.execute(
+                    """INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records)
+                    VALUES(%s,%s,%s,0) ON CONFLICT DO NOTHING""",
+                    (
+                        zip_id,
+                        processor_version,
+                        _review_step(failure),
+                    ),
+                )
+                failures.append(failure)
     if failures:
-        raise ValueError(
-            "City PDF members retained for review: " + "; ".join(failures)[:1500]
-        )
+        raise CityZipPartialReview(total, failures)
     return total
 
 
