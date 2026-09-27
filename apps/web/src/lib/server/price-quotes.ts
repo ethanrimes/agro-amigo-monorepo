@@ -32,6 +32,46 @@ export const PRICE_QUOTES = `
   UNION ALL
 ${CITY_PRICE_QUOTES}`;
 
+/** Filter availability depends on retained dimensions, not dated price winners.
+ * Ordinary parser output normalizes case; differing whitespace spellings of the
+ * same quote dimension are rare and retain the exact revision-aware fallback.
+ */
+export const PRODUCT_FILTER_OPTIONS_SQL = `
+  WITH city_dimensions AS MATERIALIZED (
+    SELECT DISTINCT m.id AS market_id,m.name AS market_name,
+      lower(btrim(r.presentation)) AS presentation_key,r.quantity,
+      lower(btrim(r.source_unit)) AS unit_key,
+      upper(left(r.presentation,1)) || lower(substr(r.presentation,2)) AS presentation,
+      r.quantity::float8::text || ' ' || upper(left(r.source_unit,1)) || lower(substr(r.source_unit,2)) AS units
+    FROM regional_price r JOIN market m ON m.name=r.market_name
+    WHERE r.product_id=$1 AND ($2='' OR m.region=$2)
+      AND r.observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
+  ), ambiguity AS (
+    SELECT EXISTS(SELECT 1 FROM city_dimensions
+      GROUP BY market_id,presentation_key,quantity,unit_key HAVING count(*)>1) AS requires_revision_resolution
+  ), options AS (
+    SELECT DISTINCT
+      CASE o.source_id WHEN 'dane-milk-farm' THEN 'farmgate' WHEN 'dane-rice-mill' THEN 'mill' WHEN 'fnc' THEN 'coffee' ELSE 'monthly' END AS series,
+      m.id AS market_id,m.name AS market_name,'Por unidad de medida'::text AS presentation,
+      CASE o.unit WHEN 'kg' THEN '1 kg' WHEN 'litre' THEN '1 litro' WHEN 'unit' THEN '1 unidad' WHEN '125kg' THEN 'Carga de 125 kg' ELSE o.unit END AS units
+    FROM published_price_observation o JOIN market m ON m.id=o.market_id
+    WHERE o.product_id=$1 AND ($2='' OR m.region=$2)
+      AND o.observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
+    UNION
+    SELECT 'city',market_id,market_name,presentation,units FROM city_dimensions
+  ) SELECT options.*,ambiguity.requires_revision_resolution FROM options CROSS JOIN ambiguity
+    ORDER BY series,market_name,presentation,units`;
+
+// Preserve separately stored classification corrections and every historical path.
+export const PRODUCT_CLASSIFICATIONS_SQL = `
+  SELECT DISTINCT c.category_path FROM (
+    SELECT DISTINCT document_id,source_locator FROM regional_price
+    WHERE product_id=$1 ORDER BY document_id,source_locator
+  ) r CROSS JOIN LATERAL (
+    SELECT category_path FROM regional_classification c
+    WHERE c.document_id=r.document_id AND c.source_locator=r.source_locator OFFSET 0
+  ) c ORDER BY c.category_path`;
+
 export type PriceFilters = {
   series?: string;
   market?: string;
@@ -48,12 +88,13 @@ export async function filteredProduct(
   const product = (await db.query("SELECT * FROM product WHERE id=$1", [id]))
     .rows[0];
   if (!product) return null;
-  const options = (
-    await db.query(
-      `WITH quotes AS (${PRICE_QUOTES}) SELECT DISTINCT series,market_id,market_name,presentation,units FROM quotes WHERE product_id=$1 AND ($2='' OR region=$2) AND observed_on<=CURRENT_DATE ORDER BY series,market_name,presentation,units`,
+  let options = (await db.query(PRODUCT_FILTER_OPTIONS_SQL, [id, region])).rows;
+  if (options.some((option) => option.requires_revision_resolution)) {
+    options = (await db.query(
+      `WITH quotes AS (${PRICE_QUOTES}) SELECT DISTINCT series,market_id,market_name,presentation,units FROM quotes WHERE product_id=$1 AND ($2='' OR region=$2) AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY series,market_name,presentation,units`,
       [id, region],
-    )
-  ).rows;
+    )).rows;
+  }
   const seriesOptions = [...new Set<string>(options.map((o) => o.series))].sort(
     (a, b) => (a === "city" ? -1 : b === "city" ? 1 : a.localeCompare(b)),
   );
@@ -88,7 +129,7 @@ export async function filteredProduct(
     : unitOptions[0] || "";
   const market = requested.market || "";
   const historical = requested.history === "all";
-  const filter = `product_id=$1 AND ($2='' OR region=$2) AND series=$3 AND presentation=$4 AND units=$5 AND ($6='' OR market_id=$6) AND ${historical ? "observed_on<=CURRENT_DATE" : WINDOW}`;
+  const filter = `product_id=$1 AND ($2='' OR region=$2) AND series=$3 AND presentation=$4 AND units=$5 AND ($6='' OR market_id=$6) AND ${historical ? "observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date" : WINDOW}`;
   const args = [id, region, series, presentation, units, market];
   const [markets, history, classification, additionalReferences] = await Promise.all([
     db.query(
@@ -100,7 +141,7 @@ export async function filteredProduct(
       args,
     ),
     db.query(
-      `SELECT DISTINCT c.category_path FROM regional_classification c JOIN regional_price r USING(document_id,source_locator) WHERE r.product_id=$1 ORDER BY c.category_path`,
+      PRODUCT_CLASSIFICATIONS_SQL,
       [id],
     ),
     region ? Promise.resolve([]) : summaryReferencesForProduct(product.name),
