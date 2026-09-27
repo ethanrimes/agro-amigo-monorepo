@@ -474,6 +474,8 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
     """A small persistent daily budget prevents OCR backlog from blocking ingestion."""
     import time
 
+    from .official_sources import is_reference_kind
+
     def enough_time(missing_readings):
         required = (
             sum(PROVIDER_TIMEOUT) * missing_readings + PUBLICATION_RESERVE_SECONDS
@@ -608,7 +610,7 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
 
                 publish_price_ocr(db, did, kind)
                 status = "published"
-            elif agreed and kind.startswith(("international-", "colombia-")):
+            elif agreed and is_reference_kind(kind):
                 from .official_sources import process as publish_official
 
                 original = db.execute(

@@ -19,12 +19,22 @@ MAX_PER_RUN = 2
 
 
 def leaf_versions():
-    from . import coffee_sources, colombia_sources, international_sources, worker
+    from . import (
+        coffee_sources,
+        colombia_sources,
+        dane_weekly,
+        international_sources,
+        worker,
+    )
 
-    excluded = colombia_sources.INDEX_KINDS | {"colombia-evidence"}
+    excluded = (
+        colombia_sources.INDEX_KINDS
+        | dane_weekly.INDEX_KINDS
+        | {"colombia-evidence"}
+    )
     kinds = sorted(
         kind
-        for module in (coffee_sources, colombia_sources, international_sources)
+        for module in (coffee_sources, colombia_sources, international_sources, dane_weekly)
         for kind in module.PUBLISHERS
         if kind not in excluded and not kind.endswith("-index")
     )

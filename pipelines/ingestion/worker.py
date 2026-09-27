@@ -81,11 +81,9 @@ PARSER_VERSIONS = {
 
 
 def parser_version(kind):
-    if kind in ("coffee", "coffee-pdf") or kind.startswith(
-        ("international-", "colombia-")
-    ):
-        from .official_sources import VERSION, adapter
+    from .official_sources import VERSION, adapter, is_reference_kind
 
+    if kind in ("coffee", "coffee-pdf") or is_reference_kind(kind):
         return VERSION + ":" + adapter(kind).VERSION
     return PARSER_VERSIONS.get(kind, "source-v1")
 
@@ -120,6 +118,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/coffee_sources.py",
     "pipelines/ingestion/seasonality.py",
     "pipelines/ingestion/dane_context.py",
+    "pipelines/ingestion/dane_weekly.py",
     "pipelines/ingestion/official_sources.py",
     "pipelines/ingestion/official_catalog.py",
     "pipelines/ingestion/international_sources.py",
@@ -498,7 +497,9 @@ def archive(
 ):
     digest = hashlib.sha256(data).hexdigest()
     suffix = Path(filename or urlparse(url).path).suffix.lower()
-    official = kind.startswith(("international-", "colombia-"))
+    from .official_sources import is_reference_kind
+
+    official = is_reference_kind(kind)
     if official and suffix not in (
         ".xlsx",
         ".xls",
@@ -1403,7 +1404,9 @@ def _process_asset(db, url, kind, day):
         "UPDATE ingestion_asset SET document_id=%s,status='pending',checked_at=now() WHERE url=%s",
         (did, url),
     )
-    if kind.startswith(("international-", "colombia-")):
+    from .official_sources import is_reference_kind
+
+    if is_reference_kind(kind):
         from .official_sources import process
 
         count = process(db, data, did, url, kind)
