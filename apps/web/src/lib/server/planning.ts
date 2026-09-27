@@ -105,6 +105,32 @@ async function loadInputs(
   const municipal = scope === "municipality";
   const table = municipal ? "input_municipal_price" : "input_price";
   const period = historical ? "observed_on<=CURRENT_DATE" : WINDOW;
+  if (grouped && department && !municipal && !historical) {
+    // Read the department's recent published quotes once. The department-leading
+    // covering index avoids a separate random lookup for each current/prior price.
+    // Keep the last observation in each calendar month before finding its
+    // predecessor: two quotes in the current month must not hide last month's.
+    const query = `WITH available AS MATERIALIZED (
+        SELECT p.* FROM published_input_price p
+        WHERE ${period} AND p.department=$1 AND ($2='' OR p.id=$2)
+      ), months AS (
+        SELECT DISTINCT ON(id,date_trunc('month',observed_on)) * FROM available
+        ORDER BY id,date_trunc('month',observed_on) DESC,observed_on DESC,price
+      ), history AS (
+        SELECT m.*,lead(price) OVER month_order AS prior_price,
+          lead(observed_on) OVER month_order AS prior_date
+        FROM months m WINDOW month_order AS (PARTITION BY id ORDER BY observed_on DESC)
+      )
+      SELECT DISTINCT ON(id) id,department,observed_on,name,category,presentation,
+        price,document_id,source_locator,brand,registration,product_line,
+        ''::text AS municipality,'department'::text AS scope,
+        CASE WHEN date_trunc('month',prior_date)=date_trunc('month',observed_on)-interval '1 month'
+          THEN prior_price END AS previous_price,
+        CASE WHEN date_trunc('month',prior_date)=date_trunc('month',observed_on)-interval '1 month'
+          THEN prior_date END AS previous_date
+      FROM history ORDER BY id,observed_on DESC,price`;
+    return (await database().query(query, [department, id])).rows;
+  }
   const locationKeys = grouped
     ? ""
     : `,department${municipal ? ",municipality" : ""}`;
