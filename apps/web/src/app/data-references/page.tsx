@@ -164,7 +164,9 @@ export default function DataReferences() {
                           <dt>{key}</dt>
                           <dd>
                             {typeof v === "number"
-                              ? key === "Subsidio" || key === "Contribución"
+                              ? key === "Año"
+                                ? String(v)
+                                : key === "Subsidio" || key === "Contribución"
                                 ? number(v * 100) + " %"
                                 : number(v)
                               : String(v)}
