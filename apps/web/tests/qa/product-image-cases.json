@@ -1,0 +1,24 @@
+[
+  {
+    "name": "DANE milk product image loads before visual review",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&market=finca-antioquia-abejorral&history=all",
+    "ready": "!!document.querySelector('[data-testid=current-product-price]') && !!document.querySelector('.detail-picture img') && document.querySelector('.detail-picture img').complete",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-04",
+            "condition": "document.querySelector('.detail-picture img').naturalWidth>0 && document.querySelector('.detail-picture img').getAttribute('src')==='/images/library/milk.jpg'",
+            "expected": "Milk illustration is successfully loaded at exact farmgate product scope; this is visual readiness, not new source-price evidence",
+            "observed": "({src:document.querySelector('.detail-picture img').getAttribute('src'),width:document.querySelector('.detail-picture img').naturalWidth})"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Milk product header remains inside phone viewport"
+          }
+        ]
+      }
+    ]
+  }
+]

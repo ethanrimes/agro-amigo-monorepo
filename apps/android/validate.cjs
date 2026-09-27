@@ -70,12 +70,20 @@ let activeDevice;
       errors.push({ step: activeStep, message: e.message }),
     );
     p.on("response", (r) => {
-      if (r.url().startsWith(origin + "/api/"))
-        requests.push({
+      if (r.url().startsWith(origin + "/api/")) {
+        const entry = {
           step: activeStep,
           path: r.url().slice(origin.length),
           status: r.status(),
-        });
+          headersAt: new Date().toISOString(),
+        };
+        requests.push(entry);
+        void r.finished().then(error => {
+          entry.finishedAt = new Date().toISOString();
+          entry.timing = r.request().timing();
+          if (error) entry.bodyError = String(error);
+        }).catch(error => { entry.bodyError = error.message; });
+      }
     });
   };
   watchPage(page);
@@ -111,6 +119,7 @@ let activeDevice;
       `${dir}/${name}.png`,
       execFileSync(adb, ["-s", serial, "exec-out", "screencap", "-p"], {
         maxBuffer: 16 * 1024 * 1024,
+        timeout: 15000,
       }),
     );
   const waitForNetwork = async () =>
@@ -329,6 +338,7 @@ let activeDevice;
         status: "failed",
         ms: Date.now() - started,
         error: String(e.stack || e).slice(0, 5000),
+        body: await page.locator("body").innerText({ timeout: 5000 }).catch(() => null),
       });
       console.error("FAIL", name, e.message);
     }
@@ -341,6 +351,12 @@ let activeDevice;
         error: e.message,
       });
     }
+    // Preserve completed evidence even if the emulator later hangs. This is a
+    // partial checkpoint; only the final report verifies settings restoration.
+    writeFileSync(`${dir}/progress.json`, JSON.stringify({
+      startedAt, updatedAt: new Date().toISOString(), complete: false,
+      webReleaseBefore, results, jsErrors: errors, apiRequests: requests,
+    }, null, 2));
   }
   async function comparison(kind, params = "") {
     const data = await get(`/api/compare/${kind}?${params}`);
@@ -947,7 +963,7 @@ let activeDevice;
       });
       await expect(result.locator("strong")).toHaveText(percent(data.percent));
       await expect(filters()).toContainText("Promedio de Colombia");
-      await expect(page.getByLabel("Historial de precios", { exact: true })).toHaveValue("recent");
+      await expect(filters()).toContainText("Últimos 12 meses");
       const input = page.getByLabel("Buscar producto", { exact: true });
       await input.fill("limón");
       await expect(filters()).toContainText("limón");
@@ -1160,7 +1176,7 @@ let activeDevice;
         .getByLabel("Cobertura del precio")
         .selectOption("municipality");
       await expect(page.locator(".input-catalog-card").first()).toBeVisible();
-      await expect(page.getByLabel(/^Período/)).toHaveCount(0);
+      await expect(page.getByLabel("Historial de precios", { exact: true })).toHaveValue("recent");
       await page.getByLabel("Buscar insumo", { exact: true }).fill("urea");
       await page.getByLabel("Buscar insumo", { exact: true }).press("Escape");
       await expect(filters()).toContainText(/municip/i);
@@ -1269,7 +1285,7 @@ let activeDevice;
     );
 
     await step(
-      "20-farm-map-layers-and-finance-navigation",
+      "20-farm-map-layers-and-reference-navigation",
       async () => {
         await navigate("/farm");
         const example = page.getByRole("button", {
@@ -1302,10 +1318,13 @@ let activeDevice;
         await expect(page.getByLabel("Mes habitual")).toHaveCount(0);
         await map.scrollIntoViewIfNeeded();
         screenshot("20-farm-temperature-map");
-        await page.getByRole("tab", { name: /Costos y rentabilidad/ }).click();
-        await expect(page.locator("#clean-panel")).toBeVisible();
-        await expect(page.locator("#zone-panel")).toBeHidden();
-        await page.getByRole("tab", { name: /Explorar mi zona/ }).click();
+        await expect(page.locator("#clean-tab,#clean-panel,.clean-workspace")).toHaveCount(0);
+        await page.getByLabel("Buscar municipio", { exact: true }).fill("Pitalito");
+        await page.getByRole("option", { name: /PITALITO.*HUILA/i }).click();
+        await page.getByRole("button", { name: "¿Qué se cultiva en este municipio?", exact: true }).click();
+        await expect(page.locator(".crop-option").first()).toBeVisible();
+        await expect(page.getByRole("link", { name: /Ver calendario y fuentes/ }).first()).toHaveAttribute("href", /municipality=41551/);
+        await page.getByRole("button", { name: "Cerrar cultivos de la zona", exact: true }).click();
         await expect(
           page.getByLabel("Horizonte de la información"),
         ).toHaveValue("year");
@@ -1315,51 +1334,30 @@ let activeDevice;
       true,
     );
 
-    await step(
-      "21-budget-calculation-save-and-invalid-input",
-      async () => {
-        await navigate("/plan?tab=budget");
-        await page.getByLabel("Área (hectáreas)", { exact: true }).fill("2");
-        await page
-          .getByLabel("Cosecha de referencia (kg por hectárea)")
-          .fill("1000");
-        await page.getByLabel("Pérdida o producto no vendible (%)").fill("10");
-        for (const [label, value] of [
-          ["Preparación, siembra y labores por hectárea", "200000"],
-          ["Semilla e insumos por hectárea", "300000"],
-          ["Cosecha y poscosecha por hectárea", "100000"],
-          ["Otros costos de producción por hectárea", "0"],
-        ])
-          await page.getByLabel(label, { exact: true }).fill(value);
-        await page
-          .getByRole("button", { name: "Ingresar mi precio", exact: true })
-          .click();
-        await page
-          .getByLabel("Precio que recibirías por kg (COP)")
-          .fill("2000");
-        await page
-          .getByLabel("Gastos adicionales de venta, total (COP)")
-          .fill("100000");
-        await page.getByLabel("Comisión sobre la venta (%)").fill("10");
-        await expect(
-          page.locator(".earnings-scenarios .typical strong"),
-        ).toHaveText(money(1940000));
-        await page
-          .getByRole("button", { name: "Guardar escenario", exact: true })
-          .click();
-        await expect(page.locator(".saved-scenarios")).toContainText(
-          money(1940000),
-        );
-        await page
-          .getByLabel("Cosecha de referencia (kg por hectárea)")
-          .fill("0");
-        await expect(
-          page.getByRole("button", { name: "Guardar escenario", exact: true }),
-        ).toBeDisabled();
-        await layout();
-      },
-      true,
-    );
+    await step("21-readonly-crop-reference-source-and-native-return", async () => {
+      const route = "/plan?tab=budget&municipality=41551&crop=2030300";
+      await navigate(route);
+      await expect(page.locator("h1")).toHaveText("Cultivos, calendarios y fuentes");
+      await expect(page.getByRole("combobox", { name: "Municipio de referencia", exact: true })).toHaveValue("41551");
+      await expect(page.getByRole("combobox", { name: "Cultivo y sistema de referencia", exact: true })).toHaveValue("2030300");
+      await expect(page.locator(".calendar-table tbody tr").first()).toBeVisible();
+      await expect(page.locator(".cost-reference")).toContainText("1.550.805");
+      await expect(page.locator(".cost-reference")).toContainText("125 kg");
+      await expect(page.locator("input[type=number],input[type=date],.earnings-scenarios,.clean-kpis")).toHaveCount(0);
+      await expect(page.locator("main")).toContainText("Los presupuestos y registros anteriores se conservan");
+      const source = page.locator('a[href="/evidence/coffee-development?page=2"]');
+      await source.click();
+      await expect(page.locator("canvas[data-rendered=true]")).toBeVisible();
+      await expect(page.getByLabel("Página del documento")).toHaveValue("2");
+      await expect(page.locator(".pdf-text")).not.toBeEmpty();
+      screenshot("21-readonly-coffee-development-source-page2");
+      await device.shell("input keyevent 4");
+      await expect(page).toHaveURL(origin + route);
+      await expect(page.locator(".crop-references")).toBeVisible();
+      await expect(page.getByRole("combobox", { name: "Cultivo y sistema de referencia", exact: true })).toHaveValue("2030300");
+      await layout();
+      return {legacyBudgetUrlNowReadOnly:true,exactMunicipality:"41551",crop:"2030300",source:"coffee-development?page=2",nativeBackPreservedReference:true};
+    }, true);
 
     await step(
       "22-offers-arithmetic-and-reload",
@@ -2491,39 +2489,31 @@ let activeDevice;
         visited,
       };
     });
-    await step("30-cleansheet-table-waterfall-and-break-even", async () => {
+    await step("30-farm-reference-navigation-preserves-stored-records", async () => {
       await navigate("/farm");
       await page.getByLabel("Buscar municipio", { exact: true }).fill("Pitalito");
       await page.getByRole("option", { name: /PITALITO.*HUILA/i }).click();
-      await page.getByRole("tab", { name: /Costos y rentabilidad/ }).click();
-      await expect(page.locator(".clean-workspace")).toBeVisible();
-      await page.getByLabel("Área que quieres analizar (ha)", { exact: true }).fill("2");
-      await page.getByLabel("Rendimiento esperado (kg/ha)", { exact: true }).fill("1000");
-      await page.getByLabel("Pérdidas antes de vender (%)", { exact: true }).fill("10");
-      await page.getByRole("button", { name: "Mi precio", exact: true }).click();
-      await page.getByLabel("Mi precio esperado (COP/kg)").fill("2000");
-      const costs=page.locator(".clean-cost-edit input");
-      const amounts=[200000,300000,100000,0];
-      expect(await costs.count()).toBe(4);
-      for(let i=0;i<amounts.length;i++) await costs.nth(i).fill(String(amounts[i]));
-      await page.getByLabel("Transporte, empaque y venta (COP totales)").fill("100000");
-      await page.getByLabel("Comisión sobre la venta (%)", { exact: true }).fill("10");
-      const kpis=page.locator(".clean-kpis strong");
-      await expect(kpis.nth(0)).toHaveText(money(3600000));
-      await expect(kpis.nth(1)).toHaveText(money(1660000));
-      await expect(kpis.nth(2)).toHaveText(money(1940000));
-      await expect(kpis.nth(3)).toHaveText(money(1300000/1620)+"/kg");
-      await page.locator(".clean-result-heading h3").click();
-      await expect(page.locator(".clean-waterfall")).toBeVisible();
-      await captureElement(page.locator(".clean-results"),"30-cleansheet-waterfall");
-      await page.getByRole("button", { name: "Tabla", exact: true }).click();
-      await expect(page.locator(".clean-result-table tbody tr.total td").nth(1)).toHaveText(money(1940000));
-      await captureElement(page.locator(".clean-table-wrap"),"30-cleansheet-table");
-      await page.getByLabel("Área que quieres analizar (ha)", { exact: true }).fill("-1");
-      await expect(page.locator(".clean-kpis")).toHaveCount(0);
-      await expect(page.locator(".clean-results .clean-incomplete")).toContainText("área y rendimiento positivos");
+      await page.getByRole("button", { name: "¿Qué se cultiva en este municipio?", exact: true }).click();
+      const link = page.locator('.crop-option a[href="/plan?municipality=41551&crop=2030300"]');
+      await expect(link).toBeVisible();
+      const savedBefore = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([k]) => k.startsWith("agroamigo-farm") || k.startsWith("agroamigo-scenarios") || k.startsWith("agroamigo-location"))));
+      expect(Object.keys(savedBefore).length).toBeGreaterThan(0);
+      await link.click();
+      await expect(page).toHaveURL(origin + "/plan?municipality=41551&crop=2030300");
+      await expect(page.locator(".crop-references .panel").first()).toContainText("Café");
+      await page.getByRole("combobox", { name: "Cultivo y sistema de referencia", exact: true }).selectOption("1060200");
+      await expect(page.locator(".crop-references h2").first()).toHaveText("Frijol");
+      await expect(page.locator(".crop-references .panel").first()).toContainText("Grano seco");
+      await expect(page.locator("input[type=number],input[type=date],#clean-tab,#clean-panel,.clean-kpis,.earnings-scenarios")).toHaveCount(0);
+      const savedAfter = await page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([k]) => k.startsWith("agroamigo-farm") || k.startsWith("agroamigo-scenarios") || k.startsWith("agroamigo-location"))));
+      expect(savedAfter).toEqual(savedBefore);
+      screenshot("30-readonly-bean-reference-stored-records-preserved");
+      await device.shell("input keyevent 4");
+      await expect(page).toHaveURL(origin + "/farm");
+      await expect(page.locator("#zone-panel")).toBeVisible();
+      await expect(page.locator("#clean-tab,#clean-panel")).toHaveCount(0);
       await layout();
-      return {revenue:3600000,costs:1660000,profit:1940000,breakEven:1300000/1620,waterfallAndTable:true,negativeAreaRejected:true};
+      return {referenceLinkPreservesMunicipality:true,readOnlyCropChange:true,storedRecordKeysCompared:Object.keys(savedBefore).length,allStoredBytesPreserved:true,nativeBackReturnsFarm:true};
     });
   } finally {
     for (const [kind, state] of Object.entries(networkBefore))

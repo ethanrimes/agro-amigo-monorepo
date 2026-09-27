@@ -37,12 +37,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===1440)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -88,12 +88,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===3450)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -139,12 +139,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===74500)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -190,12 +190,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===311000)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -241,12 +241,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===117500)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -292,12 +292,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===45500)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -343,12 +343,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===88000)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -394,12 +394,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===119000)",
             "expected": "Exact source-date package midpoint present in history"
           }
@@ -445,12 +445,12 @@
         "action": "document.querySelector(\".chart-data\").open=true;",
         "checks": [
           {
-            "id": "PRD-08",
+            "id": "PRD-10",
             "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
             "expected": "History table is descending by price"
           },
           {
-            "id": "PRD-08",
+            "id": "PRD-09",
             "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===124500)",
             "expected": "Exact source-date package midpoint present in history"
           }

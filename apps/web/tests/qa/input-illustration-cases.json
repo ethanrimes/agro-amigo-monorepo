@@ -1,0 +1,35 @@
+[
+  {
+    "name": "DANE equipment neutral illustration preserves exact commercial price",
+    "route": "/insumo/fumigadora-plastica-manual-20-litros-royal-condor-progen-clasica-unidad-royal-condor-progen?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector('.input-detail-summary h2') && !!document.querySelector('.entity-hero img') && document.querySelector('.entity-hero img').complete",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector('.entity-hero img').getAttribute('src')==='/images/illustrations/input-neutral.svg' && document.querySelector('.entity-hero img').naturalWidth>0",
+            "expected": "Sprayer equipment uses loaded neutral illustration, never fertilizer granules",
+            "observed": "({src:document.querySelector('.entity-hero img').getAttribute('src'),alt:document.querySelector('.entity-hero img').alt,category:document.querySelector('.entity-hero .eyebrow').innerText})"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector('.photo-note').innerText.includes('Ilustración general de insumos y servicios agrícolas') && document.querySelector('.photo-note').innerText.includes('no representa '+document.querySelector('.entity-hero h1').innerText) && document.querySelector('.photo-note').innerText.includes('No certifica el producto comercial')",
+            "expected": "Visible illustrative caveat prevents generic image from certifying equipment identity",
+            "observed": "document.querySelector('.photo-note').innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number(document.querySelector('.input-detail-summary h2').innerText.replace(/[^0-9]/g,''))===435557",
+            "expected": "Image correction preserves audited435557COP rounded commercial price"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Illustration/caveat do not overflow viewport"
+          }
+        ]
+      }
+    ]
+  }
+]
