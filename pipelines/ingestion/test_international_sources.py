@@ -729,5 +729,139 @@ class September2026LiveSourceRegressions(unittest.TestCase):
         self.assertTrue(all(r["price"] > 0 for r in rows if r not in review))
 
 
+class NativeTextFlowerTests(unittest.TestCase):
+    def parse_text(self, text, market="Boston"):
+        heading = "Terminal" if market == "Boston" else "Shipping Point"
+        body = (
+            f"{market.upper()} Ornamental {heading} Prices as of 27-NOV-2018\n"
+            "Provided by: Specialty Crops Market News\nUSDA.\n" + text
+        ).encode()
+        return src.parse(
+            body,
+            "https://esmis.nal.usda.gov/report.TXT",
+            f"international-usda-{market.lower()}-flowers",
+        )
+
+    def test_discovery_includes_txt_and_canonicalizes_archive_fragments(self):
+        for market in ("miami", "boston"):
+            fixture = AUDIT_FIXTURES / f"international-usda-{market}-index-last.html"
+            if not fixture.exists():
+                self.skipTest("Native TXT archive index fixtures")
+            url = (
+                src.USDA_MIAMI_ARCHIVE if market == "miami" else src.USDA_BOSTON_ARCHIVE
+            )
+            found = src.discover(
+                fixture.read_bytes(), url, f"international-usda-{market}-index"
+            )
+            self.assertTrue(any(u.upper().endswith(".TXT") for u, _ in found))
+            self.assertTrue(all("#" not in u for u, _ in found))
+            self.assertEqual(len(found), len(set(found)))
+        found = src.discover(
+            b'<a href="?page=1#main-content">One</a><a href="?page=1">Same</a>',
+            src.USDA_MIAMI_ARCHIVE,
+            "international-usda-miami-index",
+        )
+        self.assertEqual(
+            found,
+            [(src.USDA_MIAMI_ARCHIVE + "?page=1", "international-usda-miami-index")],
+        )
+
+    def test_explicit_packages_origins_and_sizes_are_preserved(self):
+        rows = self.parse_text(
+            "---ROSE, HYBRID TEA: MARKET STEADY. per stem EC Red Varieties 70cm .95-1.25 mostly .95 60cm .85-1.25 mostly .85\n"
+        )
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(
+            [r["details"]["variety"] for r in rows],
+            ["Red Varieties 70cm", "Red Varieties 60cm"],
+        )
+        self.assertTrue(
+            all(r["details"]["origin"] == "USDA origin code EC" for r in rows)
+        )
+        self.assertTrue(
+            all(
+                r["source_page"] is None
+                and r["source_locator"].startswith("Text lines")
+                for r in rows
+            )
+        )
+        self.assertEqual(
+            (rows[0]["min"], rows[0]["max"], rows[0]["unit"]), (0.95, 1.25, "per stem")
+        )
+
+    def test_ambiguous_variant_review_preserves_valid_siblings_and_all_ranges(self):
+        rows = self.parse_text(
+            "---ASTER: per bunch CB Monte Casino long 7.50 red 8.00 NL long 12.00 mostly 13.00\n---ACACIA: per bunch CB long 7.50\n"
+        )
+        self.assertEqual(len(rows), 4)
+        self.assertIsNone(rows[1]["price"])
+        self.assertIsNone(rows[2]["price"])
+        self.assertEqual(rows[2]["details"]["out_of_range_mostly_quotes"][0]["min"], 13)
+        self.assertEqual(rows[0]["price"], 7.5)
+        self.assertEqual(rows[3]["price"], 7.5)
+
+    def test_bad_header_is_rejected_without_trying_ocr_or_pdf(self):
+        with self.assertRaisesRegex(ValueError, "header"):
+            src.parse(
+                b"<html>price 9.50</html>",
+                "https://esmis.nal.usda.gov/report.TXT",
+                "international-usda-boston-flowers",
+            )
+
+    def test_all_ranges_in_both_real_2018_reports_are_retained(self):
+        for market, count, publishable, day in [
+            ("miami", 85, 52, date(2018, 12, 17)),
+            ("boston", 190, 135, date(2018, 11, 27)),
+        ]:
+            fixture = AUDIT_FIXTURES / f"{market}-2018.TXT"
+            if not fixture.exists():
+                self.skipTest("Actual 2018 native text originals")
+            body = fixture.read_bytes()
+            rows = src.parse(
+                body,
+                f"https://esmis.nal.usda.gov/{market}.TXT",
+                f"international-usda-{market}-flowers",
+            )
+            self.assertEqual(len(rows), count)
+            self.assertEqual(sum(r["price"] is not None for r in rows), publishable)
+            self.assertTrue(all(r["date"] == day for r in rows))
+            self.assertEqual(len({r["source_locator"] for r in rows}), len(rows))
+            printed = Counter(
+                (float(m["low"]), float(m["high"] or m["low"]))
+                for m in src.PRICE.finditer(" ".join(body.decode().split()))
+            )
+            retained = Counter((r["min"], r["max"]) for r in rows)
+            retained.update(
+                (r["details"]["mostly_min"], r["details"]["mostly_max"])
+                for r in rows
+                if "mostly_min" in r["details"]
+            )
+            for key in (
+                "exceptional_prices",
+                "conflicting_mostly_quotes",
+                "out_of_range_mostly_quotes",
+            ):
+                retained.update(
+                    (q["min"], q["max"])
+                    for r in rows
+                    for q in r["details"].get(key, [])
+                )
+            self.assertEqual(printed, retained)
+            if market == "miami":
+                self.assertEqual(
+                    rows[0]["details"]["variety"], "Sup Sel Assorted Colors"
+                )
+                self.assertEqual(
+                    (rows[0]["min"], rows[0]["max"], rows[0]["unit"]),
+                    (2.45, 2.65, "bunched 10s"),
+                )
+                self.assertIn(
+                    "Mostly Colombia.", rows[0]["details"]["commodity_origin_note"]
+                )
+            else:
+                self.assertEqual((rows[0]["price"], rows[1]["price"]), (7.5, 12))
+                self.assertEqual(rows[0]["details"]["origin"], "USDA origin code CB")
+
+
 if __name__ == "__main__":
     unittest.main()

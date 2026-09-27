@@ -22,6 +22,16 @@ COFFEE_YEAR_DEFINITION = (
 )
 
 
+def discover(body=None, url=None, kind=None):
+    """FNC originals are discovered by the worker's statistics-page crawler."""
+    return []
+
+
+def publication_rows(rows):
+    """National daily prices already have the dedicated coffee_reference view."""
+    return [row for row in rows if row["series"] != "fnc-internal-daily"]
+
+
 def _amount(value, locator):
     if (
         value
