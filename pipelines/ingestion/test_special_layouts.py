@@ -308,57 +308,24 @@ class MilkNarrativeClassification(unittest.TestCase):
         with self.assertRaises(MilkNarrativeOnly):
             list(parse_milk_pdf(data, date(2026, 7, 31)))
 
-    def test_worker_records_only_explicit_narrative_as_processed(self):
-        from .special_prices import MilkNarrativeOnly
+    def test_worker_routes_milk_through_composite_native_publication(self):
         from .worker import _process_asset
 
         db = MagicMock()
         db.execute.return_value.fetchone.side_effect = [
-            ("old-parser",),
-            ("old-document", "failed", 0),
+            ("old-parser",), ("old-document", "failed", 0),
         ]
         with (
-            patch(
-                "pipelines.ingestion.worker.fetch_asset", return_value=b"native report"
-            ),
-            patch(
-                "pipelines.ingestion.worker.archive", return_value="retained-original"
-            ),
+            patch("pipelines.ingestion.worker.fetch_asset", return_value=b"native report"),
+            patch("pipelines.ingestion.worker.archive", return_value="retained-original"),
             patch("pipelines.ingestion.pdf_sources.extract_pages"),
-            patch(
-                "pipelines.ingestion.special_prices.parse_milk_pdf",
-                side_effect=MilkNarrativeOnly("native narrative"),
-            ),
+            patch("pipelines.ingestion.milk_publication.publish", return_value=0) as publish,
             patch("pipelines.ingestion.worker.save_rows") as save,
         ):
-            self.assertEqual(
-                _process_asset(
-                    db,
-                    "https://www.dane.gov.co/report.pdf",
-                    "milk-pdf",
-                    date(2026, 7, 31),
-                ),
-                0,
-            )
+            self.assertEqual(_process_asset(db, "https://www.dane.gov.co/report.pdf", "milk-pdf", date(2026,7,31)), 0)
+        publish.assert_called_once_with(db,b"native report","retained-original","https://www.dane.gov.co/report.pdf",date(2026,7,31))
         save.assert_not_called()
-        self.assertTrue(
-            any(
-                "status='processed'" in call.args[0]
-                for call in db.execute.call_args_list
-            )
-        )
-        self.assertTrue(
-            any(
-                "Native narrative; no municipal price table" in str(call.args)
-                for call in db.execute.call_args_list
-            )
-        )
-        self.assertFalse(
-            any(
-                "UPDATE source_document" in call.args[0]
-                for call in db.execute.call_args_list
-            )
-        )
+        self.assertFalse(any("UPDATE source_document" in call.args[0] for call in db.execute.call_args_list))
 
     def test_worker_does_not_swallow_other_missing_table_failures(self):
         from .worker import _process_asset

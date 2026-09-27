@@ -55,19 +55,24 @@ class OCRDeferred(RuntimeError):
     pass
 
 
-def transcribe(image_bytes, *, model=None, key=None, verify=False):
+def transcribe(image_bytes, *, model=None, key=None, verify=False, source_kind=None):
     key = key or os.environ.get("GEMINI_API_KEY")
     if not key:
         raise OCRDeferred("Gemini OCR key is not configured")
     model = model or os.environ.get("GEMINI_OCR_MODEL", MODEL)
     if not re.fullmatch(r"[a-z0-9.-]+", model):
         raise ValueError("Invalid OCR model name")
+    prompt = PROMPT
+    if source_kind == "milk-macroregion-pdf":
+        from .milk_macroregions import OCR_INSTRUCTION
+
+        prompt += OCR_INSTRUCTION
     payload = {
         "contents": [
             {
                 "parts": [
                     {
-                        "text": PROMPT
+                        "text": prompt
                         + (
                             "\nPerform a fresh careful reading, checking every numeric cell and all page headings."
                             if verify
@@ -470,6 +475,13 @@ def publish_workbook_reading(db, did, locator, kind, result):
     return True
 
 
+def _finalize_milk_task(db, did, kind):
+    if kind == "milk-macroregion-pdf":
+        from .milk_publication import finalize_macroregion_publication
+
+        finalize_macroregion_publication(db, did)
+
+
 def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
     """A small persistent daily budget prevents OCR backlog from blocking ingestion."""
     import time
@@ -565,12 +577,28 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
                     else "Native extraction rechecked: no OCR needed for this readable or non-price PDF page; original, image and prior readings retained"
                 )
             except (TypeError, ValueError) as exc:
-                reason = "Native OCR eligibility could not be verified: " + str(exc)[:350]
+                reason = (
+                    "Native OCR eligibility could not be verified: " + str(exc)[:350]
+                )
             if reason:
                 db.execute(
                     "UPDATE source_ocr_task SET status='review',checked_at=now(),error=%s WHERE document_id=%s AND source_locator=%s",
                     (reason, did, loc),
                 )
+                summary["review"] += 1
+                continue
+        milk_chart = None
+        if kind == "milk-macroregion-pdf":
+            from .milk_macroregions import eligible_task
+
+            try:
+                milk_chart = eligible_task(db, did, loc)
+            except ValueError as exc:
+                db.execute(
+                    "UPDATE source_ocr_task SET status='review',checked_at=now(),error=%s WHERE document_id=%s AND source_locator=%s",
+                    (str(exc)[:500], did, loc),
+                )
+                _finalize_milk_task(db, did, kind)
                 summary["review"] += 1
                 continue
         cached = [
@@ -614,14 +642,26 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
                                 Image.Resampling.LANCZOS,
                             )
                         )
-                result = transcribe(content, verify=bool(idx))
+                result = (
+                    transcribe(content, verify=bool(idx), source_kind=kind)
+                    if kind == "milk-macroregion-pdf"
+                    else transcribe(content, verify=bool(idx))
+                )
                 missing -= 1
                 db.execute(
                     "INSERT INTO source_ocr_result(image_id,version,reading,result) VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
                     (iid, VERSION, idx, Jsonb(result)),
                 )
                 readings.append(result)
-            agreed = compare_readings(*readings)
+            if kind == "milk-macroregion-pdf":
+                from .milk_macroregions import paired_rows
+
+                # Compare validated semantic cells, not OCR prose order. Both
+                # readings must contain every explicit month/region/unit label.
+                paired_rows(milk_chart, readings)
+                agreed = True
+            else:
+                agreed = compare_readings(*readings)
             status = "verified" if agreed else "review"
             # Only supported city/workbook layouts can promote prices; unknown
             # tables remain available for review as extracted evidence.
@@ -629,6 +669,11 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
                 from .city_reports import publish_ocr_page
 
                 publish_ocr_page(db, did, page, readings[0])
+                status = "published"
+            elif agreed and kind == "milk-macroregion-pdf":
+                from .milk_macroregions import publish_readings
+
+                publish_readings(db, did, loc, iid, readings)
                 status = "published"
             elif agreed and kind in ("daily-pdf", "monthly-pdf"):
                 from .pdf_sources import publish_price_ocr
@@ -673,6 +718,7 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
                     loc,
                 ),
             )
+            _finalize_milk_task(db, did, kind)
             summary["processed"] += 1
             summary["review"] += not agreed
         except OCRDeferred as exc:
@@ -680,6 +726,7 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
                 "UPDATE source_ocr_task SET status='deferred',checked_at=now(),error=%s WHERE document_id=%s AND source_locator=%s",
                 (str(exc), did, loc),
             )
+            _finalize_milk_task(db, did, kind)
             summary["deferred"] += 1
             break
         except ValueError as exc:
@@ -687,5 +734,6 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
                 "UPDATE source_ocr_task SET status='review',checked_at=now(),error=%s WHERE document_id=%s AND source_locator=%s",
                 (str(exc)[:500], did, loc),
             )
+            _finalize_milk_task(db, did, kind)
             summary["review"] += 1
     return summary

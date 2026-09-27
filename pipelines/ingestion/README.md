@@ -210,6 +210,36 @@ publication starts in July 2012, and the consolidated monthly workbooks start in
 2013. The FNC workbook includes daily national reference prices from 2003. TRM
 has a separate longer history. These are different series and units.
 
+## Milk municipal tables and macroregional charts
+
+`special_prices.py` reads municipal milk tables; `milk_macroregions.py` reads
+the separately labeled five-region chart. `milk_publication.py` coordinates their
+publication without treating a regional average as a municipality. The chart
+series is `dane-milk-macroregion`, denominated in COP per litre, with the printed
+month, region, monthly mean basis and original PDF page attached to each quote.
+
+Native tables and vector chart labels take precedence. Vector labels are bound
+to their region and month by their position and the printed legend colors;
+bar height never supplies a price. A raster chart is queued only after native
+extraction has failed for that chart. Two complete readings must agree on all
+ten printed values and their month/region assignments. Missing labels, unit,
+dates or uncertainty keep that chart under review. The original PDF, rendered
+crop and provider readings are retained independently.
+
+The milk worker version includes both municipal and macroregion parser versions,
+so an upgrade makes previously processed originals eligible for the recurring
+backfill. Municipal rows can remain published while a chart awaits OCR. Parent
+record counts are recomputed from municipal completion and retained chart rows;
+retries do not increment an old count. Archive/report date conflicts block chart
+publication, including its prior-month column. A pending or reviewed chart is
+not evidence that all of the PDF's price data has been extracted.
+
+Focused tests are `test_milk_macroregions` (literal labels, native-first behavior,
+OCR agreement and original-source parity) and `test_milk_publication` (publication,
+checkpoint, status and replay behavior). Real-provider and app checks have their
+own dated artifacts; passing mocked OCR tests alone does not validate a provider
+response. The configured request allowance remains in force during audits.
+
 ## Run, deploy and inspect
 
 ```sh

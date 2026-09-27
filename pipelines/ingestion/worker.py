@@ -84,6 +84,14 @@ PARSER_VERSIONS = {
 def parser_version(kind):
     from .official_sources import VERSION, adapter, is_reference_kind
 
+    if kind in ("milk-pdf", "milk-macroregion-pdf"):
+        from .milk_macroregions import VERSION as MACRO_VERSION
+
+        return (
+            PARSER_VERSIONS["milk-pdf"] + ":" + MACRO_VERSION
+            if kind == "milk-pdf"
+            else MACRO_VERSION
+        )
     if kind in ("daily", "dane-daily-query"):
         from .dane_daily_query import VERSION as QUERY_VERSION
 
@@ -120,6 +128,8 @@ def today():
 
 
 RELEASE_FILES = [
+    "pipelines/ingestion/milk_macroregions.py",
+    "pipelines/ingestion/milk_publication.py",
     "pipelines/ingestion/city_link_recovery.py",
     "pipelines/ingestion/dane_daily_query.py",
     "pipelines/ingestion/query_publication.py",
@@ -1604,17 +1614,9 @@ def _process_asset(db, url, kind, day):
 
         parser = lambda b: parse_special(b, kind, day)
     if kind == "milk-pdf":
-        from pipelines.ingestion.special_prices import MilkNarrativeOnly, parse_milk_pdf
+        from .milk_publication import publish
 
-        try:
-            milk_rows = list(parse_milk_pdf(data, day))
-        except MilkNarrativeOnly:
-            db.execute(
-                "UPDATE ingestion_asset SET document_id=%s,status='processed',records=0,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
-                (did, "Native narrative; no municipal price table", url),
-            )
-            return 0
-        parser = lambda b: iter(milk_rows)
+        return publish(db, data, did, url, day)
     if kind == "daily-pdf":
         parser = lambda b: parse_pdf(b, day)
     if kind == "inputs-pdf":
