@@ -32,6 +32,40 @@ class Runtime(unittest.TestCase):
         self.catalog.start()
         self.addCleanup(self.catalog.stop)
 
+    def test_supply_resumes_validated_original_before_mutable_url(self):
+        db = MagicMock()
+        did = "a" * 64
+        url = "https://www.dane.gov.co/supply.xlsx"
+        for retained in (True, False):
+            with self.subTest(retained=retained):
+                db.reset_mock()
+                db.execute.return_value.fetchone.side_effect = [
+                    (worker.parser_version("supply"),),
+                    (b"validated retained original",) if retained else None,
+                    (did, "pending", 0),
+                ]
+                with (
+                    patch.object(
+                        worker, "fetch_asset", return_value=b"new original"
+                    ) as fetch,
+                    patch.object(worker, "archive", return_value=did),
+                    patch("pipelines.ingestion.ocr.scan_document"),
+                    patch(
+                        "pipelines.ingestion.supply.publish_supply", return_value=42
+                    ) as publish,
+                ):
+                    self.assertEqual(worker.process_asset(db, url, "supply", None), 42)
+                self.assertEqual(fetch.call_count, 0 if retained else 1)
+                self.assertEqual(
+                    publish.call_args.args[1],
+                    b"validated retained original" if retained else b"new original",
+                )
+                resume_sql, params = db.execute.call_args_list[1].args
+                self.assertIn("c.step='supply:validated'", resume_sql)
+                self.assertIn("NOT EXISTS", resume_sql)
+                self.assertIn("c.step='supply:complete'", resume_sql)
+                self.assertEqual(params[1:], ("supply-v5", "supply-v5"))
+
     def test_failed_input_publication_resumes_retained_bytes_before_mutable_url(self):
         db = MagicMock()
         did = "a" * 64
@@ -248,8 +282,12 @@ class Runtime(unittest.TestCase):
                 return_value=[source, source, failed],
             ) as candidates,
             patch.object(
-                worker, "process_asset",
-                side_effect=[WorkDeferred("Committed batches will resume"), ValueError("Invalid source")],
+                worker,
+                "process_asset",
+                side_effect=[
+                    WorkDeferred("Committed batches will resume"),
+                    ValueError("Invalid source"),
+                ],
             ) as process,
             patch("pipelines.ingestion.ocr.drain", return_value={}),
             patch("pipelines.ingestion.retained_replays.drain", return_value={}),
@@ -259,16 +297,31 @@ class Runtime(unittest.TestCase):
         # Both the duplicate initial candidate and the refreshed queue contain
         # this still-eligible URL. Neither may repeat its work in this run.
         self.assertEqual(candidates.call_count, 2)
-        self.assertEqual([c.args[1] for c in process.call_args_list], [source[0], failed[0]])
+        self.assertEqual(
+            [c.args[1] for c in process.call_args_list], [source[0], failed[0]]
+        )
         self.assertEqual(summary["assets"], 0)
         self.assertEqual(summary["rows"], 0)
-        self.assertEqual(summary["deferred"], [{"url": source[0], "reason": "Committed batches will resume"}])
+        self.assertEqual(
+            summary["deferred"],
+            [{"url": source[0], "reason": "Committed batches will resume"}],
+        )
         self.assertEqual(len(summary["errors"]), 1)
-        deferred = [c for c in db.execute.call_args_list if "SET status='pending',checked_at=now()-interval" in c.args[0]]
+        deferred = [
+            c
+            for c in db.execute.call_args_list
+            if "SET status='pending',checked_at=now()-interval" in c.args[0]
+        ]
         self.assertEqual(len(deferred), 1)
         self.assertIn("interval '6 hours'", deferred[0].args[0])
-        self.assertEqual(deferred[0].args[1], ("Committed batches will resume", source[0]))
-        failures = [c for c in db.execute.call_args_list if "SET status=%s,attempts=attempts+1,checked_at=now()" in c.args[0]]
+        self.assertEqual(
+            deferred[0].args[1], ("Committed batches will resume", source[0])
+        )
+        failures = [
+            c
+            for c in db.execute.call_args_list
+            if "SET status=%s,attempts=attempts+1,checked_at=now()" in c.args[0]
+        ]
         self.assertEqual(len(failures), 1)
         self.assertEqual(failures[0].args[1][0], "failed")
         self.assertEqual(failures[0].args[1][-1], failed[0])

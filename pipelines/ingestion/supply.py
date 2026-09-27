@@ -1,8 +1,11 @@
 """Stream dated DANE arrivals into permanent monthly supply snapshots."""
 
+import hashlib
 import io
+import json
 import math
 import re
+import time
 from array import array
 from collections import defaultdict
 from collections.abc import Sequence
@@ -176,7 +179,15 @@ def _supply_day(value, reporting_year):
     return None
 
 
-def parse_supply(data):
+def _check_budget(deadline, message):
+    from .resumable_inputs import WorkDeferred
+
+    if deadline is not None and time.monotonic() >= deadline:
+        raise WorkDeferred(message)
+
+
+def parse_supply(data, *, deadline=None):
+    _check_budget(deadline, "Supply native validation deferred before starting")
     groups = {}
     read_day = lru_cache(maxsize=512)(_supply_day)
     cutoff = today()
@@ -184,6 +195,7 @@ def parse_supply(data):
     source = None
     try:
         for sheet in book:
+            _check_budget(deadline, "Supply native validation exceeded the run budget")
             source = _supply_rows(sheet)
             header = None
             years = set()
@@ -221,6 +233,10 @@ def parse_supply(data):
                 continue
             reporting_year = next(iter(years)) if len(years) == 1 else None
             for rownum, row in source:
+                if rownum % 1000 == 0:
+                    _check_budget(
+                        deadline, "Supply native validation exceeded the run budget"
+                    )
                 value = row[header["Fecha"]]
                 try:
                     day = read_day(value, reporting_year)
@@ -270,13 +286,56 @@ def parse_supply(data):
     return groups
 
 
-def publish_supply(db, data, did):
+PUBLICATION_BATCH_SIZE = 250
+
+
+def publish_supply(db, data, did, *, deadline=None):
+    """Validate the full original, then checkpoint bounded exact-identity batches.
+
+    An explicit caller transaction still owns the entire operation. In the
+    worker's normal autocommit mode, each finished batch survives interruption.
+    """
+    from . import worker
+
+    deadline = worker.RUN_DEADLINE.get() if deadline is None else deadline
+    version = worker.parser_version("supply")
     revision = db.execute(
         "SELECT retrieved_at FROM source_document WHERE id=%s", (did,)
     ).fetchone()
     if not revision or revision[0] is None:
         raise ValueError("Supply publication requires a retained source timestamp")
-    groups = parse_supply(data)
+    steps = dict(
+        db.execute(
+            "SELECT step,records FROM ingestion_checkpoint WHERE document_id=%s AND processor_version=%s",
+            (did, version),
+        ).fetchall()
+    )
+    if "supply:complete" in steps:
+        return steps["supply:complete"]
+    _check_budget(deadline, "Supply native validation deferred before starting")
+    groups = parse_supply(data, deadline=deadline)
+    _check_budget(deadline, "Supply native validation exceeded the run budget")
+    # All source rows have been validated before any prices/checkpoints commit.
+    # Different literal spellings cannot silently split one normalized identity
+    # across batches or be collapsed without source-specific evidence.
+    identities = {}
+    periods = defaultdict(list)
+    for key in groups:
+        market, food, period = key
+        identity = ("sipsa-" + slug(market), slug(food), period)
+        if identity in identities:
+            raise ValueError("Conflicting normalized supply identity: " + repr(key))
+        identities[identity] = key
+        periods[period].append(identity)
+    if "supply:validated" in steps and steps["supply:validated"] != len(groups):
+        raise ValueError("Supply group count changed after source validation")
+
+    def checkpoint(step, records):
+        db.execute(
+            "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
+            (did, version, step, records),
+        )
+
     products = {
         slug(n): pid for pid, n in db.execute("SELECT id,name FROM product").fetchall()
     }
@@ -289,70 +348,118 @@ def publish_supply(db, data, did):
         "cartagena": "cartagena-de-indias",
         "cali": "santiago-de-cali",
     }
+    _check_budget(deadline, "Supply validated; market registration will resume")
     with db.transaction():
-        with db.cursor() as cur:
-            for market in sorted({k[0] for k in groups}):
-                city = market.split(",")[0]
-                key = aliases.get(slug(city), slug(city))
-                found = [r for r in places if slug(r[1]) == key]
-                municipality, name, department = (
-                    found[0] if len(found) == 1 else (None, city, "")
-                )
+        for market in sorted({k[0] for k in groups}):
+            city = market.split(",")[0]
+            key = aliases.get(slug(city), slug(city))
+            found = [r for r in places if slug(r[1]) == key]
+            municipality, name, department = (
+                found[0] if len(found) == 1 else (None, city, "")
+            )
+            db.execute(
+                "INSERT INTO market(id,name,city,region,municipality_id) VALUES(%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING",
+                ("sipsa-" + slug(market), market, name, department, municipality),
+            )
+        checkpoint("supply:validated", len(groups))
+    columns = (
+        "market_id,food_id,food_name,product_id,category,period_start,"
+        "observed_on,first_reported_on,quantity_kg,reporting_days,"
+        "document_id,source_rows"
+    )
+    selected = ",".join("s." + col for col in columns.split(","))
+    for period in sorted(periods, reverse=True):
+        keys = sorted(periods[period])
+        for start in range(0, len(keys), PUBLICATION_BATCH_SIZE):
+            _check_budget(
+                deadline,
+                "Supply identity batches checkpointed; remaining groups will resume",
+            )
+            batch = keys[start : start + PUBLICATION_BATCH_SIZE]
+            digest = hashlib.sha256(
+                json.dumps(
+                    [[key[0], key[1], key[2].isoformat()] for key in batch],
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                ).encode()
+            ).hexdigest()
+            step = f"supply-batch-v1:{period.isoformat()}:{digest}"
+            if step in steps:
+                if steps[step] != len(batch):
+                    raise ValueError("Supply checkpoint identity count is inconsistent")
+                continue
+            with db.transaction(), db.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO market(id,name,city,region,municipality_id) VALUES(%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING",
-                    ("sipsa-" + slug(market), market, name, department, municipality),
+                    "CREATE TEMP TABLE supply_stage (LIKE supply_observation) ON COMMIT DROP"
                 )
-            cur.execute(
-                "CREATE TEMP TABLE supply_stage (LIKE supply_observation) ON COMMIT DROP"
-            )
-            columns = (
-                "market_id,food_id,food_name,product_id,category,period_start,"
-                "observed_on,first_reported_on,quantity_kg,reporting_days,"
-                "document_id,source_rows"
-            )
-            with cur.copy(f"COPY supply_stage ({columns}) FROM STDIN") as copy:
-                for (market, food, period), g in groups.items():
-                    copy.write_row(
-                        (
-                            "sipsa-" + slug(market),
-                            slug(food),
-                            food,
-                            products.get(slug(food)),
-                            g["category"],
-                            period,
-                            max(g["days"]),
-                            min(g["days"]),
-                            g["kg"],
-                            len(g["days"]),
-                            did,
-                            Jsonb(_source_rows(g)),
+                with cur.copy(f"COPY supply_stage ({columns}) FROM STDIN") as copy:
+                    for mid, fid, month in batch:
+                        market, food, _ = identities[(mid, fid, month)]
+                        g = groups[(market, food, month)]
+                        copy.write_row(
+                            (
+                                mid,
+                                fid,
+                                food,
+                                products.get(fid),
+                                g["category"],
+                                month,
+                                max(g["days"]),
+                                min(g["days"]),
+                                g["kg"],
+                                len(g["days"]),
+                                did,
+                                Jsonb(_source_rows(g)),
+                            )
                         )
-                    )
-            # Keep the whole document atomic while bounding each INSERT to one
-            # source month. Existing retention triggers preserve every previous
-            # published tuple, including changed metadata or equal-value evidence.
-            cur.execute("CREATE INDEX ON supply_stage(period_start)")
-            for period in sorted({key[2] for key in groups}):
+                _check_budget(
+                    deadline,
+                    "Supply batch staged; completed groups retained for resume",
+                )
+                # LATERAL/LIMIT bounds each lookup to the complete primary key;
+                # stale/equal rows never enter INSERT or its retention/FK work.
                 cur.execute(
                     f"""INSERT INTO supply_observation ({columns})
-                SELECT {columns} FROM supply_stage WHERE period_start=%s
-                ON CONFLICT(market_id,food_id,period_start) DO UPDATE SET
-                food_name=excluded.food_name,product_id=excluded.product_id,
-                category=excluded.category,
-                observed_on=excluded.observed_on,first_reported_on=excluded.first_reported_on,
-                quantity_kg=excluded.quantity_kg,reporting_days=excluded.reporting_days,
-                document_id=excluded.document_id,source_rows=excluded.source_rows
-                WHERE (supply_observation.food_name,supply_observation.product_id,
-                       supply_observation.category,supply_observation.observed_on,
-                       supply_observation.first_reported_on,supply_observation.quantity_kg,
-                       supply_observation.reporting_days,supply_observation.document_id,
-                       supply_observation.source_rows)
-                  IS DISTINCT FROM (excluded.food_name,excluded.product_id,
-                       excluded.category,excluded.observed_on,excluded.first_reported_on,
-                       excluded.quantity_kg,excluded.reporting_days,excluded.document_id,
-                       excluded.source_rows)
-                  AND %s::timestamptz >= (SELECT retrieved_at FROM source_document
-                      WHERE id=supply_observation.document_id)""",
-                    (period, revision[0]),
+                    SELECT {selected} FROM supply_stage s
+                    LEFT JOIN LATERAL (
+                        SELECT p.* FROM supply_observation p
+                        WHERE p.market_id=s.market_id AND p.food_id=s.food_id
+                          AND p.period_start=s.period_start LIMIT 1
+                    ) prior ON true
+                    LEFT JOIN source_document old_source ON old_source.id=prior.document_id
+                    WHERE prior.market_id IS NULL OR (
+                        %s::timestamptz >= old_source.retrieved_at AND
+                        (prior.food_name,prior.product_id,prior.category,prior.observed_on,
+                         prior.first_reported_on,prior.quantity_kg,prior.reporting_days,
+                         prior.document_id,prior.source_rows)
+                        IS DISTINCT FROM
+                        (s.food_name,s.product_id,s.category,s.observed_on,s.first_reported_on,
+                         s.quantity_kg,s.reporting_days,s.document_id,s.source_rows))
+                    ON CONFLICT(market_id,food_id,period_start) DO UPDATE SET
+                        food_name=excluded.food_name,product_id=excluded.product_id,
+                        category=excluded.category,observed_on=excluded.observed_on,
+                        first_reported_on=excluded.first_reported_on,quantity_kg=excluded.quantity_kg,
+                        reporting_days=excluded.reporting_days,document_id=excluded.document_id,
+                        source_rows=excluded.source_rows
+                    WHERE (supply_observation.food_name,supply_observation.product_id,
+                           supply_observation.category,supply_observation.observed_on,
+                           supply_observation.first_reported_on,supply_observation.quantity_kg,
+                           supply_observation.reporting_days,supply_observation.document_id,
+                           supply_observation.source_rows)
+                      IS DISTINCT FROM (excluded.food_name,excluded.product_id,
+                           excluded.category,excluded.observed_on,excluded.first_reported_on,
+                           excluded.quantity_kg,excluded.reporting_days,excluded.document_id,
+                           excluded.source_rows)
+                      AND %s::timestamptz >= (SELECT retrieved_at FROM source_document
+                          WHERE id=supply_observation.document_id)""",
+                    (revision[0], revision[0]),
                 )
+                checkpoint(step, len(batch))
+                # Explicit DROP also supports nesting inside a caller's outer
+                # transaction, where ON COMMIT DROP waits until the outer commit.
+                cur.execute("DROP TABLE pg_temp.supply_stage")
+            steps[step] = len(batch)
+    _check_budget(deadline, "Supply groups published; source completion will resume")
+    with db.transaction():
+        checkpoint("supply:complete", len(groups))
     return len(groups)

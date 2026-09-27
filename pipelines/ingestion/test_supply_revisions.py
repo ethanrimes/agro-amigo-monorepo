@@ -14,6 +14,7 @@ from . import supply, worker
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "artifacts/automation-audit-2026-09-26/international"
+CURRENT_CACHE = EVIDENCE / "supply-2026-current-groups.jsonl.gz"
 
 
 def groups(
@@ -51,6 +52,9 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
         self.db.execute("SET statement_timeout='30s'")
         self.db.execute(
             "CREATE TEMP TABLE source_document(id text PRIMARY KEY,retrieved_at timestamptz)"
+        )
+        self.db.execute(
+            "CREATE TEMP TABLE ingestion_checkpoint(document_id text REFERENCES source_document(id),processor_version text,step text,records bigint,completed_at timestamptz DEFAULT now(),PRIMARY KEY(document_id,processor_version,step))"
         )
         self.db.execute("CREATE TEMP TABLE product(id text PRIMARY KEY,name text)")
         self.db.execute(
@@ -95,6 +99,7 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
             )
         for table in (
             "source_document",
+            "ingestion_checkpoint",
             "product",
             "municipality",
             "market",
@@ -174,7 +179,9 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
             food="Tomate CHONTO",
             rows={"2.1": [[15, 16], [19, 20]]},
         )
-        self.publish("c", revised)
+        # A new parser version can correct metadata from an immutable original.
+        with patch.object(worker, "parser_version", return_value="supply-metadata-fix"):
+            self.publish("c", revised)
         self.assertEqual(
             self.db.execute(
                 "SELECT food_name,product_id,category,observed_on,first_reported_on,reporting_days,quantity_kg,source_rows FROM supply_observation"
@@ -210,7 +217,7 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
             self.db.execute("SELECT count(*) FROM supply_observation").fetchone()[0], 0
         )
 
-    def test_second_month_failure_rolls_back_first_month_and_its_retained_version(self):
+    def test_outer_transaction_rolls_back_every_month_and_retained_version(self):
         initial = {**groups(month=1), **groups(month=2)}
         self.publish("a", initial)
         before = self.db.execute(
@@ -235,7 +242,8 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
 
             def execute(inner, sql, params=()):
                 if sql.startswith("INSERT INTO supply_observation"):
-                    statements.append(params)
+                    inner.cur.execute("SELECT DISTINCT period_start FROM supply_stage")
+                    statements.append(inner.cur.fetchone()[0])
                     if len(statements) == 2:
                         raise RuntimeError("Simulated second-month interruption")
                 return inner.cur.execute(sql, params)
@@ -247,13 +255,14 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
             def cursor(inner):
                 return Cursor()
 
-        with self.assertRaisesRegex(RuntimeError, "second-month"):
+        with (
+            self.assertRaisesRegex(RuntimeError, "second-month"),
+            self.db.transaction(),
+        ):
             self.publish(
                 "c", {**groups(200, month=1), **groups(300, month=2)}, Database()
             )
-        self.assertEqual(
-            [p[0] for p in statements], [date(2020, 1, 1), date(2020, 2, 1)]
-        )
+        self.assertEqual(statements, [date(2020, 2, 1), date(2020, 1, 1)])
         self.assertEqual(
             self.db.execute(
                 "SELECT * FROM supply_observation ORDER BY period_start"
@@ -281,12 +290,17 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
         )
 
     @unittest.skipUnless(
-        (EVIDENCE / "supply-2026-groups.jsonl.gz").exists(),
+        CURRENT_CACHE.exists() or (EVIDENCE / "supply-2026-groups.jsonl.gz").exists(),
         "Optional real-source aggregate cache",
     )
     def test_real_year_publication_updates_preserve_all_source_rows_and_days(self):
         values = {}
-        with gzip.open(EVIDENCE / "supply-2026-groups.jsonl.gz", "rt") as stream:
+        cache = (
+            CURRENT_CACHE
+            if CURRENT_CACHE.exists()
+            else EVIDENCE / "supply-2026-groups.jsonl.gz"
+        )
+        with gzip.open(cache, "rt") as stream:
             for line in stream:
                 r = json.loads(line)
                 values[(r["market"], r["food"], date.fromisoformat(r["period"]))] = {
@@ -333,7 +347,7 @@ class SupplyRevisionPostgresTests(unittest.TestCase):
             self.db.execute("SELECT count(*) FROM retained_record").fetchone()[0],
             len(values) * 2,
         )
-        (EVIDENCE / "supply-publication-performance.json").write_text(
+        (EVIDENCE / "supply-v5-publication-performance.json").write_text(
             json.dumps(
                 {
                     "environment": "isolated local PostgreSQL with real retention trigger",
