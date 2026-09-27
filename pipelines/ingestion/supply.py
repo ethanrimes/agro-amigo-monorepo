@@ -271,6 +271,11 @@ def parse_supply(data):
 
 
 def publish_supply(db, data, did):
+    revision = db.execute(
+        "SELECT retrieved_at FROM source_document WHERE id=%s", (did,)
+    ).fetchone()
+    if not revision or revision[0] is None:
+        raise ValueError("Supply publication requires a retained source timestamp")
     groups = parse_supply(data)
     products = {
         slug(n): pid for pid, n in db.execute("SELECT id,name FROM product").fetchall()
@@ -300,7 +305,12 @@ def publish_supply(db, data, did):
             cur.execute(
                 "CREATE TEMP TABLE supply_stage (LIKE supply_observation) ON COMMIT DROP"
             )
-            with cur.copy("COPY supply_stage FROM STDIN") as copy:
+            columns = (
+                "market_id,food_id,food_name,product_id,category,period_start,"
+                "observed_on,first_reported_on,quantity_kg,reporting_days,"
+                "document_id,source_rows"
+            )
+            with cur.copy(f"COPY supply_stage ({columns}) FROM STDIN") as copy:
                 for (market, food, period), g in groups.items():
                     copy.write_row(
                         (
@@ -318,10 +328,31 @@ def publish_supply(db, data, did):
                             Jsonb(_source_rows(g)),
                         )
                     )
-            cur.execute("""INSERT INTO supply_observation SELECT * FROM supply_stage
+            # Keep the whole document atomic while bounding each INSERT to one
+            # source month. Existing retention triggers preserve every previous
+            # published tuple, including changed metadata or equal-value evidence.
+            cur.execute("CREATE INDEX ON supply_stage(period_start)")
+            for period in sorted({key[2] for key in groups}):
+                cur.execute(
+                    f"""INSERT INTO supply_observation ({columns})
+                SELECT {columns} FROM supply_stage WHERE period_start=%s
                 ON CONFLICT(market_id,food_id,period_start) DO UPDATE SET
+                food_name=excluded.food_name,product_id=excluded.product_id,
+                category=excluded.category,
                 observed_on=excluded.observed_on,first_reported_on=excluded.first_reported_on,
                 quantity_kg=excluded.quantity_kg,reporting_days=excluded.reporting_days,
                 document_id=excluded.document_id,source_rows=excluded.source_rows
-                WHERE (supply_observation.quantity_kg,supply_observation.document_id) IS DISTINCT FROM (excluded.quantity_kg,excluded.document_id)""")
+                WHERE (supply_observation.food_name,supply_observation.product_id,
+                       supply_observation.category,supply_observation.observed_on,
+                       supply_observation.first_reported_on,supply_observation.quantity_kg,
+                       supply_observation.reporting_days,supply_observation.document_id,
+                       supply_observation.source_rows)
+                  IS DISTINCT FROM (excluded.food_name,excluded.product_id,
+                       excluded.category,excluded.observed_on,excluded.first_reported_on,
+                       excluded.quantity_kg,excluded.reporting_days,excluded.document_id,
+                       excluded.source_rows)
+                  AND %s::timestamptz >= (SELECT retrieved_at FROM source_document
+                      WHERE id=supply_observation.document_id)""",
+                    (period, revision[0]),
+                )
     return len(groups)

@@ -3,6 +3,7 @@
 import calendar
 import re
 from datetime import date, datetime
+from decimal import Decimal
 
 DEPARTMENTS = "Amazonas|Antioquia|Arauca|Atlántico|Bogotá D.C.|Bolívar|Boyacá|Caldas|Caquetá|Casanare|Cauca|Cesar|Chocó|Córdoba|Cundinamarca|Guainía|Guaviare|Huila|La Guajira|Magdalena|Meta|Nariño|Norte de Santander|Putumayo|Quindío|Risaralda|San Andrés|Santander|Sucre|Tolima|Valle del Cauca|Vaupés|Vichada".split(
     "|"
@@ -233,7 +234,13 @@ def project_special(db, did, url):
         key = (pid, mid, day)
         # The application compares COP/kg; retain original COP/tonne in raw history.
         converted = price / 1000 if rice else price
-        if key in values and values[key][6] != converted:
+        bounds = tuple(
+            Decimal(str(meta[field])) / 1000
+            if rice and meta.get(field) is not None
+            else meta.get(field)
+            for field in ("min_price", "max_price")
+        )
+        if key in values and values[key][6:9] != (converted, *bounds):
             conflicts.add(key)
         values[key] = (
             pid,
@@ -243,8 +250,7 @@ def project_special(db, did, url):
             "monthly",
             "kg" if rice else "litre",
             converted,
-            meta.get("min_price"),
-            meta.get("max_price"),
+            *bounds,
             url,
             did,
             loc
@@ -254,7 +260,7 @@ def project_special(db, did, url):
                 else "; precio en finca, COP/litro"
             ),
         )
-    with db.cursor() as cur:
+    with db.transaction(), db.cursor() as cur:
         cur.executemany(
             "INSERT INTO product(id,name,category) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING",
             products.values(),
@@ -263,15 +269,29 @@ def project_special(db, did, url):
             "INSERT INTO market(id,name,city,region) VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
             markets.values(),
         )
-        cur.executemany(
-            """INSERT INTO price_observation(product_id,market_id,source_id,observed_on,period,unit,price,min_price,max_price,source_url,document_id,source_locator)
-            VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit)
+        columns = "product_id,market_id,source_id,observed_on,period,unit,price,min_price,max_price,source_url,document_id,source_locator"
+        cur.execute(
+            f"CREATE TEMP TABLE IF NOT EXISTS special_price_stage ON COMMIT DROP AS SELECT {columns} FROM price_observation WITH NO DATA"
+        )
+        cur.execute("TRUNCATE pg_temp.special_price_stage")
+        with cur.copy(
+            f"COPY pg_temp.special_price_stage ({columns}) FROM STDIN"
+        ) as copy:
+            for key, row in values.items():
+                if key not in conflicts:
+                    copy.write_row(row)
+        cur.execute(
+            f"""INSERT INTO price_observation({columns})
+            SELECT {columns} FROM pg_temp.special_price_stage WHERE true
+            ON CONFLICT(product_id,market_id,source_id,observed_on,period,unit)
             DO UPDATE SET price=excluded.price,min_price=excluded.min_price,max_price=excluded.max_price,source_url=excluded.source_url,document_id=excluded.document_id,source_locator=excluded.source_locator
-            WHERE (price_observation.price,price_observation.document_id) IS DISTINCT FROM (excluded.price,excluded.document_id)
+            WHERE (price_observation.price,price_observation.min_price,price_observation.max_price,price_observation.document_id,price_observation.source_locator)
+              IS DISTINCT FROM (excluded.price,excluded.min_price,excluded.max_price,excluded.document_id,excluded.source_locator)
+            AND (SELECT retrieved_at FROM source_document WHERE id=excluded.document_id)
+              >=coalesce((SELECT retrieved_at FROM source_document WHERE id=price_observation.document_id),'-infinity'::timestamptz)
             AND ((SELECT media_type FROM source_document WHERE id=excluded.document_id)<>'application/pdf'
              OR (SELECT media_type FROM source_document WHERE id=price_observation.document_id)='application/pdf'
              OR EXISTS(SELECT 1 FROM ingestion_asset WHERE document_id=price_observation.document_id AND status='review'))""",
-            [r for k, r in values.items() if k not in conflicts],
         )
     return len(conflicts)
 
