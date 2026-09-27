@@ -29,9 +29,10 @@ const labels: Record<string, string> = {
   period: "Frecuencia",
   food_name: "Alimento",
   market_name: "Mercado",
+  market: "Mercado",
   quantity_kg: "Cantidad (kg)",
   reporting_days: "Días con reporte",
-  period_start: "Mes",
+  period_start: "Inicio del período",
   first_reported_on: "Primer reporte",
   crop: "Cultivo",
   variety: "Variedad / sistema",
@@ -104,6 +105,19 @@ export function EvidenceContent({
               </p>
               {typeof data.metadata.review_note === "string" && (
                 <p className="inline-note">{data.metadata.review_note}</p>
+              )}
+              {typeof data.metadata.price_disagreement_note === "string" && (
+                <p className="inline-note">{data.metadata.price_disagreement_note}</p>
+              )}
+              {typeof data.metadata.date_resolution_note === "string" && (
+                <p className="inline-note">
+                  {data.metadata.date_resolution_note}{" "}
+                  {typeof data.metadata.date_evidence_url === "string" && (
+                    <a href={data.metadata.date_evidence_url} target="_blank" rel="noreferrer">
+                      Consultar publicación que confirma la fecha ↗
+                    </a>
+                  )}
+                </p>
               )}
               <div className="evidence-actions">
                 <a

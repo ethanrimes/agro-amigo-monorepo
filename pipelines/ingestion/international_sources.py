@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v6"
+VERSION = "official-international-v7"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -709,8 +709,8 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 # retain its qualifier without inventing a flower variety.
                 quote_qualifier, prefix = prefix, ""
             if re.search(r"\bmostly\s*$", prefix, re.I):
-                if last is None or lo < last["min"] or hi > last["max"] or hi < lo:
-                    raise ValueError("USDA mostly range is outside full quote")
+                if last is None:
+                    raise ValueError("USDA mostly qualifier lacks its full quote")
                 _record_mostly(
                     last,
                     lo,
@@ -794,6 +794,10 @@ def _record_mostly(row, low, high, locator):
     """Keep a contradictory printed qualifier in review without losing siblings."""
     details = row["details"]
     incoming = {"min": low, "max": high, "source_locator": locator}
+    if not (row["min"] <= low <= high <= row["max"]):
+        details.setdefault("out_of_range_mostly_quotes", []).append(incoming)
+        _text_review(row, "Printed mostly range is outside the full quote")
+        return
     if "conflicting_mostly_quotes" in details:
         details["conflicting_mostly_quotes"].append(incoming)
     elif "mostly_min" in details and (details["mostly_min"], details["mostly_max"]) != (
@@ -837,16 +841,44 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
             raise ValueError("Boston flower price appears before its package")
         text = text[first_unit.start() :]
         unit, origin, variant, last = None, None, "", None
+        exceptional = None
         matches = list(PRICE.finditer(text))
         for j, match in enumerate(matches):
             prefix = text[(matches[j - 1].end() if j else 0) : match.start()].strip()
             lo, hi = float(match["low"]), float(match["high"] or match["low"])
+            locator = f"PDF page {page}, commodity {title}, quote {j + 1}"
             if re.search(r"\bmostly\s*$", prefix, re.I):
-                if last is None or not (last["min"] <= lo <= hi <= last["max"]):
-                    raise ValueError("Boston mostly range is outside the full range")
-                _record_mostly(
-                    last, lo, hi, f"PDF page {page}, commodity {title}, quote {j + 1}"
-                )
+                if last is None:
+                    raise ValueError("Boston mostly qualifier lacks its full quote")
+                if exceptional is not None:
+                    # This qualifier belongs to the preceding exceptional
+                    # range, not the main quote's already recorded mostly.
+                    values = exceptional.setdefault("mostly_quotes", [])
+                    values.append({"min": lo, "max": hi, "source_locator": locator})
+                    if not exceptional["min"] <= lo <= hi <= exceptional["max"]:
+                        _text_review(
+                            last,
+                            "Exceptional USDA mostly range is outside its full quote",
+                        )
+                    elif any((v["min"], v["max"]) != (lo, hi) for v in values):
+                        _text_review(
+                            last, "Conflicting exceptional USDA mostly qualifiers"
+                        )
+                    continue
+                _record_mostly(last, lo, hi, locator)
+                continue
+            if re.fullmatch(r"(?:few|occasional)(?: (?:higher|lower))?", prefix, re.I):
+                if last is None:
+                    raise ValueError("Boston exceptional price lacks its main quote")
+                exceptional = {
+                    "qualifier": prefix,
+                    "min": lo,
+                    "max": hi,
+                    "source_locator": locator,
+                }
+                last["details"].setdefault("exceptional_prices", []).append(exceptional)
+                if lo <= 0 or hi < lo:
+                    _text_review(last, "Invalid literal Boston exceptional price range")
                 continue
             prefix = re.sub(r"^(?:(?:occasional|few) (?:higher|lower)\s*)+", "", prefix)
             units = list(UNIT.finditer(prefix))
@@ -872,17 +904,38 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
                 hi,
                 day,
                 "Boston",
-                f"PDF page {page}, commodity {title}, quote {j + 1}",
+                locator,
                 block,
                 url,
                 origin,
             )
             found.append(last)
+            exceptional = None
     if not found:
         raise ValueError("No Boston flower prices parsed")
-    keys = [(r["product_id"], r["market"], r["date"]) for r in found]
-    if len(keys) != len(set(keys)):
-        raise ValueError("Ambiguous duplicate Boston flower identity")
+    identities = {}
+    for row in found:
+        key = (row["product_id"], row["market"], row["date"])
+        identities.setdefault(key, []).append(row)
+    for duplicates in identities.values():
+        if len(duplicates) < 2:
+            continue
+        # Keep every literal occurrence, including its own full/mostly ranges.
+        # An unqualified repeat may conceal a missing variety or an exceptional
+        # price scope; picking a winner would create an unsupported observation.
+        evidence = [
+            {
+                "source_locator": row["source_locator"],
+                "min": row["min"],
+                "max": row["max"],
+                "mostly_min": row["details"].get("mostly_min"),
+                "mostly_max": row["details"].get("mostly_max"),
+            }
+            for row in duplicates
+        ]
+        for row in duplicates:
+            row["details"]["ambiguous_identity_quotes"] = evidence
+            _text_review(row, "Ambiguous duplicate Boston flower identity")
     return found
 
 

@@ -29,24 +29,61 @@ PDF precedence and reject older revisions within the same source priority.
 
 ## Ambiguities with verified alternative coverage
 
+- DANE's public historical explorer independently supplies 12,638 daily means
+  across nine requested dates, including the two missing daily Excels, six
+  contradictory/mislinked daily originals and the missing July 2023 city ZIP.
+  These remain a distinct daily-query series with published mean/min/max, exact
+  units and fully archived query parameters/responses. Every selector and the
+  native `totalRows` are checked; empty selections and partial pages are rejected.
+- July 24, 2023's official ZIP contains 23 original July 22 city PDFs with 969
+  package/round price ranges. All 49 members validate (2,283 ranges across three
+  dates). The July 22 ZIP's full roster cannot be established. Bogotá's missing
+  package-price PDF is not reconstructed; its 93 independently published daily
+  means are included in the separate 754-row July 22 query response.
+
 - September 17 and 24 city ZIPs contain PDFs dated the following day. All 100
   disputed positive prices match correctly dated originals already published.
   The premature Santa Marta PDF is empty; its proper report supplies 23 rows.
 - The December 2020 milk Excel is byte-identical to November's. The correct
   December PDF supplies all 208 published December municipal prices. Assigning
   the copied annex to December would misstate 199 prices, so its review remains.
+- September 2021 milk uses a single wide native table. Header geometry and the
+  repeated report month recover 208 rows; all 624 minimum/maximum/mean cells and
+  25 departments reconcile independently with Poppler.
+- USDA Boston's explicit exceptional range stays attached to its base quote;
+  truly unqualified duplicates are reviewed. Miami's out-of-range `mostly`
+  qualifier reviews only its own quote and retains all literal values.
 
 The app identifies reviewed reference dates in the source viewer and excludes
 misdated daily workbook aliases from the library. Retained originals remain
 available by document ID. Official DANE reference records are supported in the
 same source viewer as the other official price series.
+Corrected headers show the independently verified date and corroborating source.
+The known February 2013 carrot-price disagreement is explicit in the viewer;
+the original workbook value is preserved.
+
+Responses are archived as each request completes, before schema/content
+validation, so a later failure does not lose downloaded evidence. Failed and
+deferred recovery cannot clear an existing source review. Parser-version changes
+invalidate the daily recovery cache. All fallbacks keep their original date,
+market, unit and price statistic; none uses OCR to fill missing identities.
 
 ## Validation and deployment evidence
 
-Initial full ingestion suite: 456 tests, 368 passed and 88 opt-in skips. Fourteen
+Final full ingestion suite: 510 tests, 409 passed and 101 opt-in skips. Fourteen
 explicit PostgreSQL tests passed using only session TEMP tables, including
 atomic partial publication, wrong-date rejection, idempotent review retention,
 daily revision chronology and provenance. The production web build passed.
+Five additional TEMP PostgreSQL query tests check native response retention,
+failed requests, replay, exact units/ranges, catalog publication and supplemental
+city-archive identity. Three TEMP worker-run tests prove review suppression stays
+in effect during and after failed/deferred alternate recovery. Mobile Chrome
+and Safari source annotations fit their viewports without page errors; these
+checks use browser emulation, not native simulator execution.
+
+USDA replay covered 205 cached originals: every one of the 179 previously
+successful documents produced exactly unchanged observations. Nine prior
+failures became recoverable; 17 other source/layout failures remain explicit.
 
 Artifact root: `artifacts/source-ambiguity-2026-09-27/` (ignored; official
 originals, price comparisons, query responses, database/API checks and logs).

@@ -310,7 +310,7 @@ class Runtime(unittest.TestCase):
         deferred = [
             c
             for c in db.execute.call_args_list
-            if "SET status='pending',checked_at=now()-interval" in c.args[0]
+            if "checked_at=now()-interval" in c.args[0]
         ]
         self.assertEqual(len(deferred), 1)
         self.assertIn("interval '6 hours'", deferred[0].args[0])
@@ -320,7 +320,8 @@ class Runtime(unittest.TestCase):
         failures = [
             c
             for c in db.execute.call_args_list
-            if "SET status=%s,attempts=attempts+1,checked_at=now()" in c.args[0]
+            if "attempts=attempts+1,checked_at=now(),error=%s,processor_version=%s"
+            in c.args[0]
         ]
         self.assertEqual(len(failures), 1)
         self.assertEqual(failures[0].args[1][0], "failed")
