@@ -147,3 +147,9 @@ bytes and immutable locators reach the ordinary evidence viewer. Image-only
 weekly workbooks currently stop at explicit layout review; do not route them
 through the legacy workbook price publisher or imply that every queued weekly
 original has been published.
+
+For failed-source recovery, see `EXTRACTION_RECOVERY_2026-09-27.md` and the
+focused `test_*fallbacks.py` modules. `input_references.py` reads native XLS/XLSX
+context and provider/stratum tariffs; `queue_plan.py` controls retries after
+parser upgrades. Readable prose and conflicting source rows remain explicit
+coverage/review cases rather than being forced through OCR.

@@ -7,6 +7,7 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
+INPUT_PDF_VERSION = "inputs-pdf-v5"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
@@ -206,9 +207,7 @@ def queued_price_page_needs_ocr(data, day, kind, number):
         native = list(parse_pdf_pages([page], day, monthly, allow_empty=True))
         previous = number > 1 and bool(
             list(
-                parse_pdf_pages(
-                    [pdf.pages[number - 2]], day, monthly, allow_empty=True
-                )
+                parse_pdf_pages([pdf.pages[number - 2]], day, monthly, allow_empty=True)
             )
         )
         return native_price_page_failure(
@@ -346,6 +345,46 @@ def input_category(title):
     )
 
 
+def _input_line_text(words):
+    """Join glyph runs split only by a font change, without inventing spaces."""
+    parts = []
+    previous = None
+    for word in words:
+        gap = word["x0"] - previous["x1"] if previous else None
+        parts.append((" " if gap is not None and gap > 0.5 else "") + word["text"])
+        previous = word
+    return "".join(parts).strip()
+
+
+def _input_presentation(heading, heading_lines):
+    # A decimal comma belongs to the product/quantity, whereas a separator may
+    # have no following space (the July 2014 source prints "15 litros,unidad").
+    separators = [
+        match.start()
+        for match in re.finditer(",", heading)
+        if not (
+            match.start() > 0
+            and heading[match.start() - 1].isdigit()
+            and heading[match.end() : match.end() + 1].isdigit()
+        )
+    ]
+    if separators:
+        index = separators[-1]
+        name, presentation = heading[:index].strip(), heading[index + 1 :].strip()
+        if name and presentation:
+            return name, presentation
+    # Some originals omit the separator but put an explicit presentation on
+    # its own heading line. Keep even publisher duplication verbatim; do not
+    # silently turn the printed "unidad 1 unidad" into an inferred package.
+    if len(heading_lines) > 1 and re.fullmatch(
+        r"(?:unidad\s+)?(?:\d+(?:[.,]\d+)?\s+)?unidad(?:es)?",
+        heading_lines[-1],
+        re.IGNORECASE,
+    ):
+        return " ".join(heading_lines[:-1]), heading_lines[-1]
+    return None
+
+
 def parse_input_pdf(data, day):
     """Read each dated two-column table, including layouts without variation.
 
@@ -364,6 +403,7 @@ def parse_input_pdf(data, day):
                 w for w in page.extract_words(extra_attrs=["fontname"]) if w["upright"]
             ]
             heading = ""
+            heading_lines = []
             previous_category = None
             for col, (left, right) in enumerate(
                 [(0, page.width / 2), (page.width / 2, page.width)], 1
@@ -427,6 +467,7 @@ def parse_input_pdf(data, day):
                     category = input_category(title)
                     if category != previous_category:
                         heading = ""
+                        heading_lines = []
                     previous_category = category
                     table_right = (
                         max(w["x1"] for w in percentage_headers) + 10
@@ -448,16 +489,18 @@ def parse_input_pdf(data, day):
                         else:
                             lines[-1][1].append(w)
                     previous_heading = False
+                    heading_bottom = None
                     unresolved = False
                     for line_no, (top, ws) in enumerate(lines, 1):
                         ws.sort(key=lambda w: w["x0"])
-                        line = clean(" ".join(w["text"] for w in ws))
+                        line = clean(_input_line_text(ws))
                         if len(line) == 1 and line.isalpha():
                             continue  # Decorative vertical margin lettering.
                         # Preserve overprinted product identities for review;
                         # never borrow the preceding product's name.
                         if line.startswith("Cuadro"):
                             heading = ""
+                            heading_lines = []
                             unresolved = True
                             previous_heading = False
                             continue
@@ -498,13 +541,16 @@ def parse_input_pdf(data, day):
                                 raise ValueError(
                                     f"Input PDF price without product/presentation: page {page_no}, col {col}, line {line_no}"
                                 )
+                            quality_issue = None
+                            split_heading = _input_presentation(heading, heading_lines)
                             if unresolved:
                                 name, presentation = (
                                     "Identidad ilegible en el original",
                                     "Sin presentación verificable",
                                 )
-                            elif ", " in heading:
-                                name, presentation = heading.rsplit(", ", 1)
+                                quality_issue = "Publisher overprinted the product heading with a duplicate table title"
+                            elif split_heading:
+                                name, presentation = split_heading
                             elif category == "Jornales":
                                 name, presentation = heading, "Jornal"
                             elif any(
@@ -516,9 +562,11 @@ def parse_input_pdf(data, day):
                                     "Según descripción del servicio",
                                 )
                             else:
-                                raise ValueError(
-                                    f"Missing input presentation on page {page_no}: {heading}"
+                                name, presentation = (
+                                    heading,
+                                    "Sin presentación verificable",
                                 )
+                                quality_issue = "Native product heading has no explicit, separable presentation"
                             value = float(price.replace(".", "").replace(",", "."))
                             if value <= 0:
                                 continue
@@ -529,18 +577,19 @@ def parse_input_pdf(data, day):
                             )
                             yield record(
                                 "dane-inputs-pdf-unresolved"
-                                if unresolved
+                                if quality_issue
                                 else "dane-inputs-pdf",
                                 day,
                                 name,
                                 municipality,
                                 presentation,
                                 value,
-                                f"PDF page {page_no},col {col},y {top:.1f}; inputs-pdf-v4",
+                                f"PDF page {page_no},col {col},y {top:.1f}; {INPUT_PDF_VERSION}",
                                 change,
                                 {
                                     "sheet": "pdf",
-                                    "parser_version": "inputs-pdf-v4",
+                                    "parser_version": INPUT_PDF_VERSION,
+                                    "extraction_method": "native-pdf-word-geometry",
                                     "printed_category": clean(title),
                                     "category": category,
                                     "presentation": presentation,
@@ -550,14 +599,38 @@ def parse_input_pdf(data, day):
                                     "municipality": municipality,
                                     "page": page_no,
                                     "printed_heading": heading,
-                                    "quality_issue": "Publisher overprinted the product heading with a duplicate table title"
-                                    if unresolved
-                                    else None,
+                                    "printed_heading_lines": heading_lines.copy(),
+                                    "quality_issue": quality_issue,
                                 },
                             )
                             previous_heading = False
                         elif (
                             all("Bold" in w["fontname"] for w in ws)
+                            or (
+                                # Native continuation lines can change font on
+                                # one suffix, or entirely. Require an adjacent
+                                # established heading, left-aligned text, and
+                                # explicit unit vocabulary, never a numeric
+                                # cell in the price/variation columns.
+                                previous_heading
+                                and heading_bottom is not None
+                                and -1 <= top - heading_bottom <= 5
+                                and abs(ws[0]["x0"] - (table_left + 8)) < 5
+                                and re.search(
+                                    r"\b(?:kilo\w*|gramos?|litros?|cent[ií]metros?|mililitros?|unidad(?:es)?|metros?|bolsas?|dosis|gal[oó]n(?:es)?|jeringas?|paquetes?|rollos?)\b",
+                                    line,
+                                    re.IGNORECASE,
+                                )
+                                and not any(
+                                    w["x0"] >= price_left
+                                    and re.fullmatch(
+                                        r"[-+]?\d[\d.,]*|n\.d\.",
+                                        w["text"],
+                                        re.IGNORECASE,
+                                    )
+                                    for w in ws
+                                )
+                            )
                             or (
                                 max(w["x1"] for w in ws) < price_left
                                 and re.search(
@@ -575,7 +648,14 @@ def parse_input_pdf(data, day):
                                 line,
                                 flags=re.IGNORECASE,
                             ).strip()
-                            heading = heading + " " + line if previous_heading else line
+                            if line:
+                                heading_lines = (
+                                    heading_lines + [line]
+                                    if previous_heading
+                                    else [line]
+                                )
+                                heading = " ".join(heading_lines)
+                            heading_bottom = max(w["bottom"] for w in ws)
                             unresolved = False
                             previous_heading = True
                         else:

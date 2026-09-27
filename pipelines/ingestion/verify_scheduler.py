@@ -20,10 +20,13 @@ def main():
             (source,),
         ).fetchone()
         worker.queue(db, source, "daily")
-        assert db.execute(
-            "SELECT ctid,xmin,xmax,discovered_at FROM ingestion_asset WHERE url=%s",
-            (source,),
-        ).fetchone() == original
+        assert (
+            db.execute(
+                "SELECT ctid,xmin,xmax,discovered_at FROM ingestion_asset WHERE url=%s",
+                (source,),
+            ).fetchone()
+            == original
+        )
         worker.queue(db, source, "daily", worker.today())
         worker.queue(db, source, "daily-pdf", worker.today())
         assert db.execute(
@@ -73,7 +76,8 @@ def main():
         assert {"leaf", "international-leaf", "upgrade", "stale-review"} <= selected, (
             selected
         )
-        assert not {"recent-review", "recent-failure"} & selected, selected
+        assert "recent-failure" in selected, selected
+        assert "recent-review" not in selected, selected
         daily = {url for url, _, _ in queue_plan.daily_candidates(db, worker.today())}
         assert "https://example.invalid/leaf" in daily
         assert "https://example.invalid/international-leaf" in daily
@@ -96,8 +100,13 @@ def main():
             ("recent-daily", "daily", worker.today(), "now()"),
         ]:
             db.execute(
-                f"INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at) VALUES(%s,%s,'complete',%s,{checked})",
-                ("https://example.invalid/" + name, kind, day),
+                f"INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at,processor_version) VALUES(%s,%s,'complete',%s,{checked},%s)",
+                (
+                    "https://example.invalid/" + name,
+                    kind,
+                    day,
+                    worker.parser_version(kind),
+                ),
             )
         daily = {
             url.rsplit("/", 1)[-1]
@@ -112,39 +121,132 @@ def main():
         audit_day = date(2026, 9, 27)
         milk_root = "https://www.dane.gov.co/files/operaciones/SIPSA/"
         milk_cases = [
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx", date(2026, 5, 1), "complete", "now()-interval '1 day'", True),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2025.xlsx", date(2025, 5, 1), "complete", "now()-interval '1 day'", True),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2024.xlsx", date(2024, 5, 1), "complete", "now()-interval '1 day'", False),
-            ("anex-SIPSALeche-may2026.xlsx", date(2026, 5, 1), "complete", "now()-interval '1 day'", False),
-            ("anex-SIPSALeche-ago2026.xlsx", date(2026, 8, 1), "complete", "now()-interval '1 day'", True),
-            ("ANEX-SIPSALECHE-SERIEHISTORICAPRECIOS-2026.XLS", date(2026, 5, 1), "complete", "now()-interval '1 day'", True),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?cooldown", date(2026, 5, 1), "complete", "now()", False),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?ocr", date(2026, 5, 1), "awaiting-ocr", "now()-interval '1 day'", False),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?review", date(2026, 5, 1), "review", "now()-interval '7 hours'", False),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?stale-review", date(2026, 5, 1), "review", "now()-interval '2 days'", True),
-            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?changed", date(2026, 5, 1), "complete", "now()-interval '1 day'", True),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx",
+                date(2026, 5, 1),
+                "complete",
+                "now()-interval '1 day'",
+                True,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2025.xlsx",
+                date(2025, 5, 1),
+                "complete",
+                "now()-interval '1 day'",
+                True,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2024.xlsx",
+                date(2024, 5, 1),
+                "complete",
+                "now()-interval '1 day'",
+                False,
+            ),
+            (
+                "anex-SIPSALeche-may2026.xlsx",
+                date(2026, 5, 1),
+                "complete",
+                "now()-interval '1 day'",
+                False,
+            ),
+            (
+                "anex-SIPSALeche-ago2026.xlsx",
+                date(2026, 8, 1),
+                "complete",
+                "now()-interval '1 day'",
+                True,
+            ),
+            (
+                "ANEX-SIPSALECHE-SERIEHISTORICAPRECIOS-2026.XLS",
+                date(2026, 5, 1),
+                "complete",
+                "now()-interval '1 day'",
+                True,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?cooldown",
+                date(2026, 5, 1),
+                "complete",
+                "now()",
+                False,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?ocr",
+                date(2026, 5, 1),
+                "awaiting-ocr",
+                "now()-interval '1 day'",
+                False,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?review",
+                date(2026, 5, 1),
+                "review",
+                "now()-interval '7 hours'",
+                False,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?stale-review",
+                date(2026, 5, 1),
+                "review",
+                "now()-interval '2 days'",
+                True,
+            ),
+            (
+                "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?changed",
+                date(2026, 5, 1),
+                "complete",
+                "now()-interval '1 day'",
+                True,
+            ),
         ]
         for name, observed_on, status, checked, _ in milk_cases:
             db.execute(
-                f"INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at) VALUES(%s,'milk',%s,%s,{checked})",
-                (milk_root + name, status, observed_on),
+                f"INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at,processor_version) VALUES(%s,'milk',%s,%s,{checked},%s)",
+                (milk_root + name, status, observed_on, worker.parser_version("milk")),
             )
         daily = {url for url, _, _ in queue_plan.daily_candidates(db, audit_day)}
         for name, _, _, _, expected in milk_cases:
             assert ((milk_root + name) in daily) == expected, name
-        next_year = {url for url, _, _ in queue_plan.daily_candidates(db, date(2027, 9, 27))}
-        assert milk_root + "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx" in next_year
-        assert milk_root + "anex-SIPSALeche-SerieHistoricaPrecios-2025.xlsx" not in next_year
+        next_year = {
+            url for url, _, _ in queue_plan.daily_candidates(db, date(2027, 9, 27))
+        }
+        assert (
+            milk_root + "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx" in next_year
+        )
+        assert (
+            milk_root + "anex-SIPSALeche-SerieHistoricaPrecios-2025.xlsx"
+            not in next_year
+        )
         # All other mutable annual families already have an independent
         # eligibility rule. Guard them against the same old-observation bug.
-        for kind in ("inputs", "inputs-municipal", "coffee", "coffee-pdf", "rice", "monthly", "supply", "supply-reference", "supply-index"):
+        for kind in (
+            "inputs",
+            "inputs-municipal",
+            "coffee",
+            "coffee-pdf",
+            "rice",
+            "monthly",
+            "supply",
+            "supply-reference",
+            "supply-index",
+        ):
             source = f"https://example.invalid/annual/{kind}-2026.xlsx"
             db.execute(
                 "INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at) VALUES(%s,%s,'complete',%s,now()-interval '1 day')",
                 (source, kind, audit_day - timedelta(days=150)),
             )
         daily = {url for url, _, _ in queue_plan.daily_candidates(db, audit_day)}
-        for kind in ("inputs", "inputs-municipal", "coffee", "coffee-pdf", "rice", "monthly", "supply", "supply-reference", "supply-index"):
+        for kind in (
+            "inputs",
+            "inputs-municipal",
+            "coffee",
+            "coffee-pdf",
+            "rice",
+            "monthly",
+            "supply",
+            "supply-reference",
+            "supply-index",
+        ):
             assert f"https://example.invalid/annual/{kind}-2026.xlsx" in daily, kind
         # A :25 checkpoint should be eligible at the next :15 hourly run,
         # fifty minutes later. The old five-hour backdate missed that run;
@@ -157,7 +259,12 @@ def main():
         ]:
             db.execute(
                 "INSERT INTO ingestion_asset(url,kind,status,checked_at,processor_version) VALUES(%s,'inputs',%s,now()-%s::interval,%s)",
-                ("https://example.invalid/" + name, status, elapsed, worker.parser_version("inputs")),
+                (
+                    "https://example.invalid/" + name,
+                    status,
+                    elapsed,
+                    worker.parser_version("inputs"),
+                ),
             )
         for candidates in (
             queue_plan.daily_candidates(db, audit_day),

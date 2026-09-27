@@ -133,7 +133,7 @@ class LegacyMonthly(unittest.TestCase):
         self.assertEqual([r[7] for r in rows], [25, 25, 0.25])
         self.assertEqual([r[-1]["year_to_date_percent"] for r in rows], [10, 10, 0.10])
         self.assertTrue(
-            all(r[-1]["parser_version"] == "monthly-annex-v2" for r in rows)
+            all(r[-1]["parser_version"] == "monthly-annex-v3" for r in rows)
         )
 
     @unittest.skipUnless(
@@ -150,7 +150,7 @@ class LegacyMonthly(unittest.TestCase):
             for col in range(1, 17, 2):
                 cell = sheet.cell(n, col)
                 if cell.ctype == xlrd.XL_CELL_NUMBER and cell.value > 0:
-                    expected[f"Anexo 1!row {n + 1},col {col + 1}; monthly-annex-v2"] = (
+                    expected[f"Anexo 1!row {n + 1},col {col + 1}; monthly-annex-v3"] = (
                         cell.value
                     )
         self.assertEqual(len(rows), 398)
