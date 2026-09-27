@@ -7,6 +7,7 @@ import { ErrorState } from "@/components/marketplace/Shared";
 import { PdfViewer } from "@/components/planning/PdfViewer";
 import { WorkbookViewer } from "@/components/planning/WorkbookViewer";
 import type { Evidence } from "@/lib/planning-types";
+import { evidencePeriod } from "@/lib/evidence-period";
 import { dateLabel, number } from "@/lib/market-types";
 const labels: Record<string, string> = {
   product_name: "Producto",
@@ -101,13 +102,16 @@ export function EvidenceContent({
               </span>
               <h2>{data.title}</h2>
               <p>
-                {data.publisher} · Referencia: {data.reference_period}
+                {data.publisher} · Referencia: {evidencePeriod(data)}
               </p>
               {typeof data.metadata.review_note === "string" && (
                 <p className="inline-note">{data.metadata.review_note}</p>
               )}
               {typeof data.metadata.record_review_note === "string" && (
                 <p className="inline-note">{data.metadata.record_review_note}</p>
+              )}
+              {typeof data.metadata.identity_review_note === "string" && (
+                <p className="inline-note">{data.metadata.identity_review_note}</p>
               )}
               {typeof data.metadata.price_disagreement_note === "string" && (
                 <p className="inline-note">{data.metadata.price_disagreement_note}</p>

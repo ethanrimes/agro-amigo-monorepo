@@ -1,5 +1,6 @@
 import "server-only";
 import { database, WINDOW } from "./db";
+import { reconcileInputCatalog } from "./input-identities";
 import { PRICE_QUOTES } from "./price-quotes";
 import { compareQuotes, summarizeComparisons } from "../comparison-math";
 import type {
@@ -142,7 +143,7 @@ async function inputQuotes(
     ) p`,
     [department, municipality, product, identities || null],
   );
-  return result.rows;
+  return product ? result.rows : reconcileInputCatalog(result.rows.map((row) => ({ ...row, observed_on: row.date })));
 }
 
 async function inputReferenceBatch(

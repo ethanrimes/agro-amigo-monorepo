@@ -21,7 +21,7 @@ function Inputs() {
     [category, setCategory] = useState("Todos"),
     [limit, setLimit] = useState(24),
     [scope, setScope] = useState(q.get("scope") || "department");
-  const historical = false;
+  const [historical, setHistorical] = useState(q.get("history") === "all");
   const { data, loading, error, retry } = useData<InputPrice[]>(
     "/api/planning/inputs?grouped=true&department=" +
       encodeURIComponent(department) +
@@ -123,6 +123,7 @@ function Inputs() {
           },
           { label: "Departamento", value: department || "Colombia" },
           { label: "Categoría", value: category },
+          { label: "Historial", value: historical ? "Todo el historial" : "Últimos 12 meses" },
           { label: "Búsqueda", value: query },
         ]}
       />
@@ -132,6 +133,13 @@ function Inputs() {
         </Link>
       </p>
       <div className="catalog-controls">
+        <label className="region-field">
+          <span>Historial de precios</span>
+          <select aria-label="Historial de precios" value={historical ? "all" : "recent"} onChange={(event) => { setHistorical(event.target.value === "all"); setLimit(24); }}>
+            <option value="recent">Últimos 12 meses</option>
+            <option value="all">Todo el historial</option>
+          </select>
+        </label>
         <label className="region-field">
           <span>Cobertura del precio</span>
           <select

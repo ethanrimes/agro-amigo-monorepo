@@ -28,6 +28,7 @@ class ReviewRetentionTests(unittest.TestCase):
             "ingestion_run",
             "historical_price",
             "price_observation",
+            "price_observation_review",
         ):
             self.db.execute(
                 f"CREATE TEMP TABLE {table} (LIKE public.{table} INCLUDING ALL)"

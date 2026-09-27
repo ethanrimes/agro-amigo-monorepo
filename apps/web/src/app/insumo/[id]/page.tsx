@@ -21,7 +21,7 @@ function Input({ id }: { id: string }) {
     [municipality, setMunicipality] = useState(q.get("municipality") || ""),
     [mode, setMode] = useState<InformationMode>("price"),
     [scope, setScope] = useState(q.get("scope") || "department");
-  const historical = false;
+  const [historical, setHistorical] = useState(q.get("history") === "all");
   const location = (r: { municipality: string; department: string }) =>
     r.municipality ? r.municipality + ", " + r.department : r.department;
   const { data, loading, error, retry } = useData<InputDetail>(
@@ -59,11 +59,23 @@ function Input({ id }: { id: string }) {
             label: "Municipio",
             value: data?.input.municipality || municipality,
           },
+          { label: "Historial", value: historical ? "Todo el historial" : "Últimos 12 meses" },
           { label: "Presentación", value: data?.input.presentation || "" },
           { label: "Marca", value: data?.input.brand || "" },
         ]}
       />
       <div className="catalog-controls">
+        <label className="form-field">
+          Historial de precios
+          <select
+            aria-label="Historial de precios"
+            value={historical ? "all" : "recent"}
+            onChange={(event) => setHistorical(event.target.value === "all")}
+          >
+            <option value="recent">Últimos 12 meses</option>
+            <option value="all">Todo el historial</option>
+          </select>
+        </label>
         <label className="form-field">
           Cobertura del precio
           <select

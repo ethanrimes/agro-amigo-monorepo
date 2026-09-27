@@ -1,5 +1,7 @@
 import "server-only";
+import { OFFICIAL_EVIDENCE_ROWS_SQL } from "./official-evidence-sql";
 import { createHash } from "node:crypto";
+import { reconcileInputCatalog } from "./input-identities";
 import { database, WINDOW } from "./db";
 import type {
   Evidence,
@@ -95,7 +97,7 @@ export async function seasonality(
 /** Catalog reads select a winner before loading its previous-month price.
  * Detail reads retain a separate newest quote for every exact location.
  */
-async function loadInputs(
+async function readInputRows(
   department: string,
   scope = "department",
   historical = false,
@@ -134,11 +136,18 @@ async function loadInputs(
   const locationKeys = grouped
     ? ""
     : `,department${municipal ? ",municipality" : ""}`;
-  const query = `WITH identities AS MATERIALIZED (
+  // A national all-history catalog touches thousands of identities. Discover
+  // keys once, then keep each current/prior-price read below the SQL deadline;
+  // the complete result and failures still share the existing catalog cache.
+  const batchedHistory = historical && grouped && !department && !id;
+  const identityQuery = batchedHistory ? `identities AS MATERIALIZED (
+      SELECT id,CURRENT_DATE AS latest_date FROM unnest($3::text[]) AS selected(id) WHERE ($2='' OR id=$2)
+    ` : `identities AS MATERIALIZED (
       SELECT id${locationKeys},max(observed_on) AS latest_date FROM ${table}
       WHERE ${period} AND ($1='' OR department=$1) AND ($2='' OR id=$2)
       GROUP BY id${locationKeys} ORDER BY id${locationKeys}
-    ), winners AS MATERIALIZED (
+    `;
+  const query = `WITH ${identityQuery}    ), winners AS MATERIALIZED (
       SELECT p.*${municipal ? "" : ",''::text AS municipality"} FROM identities i
       CROSS JOIN LATERAL (
         SELECT p.* FROM published_${table} p WHERE p.id=i.id AND p.observed_on<=i.latest_date
@@ -157,7 +166,28 @@ async function loadInputs(
       ORDER BY p.observed_on DESC LIMIT 1
     ) previous ON TRUE
     ORDER BY ${grouped ? "w.id" : "w.category,w.name,w.presentation,w.department,w.municipality"}`;
+  if (batchedHistory) {
+    const keys = (await database().query<{ id: string }>(`WITH RECURSIVE keys(id) AS (
+      (SELECT id FROM ${table} ORDER BY id LIMIT 1)
+      UNION ALL
+      SELECT n.id FROM keys prior CROSS JOIN LATERAL (
+        SELECT id FROM ${table} WHERE id>prior.id ORDER BY id LIMIT 1
+      ) n
+    ) SELECT id FROM keys ORDER BY id`)).rows.map((row) => row.id);
+    const rows = [];
+    for (let offset = 0; offset < keys.length; offset += 500) {
+      rows.push(...(await database().query(query, [department, id, keys.slice(offset, offset + 500)])).rows);
+    }
+    return rows;
+  }
   return (await database().query(query, [department, id])).rows;
+}
+
+/** Read original revision metadata once for the bounded result set. Direct legacy
+ * detail URLs preserve their retained historical identity and remain accessible. */
+async function loadInputs(department: string, scope = "department", historical = false, id = "", grouped = false) {
+  const rows = await readInputRows(department, scope, historical, id, grouped);
+  return id ? rows : reconcileInputCatalog(rows);
 }
 
 // Match the catalog endpoint's five-minute freshness contract and share work
@@ -182,7 +212,8 @@ export function inputs(
     inputCatalogCache.delete(inputCatalogCache.keys().next().value!);
   const result = loadInputs(department, scope, historical, id, grouped);
   inputCatalogCache.set(key, { expires: Date.now() + 300_000, result });
-  void result.catch(() => {
+  void result.catch((error) => {
+    console.error("Input catalog read failed", error?.name || "unknown", error?.code || "unknown");
     if (inputCatalogCache.get(key)?.result === result)
       inputCatalogCache.delete(key);
   });
@@ -375,6 +406,14 @@ export async function evidence(
     r.metadata.record_review_count = reviewedRows;
     r.metadata.record_review_note = `Hay ${reviewedRows.toLocaleString("es-CO")} ${reviewedRows === 1 ? "registro de este archivo pendiente" : "registros de este archivo pendientes"} de verificación. Se conservan en el historial y no se usan como precios publicados.`;
   }
+  const correctedIdentities = (await db.query<{ count: number }>(
+    "SELECT count(*)::int AS count FROM price_observation_review WHERE document_id=$1",
+    [r.id],
+  )).rows[0]?.count || 0;
+  if (correctedIdentities) {
+    r.metadata.identity_review_count = correctedIdentities;
+    r.metadata.identity_review_note = `Conservamos ${correctedIdentities.toLocaleString("es-CO")} ${correctedIdentities === 1 ? "lectura anterior" : "lecturas anteriores"} con una identidad de mercado incorrecta. Esas lecturas no se usan como precios publicados; las correcciones se contrastan con este archivo original.`;
+  }
   if (r.metadata.ingestion_kind === "daily") {
     let resolution = (await db.query<{
       resolution: {
@@ -495,15 +534,7 @@ export async function evidence(
   ) {
     r.records = (
       await db.query(
-        `SELECT product_name,market,observed_on,period_start,price,min_price,max_price,currency,unit,basis,source_locator
-         FROM (SELECT DISTINCT ON(q.source_locator) q.* FROM official_price_quote q
-           WHERE q.document_id=$1 AND ($2='' OR q.source_locator=$2)
-           AND NOT EXISTS(SELECT 1 FROM ingestion_asset a WHERE a.document_id=q.document_id
-             AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
-           AND NOT EXISTS(SELECT 1 FROM official_source_review r
-             WHERE r.document_id=q.document_id AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-           ORDER BY q.source_locator,q.parsed_at DESC) verified
-         ORDER BY observed_on DESC,source_locator LIMIT 100`,
+        OFFICIAL_EVIDENCE_ROWS_SQL,
         [r.id, (filters.get("locator") || "").slice(0, 500)],
       )
     ).rows;
