@@ -18,7 +18,7 @@ import styles from "./comparison.module.css";
 export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
   const initial = useSearchParams();
   const [requested, setRequested] = useState<Record<string, string>>(() =>
-    ({ ...Object.fromEntries(initial), history: "recent" }),
+    ({ ...Object.fromEntries(initial), history: initial.get("history") === "all" ? "all" : "recent" }),
   );
   const [query, setQuery] = useState(initial.get("q") || "");
   const [category, setCategory] = useState(initial.get("category") || "");
@@ -100,6 +100,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
   const scopeName =
     filters.scope === "municipality" ? "Municipios" : "Departamentos";
   const filtersForDisplay = [
+    { label: "Historial", value: filters.history === "all" ? "Todo el historial" : "Últimos 12 meses" },
     {
       label: "A · base",
       value:

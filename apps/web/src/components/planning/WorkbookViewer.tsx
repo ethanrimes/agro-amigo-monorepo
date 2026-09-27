@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
+import { workbookCellText, WORKBOOK_PREVIEW_VERSION, type WorkbookCell } from "@/lib/workbook-cell";
 
 type Workbook = {
   sheets: string[];
@@ -10,7 +11,7 @@ type Workbook = {
   totalRows: number;
   totalColumns: number;
   displayedColumns: number;
-  rows: { value: string | number | boolean | null; type: string }[][];
+  rows: WorkbookCell[][];
   readOnly: true;
 };
 function columnLabel(index: number): string {
@@ -32,7 +33,7 @@ export function WorkbookViewer({
     [start, setStart] = useState(initialRow),
     [zoom, setZoom] = useState(1);
   const { data, loading, error, retry } = useData<Workbook>(
-    `/api/evidence/${id}/workbook?${new URLSearchParams({ sheet, start: String(start) })}`,
+    `/api/evidence/${id}/workbook?${new URLSearchParams({ sheet, start: String(start), format: WORKBOOK_PREVIEW_VERSION })}`,
   );
   return (
     <section
@@ -110,13 +111,7 @@ export function WorkbookViewer({
                           key={c}
                           className={cell.type === "number" ? "numeric" : ""}
                         >
-                          {cell.value === null
-                            ? ""
-                            : typeof cell.value === "number"
-                              ? cell.value.toLocaleString("es-CO", {
-                                  maximumFractionDigits: 12,
-                                })
-                              : String(cell.value)}
+                          {workbookCellText(cell)}
                         </td>
                       ))}
                     </tr>
