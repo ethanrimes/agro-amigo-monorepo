@@ -459,11 +459,17 @@ let activeDevice;
         "Caja de cartón",
         "2.5 Kilogramo",
       );
+      const largeFixture = await fixtureProduct(
+        "mora-de-castilla",
+        "Caja de cartón",
+        "12.5 Kilogramo",
+      );
+      expect(fixture.data.history.find((r) => r.date === "2026-09-07")?.price).toBe(21000);
       await navigate(`/product/${fixture.id}?${fixture.params}`);
       await expect(page.getByTestId("current-product-price")).toHaveText(
-        money(21000),
+        money(fixture.data.current.price),
       );
-      screenshot("04-mora-2_5kg-21000");
+      screenshot("04-mora-2_5kg-current");
       await page.getByLabel("Unidades", { exact: true }).click();
       screenshot("04-native-package-selector");
       await device.shell("input keyevent 4");
@@ -474,7 +480,7 @@ let activeDevice;
         fixture.market.id,
       );
       await expect(page.getByTestId("current-product-price")).toHaveText(
-        money(79500),
+        money(largeFixture.data.current.price),
       );
       await expect(filters()).toContainText("12.5 Kilogramo");
       const q = new URLSearchParams({
@@ -490,9 +496,10 @@ let activeDevice;
       );
       const base = new URLSearchParams(fixture.params);
       base.delete("market");
+      const allMarkets = await get(`/api/products/${fixture.id}?${base}`);
       await navigate(`/product/${fixture.id}?${base}`);
       await expect(page.getByTestId("current-product-price")).toHaveText(
-        money(21000),
+        money(allMarkets.current.price),
       );
       let delayedMarketRequest = false;
       const pendingDelays = [],
@@ -524,7 +531,7 @@ let activeDevice;
           .selectOption("12.5 Kilogramo");
         await Promise.all(pendingDelays);
         await expect(page.getByTestId("current-product-price")).toHaveText(
-          money(79500),
+          money(largeFixture.data.current.price),
         );
         await expect(page.getByLabel("Mercado", { exact: true })).toHaveValue(
           fixture.market.id,
@@ -539,8 +546,10 @@ let activeDevice;
       }
       await layout();
       return {
-        smallPackage: 21000,
-        largePackage: 79500,
+        smallPackage: fixture.data.current.price,
+        largePackage: largeFixture.data.current.price,
+        smallAllMarkets: allMarkets.current.price,
+        september7: {smallPackage: 21000, largePackage: 79500},
         smallKg: 2.5,
         largeKg: 12.5,
         rapidFilterChangesPreservedMarket: true,
@@ -594,7 +603,7 @@ let activeDevice;
         /atlantico/,
       );
       await expect(dialog.locator(".map-price-popup")).toBeVisible();
-      await expect(dialog.locator(".map-popup-price")).toHaveText(money(86000));
+      await expect(dialog.locator(".map-popup-price")).toHaveText(money(fixture.data.current.price));
       await expect(dialog.locator(".map-price-popup")).toContainText(
         "Barranquillita",
       );
@@ -640,15 +649,16 @@ let activeDevice;
       await device.shell("input keyevent 4");
       await expect(dialog).toHaveCount(0);
       await expect(page.getByTestId("current-product-price")).toHaveText(
-        money(86000),
+        money(fixture.data.current.price),
       );
       expect(await page.evaluate(() => document.body.style.overflow)).not.toBe(
         "hidden",
       );
-      return { popupPrice: 86000, nativeBackClosedOverlay: true };
+      return { popupPrice: fixture.data.current.price, nativeBackClosedOverlay: true };
     });
 
     await step("07-city-list-links-preserve-market", async () => {
+      const fixture = lemon || (await fixtureProduct());
       await navigate("/regional?q=Limón tahití");
       await option(page.getByLabel("Mercado del informe"), /barranquillita/);
       await expect(page.locator(".input-card")).toHaveCount(1);
@@ -657,7 +667,7 @@ let activeDevice;
       );
       await page.locator(".input-card h2 a").click();
       await expect(page.getByTestId("current-product-price")).toHaveText(
-        money(86000),
+        money(fixture.data.current.price),
       );
       await expect(filters()).toContainText("Barranquillita");
       await layout();
@@ -937,7 +947,7 @@ let activeDevice;
       });
       await expect(result.locator("strong")).toHaveText(percent(data.percent));
       await expect(filters()).toContainText("Promedio de Colombia");
-      await expect(page.getByLabel(/^Período/)).toHaveCount(0);
+      await expect(page.getByLabel("Historial de precios", { exact: true })).toHaveValue("recent");
       const input = page.getByLabel("Buscar producto", { exact: true });
       await input.fill("limón");
       await expect(filters()).toContainText("limón");
@@ -1155,7 +1165,7 @@ let activeDevice;
       await page.getByLabel("Buscar insumo", { exact: true }).press("Escape");
       await expect(filters()).toContainText(/municip/i);
       await expect(filters()).toContainText("urea");
-      await expect(filters()).not.toContainText(/12 meses|Todo el histórico/i);
+      await expect(filters()).toContainText("Últimos 12 meses");
       const catalogMapRequest = page.waitForResponse((r) => {
         const u = new URL(r.url());
         return (
@@ -1223,7 +1233,7 @@ let activeDevice;
       return {
         catalogQueryPreserved: true,
         scope: "municipality",
-        history: "all",
+        history: "recent",
         municipalityPreservedInDetailMap: true,
       };
     });
@@ -2060,6 +2070,17 @@ let activeDevice;
           );
         const verifyCard = async (row) => {
           const card = cardFor(row);
+          // The unified catalog now pages24 cards. A precise quote can be on a
+          // later page of a broad product query; exercise the visible pager.
+          await expect(page.locator(".product-card").first()).toBeVisible();
+          for (let pageNumber = 0; pageNumber < 100 && await card.count() === 0; pageNumber++) {
+            const more = page.getByRole("button", { name: /^Ver más productos/ });
+            if (!await more.count()) break;
+            await expect(more).toBeEnabled();
+            const before = await page.locator(".product-card").count();
+            await more.click();
+            await expect.poll(() => page.locator(".product-card").count()).toBeGreaterThan(before);
+          }
           await expect(card).toBeVisible();
           await expect(card.locator(".product-name")).toHaveText(row.name);
           await expect(card.locator(".product-price")).toHaveAttribute(

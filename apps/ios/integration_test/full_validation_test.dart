@@ -81,6 +81,49 @@ void main() {
         debugPrint('PASS $name');
       }
 
+      Future<Map<String, dynamic>> priceFixture(
+        String id,
+        String presentation,
+        String units,
+        num september7Price,
+      ) async {
+        await run('''(() => {
+          window.agroPriceFixture = null; window.agroPriceFixtureError = null;
+          const normalize = s => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+          const get = async p => { const r = await fetch(p); if (!r.ok) throw Error('Fixture HTTP ' + r.status); return r.json(); };
+          (async () => {
+            const params = new URLSearchParams({series:'city',presentation:${jsonEncode(presentation)},units:${jsonEncode(units)},history:'all',region:''});
+            const all = await get('/api/products/${Uri.encodeComponent(id)}?' + params);
+            const market = all.options.markets.find(m => normalize(m.name).includes('barranquillita'));
+            const actualPresentation = all.options.presentations.find(p => normalize(p) === normalize(${jsonEncode(presentation)}));
+            if (!market || !actualPresentation) throw Error('Exact fixture market/package missing');
+            params.set('market', market.id); params.set('presentation', actualPresentation);
+            const exact = await get('/api/products/${Uri.encodeComponent(id)}?' + params);
+            if (!exact.current || !exact.markets.length) throw Error('Exact current quotation missing');
+            window.agroPriceFixture = {
+              route: '/product/${Uri.encodeComponent(id)}?' + params,
+              priceText: new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(exact.current.price),
+              current: exact.current, market, sourceDocument: exact.markets[0].document_id,
+              september7: exact.history.find(r => r.date === '2026-09-07')?.price
+            };
+          })().catch(e => { window.agroPriceFixtureError = String(e); });
+        })()''');
+        await until('window.agroPriceFixture || window.agroPriceFixtureError');
+        expect(await js('!window.agroPriceFixtureError'), true);
+        final fixture =
+            jsonDecode(
+                  (await js(
+                    'JSON.stringify(window.agroPriceFixture)',
+                  )).toString(),
+                )
+                as Map<String, dynamic>;
+        // The retained original's fixed historical price is independent of the
+        // changing latest quote. UI equality is then checked on that exact scope.
+        expect(fixture['september7'], september7Price);
+        debugPrint('PRICE_FIXTURE ${jsonEncode(fixture)}');
+        return fixture;
+      }
+
       await until('document.querySelector(".mobile-nav")');
       final storage = await js(
         'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))',
@@ -96,9 +139,15 @@ void main() {
       const price =
           'document.querySelector("[data-testid=current-product-price]")';
       if (!const bool.fromEnvironment('AGRO_IOS_FARM_AND_SOURCES_ONLY')) {
+        final lemon = await priceFixture(
+          'limon-tahiti',
+          'Bulto',
+          '24 Kilogramo',
+          86000,
+        );
         await go(
-          '/product/limon-tahiti?series=city&presentation=Bulto&units=24+Kilogramo',
-          '$price?.textContent.includes("86.000")',
+          lemon['route'] as String,
+          '$price?.textContent === ${jsonEncode(lemon['priceText'])}',
         );
         expect(await js('document.body.innerText.includes("Cítricos")'), true);
         expect(
@@ -126,7 +175,7 @@ void main() {
         );
         await select('.map-summary select', 'Atlántico');
         await until(
-          'document.querySelector(".map-popup-price")?.textContent.includes("86.000")',
+          'document.querySelector(".map-popup-price")?.textContent.includes(${jsonEncode(lemon['priceText'])})',
         );
         expect(
           await js(
@@ -144,17 +193,33 @@ void main() {
         await shot('04-city-pdf-in-app');
         await click('button[aria-label="Cerrar ventana"]');
         await until('!document.querySelector("dialog[open]")');
+        final smallMora = await priceFixture(
+          'mora-de-castilla',
+          'Caja de cartón',
+          '2.5 Kilogramo',
+          21000,
+        );
+        final largeMora = await priceFixture(
+          'mora-de-castilla',
+          'Caja de cartón',
+          '12.5 Kilogramo',
+          79500,
+        );
         await go(
-          '/product/mora-de-castilla?series=city&presentation=Caja+de+cart%C3%B3n&units=2.5+Kilogramo',
+          smallMora['route'] as String,
           '$price && document.querySelector("select[aria-label=Unidades]")',
         );
         await run(
           '''(()=>{const m=document.querySelector('select[aria-label=Mercado]');const o=[...m.options].find(o=>o.textContent.includes('Barranquillita'));if(!o)throw Error('Missing market');m.value=o.value;m.dispatchEvent(new Event('change',{bubbles:true}));})()''',
         );
-        await until('$price?.textContent.includes("21.000")');
+        await until(
+          '$price?.textContent === ${jsonEncode(smallMora['priceText'])}',
+        );
         await shot('05-small-package');
         await select('select[aria-label=Unidades]', '12.5 Kilogramo');
-        await until('$price?.textContent.includes("79.500")');
+        await until(
+          '$price?.textContent === ${jsonEncode(largeMora['priceText'])}',
+        );
         await shot('06-large-package');
         await go(
           '/evidence/2d70e39303ad4dc9337101faa6399d6dbb936f8cb952114db095245c098431e8',
