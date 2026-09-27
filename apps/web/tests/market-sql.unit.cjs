@@ -12,7 +12,7 @@ function load(name) {
   new Function('exports', 'require', ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(out, () => ({ WINDOW: window }));
   return out;
 }
-const { marketDetailQuery, marketProductsQuery } = load('market-sql.ts');
+const { marketsQuery, marketDetailQuery, marketProductsQuery } = load('market-sql.ts');
 const { PRICE_QUOTES } = load('price-quotes.ts');
 const socket = process.env.AGRO_MARKET_SQL_TEST_SOCKET;
 const enabled = Boolean(socket?.startsWith('/tmp/agro-market-api-pg-'));
@@ -23,9 +23,9 @@ test('one bound market drives identity-only aggregation without global quote pay
   const query = marketDetailQuery(window);
   assert.ok(query.includes('WHERE m.id=$1'));
   assert.ok(query.includes('WHERE market_id=m.id'));
-  assert.ok(query.includes('WHERE market_name=m.name'));
+  assert.ok(query.includes('WHERE r.market_name=m.name'));
   assert.ok(!query.includes('regional_classification'));
-  assert.ok(!query.includes('source_document'));
+  assert.ok(!query.includes('source_locator'));
 });
 before(async () => {
   if (!enabled) return;
@@ -64,7 +64,9 @@ before(async () => {
         ('newdoc','r1','2026-09-26','bar',24,1),('doc','r3','2026-09-26','bar',30,1),
         ('doc','r4','2026-09-24','foo',24,1),('doc','r5','2013-01-01','old',24,1),('doc','r6','2999-01-01','old',24,1))v(doc,loc,d,p,q,r);
     INSERT INTO regional_classification VALUES('doc','r1',ARRAY['Frutas','Cítricos']);
-    INSERT INTO supply_observation VALUES('market-1','2026-09-20'),('supply-only','2026-09-21'),('old-only','2013-01-01');`);
+    INSERT INTO supply_observation VALUES('market-1','2026-09-20'),('supply-only','2026-09-21'),('old-only','2013-01-01');
+    INSERT INTO price_observation VALUES('missing-product','market-1','dane','2026-09-27',100,90,110,'kg','doc','missing:1','https://example.invalid/original.xlsx','monthly');
+    INSERT INTO regional_price VALUES(NULL,'missing-original','2026-09-27','missing-original','Missing original','Armenia Mercar','Frutas','Bulto',24,'Kilogramo',1,100,120,'kg',1);`);
   assert.equal((await db.query("SELECT relpersistence FROM pg_class WHERE oid='price_observation'::regclass")).rows[0].relpersistence, 't');
   await db.query(fs.readFileSync(path.join(__dirname, '../../../pipelines/ingestion/migrations/20260927_013_market_prices.sql'), 'utf8'));
 });
@@ -81,6 +83,18 @@ async function equivalent(id) {
   assert.deepEqual(actual, previous);
   return actual;
 }
+check('full market navigation matches previous counts, dates, joins, ordering and supply-only coverage', async () => {
+  const previous = (await db.query(`WITH quotes AS (${PRICE_QUOTES})
+    SELECT m.*,u.latitude,u.longitude,u.department_id,coalesce(p.product_count,0) AS product_count,p.date,s.supply_date
+    FROM market m LEFT JOIN municipality u ON u.id=m.municipality_id
+    LEFT JOIN (SELECT market_id,count(DISTINCT product_id) product_count,max(observed_on) date
+      FROM quotes WHERE ${window} GROUP BY market_id) p ON p.market_id=m.id
+    LEFT JOIN (SELECT market_id,max(observed_on) supply_date FROM supply_observation WHERE ${window} GROUP BY market_id) s ON s.market_id=m.id
+    WHERE p.market_id IS NOT NULL OR s.market_id IS NOT NULL ORDER BY product_count DESC,m.name`)).rows;
+  const actual = (await db.query(marketsQuery(window))).rows;
+  assert.deepEqual(actual, previous);
+  assert.deepEqual(actual.map((row) => row.id), ['market-1', 'supply-only']);
+});
 check('city packages, rounds and retained revisions preserve distinct product counts and latest dates', async () => {
   const [row] = await equivalent('market-1');
   assert.equal(row.product_count, '3');
