@@ -136,11 +136,11 @@ async function readInputRows(
   const locationKeys = grouped
     ? ""
     : `,department${municipal ? ",municipality" : ""}`;
-  // A national all-history catalog touches thousands of identities. Discover
+  // A national catalog touches thousands of identities in either period. Discover
   // keys once, then keep each current/prior-price read below the SQL deadline;
   // the complete result and failures still share the existing catalog cache.
-  const batchedHistory = historical && grouped && !department && !id;
-  const identityQuery = batchedHistory ? `identities AS MATERIALIZED (
+  const batchedCatalog = grouped && !department && !id;
+  const identityQuery = batchedCatalog ? `identities AS MATERIALIZED (
       SELECT id,CURRENT_DATE AS latest_date FROM unnest($3::text[]) AS selected(id) WHERE ($2='' OR id=$2)
     ` : `identities AS MATERIALIZED (
       SELECT id${locationKeys},max(observed_on) AS latest_date FROM ${table}
@@ -166,7 +166,7 @@ async function readInputRows(
       ORDER BY p.observed_on DESC LIMIT 1
     ) previous ON TRUE
     ORDER BY ${grouped ? "w.id" : "w.category,w.name,w.presentation,w.department,w.municipality"}`;
-  if (batchedHistory) {
+  if (batchedCatalog) {
     const keys = (await database().query<{ id: string }>(`WITH RECURSIVE keys(id) AS (
       (SELECT id FROM ${table} ORDER BY id LIMIT 1)
       UNION ALL

@@ -23,6 +23,8 @@ function app(client) {
       if (name === 'server-only') return {};
       if (name === 'node:crypto') return require(name);
       if (name === './db') return { database: () => client, WINDOW };
+      if (name === './official-evidence-sql') return {};
+      if (name === './input-identities') return { reconcileInputCatalog: async rows => rows };
       if (name === '../planning-math') return { fold: s => s };
       if (name === '../weather-data') return {};
       throw new Error(`Unexpected import ${name}`);
@@ -87,7 +89,8 @@ test('grouped department catalog agrees with independent exact-month and publish
       CREATE TEMP TABLE input_municipal_price(LIKE input_price INCLUDING DEFAULTS);
       ALTER TABLE input_municipal_price ADD COLUMN municipality text NOT NULL;
       ALTER TABLE input_municipal_price ADD PRIMARY KEY(id,department,municipality,observed_on);
-      CREATE TEMP TABLE ingestion_asset(url text PRIMARY KEY,document_id text,kind text,processor_version text,status text);`);
+      CREATE TEMP TABLE ingestion_asset(url text PRIMARY KEY,document_id text,kind text,processor_version text,status text);
+      CREATE TEMP TABLE ingestion_checkpoint(document_id text,processor_version text,step text);`);
     // Use the real published views, not a simplified fixture eligibility rule.
     const schema = fs.readFileSync(path.join(root, 'pipelines/ingestion/schema.sql'), 'utf8');
     for (const name of ['published_input_price', 'published_input_municipal_price']) {
@@ -101,6 +104,7 @@ test('grouped department catalog agrees with independent exact-month and publish
       { url: 'earlier-parser', document_id: 'pdf-old', kind: 'inputs-pdf', processor_version: 'inputs-pdf-v3', status: 'complete' },
     ];
     for (const a of assets) await client.query('INSERT INTO ingestion_asset VALUES($1,$2,$3,$4,$5)', Object.values(a));
+    await client.query("INSERT INTO ingestion_checkpoint VALUES('pdf-upgraded','inputs-pdf-v4','inputs-pdf:published')");
     const rows = [];
     const add = (id, offset, price, extras = {}) => rows.push({ id, department: 'Antioquia', observed_on: month(clock.today, offset),
       name: 'Same commercial product', category: 'Fertilizantes', presentation: id.endsWith('25kg') ? '25 kg' : '50 kg',
@@ -120,6 +124,9 @@ test('grouped department catalog agrees with independent exact-month and publish
     add('corrected-pdf', -1, 123, { document_id: 'pdf-upgraded', source_locator: 'page3; inputs-pdf-v4' });
     add('old-parser-still-valid', -1, 125, { document_id: 'pdf-old' });
     add('historic-only', -14, 55); add('historic-only', -15, 50);
+    // More than500 keys force actual national batching in both recent/all
+    // modes. Historical/future-only keys must not leak into recent results.
+    for (let n=0;n<505;n++) add('batch-'+String(n).padStart(3,'0'),-1,200+n);
     add('boundary', -12, 40, { observed_on: clock.cutoff });
     const tomorrow = new Date(clock.today + 'T00:00:00Z'); tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
     add('future', 0, 999, { observed_on: tomorrow.toISOString().slice(0, 10) });
@@ -142,6 +149,7 @@ test('grouped department catalog agrees with independent exact-month and publish
       ['', 'department', false, 'ordinary-50kg', false],
       ['Antioquia', 'municipality', false, '', true],
       ['Antioquia', 'municipality', false, '', false],
+      ['', 'municipality', false, '', true],
       ['', 'municipality', true, '', true],
     ];
     for (const args of cases) {
