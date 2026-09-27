@@ -22,7 +22,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-VERSION = "colombia-prices-v4"
+VERSION = "colombia-prices-v5"
 AGRONET_CACAO = "https://agronet.gov.co/noticias/precio-de-referencia-semanal-de-compra-de-cacao-fuente-industria-nacional-exportadores-0"
 FEDEPALMA_FFP = "https://fedepalma.org/fondo-de-fomento-palmero-ffp/"
 FEDEGAN_PRICES = "https://estadisticas.fedegan.org.co/Indicadores/13"
@@ -1511,8 +1511,11 @@ def _pork_terciles(page, page_no, day):
             for segment, raw in zip(("superior", "medio", "inferior"), m.groups()[1:]):
                 if raw == "-":
                     continue
-                value = _pork_native_number(raw)
-                zero = value is None or value <= 0
+                # Power BI can print literal zero terciles beside a missing
+                # weighted quote. Preserve that source cell for review before
+                # the positive-only number decoder rejects it.
+                zero = bool(re.fullmatch(r"0+(?:[.,]0+)?", raw))
+                value = None if zero else _pork_native_number(raw)
                 output.append(
                     _row(
                         name,
