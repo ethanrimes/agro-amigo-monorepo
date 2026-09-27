@@ -60,7 +60,13 @@ available by document ID. Official DANE reference records are supported in the
 same source viewer as the other official price series.
 Corrected headers show the independently verified date and corroborating source.
 The known February 2013 carrot-price disagreement is explicit in the viewer;
-the original workbook value is preserved.
+the original workbook value is preserved. The viewer displays the number of
+records withheld for review. An additive read-only grant fixes access to retained
+correction evidence. Official source queries now start with the selected
+document, preserve its literal verified rows, and apply the same date/quote
+review suppression without scanning the global price projection. Six TEMP
+PostgreSQL regression cases validate those semantics; actual reader queries
+returned in 0.07–0.15 seconds for six checked sources.
 
 Responses are archived as each request completes, before schema/content
 validation, so a later failure does not lose downloaded evidence. Failed and
@@ -70,7 +76,7 @@ market, unit and price statistic; none uses OCR to fill missing identities.
 
 ## Validation and deployment evidence
 
-Final full ingestion suite: 510 tests, 409 passed and 101 opt-in skips. Fourteen
+Final full ingestion suite: 519 tests, 418 passed and 101 opt-in skips. Fourteen
 explicit PostgreSQL tests passed using only session TEMP tables, including
 atomic partial publication, wrong-date rejection, idempotent review retention,
 daily revision chronology and provenance. The production web build passed.
@@ -81,9 +87,12 @@ in effect during and after failed/deferred alternate recovery. Mobile Chrome
 and Safari source annotations fit their viewports without page errors; these
 checks use browser emulation, not native simulator execution.
 
-USDA replay covered 205 cached originals: every one of the 179 previously
-successful documents produced exactly unchanged observations. Nine prior
-failures became recoverable; 17 other source/layout failures remain explicit.
+USDA v8 replay parses all 205 cached originals. Every one of the 188
+previously successful v7 outputs remains exactly unchanged. The final 17
+recoveries retain 1,063 valid literal price occurrences (1,018 distinct quotes)
+and 62 review records. Two originals contain no printed prices; they receive
+explicit no-price reviews. Missing units, conflicting identities and malformed
+decimal ranges remain literal review evidence, while valid sibling rows publish.
 
 Artifact root: `artifacts/source-ambiguity-2026-09-27/` (ignored; official
 originals, price comparisons, query responses, database/API checks and logs).

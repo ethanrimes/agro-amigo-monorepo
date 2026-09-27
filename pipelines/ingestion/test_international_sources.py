@@ -213,14 +213,22 @@ class FlowerIdentityTests(unittest.TestCase):
                 ]
             )
 
-    def test_repeated_miami_block_preserves_locators_but_conflicts_fail(self):
+    def test_repeated_miami_block_preserves_locators_but_conflicts_review(self):
         lines = ["---ASTER:", "Purple", "per bunch 2.00-3.00"]
         rows = self.parse_lines(lines + lines)
         self.assertEqual(len(rows), 2)
         self.assertEqual(rows[0]["product_id"], rows[1]["product_id"])
         self.assertNotEqual(rows[0]["source_locator"], rows[1]["source_locator"])
-        with self.assertRaisesRegex(ValueError, "Ambiguous duplicate"):
-            self.parse_lines(lines + ["---ASTER:", "Purple", "per bunch 2.00-4.00"])
+        conflicts = self.parse_lines(
+            lines + ["---ASTER:", "Purple", "per bunch 2.00-4.00"]
+        )
+        self.assertTrue(all(r["price"] is None for r in conflicts))
+        self.assertTrue(
+            all(
+                "Ambiguous duplicate" in r["details"]["quality_issue"]
+                for r in conflicts
+            )
+        )
 
     def test_standard_grade_and_exceptional_prices_keep_the_parent_quote(self):
         rows = self.parse_lines(
@@ -323,8 +331,10 @@ class FlowerIdentityTests(unittest.TestCase):
                 ],
             ),
         ):
-            with self.assertRaisesRegex(ValueError, "before its package"):
-                src.parse_boston_flowers(b"fixture")
+            rows = src.parse_boston_flowers(b"fixture")
+            self.assertIsNone(rows[0]["price"])
+            self.assertEqual(rows[0]["unit"], "unspecified package")
+            self.assertEqual((rows[1]["price"], rows[1]["unit"]), (3.5, "per stem"))
 
     def test_unquoted_product_does_not_inherit_neighbor_price(self):
         rows = self.parse_lines(
@@ -607,10 +617,14 @@ class DownloadedSourceTests(unittest.TestCase):
                     len(src.parse_boston_flowers((FIXTURES / file).read_bytes())), count
                 )
 
-    def test_publisher_malformed_miami_range_is_rejected(self):
+    def test_publisher_malformed_miami_range_is_retained_only_for_review(self):
         # September 29, 2025 literally prints "0.25-.0.29" in the source.
-        with self.assertRaises(ValueError):
-            src.parse_miami_flowers((FIXTURES / "miami-2025-09-29.pdf").read_bytes())
+        rows = src.parse_miami_flowers((FIXTURES / "miami-2025-09-29.pdf").read_bytes())
+        self.assertEqual(len(rows), 59)
+        review = [r for r in rows if r["price"] is None]
+        self.assertEqual(len(review), 1)
+        self.assertEqual(review[0]["details"]["literal_price_range"], "0.25-.0.29")
+        self.assertEqual((review[0]["min"], review[0]["max"]), (None, None))
 
 
 @unittest.skipUnless(
@@ -688,20 +702,19 @@ class September2026LiveSourceRegressions(unittest.TestCase):
             ("COLOMBIA", 0.60, 0.70, "per stem"),
         )
 
-    def test_genuinely_contradictory_publications_remain_rejected(self):
-        for filename, market, reason in [
-            ("failed-08.pdf", "miami", "Malformed USDA printed price range"),
-            ("historical-4af6bea32800ca79.pdf", "boston", "before its package"),
+    def test_genuinely_contradictory_rows_remain_reviewed(self):
+        for filename, market, count, reviews in [
+            ("failed-08.pdf", "miami", 58, 1),
+            ("historical-4af6bea32800ca79.pdf", "boston", 82, 2),
         ]:
-            with (
-                self.subTest(filename=filename),
-                self.assertRaisesRegex(ValueError, reason),
-            ):
-                src.parse(
+            with self.subTest(filename=filename):
+                rows = src.parse(
                     (AUDIT_FIXTURES / filename).read_bytes(),
                     filename,
                     f"international-usda-{market}-flowers",
                 )
+                self.assertEqual(len(rows), count)
+                self.assertEqual(sum(r["price"] is None for r in rows), reviews)
 
     def test_isolatable_contradictions_review_quotes_without_losing_siblings(self):
         for filename, market, count, reviews in [

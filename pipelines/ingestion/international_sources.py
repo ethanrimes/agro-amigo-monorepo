@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v7"
+VERSION = "official-international-v8"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -357,6 +357,11 @@ FLOWER_NAMES = {
 PRICE = re.compile(
     r"(?<![\d.])(?P<low>\d*\.\d{1,2})(?:\s*-\s*(?P<high>\d*\.\d{1,2}))?(?!\d|\.\d)"
 )
+# Preserve the publisher's duplicated decimal point as one opaque price token.
+# Its numeric bounds are deliberately unknown; it must never become .25-.29.
+MIAMI_QUOTE = re.compile(
+    r"(?P<malformed>(?<![\d.])\d*\.\d{1,2}-\s*\.\d+\.\d{1,2}(?!\d))|" + PRICE.pattern
+)
 UNIT = re.compile(
     r"per carton(?: \d+ bunches of \d+ stems)?|"
     r"(?:on stem )?per (?:stem|bunch|bloom|box)|bunched \d+s",
@@ -560,9 +565,15 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
         # range becomes a second quote for the parent color. Join only within
         # this column and retain every original line in the source locator.
         end_index = index
-        while PRICE.search(line):
-            tail = list(PRICE.finditer(line))[-1]
+        while MIAMI_QUOTE.search(line):
+            tail = list(MIAMI_QUOTE.finditer(line))[-1]
             suffix = line[tail.end() :].strip(" ,;:.")
+            if re.fullmatch(
+                r"Supplies sufficient to quote|[A-Za-z ]+,\s*no offerings", suffix, re.I
+            ):
+                # A complete notice is evidence, not another numeric quote or
+                # a reason to consume the following independently priced row.
+                break
             needs_continuation = bool(suffix) and not re.fullmatch(
                 r"(?:(?:occasional|few) (?:higher|lower)(?: and (?:higher|lower))?|"
                 r"(?:and )?(?:higher|lower)|FIRST REPORT)",
@@ -576,6 +587,19 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             if end_index >= len(lines):
                 raise ValueError("Unfinished USDA quote qualifier")
             following, next_page, next_column = lines[end_index]
+            if (
+                (page, column) == (next_page, next_column)
+                and re.fullmatch(r"(?:occasional|few)", suffix, re.I)
+                and re.fullmatch(
+                    r"(?:higher|lower)(?: and (?:higher|lower))?", following, re.I
+                )
+            ):
+                line += " " + following
+                original_line += "\n" + following
+                end_index += 1
+                continued_rows.add(end_index)
+                locator_rows = f"{index}-{end_index}"
+                continue
             if not PRICE.search(following) and re.search(
                 r"\bsupplies (?:in too few hands|insufficient and in too few hands) "
                 r"to establish a market\.?$",
@@ -640,9 +664,7 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 raise ValueError("Unrecognized USDA no-quote notice continuation")
             no_quote_continuation = False
             continue
-        if re.search(r"\d\.\d+\s*-\s*\.\d+\.", line_body):
-            raise ValueError("Malformed USDA printed price range")
-        matches = list(PRICE.finditer(line_body))
+        matches = list(MIAMI_QUOTE.finditer(line_body))
         if not matches:
             if re.search(
                 r"(?:supplies insufficient to quote|no offerings)\.?$", line_body, re.I
@@ -689,8 +711,27 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             )
             if re.search(r"\d*\.\d", prefix):
                 raise ValueError("Unrecognized USDA numeric quote qualifier")
-            lo, hi = float(match["low"]), float(match["high"] or match["low"])
+            malformed = match["malformed"]
+            lo, hi = (
+                (None, None)
+                if malformed
+                else (float(match["low"]), float(match["high"] or match["low"]))
+            )
             quote_qualifier = None
+            if malformed and re.fullmatch(
+                r"mostly|(?:few|occasional)(?: (?:higher|lower))?", prefix, re.I
+            ):
+                if last is None:
+                    raise ValueError("Malformed USDA qualifier lacks its main quote")
+                last["details"].setdefault("malformed_qualifier_quotes", []).append(
+                    {
+                        "qualifier": prefix,
+                        "literal_price_range": malformed,
+                        "source_locator": f"PDF page {page}, col {column}, text row {locator_rows}, quote {j + 1}",
+                    }
+                )
+                _text_review(last, "Malformed literal USDA qualifier price range")
+                continue
             if re.fullmatch(r"(?:few|occasional)(?: (?:higher|lower))?", prefix, re.I):
                 if lo <= 0 or hi < lo or (j and last is None):
                     raise ValueError("USDA exceptional price lacks its main quote")
@@ -742,8 +783,8 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 name,
                 quote_variant,
                 unit,
-                lo,
-                hi,
+                1 if malformed else lo,
+                1 if malformed else hi,
                 day,
                 "Miami",
                 f"PDF page {page}, col {column}, text row {locator_rows}, quote {j + 1}",
@@ -751,6 +792,13 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 url,
                 "Imports through Miami; country not specified per quote",
             )
+            if malformed:
+                last.update(price=None, min=None, max=None)
+                last["details"]["literal_price_range"] = malformed
+                _text_review(
+                    last,
+                    "Malformed literal USDA price range; bounds cannot be inferred",
+                )
             found.append(last)
             if quote_qualifier:
                 last["details"]["quote_qualifier"] = quote_qualifier
@@ -775,9 +823,25 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             ),
             row["details"]["original_quote"],
         )
-        if key in identities and identities[key] != value:
-            raise ValueError("Ambiguous duplicate USDA Miami flower identity")
-        identities[key] = value
+        identities.setdefault(key, []).append((row, value))
+    for occurrences in identities.values():
+        if len({value for _, value in occurrences}) <= 1:
+            continue
+        evidence = [
+            {
+                "source_locator": row["source_locator"],
+                "min": row["min"],
+                "max": row["max"],
+                "original_quote": row["details"]["original_quote"],
+            }
+            for row, _ in occurrences
+        ]
+        for row, _ in occurrences:
+            row["details"]["ambiguous_identity_quotes"] = evidence
+            _text_review(
+                row,
+                "Ambiguous duplicate USDA Miami flower identity; no distinguishing size or variant is printed",
+            )
     return found
 
 
@@ -794,6 +858,10 @@ def _record_mostly(row, low, high, locator):
     """Keep a contradictory printed qualifier in review without losing siblings."""
     details = row["details"]
     incoming = {"min": low, "max": high, "source_locator": locator}
+    if row["min"] is None or row["max"] is None:
+        details.setdefault("unbound_mostly_quotes", []).append(incoming)
+        _text_review(row, "Mostly qualifier follows a malformed full price range")
+        return
     if not (row["min"] <= low <= high <= row["max"]):
         details.setdefault("out_of_range_mostly_quotes", []).append(incoming)
         _text_review(row, "Printed mostly range is outside the full quote")
@@ -829,6 +897,46 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
             blocks.append([line, page])
         elif blocks:
             blocks[-1][0] += " " + line
+    if not blocks:
+        notice = " ".join(line for line, _, _ in lines)
+        boilerplate = (
+            "WHOLESALE MARKET PRICES: Prices quoted cover sales by primary receivers "
+            "of overall supplies on wholesale lots and are on stock of generally good "
+            "merchantable quality and condition unless otherwise stated"
+        )
+        if notice == boilerplate:
+            import pdfplumber
+
+            # A native heading over an image table is not an empty bulletin.
+            # These two originals contain only the standard boilerplate body.
+            with pdfplumber.open(io.BytesIO(body)) as pdf:
+                blank = all(
+                    not any(
+                        obj["bottom"] > 106 and obj["top"] < page.height - 95
+                        for obj in [*page.images, *page.curves]
+                    )
+                    for page in pdf.pages
+                )
+            if blank:
+                return [
+                    {
+                        "price": None,
+                        "min": None,
+                        "max": None,
+                        "date": day,
+                        "publisher": "USDA AMS",
+                        "series": "international-usda-boston-flowers",
+                        "source_page": 1,
+                        "source_locator": "PDF page 1, report notice",
+                        "details": {
+                            "quality_issue": "Official Boston bulletin contains no printed price quotations",
+                            "native_format": "PDF",
+                            "original_quote": notice,
+                            "source_url": url,
+                            "review_type": "no-price-report",
+                        },
+                    }
+                ]
     found = []
     for block, page in blocks:
         title, text = block[3:].split(":", 1)
@@ -837,9 +945,13 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
             if PRICE.search(text):
                 raise ValueError("Boston flower price has no package")
             continue
-        if PRICE.search(text[: first_unit.start()]):
-            raise ValueError("Boston flower price appears before its package")
-        text = text[first_unit.start() :]
+        if not PRICE.search(text[: first_unit.start()]):
+            text = text[first_unit.start() :]
+        else:
+            # Preserve an explicitly named origin/variety whose first quoted
+            # price has no package. A later printed package does not license
+            # assigning that unit backwards to earlier prices.
+            text = re.sub(r"^\s*MARKET [A-Z ]+\.\s*", "", text)
         unit, origin, variant, last = None, None, "", None
         exceptional = None
         matches = list(PRICE.finditer(text))
@@ -899,7 +1011,7 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
             last = _flower_row(
                 title,
                 variant,
-                unit,
+                unit or "unspecified package",
                 lo,
                 hi,
                 day,
@@ -909,6 +1021,11 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
                 url,
                 origin,
             )
+            if unit is None:
+                _text_review(
+                    last,
+                    "Boston flower price appears before its first explicit package; unit is unknown",
+                )
             found.append(last)
             exceptional = None
     if not found:
