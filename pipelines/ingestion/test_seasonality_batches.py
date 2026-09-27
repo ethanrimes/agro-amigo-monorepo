@@ -145,14 +145,32 @@ class SeasonalBatchPostgresTests(unittest.TestCase):
     def test_run_deadline_between_batches_preserves_durable_years(self):
         self.seed()
         worker.RUN_DEADLINE.set(100)
-        clock = Mock(side_effect=[0, 0, 0, 101])
+        clock = Mock(side_effect=[0, 0, 0, 0, 101])
         with (
             patch.object(seasonality, "time", SimpleNamespace(monotonic=clock)),
             self.assertRaisesRegex(WorkDeferred, "committed complete-year batches"),
         ):
             seasonality.refresh(self.db, 2026)
-        self.assertEqual(clock.call_count, 4)
+        self.assertEqual(clock.call_count, 5)
         self.assert_evidence(2)
+        self.assertEqual(self.db.info.transaction_status, TransactionStatus.IDLE)
+        worker.RUN_DEADLINE.set(None)
+        seasonality.refresh(self.db, 2026)
+        self.assert_evidence()
+        self.assertEqual(self.count("seasonal_attempt"), 3)
+
+    def test_separate_five_minute_cap_preserves_complete_batch_with_long_run_budget(self):
+        self.seed()
+        worker.RUN_DEADLINE.set(2100)
+        clock = Mock(side_effect=[0, 0, 0, 0, 301])
+        with (
+            patch.object(seasonality, "time", SimpleNamespace(monotonic=clock)),
+            self.assertRaisesRegex(WorkDeferred, "committed complete-year batches"),
+        ):
+            seasonality.refresh(self.db, 2026)
+        self.assert_evidence(2)
+        self.assertEqual(self.count("retained_record"), 2)
+        self.assertEqual(self.count("seasonal_attempt"), 2)
         self.assertEqual(self.db.info.transaction_status, TransactionStatus.IDLE)
         worker.RUN_DEADLINE.set(None)
         seasonality.refresh(self.db, 2026)
@@ -220,7 +238,7 @@ class SeasonalBatchPostgresTests(unittest.TestCase):
             patch.object(
                 seasonality,
                 "time",
-                SimpleNamespace(monotonic=Mock(side_effect=[0, 0, 0, 101])),
+                SimpleNamespace(monotonic=Mock(side_effect=[0, 0, 0, 0, 101])),
             ),
         ):
             seasonality.refresh(self.db, 2026, deadline=100)
