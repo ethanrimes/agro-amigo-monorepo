@@ -705,6 +705,29 @@ class September2026LiveSourceRegressions(unittest.TestCase):
                     f"international-usda-{market}-flowers",
                 )
 
+    def test_repeated_conflicting_mostly_qualifier_reviews_only_affected_quote(self):
+        fixture = AUDIT_FIXTURES / "all-10bc0303cd855711.pdf"
+        if not fixture.exists():
+            self.skipTest("Real USDA Boston August 5 2025 fixture")
+        rows = src.parse_boston_flowers(fixture.read_bytes())
+        self.assertEqual(len(rows), 35)
+        review = [r for r in rows if r["price"] is None]
+        self.assertEqual(len(review), 1)
+        row = review[0]
+        self.assertEqual(row["details"]["source_product"], "SOLIDAGO")
+        self.assertEqual(
+            row["source_locator"], "PDF page 1, commodity SOLIDAGO, quote 1"
+        )
+        self.assertEqual(
+            (row["min"], row["max"], row["date"]), (10, 14, date(2025, 8, 5))
+        )
+        self.assertIn("quality_issue", row["details"])
+        self.assertEqual(
+            [(q["min"], q["max"]) for q in row["details"]["conflicting_mostly_quotes"]],
+            [(13, 13), (10, 10)],
+        )
+        self.assertTrue(all(r["price"] > 0 for r in rows if r not in review))
+
 
 if __name__ == "__main__":
     unittest.main()
