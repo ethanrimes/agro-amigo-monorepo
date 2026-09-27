@@ -96,4 +96,30 @@ decimal ranges remain literal review evidence, while valid sibling rows publish.
 
 Artifact root: `artifacts/source-ambiguity-2026-09-27/` (ignored; official
 originals, price comparisons, query responses, database/API checks and logs).
-Cloud deployment and official historical-query fallback validation are ongoing.
+Cloud delivery completed on 2026-09-27. Worker fingerprint:
+`bb5715a8ffc2809dd657ac469e85d00a489675f0a8285bab6b57fef27d218d3a`.
+Web release: `b1c203968cc3430591fd9339e8aa60e7`.
+
+- All 39 affected sources replayed in Azure without extraction errors (43 runs,
+  including four repeated flower sources after the final parser upgrade).
+- The 22-source verifier passed: all nine historical-query days and 12,638
+  prices reconcile; 91 original downloads match Azure/DB SHA-256; 13 frontend
+  history checks pass. Its only warning retains the missing city ZIP's unknown
+  full roster; recovered members are not represented as its complete contents.
+- The additional 17-source verifier passed: 1,063 exact price occurrences,
+  1,018 published identities, 62 retained reviews, 17 original download hashes,
+  17 source viewers and five frontend history responses.
+- Live mobile browser checks passed for corrected dates, reviewed Excel rows,
+  read-only sheets/row navigation/zoom, historical JSON prices and actual original
+  downloads. A long-filename overflow on WebKit was fixed and retested at 390px;
+  Chromium at 412px also passes. These are browser checks, not native simulators.
+- Daily refresh (23:00 UTC), hourly historical backfill (:15), OCR recovery (:05)
+  and watchdog (:45) are enabled; AlwaysOn is true. Live automation health is
+  `ok` with no issues; the watchdog monitor advanced automatically at 20:45 UTC.
+  Historical backfill was explicitly resumed at 20:46:45 UTC and confirmed in
+  durable run `b3c317bd-fc29-4cf2-9eb8-240cbc8b08ba`.
+
+No original or historical observation was deleted. Six contradictory daily
+originals remain reviewed, with independently dated query alternatives published.
+Temporary read-only audit access remains scoped to the immediately following
+user-requested cross-platform app-data validation and will be removed afterward.
