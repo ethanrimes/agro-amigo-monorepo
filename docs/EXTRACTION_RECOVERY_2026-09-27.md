@@ -47,6 +47,12 @@ The 64-page March 2014 PDF exposed redundant retention work during its 405-secon
 
 The 92-page June 2013 PDF completed in Azure with 9,860 retained rows in 342 seconds. Both long PDF requests exceeded the HTTP client's wait, but their durable cloud runs finished successfully; verification waited for the ingestion lock and checked the final run and asset records rather than treating the client timeout as a pipeline failure.
 
+The final deployment (`8028d12094d57464b447cd948517e4210acdf149d8fadaa2fd9e45163d7ea52b`) also recovered the overprinted September weekly PDF and Porkcolombia report, and rechecked the cross-month weekly control. The cumulative proof covers **29 distinct originals, 78,204 exact price rows, 572 retained review rows and 114 electricity tariffs**. Every original matched its database and Azure Blob SHA, and every source had a successful frontend history sample. The weekly report's two pending OCR tasks changed to review with a native-success explanation; both images remain retained, with zero provider attempts and zero OCR readings before and after.
+
+Azure status and function inventory returned HTTP 200 for the final package; Always On and all timers remain enabled. Daily refresh is at 23:00 UTC (18:00 Colombia), historical backfill at minute 15 hourly, OCR at minute 05 hourly, and the watchdog at minute 45. The final restart was coordinated with the existing advisory lock after active ingestion finished; the 19:15 backfill invocation could not overlap deployment. The existing HistoricalBackfill function was explicitly started at 19:22:24 UTC after validation. By 19:22:55 it had processed 15 assets / 1,212 rows without errors and was continuing into another source.
+
+History is still in progress. The 19:23 metadata snapshot contained 6,870 pending assets and 19 current-version issue records: four broken downloads, one missing-market-heading failure, eleven source-date reviews and three workbooks awaiting a verifiable publication date. Other failure/review/OCR entries still carried older parser versions and require the ongoing replay before their outcome can be assessed. These counts describe queued source metadata, not a claim of complete historical coverage.
+
 ## Code navigation
 
 - `worker.parse_monthly_summary`: monthly matrix, dates and percentages.
