@@ -1693,7 +1693,7 @@ def run(
         try:
             # Hourly catch-up makes freshness independent of one nightly timer.
             # Discovery is due every six hours, including after a failed daily run.
-            periodic = not asset_url and mode != "discover"
+            periodic = not asset_url and mode not in ("discover", "ocr")
             discovery_due = mode in ("daily", "discover", "all")
             if periodic and not discovery_due:
                 discovery_due = not db.execute(
@@ -1709,12 +1709,36 @@ def run(
                     "discovered",
                     discovery_finished_at=datetime.now(ZoneInfo("UTC")).isoformat(),
                 )
+            # A permanent historical backlog must not starve exchange rates or
+            # derived seasonal evidence. These bounded daily projections run
+            # before large assets, once per successful eighteen-hour interval.
+            auxiliary_due = (
+                periodic
+                and not db.execute(
+                    "SELECT 1 FROM ingestion_run WHERE summary ? 'auxiliary_finished_at' AND started_at>now()-interval '18 hours' LIMIT 1"
+                ).fetchone()
+            )
+            if auxiliary_due and time.monotonic() - started < time_budget - 300:
+                progress("auxiliary")
+                try:
+                    summary["trm"] = refresh_trm(db)
+                    refresh_seasons(db)
+                    summary["auxiliary_finished_at"] = datetime.now(
+                        ZoneInfo("UTC")
+                    ).isoformat()
+                except Exception as exc:
+                    summary["errors"].append(
+                        {
+                            "source": "TRM/seasonality",
+                            "error": type(exc).__name__ + ": " + str(exc)[:400],
+                        }
+                    )
             if asset_url:
                 candidates = db.execute(
                     "SELECT url,kind,observed_on FROM ingestion_asset WHERE url=%s",
                     (asset_url,),
                 ).fetchall()
-            elif mode == "discover":
+            elif mode in ("discover", "ocr"):
                 candidates = []
             else:
                 fresh = daily_candidates(db, today())
@@ -1790,29 +1814,6 @@ def run(
                     )
             if len(processed) >= limit and index < len(candidates):
                 summary["asset_limit_reached"] = True
-            # Auxiliary work has the same deadline and cannot prevent final run
-            # accounting after an expensive asset. It catches up hourly as well.
-            auxiliary_due = (
-                periodic
-                and not db.execute(
-                    "SELECT 1 FROM ingestion_run WHERE summary ? 'auxiliary_finished_at' AND started_at>now()-interval '18 hours' LIMIT 1"
-                ).fetchone()
-            )
-            if auxiliary_due and time.monotonic() - started < time_budget - 300:
-                progress("auxiliary")
-                try:
-                    summary["trm"] = refresh_trm(db)
-                    refresh_seasons(db)
-                    summary["auxiliary_finished_at"] = datetime.now(
-                        ZoneInfo("UTC")
-                    ).isoformat()
-                except Exception as exc:
-                    summary["errors"].append(
-                        {
-                            "source": "TRM/seasonality",
-                            "error": type(exc).__name__ + ": " + str(exc)[:400],
-                        }
-                    )
             if periodic and time.monotonic() < started + time_budget - 10:
                 from .retained_replays import drain as replay_retained
 
@@ -1866,7 +1867,7 @@ if __name__ == "__main__":
         level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
     )
     parser = argparse.ArgumentParser()
-    parser.add_argument("mode", choices=["daily", "backfill", "discover", "all"])
+    parser.add_argument("mode", choices=["daily", "backfill", "discover", "ocr", "all"])
     parser.add_argument("--limit", type=int, default=100)
     args = parser.parse_args()
     run(args.mode, args.limit)

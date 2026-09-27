@@ -92,6 +92,16 @@ def historical_backfill(timer: func.TimerRequest):
     run("backfill", limit=100)
 
 
+@app.function_name(name="OcrRecovery")
+@app.timer_trigger(
+    schedule="%OCR_SCHEDULE%", arg_name="timer", run_on_startup=False, use_monitor=True
+)
+def ocr_recovery(timer: func.TimerRequest):
+    # A full historical queue must not consume every provider-reading window.
+    # The shared ingestion lock and existing daily request cap still apply.
+    run("ocr", limit=0, time_budget=600, ocr_limit=2, ocr_scan_limit=1)
+
+
 @app.route(route="run-check", auth_level=func.AuthLevel.FUNCTION, methods=["POST"])
 def run_check(req: func.HttpRequest) -> func.HttpResponse:
     """Authenticated, bounded execution check using the real persistent queue."""
