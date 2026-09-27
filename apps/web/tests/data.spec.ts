@@ -37,9 +37,9 @@ test("Unified catalog preserves dated source identities and exact detail prices"
   expect(catalog.products.filter((p: any) => p.kind === "official-reference" && !p.quote_key.startsWith("summary-")).length).toBe(references.total);
   expect(catalog.products.some((p: any) => p.name === "Tomate*" && p.quote_key?.startsWith("summary-"))).toBeTruthy();
   const selected = catalog.products.find((p: any) => p.id === "aguacate-hass");
-  const detail = await (
-    await request.get("/api/products/" + selected.id + "?" + selected.href.split("?")[1])
-  ).json();
+  const detailResponse = await request.get("/api/products/" + selected.id + "?" + selected.href.split("?")[1]);
+  expect(detailResponse.ok(), `Product HTTP ${detailResponse.status()}: ${await detailResponse.text()}`).toBeTruthy();
+  const detail = await detailResponse.json();
   expect(detail.markets.length).toBeGreaterThan(0);
   expect(
     detail.markets.every((m: any) =>

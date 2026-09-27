@@ -12,6 +12,7 @@ import { inputs } from "./planning";
 import { PRICE_QUOTES, filteredProduct } from "./price-quotes";
 import type { MapFilters } from "../explore-types";
 import { supplyQueries } from "./supply-sql";
+import { marketDetailQuery, marketProductsQuery } from "./market-sql";
 export async function markets(): Promise<Market[]> {
   return (
     await database()
@@ -24,16 +25,9 @@ export async function markets(): Promise<Market[]> {
   ).rows;
 }
 export async function marketDetail(id: string): Promise<MarketDetail | null> {
-  const market = (await markets()).find((m) => m.id === id);
+  const market = (await database().query(marketDetailQuery(WINDOW), [id])).rows[0];
   if (!market) return null;
-  const products = (
-    await database().query(
-      `SELECT DISTINCT ON(p.id) p.*,o.price,o.observed_on AS date,o.unit,o.period,o.document_id,o.source_locator,
-    NULL AS previous_price,1 AS market_count,CASE WHEN o.source_id='fnc' THEN 'FNC' ELSE 'DANE · SIPSA' END AS source
-    FROM published_price_observation o JOIN product p ON p.id=o.product_id WHERE market_id=$1 AND ${WINDOW} ORDER BY p.id,o.observed_on DESC`,
-      [id],
-    )
-  ).rows;
+  const products = (await database().query(marketProductsQuery(WINDOW), [id])).rows;
   return { market, products };
 }
 export async function inputDetail(
