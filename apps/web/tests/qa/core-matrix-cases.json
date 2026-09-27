@@ -1,0 +1,1245 @@
+[
+  {
+    "name": "DANE Tomato monthly exact price and full history",
+    "route": "/product/tomate-chonto?region=&series=monthly&presentation=Por+unidad+de+medida&units=1+kg&market=sipsa-bogota-d-c-corabastos&history=all",
+    "ready": "!!document.querySelector('.price-chart') && !document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,'')===\"3454\"",
+            "expected": "Current displayed COP price matches exact archived sample after whole-peso rounding",
+            "observed": "({price:document.querySelector('[data-testid=current-product-price]').innerText,header:document.querySelector('.product-price-header').innerText,filters:document.querySelector('.applied-filters')?.innerText})"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "new URLSearchParams(location.search).get('region')==='' && document.querySelector('select[aria-label=\"Tipo de precio\"]').value===\"monthly\"",
+            "expected": "Explicit source type and no-department deep link preserved"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "document.querySelectorAll('.price-chart circle').length===164",
+            "expected": "Graph contains every retained sample point",
+            "observed": "({count:document.querySelectorAll('.price-chart circle').length,label:document.querySelector('.price-chart').getAttribute('aria-label'),first:document.querySelector('.price-chart circle title')?.textContent})"
+          },
+          {
+            "id": "PRD-18",
+            "condition": "!document.body.innerText.includes('Calcular transporte') && !!document.querySelector('.detail-actions')",
+            "expected": "Removed generic transport calculator stays absent"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const a=Array.from(document.querySelectorAll('.chart-data tbody tr')).map(r=>Number(r.children[1].innerText.replace(/[^0-9]/g,'')));return a.length>50&&a.every((v,i)=>!i||a[i-1]>=v)})()",
+            "expected": "All visible table values are numeric descending",
+            "observed": "Array.from(document.querySelectorAll('.chart-data tbody tr')).slice(0,5).map(r=>r.innerText)"
+          },
+          {
+            "id": "PRD-15",
+            "condition": "Array.from(document.querySelectorAll('button,a')).some(e=>e.textContent.includes('Consultar fuente del precio actual'))",
+            "expected": "Current price source control exists for exact selected quote"
+          }
+        ],
+        "action": "document.querySelector('.chart-data').open=true;",
+        "ready": "document.querySelector(\".chart-data\").open"
+      }
+    ]
+  },
+  {
+    "name": "DANE Milk farmgate exact price and full history",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&market=finca-antioquia-abejorral&history=all",
+    "ready": "!!document.querySelector('.price-chart') && !document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,'')===\"2121\"",
+            "expected": "Current displayed COP price matches exact archived sample after whole-peso rounding",
+            "observed": "({price:document.querySelector('[data-testid=current-product-price]').innerText,header:document.querySelector('.product-price-header').innerText,filters:document.querySelector('.applied-filters')?.innerText})"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "new URLSearchParams(location.search).get('region')==='' && document.querySelector('select[aria-label=\"Tipo de precio\"]').value===\"farmgate\"",
+            "expected": "Explicit source type and no-department deep link preserved"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "document.querySelectorAll('.price-chart circle').length===93",
+            "expected": "Graph contains every retained sample point",
+            "observed": "({count:document.querySelectorAll('.price-chart circle').length,label:document.querySelector('.price-chart').getAttribute('aria-label'),first:document.querySelector('.price-chart circle title')?.textContent})"
+          },
+          {
+            "id": "PRD-18",
+            "condition": "!document.body.innerText.includes('Calcular transporte') && !!document.querySelector('.detail-actions')",
+            "expected": "Removed generic transport calculator stays absent"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "document.body.innerText.includes(\"1 litro\") && document.body.innerText.includes(\"Precio de leche cruda en finca, por litro.\")",
+            "expected": "Milk stays litre-based with explicit farmgate basis"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const a=Array.from(document.querySelectorAll('.chart-data tbody tr')).map(r=>Number(r.children[1].innerText.replace(/[^0-9]/g,'')));return a.length>50&&a.every((v,i)=>!i||a[i-1]>=v)})()",
+            "expected": "All visible table values are numeric descending",
+            "observed": "Array.from(document.querySelectorAll('.chart-data tbody tr')).slice(0,5).map(r=>r.innerText)"
+          },
+          {
+            "id": "PRD-15",
+            "condition": "Array.from(document.querySelectorAll('button,a')).some(e=>e.textContent.includes('Consultar fuente del precio actual'))",
+            "expected": "Current price source control exists for exact selected quote"
+          }
+        ],
+        "action": "document.querySelector('.chart-data').open=true;",
+        "ready": "document.querySelector(\".chart-data\").open"
+      }
+    ]
+  },
+  {
+    "name": "DANE Corrected date XLS",
+    "route": "/evidence/09bcafd697b554afe4bac3953bd5459140dcf356b95f70c42bf569beebac3043",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelectorAll('.workbook-scroll tbody tr').length>2 && !document.querySelector('.workbook-scroll input,.workbook-scroll [contenteditable=true]')",
+            "expected": "Original workbook renders real cells in a read-only grid",
+            "observed": "({title:document.querySelector('.evidence-heading').innerText,range:document.querySelector('.workbook-range')?.innerText,rows:document.querySelectorAll('.workbook-scroll tbody tr').length,first:Array.from(document.querySelectorAll('.workbook-scroll tbody tr')).slice(0,8).map(r=>r.innerText)})"
+          },
+          {
+            "id": "EVI-13",
+            "condition": "document.querySelector('.evidence-actions a[download]').getAttribute('href')==='/api/evidence/09bcafd697b554afe4bac3953bd5459140dcf356b95f70c42bf569beebac3043/content'",
+            "expected": "Download targets the exact retained source original"
+          },
+          {
+            "id": "EVI-15",
+            "condition": "document.querySelector('.evidence-heading .inline-note')?.innerText.includes('2014-02-11') && !!document.querySelector('.evidence-heading .inline-note a[href]')",
+            "expected": "Review/date metadata is visible with original workbook",
+            "observed": "Array.from(document.querySelectorAll('.evidence-heading .inline-note')).map(e=>e.innerText)"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Long source filename and review text fit viewport",
+            "observed": "({viewport:innerWidth,width:document.documentElement.scrollWidth})"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE Milk reviewed XLS",
+    "route": "/evidence/bc9e16af972eac40d3cb876c494d38581f61927e52b8a18f645e5ee5c0447c69",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelectorAll('.workbook-scroll tbody tr').length>2 && !document.querySelector('.workbook-scroll input,.workbook-scroll [contenteditable=true]')",
+            "expected": "Original workbook renders real cells in a read-only grid",
+            "observed": "({title:document.querySelector('.evidence-heading').innerText,range:document.querySelector('.workbook-range')?.innerText,rows:document.querySelectorAll('.workbook-scroll tbody tr').length,first:Array.from(document.querySelectorAll('.workbook-scroll tbody tr')).slice(0,8).map(r=>r.innerText)})"
+          },
+          {
+            "id": "EVI-13",
+            "condition": "document.querySelector('.evidence-actions a[download]').getAttribute('href')==='/api/evidence/bc9e16af972eac40d3cb876c494d38581f61927e52b8a18f645e5ee5c0447c69/content'",
+            "expected": "Download targets the exact retained source original"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector('.evidence-heading').innerText.includes('2020-11-30') && document.querySelector('.evidence-heading .inline-note')?.innerText.includes('2020-12-31')",
+            "expected": "Review/date metadata is visible with original workbook",
+            "observed": "Array.from(document.querySelectorAll('.evidence-heading .inline-note')).map(e=>e.innerText)"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Long source filename and review text fit viewport",
+            "observed": "({viewport:innerWidth,width:document.documentElement.scrollWidth})"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE Missing market review workbook",
+    "route": "/evidence/3dcd94a82ca334bf3600170f4e9ffb97b8df8daa719ac078ec09dd6faec89554",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelectorAll('.workbook-scroll tbody tr').length>2 && !document.querySelector('.workbook-scroll input,.workbook-scroll [contenteditable=true]')",
+            "expected": "Original workbook renders real cells in a read-only grid",
+            "observed": "({title:document.querySelector('.evidence-heading').innerText,range:document.querySelector('.workbook-range')?.innerText,rows:document.querySelectorAll('.workbook-scroll tbody tr').length,first:Array.from(document.querySelectorAll('.workbook-scroll tbody tr')).slice(0,8).map(r=>r.innerText)})"
+          },
+          {
+            "id": "EVI-13",
+            "condition": "document.querySelector('.evidence-actions a[download]').getAttribute('href')==='/api/evidence/3dcd94a82ca334bf3600170f4e9ffb97b8df8daa719ac078ec09dd6faec89554/content'",
+            "expected": "Download targets the exact retained source original"
+          },
+          {
+            "id": "EVI-17",
+            "condition": "document.querySelectorAll('.evidence-heading .inline-note').length>0",
+            "expected": "Review/date metadata is visible with original workbook",
+            "observed": "Array.from(document.querySelectorAll('.evidence-heading .inline-note')).map(e=>e.innerText)"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Long source filename and review text fit viewport",
+            "observed": "({viewport:innerWidth,width:document.documentElement.scrollWidth})"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE Milk valid historical PDF",
+    "route": "/evidence/f9787aa7e94848bd7dc0c69d12511919cc49c4751898f14acbdf4fab3416874e",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-03",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]') && document.querySelector('.evidence-heading').innerText.includes('2021-09-30')",
+            "expected": "Historical milk PDF renders with September2021 observation date",
+            "observed": "document.querySelector('.evidence-heading').innerText"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE Official historical JSON original",
+    "route": "/evidence/396dc7d5fbfb55b84b5b35ac2a56e30cb186477c19e0ef75fd7cf02826c251be",
+    "ready": "!!document.querySelector('.evidence-records dl')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-11",
+            "condition": "document.body.innerText.includes(\"Datos de esta consulta\") && document.body.innerText.includes(\"Carne de cerdo, brazo con hueso\")",
+            "expected": "Historical JSON shows actual parsed record title"
+          },
+          {
+            "id": "EVI-13",
+            "condition": "document.querySelector('.evidence-actions a[download]').getAttribute('href')==='/api/evidence/396dc7d5fbfb55b84b5b35ac2a56e30cb186477c19e0ef75fd7cf02826c251be/content'",
+            "expected": "JSON download is retained original"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "EVI-11",
+            "condition": "document.body.innerText.includes(\"8.500\") && document.body.innerText.includes(\"COP\") && document.body.innerText.includes(\"kg\") && document.body.innerText.includes(\"2013-04-18\")",
+            "expected": "Source JSON record includes exact published price/currency/unit/date",
+            "observed": "document.querySelector('.evidence-records details').innerText"
+          }
+        ],
+        "action": "document.querySelector('.evidence-records details').open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE City PDF original and controls",
+    "route": "/evidence/6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const c=document.querySelector('canvas[data-rendered=true]');return c.width>100&&c.height>100})()",
+            "expected": "PDF has completed a nonzero canvas render",
+            "observed": "({canvas:Array.from(document.querySelectorAll('canvas')).map(c=>({width:c.width,height:c.height,rendered:c.dataset.rendered})),text:document.querySelector('.pdf-viewer')?.innerText})"
+          },
+          {
+            "id": "EVI-04",
+            "condition": "!!document.querySelector('select[aria-label=\"Página del documento\"]') && !!document.querySelector('select[aria-label=\"Tamaño del documento\"]')",
+            "expected": "Page and zoom controls are available"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!document.querySelector('.evidence-heading').innerText.includes('Serie histórica completa')",
+            "expected": "Single-day city original must not claim full historical-series reference period",
+            "observed": "document.querySelector('.evidence-heading').innerText"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "EVI-04",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='2' && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Second/last page renders with selected page2"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"P\\u00e1gina del documento\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"2\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "!!document.querySelector('canvas[data-rendered=true][aria-label=\"Página 2 del PDF\"]')"
+      }
+    ]
+  },
+  {
+    "name": "DANE Regional package source fields",
+    "route": "/regional?q=Mora%20de%20castilla",
+    "ready": "document.querySelectorAll('.input-card').length>0",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CTY-01",
+            "condition": "document.body.innerText.includes(\"Mora de castilla\") && document.body.innerText.includes(\"Por presentación completa\")",
+            "expected": "City packages remain literal ranges"
+          },
+          {
+            "id": "CTY-03",
+            "condition": "document.body.innerText.includes(\"equivalente calculado\")",
+            "expected": "Per-unit values are distinguished as calculated"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "CTY-02",
+            "condition": "document.body.innerText.includes(\"22.000\") && document.body.innerText.includes(\"23.000\") && document.body.innerText.includes(\"78.000\") && document.body.innerText.includes(\"80.000\")",
+            "expected": "Barranquillita original min/max values preserved for both packages",
+            "observed": "Array.from(document.querySelectorAll('.input-card')).map(e=>e.innerText)"
+          },
+          {
+            "id": "CTY-01",
+            "condition": "document.body.innerText.includes(\"Ronda 1\") && document.body.innerText.includes(\"2.5 Kilogramo\") && document.body.innerText.includes(\"12.5 Kilogramo\")",
+            "expected": "Round plus exact quantities visible"
+          },
+          {
+            "id": "CTY-06",
+            "condition": "Array.from(document.querySelectorAll('.input-card h2 a')).every(a=>new URL(a.href).searchParams.get('market')==='sipsa-barranquilla-barranquillita'&&new URL(a.href).searchParams.get('series')==='city')",
+            "expected": "Regional detail links preserve city market/source/package"
+          }
+        ],
+        "action": "const e=document.querySelector('select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,'Barranquilla, Barranquillillita'.replace('illill','ill'));e.value='Barranquilla, Barranquillita';e.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "document.querySelectorAll('.input-card').length===2"
+      }
+    ]
+  },
+  {
+    "name": "DANE Daily bulletin rendered fields",
+    "route": "/daily",
+    "ready": "document.querySelectorAll('.input-card').length>0",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "DLY-01",
+            "condition": "document.querySelector('.page-heading').innerText.includes('25 de septiembre de 2026') && document.querySelectorAll('.input-card').length===431",
+            "expected": "Latest daily report date and431published quotes equal actual workbook",
+            "observed": "({header:document.querySelector('.page-heading').innerText,count:document.querySelectorAll('.input-card').length,sourceSHA:'5fc9d3a1d7814c9393b8e8d719b7f338a528586b019d4cdb7374f60922c84a70'})"
+          },
+          {
+            "id": "DLY-02",
+            "condition": "(()=>{const cards=[...document.querySelectorAll('.input-card')];return __dailyOriginal.every(r=>{const e=cards.find(c=>c.querySelector('h2').innerText===r.product_name&&c.querySelector('.eyebrow').innerText===r.market_name);return e&&Number(e.querySelector('.input-price').innerText.replace(/[^0-9]/g,''))===r.price&&e.querySelector('.input-price small').innerText==='/ kg'})})()",
+            "expected": "All431exact product/market price/unit cells match independent original workbook grid"
+          },
+          {
+            "id": "DLY-03",
+            "condition": "(()=>{const cards=[...document.querySelectorAll('.input-card')],f=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return __dailyOriginal.every(r=>{const e=cards.find(c=>c.querySelector('h2').innerText===r.product_name&&c.querySelector('.eyebrow').innerText===r.market_name);return e?.querySelector('p').innerText.includes(r.change_percent===null?'Sin variación reportada':(r.change_percent>0?'+':'')+f(r.change_percent)+' %')})})()",
+            "expected": "All positive/negative/zero/missing variations preserve workbook percent basis"
+          },
+          {
+            "id": "DLY-04",
+            "condition": "document.body.innerText.includes(\"No se combina este boletín con la serie mensual de una variedad específica\")",
+            "expected": "Daily predominant variety caveat explicit"
+          }
+        ],
+        "action": "window.__dailyOriginal=[{\"product_name\": \"Ahuyama\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2338, \"change_percent\": -2.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1900, \"change_percent\": 0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 1567, \"change_percent\": -2.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 1742, \"change_percent\": 2.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Ibagué, La 21\", \"price\": 2000, \"change_percent\": 11.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Medellín, CMA\", \"price\": 1075, \"change_percent\": -4.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 1325, \"change_percent\": 4.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Pereira, Mercasa\", \"price\": 1700, \"change_percent\": 11.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Popayán\", \"price\": 1705, \"change_percent\": 1.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 1350, \"change_percent\": 0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Tunja\", \"price\": 1250, \"change_percent\": 1.0}, {\"product_name\": \"Ahuyama\", \"market_name\": \"Valledupar\", \"price\": 1342, \"change_percent\": -1.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Barranquilla\", \"price\": 9483, \"change_percent\": -5.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 6200, \"change_percent\": -1.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 6500, \"change_percent\": -3.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 9000, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Ibagué, La 21\", \"price\": 6000, \"change_percent\": -3.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Medellín, CMA\", \"price\": 5125, \"change_percent\": 0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Neiva, Surabastos\", \"price\": 6267, \"change_percent\": 0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Pereira, Mercasa\", \"price\": 6107, \"change_percent\": 1.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Popayán\", \"price\": 5650, \"change_percent\": -3.0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Tunja\", \"price\": 5500, \"change_percent\": 0}, {\"product_name\": \"Arveja verde en vaina\", \"market_name\": \"Villavicencio, CAV\", \"price\": 5900, \"change_percent\": -4.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Barranquilla\", \"price\": 2600, \"change_percent\": -3.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 1900, \"change_percent\": -1.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1967, \"change_percent\": 0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 2450, \"change_percent\": -1.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 2683, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Ibagué, La 21\", \"price\": 4070, \"change_percent\": 84.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Medellín, CMA\", \"price\": 2083, \"change_percent\": 1.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2350, \"change_percent\": -6.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2133, \"change_percent\": -2.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Popayán\", \"price\": 2370, \"change_percent\": -6.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Santa Marta\", \"price\": 2850, \"change_percent\": -1.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2475, \"change_percent\": 0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Tunja\", \"price\": 1575, \"change_percent\": 0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Valledupar\", \"price\": 2733, \"change_percent\": -5.0}, {\"product_name\": \"Cebolla cabezona blanca\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2175, \"change_percent\": -2.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2188, \"change_percent\": 1.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1797, \"change_percent\": 0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 1563, \"change_percent\": 0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Medellín, CMA\", \"price\": 2625, \"change_percent\": 25.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 1458, \"change_percent\": -3.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Neiva, Surabastos\", \"price\": 2444, \"change_percent\": -6.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2111, \"change_percent\": -1.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Popayán\", \"price\": 1800, \"change_percent\": -18.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 1450, \"change_percent\": 4.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Tunja\", \"price\": 1650, \"change_percent\": -6.0}, {\"product_name\": \"Cebolla junca\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2667, \"change_percent\": -2.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 3225, \"change_percent\": -2.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 1792, \"change_percent\": 2.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 1894, \"change_percent\": -9.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Ibagué, La 21\", \"price\": 3400, \"change_percent\": -15.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Medellín, CMA\", \"price\": 1938, \"change_percent\": 15.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 1250, \"change_percent\": 0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Neiva, Surabastos\", \"price\": 3040, \"change_percent\": 3.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Popayán\", \"price\": 2161, \"change_percent\": 1.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Santa Marta\", \"price\": 2500, \"change_percent\": 19.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 1400, \"change_percent\": 4.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Tunja\", \"price\": 2550, \"change_percent\": -6.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Valledupar\", \"price\": 2400, \"change_percent\": 6.0}, {\"product_name\": \"Chócolo mazorca\", \"market_name\": \"Villavicencio, CAV\", \"price\": 3800, \"change_percent\": -3.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Barranquilla\", \"price\": 9450, \"change_percent\": -5.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 5725, \"change_percent\": -3.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 5900, \"change_percent\": -1.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Ibagué, La 21\", \"price\": 5800, \"change_percent\": -9.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Medellín, CMA\", \"price\": 3563, \"change_percent\": -8.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 6250, \"change_percent\": -2.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Neiva, Surabastos\", \"price\": 6800, \"change_percent\": 2.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 7000, \"change_percent\": 0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Popayán\", \"price\": 6025, \"change_percent\": -2.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 5667, \"change_percent\": -16.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Tunja\", \"price\": 4500, \"change_percent\": -6.0}, {\"product_name\": \"Fríjol verde*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 5250, \"change_percent\": -3.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Barranquilla\", \"price\": 5458, \"change_percent\": -31.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 6667, \"change_percent\": -26.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 6688, \"change_percent\": -10.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 5792, \"change_percent\": -8.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Ibagué, La 21\", \"price\": 7300, \"change_percent\": 12.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Medellín, CMA\", \"price\": 1875, \"change_percent\": -11.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 4375, \"change_percent\": -10.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Neiva, Surabastos\", \"price\": 7067, \"change_percent\": -4.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4000, \"change_percent\": 0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Popayán\", \"price\": 4800, \"change_percent\": -18.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 4000, \"change_percent\": -24.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Tunja\", \"price\": 6080, \"change_percent\": 0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Valledupar\", \"price\": 8167, \"change_percent\": -2.0}, {\"product_name\": \"Habichuela\", \"market_name\": \"Villavicencio, CAV\", \"price\": 7458, \"change_percent\": 12.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Barranquilla\", \"price\": 2917, \"change_percent\": -2.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2063, \"change_percent\": -3.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1667, \"change_percent\": 3.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 2333, \"change_percent\": 0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 1667, \"change_percent\": -8.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Ibagué, La 21\", \"price\": 2420, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Medellín, CMA\", \"price\": 1164, \"change_percent\": -1.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2063, \"change_percent\": -1.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Neiva, Surabastos\", \"price\": 1960, \"change_percent\": -2.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2278, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Popayán\", \"price\": 1827, \"change_percent\": 17.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Santa Marta\", \"price\": 3042, \"change_percent\": 1.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2050, \"change_percent\": 0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Tunja\", \"price\": 1567, \"change_percent\": -17.0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Valledupar\", \"price\": 2917, \"change_percent\": 0}, {\"product_name\": \"Lechuga Batavia\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2700, \"change_percent\": 0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Barranquilla\", \"price\": 2663, \"change_percent\": -20.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 4188, \"change_percent\": -4.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 3133, \"change_percent\": -2.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 2867, \"change_percent\": -2.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Ibagué, La 21\", \"price\": 3800, \"change_percent\": 3.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Medellín, CMA\", \"price\": 2625, \"change_percent\": -9.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2400, \"change_percent\": -16.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Neiva, Surabastos\", \"price\": 3333, \"change_percent\": 0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Pereira, Mercasa\", \"price\": 3200, \"change_percent\": 1.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Popayán\", \"price\": 2346, \"change_percent\": 3.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Santa Marta\", \"price\": 3370, \"change_percent\": -4.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2100, \"change_percent\": -31.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Tunja\", \"price\": 2600, \"change_percent\": -16.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Valledupar\", \"price\": 3200, \"change_percent\": -2.0}, {\"product_name\": \"Pepino cohombro\", \"market_name\": \"Villavicencio, CAV\", \"price\": 3200, \"change_percent\": -2.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Barranquilla\", \"price\": 4167, \"change_percent\": -6.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 4563, \"change_percent\": -3.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 6000, \"change_percent\": -2.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 5125, \"change_percent\": -14.000000000000002}, {\"product_name\": \"Pimentón\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 5243, \"change_percent\": 5.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Ibagué, La 21\", \"price\": 4500, \"change_percent\": 16.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Medellín, CMA\", \"price\": 2625, \"change_percent\": -2.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 4375, \"change_percent\": 6.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Neiva, Surabastos\", \"price\": 3214, \"change_percent\": -4.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4500, \"change_percent\": 0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Popayán\", \"price\": 3179, \"change_percent\": -14.000000000000002}, {\"product_name\": \"Pimentón\", \"market_name\": \"Santa Marta\", \"price\": 4417, \"change_percent\": 1.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 4000, \"change_percent\": -17.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Tunja\", \"price\": 4339, \"change_percent\": 8.0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Valledupar\", \"price\": 5833, \"change_percent\": 0}, {\"product_name\": \"Pimentón\", \"market_name\": \"Villavicencio, CAV\", \"price\": 4271, \"change_percent\": -9.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Barranquilla\", \"price\": 1550, \"change_percent\": -2.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 1375, \"change_percent\": 10.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1091, \"change_percent\": 0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 1813, \"change_percent\": 2.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 1333, \"change_percent\": -6.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Ibagué, La 21\", \"price\": 2000, \"change_percent\": null}, {\"product_name\": \"Remolacha\", \"market_name\": \"Medellín, CMA\", \"price\": 1500, \"change_percent\": -5.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2175, \"change_percent\": -16.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Neiva, Surabastos\", \"price\": 1547, \"change_percent\": 0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Pereira, Mercasa\", \"price\": 1933, \"change_percent\": -6.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Santa Marta\", \"price\": 1458, \"change_percent\": -17.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2900, \"change_percent\": -3.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Tunja\", \"price\": 1025, \"change_percent\": -2.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Valledupar\", \"price\": 1778, \"change_percent\": 2.0}, {\"product_name\": \"Remolacha\", \"market_name\": \"Villavicencio, CAV\", \"price\": 1813, \"change_percent\": -5.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Barranquilla\", \"price\": 4413, \"change_percent\": -4.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 4233, \"change_percent\": 1.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 4015, \"change_percent\": 0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 4913, \"change_percent\": 14.000000000000002}, {\"product_name\": \"Tomate*\", \"market_name\": \"Ibagué, La 21\", \"price\": 3600, \"change_percent\": -10.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Medellín, CMA\", \"price\": 3650, \"change_percent\": 2.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 3900, \"change_percent\": 3.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Neiva, Surabastos\", \"price\": 3478, \"change_percent\": -2.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4500, \"change_percent\": 0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Popayán\", \"price\": 3025, \"change_percent\": -12.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 3700, \"change_percent\": -1.0}, {\"product_name\": \"Tomate*\", \"market_name\": \"Valledupar\", \"price\": 4483, \"change_percent\": 0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 1931, \"change_percent\": 2.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1367, \"change_percent\": 1.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 1771, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 1000, \"change_percent\": -17.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Ibagué, La 21\", \"price\": 1880, \"change_percent\": -6.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Medellín, CMA\", \"price\": 833, \"change_percent\": 0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 1528, \"change_percent\": 2.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Neiva, Surabastos\", \"price\": 2000, \"change_percent\": 2.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Santa Marta\", \"price\": 1292, \"change_percent\": -15.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 1531, \"change_percent\": -8.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Tunja\", \"price\": 1025, \"change_percent\": -2.0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Valledupar\", \"price\": 1389, \"change_percent\": 0}, {\"product_name\": \"Zanahoria\", \"market_name\": \"Villavicencio, CAV\", \"price\": 1438, \"change_percent\": -1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 10250, \"change_percent\": -1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 8667, \"change_percent\": -1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 10750, \"change_percent\": -2.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 7583, \"change_percent\": -5.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Ibagué, La 21\", \"price\": 8250, \"change_percent\": 3.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Medellín, CMA\", \"price\": 7525, \"change_percent\": -1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 8625, \"change_percent\": -1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Neiva, Surabastos\", \"price\": 8000, \"change_percent\": 4.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Pereira, Mercasa\", \"price\": 9333, \"change_percent\": 4.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Popayán\", \"price\": 8875, \"change_percent\": -1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 8750, \"change_percent\": 0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Tunja\", \"price\": 8500, \"change_percent\": 0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Valledupar\", \"price\": 9500, \"change_percent\": 1.0}, {\"product_name\": \"Aguacate *\", \"market_name\": \"Villavicencio, CAV\", \"price\": 11000, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Banano*\", \"market_name\": \"Barranquilla\", \"price\": 1500, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Banano*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2488, \"change_percent\": 5.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 2767, \"change_percent\": 1.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 2500, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Banano*\", \"market_name\": \"Ibagué, La 21\", \"price\": 1800, \"change_percent\": 10.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Medellín, CMA\", \"price\": 1375, \"change_percent\": 0}, {\"product_name\": \"Banano*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2475, \"change_percent\": 0}, {\"product_name\": \"Banano*\", \"market_name\": \"Neiva, Surabastos\", \"price\": 1533, \"change_percent\": 0}, {\"product_name\": \"Banano*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 1733, \"change_percent\": 6.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Popayán\", \"price\": 1800, \"change_percent\": -3.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Santa Marta\", \"price\": 1412, \"change_percent\": 2.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2400, \"change_percent\": 0}, {\"product_name\": \"Banano*\", \"market_name\": \"Tunja\", \"price\": 1967, \"change_percent\": 10.0}, {\"product_name\": \"Banano*\", \"market_name\": \"Valledupar\", \"price\": 1250, \"change_percent\": 0}, {\"product_name\": \"Banano*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 1490, \"change_percent\": -2.0}, {\"product_name\": \"Coco\", \"market_name\": \"Barranquilla\", \"price\": 3467, \"change_percent\": 0}, {\"product_name\": \"Coco\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 5677, \"change_percent\": 0}, {\"product_name\": \"Coco\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 3605, \"change_percent\": 0}, {\"product_name\": \"Coco\", \"market_name\": \"Medellín, CMA\", \"price\": 6058, \"change_percent\": 0}, {\"product_name\": \"Coco\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 5067, \"change_percent\": 0}, {\"product_name\": \"Coco\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4511, \"change_percent\": -2.0}, {\"product_name\": \"Coco\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 5000, \"change_percent\": 0}, {\"product_name\": \"Coco\", \"market_name\": \"Valledupar\", \"price\": 6000, \"change_percent\": 0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 7375, \"change_percent\": 2.0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 8452, \"change_percent\": 0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 9524, \"change_percent\": -5.0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Ibagué, La 21\", \"price\": 5500, \"change_percent\": null}, {\"product_name\": \"Granadilla\", \"market_name\": \"Medellín, CMA\", \"price\": 4519, \"change_percent\": -2.0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Neiva, Surabastos\", \"price\": 5667, \"change_percent\": 2.0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Popayán\", \"price\": 6600, \"change_percent\": -2.0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Tunja\", \"price\": 6217, \"change_percent\": -1.0}, {\"product_name\": \"Granadilla\", \"market_name\": \"Villavicencio, CAV\", \"price\": 7833, \"change_percent\": 1.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Barranquilla\", \"price\": 3917, \"change_percent\": -3.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 4107, \"change_percent\": 0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1600, \"change_percent\": 0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 3950, \"change_percent\": 1.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 3277, \"change_percent\": -4.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Medellín, CMA\", \"price\": 3500, \"change_percent\": -5.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Neiva, Surabastos\", \"price\": 3167, \"change_percent\": 6.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2667, \"change_percent\": 10.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Popayán\", \"price\": 3050, \"change_percent\": 0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Tunja\", \"price\": 2648, \"change_percent\": -3.0}, {\"product_name\": \"Guayaba*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2760, \"change_percent\": 2.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2655, \"change_percent\": -4.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 4000, \"change_percent\": -6.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 6500, \"change_percent\": -4.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Ibagué, La 21\", \"price\": 2536, \"change_percent\": null}, {\"product_name\": \"Limón común\", \"market_name\": \"Medellín, CMA\", \"price\": 3357, \"change_percent\": 0}, {\"product_name\": \"Limón común\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 3857, \"change_percent\": -1.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Neiva, Surabastos\", \"price\": 3813, \"change_percent\": -1.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Pereira, Mercasa\", \"price\": 5000, \"change_percent\": 0}, {\"product_name\": \"Limón común\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 3857, \"change_percent\": -10.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Valledupar\", \"price\": 4621, \"change_percent\": 2.0}, {\"product_name\": \"Limón común\", \"market_name\": \"Villavicencio, CAV\", \"price\": 5000, \"change_percent\": 0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Barranquilla\", \"price\": 4139, \"change_percent\": 10.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2786, \"change_percent\": -8.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 2900, \"change_percent\": 0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 4193, \"change_percent\": 3.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 3333, \"change_percent\": -4.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Ibagué, La 21\", \"price\": 3190, \"change_percent\": -1.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Medellín, CMA\", \"price\": 3875, \"change_percent\": 3.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Neiva, Surabastos\", \"price\": 4320, \"change_percent\": -2.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Pereira, Mercasa\", \"price\": 3500, \"change_percent\": 13.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Tunja\", \"price\": 3580, \"change_percent\": 5.0}, {\"product_name\": \"Limón Tahití\", \"market_name\": \"Villavicencio, CAV\", \"price\": 3250, \"change_percent\": -2.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Barranquilla\", \"price\": 6967, \"change_percent\": -1.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 5375, \"change_percent\": 5.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 5533, \"change_percent\": 0}, {\"product_name\": \"Lulo\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 7000, \"change_percent\": 0}, {\"product_name\": \"Lulo\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 6792, \"change_percent\": 1.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Ibagué, La 21\", \"price\": 5650, \"change_percent\": 1.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Medellín, CMA\", \"price\": 4950, \"change_percent\": 1.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 6167, \"change_percent\": 0}, {\"product_name\": \"Lulo\", \"market_name\": \"Neiva, Surabastos\", \"price\": 4933, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Lulo\", \"market_name\": \"Pereira, Mercasa\", \"price\": 5333, \"change_percent\": -9.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Popayán\", \"price\": 5030, \"change_percent\": 1.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 5750, \"change_percent\": 0}, {\"product_name\": \"Lulo\", \"market_name\": \"Tunja\", \"price\": 4533, \"change_percent\": -4.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Valledupar\", \"price\": 6000, \"change_percent\": 1.0}, {\"product_name\": \"Lulo\", \"market_name\": \"Villavicencio, CAV\", \"price\": 5300, \"change_percent\": 0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 4773, \"change_percent\": -1.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 3696, \"change_percent\": 3.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 5606, \"change_percent\": -3.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 4800, \"change_percent\": -3.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Medellín, CMA\", \"price\": 3125, \"change_percent\": 9.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2467, \"change_percent\": 0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2667, \"change_percent\": 0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Popayán\", \"price\": 3880, \"change_percent\": -3.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Tunja\", \"price\": 3273, \"change_percent\": -9.0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Valledupar\", \"price\": 4600, \"change_percent\": 0}, {\"product_name\": \"Mandarina*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 3750, \"change_percent\": 1.0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Barranquilla\", \"price\": 7707, \"change_percent\": -3.0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 9583, \"change_percent\": 0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 8267, \"change_percent\": -4.0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Medellín, CMA\", \"price\": 8875, \"change_percent\": 9.0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Neiva, Surabastos\", \"price\": 7100, \"change_percent\": 1.0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Pereira, Mercasa\", \"price\": 8933, \"change_percent\": 0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Popayán\", \"price\": 7050, \"change_percent\": -2.0}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Tunja\", \"price\": 6786, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Mango Tommy\", \"market_name\": \"Villavicencio, CAV\", \"price\": 9300, \"change_percent\": -1.0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 8158, \"change_percent\": -1.0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 7917, \"change_percent\": 1.0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 8167, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Ibagué, La 21\", \"price\": 7829, \"change_percent\": -7.000000000000001}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Medellín, CMA\", \"price\": 7632, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 8289, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Neiva, Surabastos\", \"price\": 8974, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Pereira, Mercasa\", \"price\": 7544, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Popayán\", \"price\": 7500, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Tunja\", \"price\": 8421, \"change_percent\": 2.0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Valledupar\", \"price\": 8125, \"change_percent\": 0}, {\"product_name\": \"Manzana royal gala\", \"market_name\": \"Villavicencio, CAV\", \"price\": 8553, \"change_percent\": 2.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 6292, \"change_percent\": 2.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 5833, \"change_percent\": -3.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 6208, \"change_percent\": -4.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Ibagué, La 21\", \"price\": 4880, \"change_percent\": 2.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Medellín, CMA\", \"price\": 4325, \"change_percent\": -2.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Pereira, Mercasa\", \"price\": 5150, \"change_percent\": -5.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Popayán\", \"price\": 6650, \"change_percent\": -1.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Tunja\", \"price\": 5375, \"change_percent\": 2.0}, {\"product_name\": \"Maracuyá\", \"market_name\": \"Villavicencio, CAV\", \"price\": 5950, \"change_percent\": 6.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Barranquilla\", \"price\": 7693, \"change_percent\": -2.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 6188, \"change_percent\": -2.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 5467, \"change_percent\": -4.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 6820, \"change_percent\": 0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 4931, \"change_percent\": -9.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Ibagué, La 21\", \"price\": 7050, \"change_percent\": -4.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Medellín, CMA\", \"price\": 5500, \"change_percent\": 0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 6350, \"change_percent\": -6.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Neiva, Surabastos\", \"price\": 5200, \"change_percent\": 4.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Pereira, Mercasa\", \"price\": 7000, \"change_percent\": 5.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Popayán\", \"price\": 6560, \"change_percent\": 2.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Santa Marta\", \"price\": 5880, \"change_percent\": -4.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 6688, \"change_percent\": -6.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Tunja\", \"price\": 6000, \"change_percent\": 4.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Valledupar\", \"price\": 6700, \"change_percent\": 4.0}, {\"product_name\": \"Mora de Castilla\", \"market_name\": \"Villavicencio, CAV\", \"price\": 8000, \"change_percent\": 0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Barranquilla\", \"price\": 2600, \"change_percent\": 0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2894, \"change_percent\": 0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 1900, \"change_percent\": 3.0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 1667, \"change_percent\": -4.0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 2236, \"change_percent\": -4.0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Medellín, CMA\", \"price\": 3350, \"change_percent\": 0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2781, \"change_percent\": -2.0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2267, \"change_percent\": -14.000000000000002}, {\"product_name\": \"Naranja*\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2500, \"change_percent\": 0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Tunja\", \"price\": 1925, \"change_percent\": -1.0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Valledupar\", \"price\": 2795, \"change_percent\": -1.0}, {\"product_name\": \"Naranja*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 1980, \"change_percent\": 0}, {\"product_name\": \"Papaya Maradol\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 3292, \"change_percent\": 10.0}, {\"product_name\": \"Papaya Maradol\", \"market_name\": \"Medellín, CMA\", \"price\": 3425, \"change_percent\": -2.0}, {\"product_name\": \"Papaya Maradol\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2167, \"change_percent\": -4.0}, {\"product_name\": \"Papaya Maradol\", \"market_name\": \"Popayán\", \"price\": 2475, \"change_percent\": -2.0}, {\"product_name\": \"Piña *\", \"market_name\": \"Barranquilla\", \"price\": 3660, \"change_percent\": -1.0}, {\"product_name\": \"Piña *\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2813, \"change_percent\": null}, {\"product_name\": \"Piña *\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 2500, \"change_percent\": 0}, {\"product_name\": \"Piña *\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 3133, \"change_percent\": -2.0}, {\"product_name\": \"Piña *\", \"market_name\": \"Ibagué, La 21\", \"price\": 4200, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Piña *\", \"market_name\": \"Medellín, CMA\", \"price\": 4350, \"change_percent\": -1.0}, {\"product_name\": \"Piña *\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4225, \"change_percent\": -3.0}, {\"product_name\": \"Piña *\", \"market_name\": \"Popayán\", \"price\": 3775, \"change_percent\": 1.0}, {\"product_name\": \"Piña *\", \"market_name\": \"Valledupar\", \"price\": 3500, \"change_percent\": 1.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Barranquilla\", \"price\": 4900, \"change_percent\": -1.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 4400, \"change_percent\": 2.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 4800, \"change_percent\": 0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 5400, \"change_percent\": 0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 4933, \"change_percent\": 0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Ibagué, La 21\", \"price\": 4050, \"change_percent\": 1.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Medellín, CMA\", \"price\": 4125, \"change_percent\": 0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 4750, \"change_percent\": 4.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Neiva, Surabastos\", \"price\": 4533, \"change_percent\": 3.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4500, \"change_percent\": -5.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Popayán\", \"price\": 2820, \"change_percent\": 2.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 4500, \"change_percent\": 1.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Tunja\", \"price\": 4100, \"change_percent\": 1.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Valledupar\", \"price\": 4933, \"change_percent\": -1.0}, {\"product_name\": \"Tomate de árbol\", \"market_name\": \"Villavicencio, CAV\", \"price\": 4850, \"change_percent\": -2.0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 3208, \"change_percent\": 1.0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 3900, \"change_percent\": -1.0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 2867, \"change_percent\": -14.000000000000002}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Ibagué, La 21\", \"price\": 3200, \"change_percent\": 0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Medellín, CMA\", \"price\": 3625, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Neiva, Surabastos\", \"price\": 4480, \"change_percent\": 4.0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 4583, \"change_percent\": 4.0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Tunja\", \"price\": 3417, \"change_percent\": 1.0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Valledupar\", \"price\": 5200, \"change_percent\": 0}, {\"product_name\": \"Arracacha*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 4050, \"change_percent\": -9.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Barranquilla\", \"price\": 2393, \"change_percent\": -3.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2500, \"change_percent\": -1.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 2350, \"change_percent\": -2.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 2365, \"change_percent\": 1.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Medellín, CMA\", \"price\": 2525, \"change_percent\": -9.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2950, \"change_percent\": -2.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 2133, \"change_percent\": -4.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Popayán\", \"price\": 2375, \"change_percent\": -2.0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 3000, \"change_percent\": 0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Valledupar\", \"price\": 2283, \"change_percent\": 0}, {\"product_name\": \"Papa negra*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2525, \"change_percent\": -1.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 6889, \"change_percent\": 0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 3900, \"change_percent\": -1.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 6675, \"change_percent\": -1.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 4000, \"change_percent\": -4.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Ibagué, La 21\", \"price\": 5775, \"change_percent\": 0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Medellín, CMA\", \"price\": 4250, \"change_percent\": 1.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 6875, \"change_percent\": -2.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Pereira, Mercasa\", \"price\": 5800, \"change_percent\": -8.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Popayán\", \"price\": 3021, \"change_percent\": -24.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 6750, \"change_percent\": -1.0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Tunja\", \"price\": 4267, \"change_percent\": 0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Valledupar\", \"price\": 5600, \"change_percent\": 0}, {\"product_name\": \"Papa criolla\", \"market_name\": \"Villavicencio, CAV\", \"price\": 4850, \"change_percent\": 8.0}, {\"product_name\": \"Plátano guineo\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2500, \"change_percent\": 8.0}, {\"product_name\": \"Plátano guineo\", \"market_name\": \"Medellín, CMA\", \"price\": 1100, \"change_percent\": -17.0}, {\"product_name\": \"Plátano guineo\", \"market_name\": \"Neiva, Surabastos\", \"price\": 1500, \"change_percent\": 0}, {\"product_name\": \"Plátano guineo\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2667, \"change_percent\": 0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Barranquilla\", \"price\": 2700, \"change_percent\": 13.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 3344, \"change_percent\": -12.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 4300, \"change_percent\": 2.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 2625, \"change_percent\": -13.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 3683, \"change_percent\": 1.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Ibagué, La 21\", \"price\": 1706, \"change_percent\": -12.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Medellín, CMA\", \"price\": 1625, \"change_percent\": 0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2219, \"change_percent\": -1.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Neiva, Surabastos\", \"price\": 2067, \"change_percent\": 0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Pereira, Mercasa\", \"price\": 1367, \"change_percent\": 5.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Popayán\", \"price\": 1940, \"change_percent\": 8.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Santa Marta\", \"price\": 2425, \"change_percent\": null}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2232, \"change_percent\": 0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Tunja\", \"price\": 3750, \"change_percent\": 1.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Valledupar\", \"price\": 3300, \"change_percent\": -1.0}, {\"product_name\": \"Plátano hartón verde\", \"market_name\": \"Villavicencio, CAV\", \"price\": 3900, \"change_percent\": -1.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Barranquilla\", \"price\": 2696, \"change_percent\": 0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Bogotá, Corabastos\", \"price\": 2500, \"change_percent\": 13.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Bucaramanga, Centroabastos\", \"price\": 3065, \"change_percent\": 1.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Cartagena, Bazurto\", \"price\": 3000, \"change_percent\": 7.000000000000001}, {\"product_name\": \"Yuca*\", \"market_name\": \"Cúcuta, Cenabastos\", \"price\": 2667, \"change_percent\": -5.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Medellín, CMA\", \"price\": 2650, \"change_percent\": 4.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Montería, Mercado del Sur\", \"price\": 2469, \"change_percent\": 5.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Pereira, Mercasa\", \"price\": 1800, \"change_percent\": -5.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Sincelejo, Nuevo Mercado\", \"price\": 2500, \"change_percent\": -1.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Valledupar\", \"price\": 2438, \"change_percent\": -1.0}, {\"product_name\": \"Yuca*\", \"market_name\": \"Villavicencio, CAV\", \"price\": 2083, \"change_percent\": -4.0}];"
+      },
+      {
+        "checks": [
+          {
+            "id": "DLY-04",
+            "condition": "document.querySelectorAll('.input-card').length===0 && document.body.innerText.includes('No hay referencias para esta búsqueda')",
+            "expected": "No-match query yields honest empty state without0price"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Buscar producto en el bolet\\u00edn\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"qa-no-such-product\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('.input-card').length===0"
+      }
+    ]
+  },
+  {
+    "name": "DANE Market prices expand exact-link basis",
+    "route": "/market/sipsa-barranquilla-barranquillita",
+    "ready": "document.querySelector('.entity-hero') && document.querySelectorAll('article a[href^=\"/product/\"]').length>0",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "MKT-03",
+            "condition": "document.querySelector('.entity-hero h1').textContent==='Barranquilla, Barranquillita'",
+            "expected": "Selected market detail has correct identity"
+          },
+          {
+            "id": "MKT-05",
+            "condition": "Array.from(document.querySelectorAll('article a[href^=\"/product/\"]')).every(a=>{const p=new URL(a.href).searchParams;return p.get('market')==='sipsa-barranquilla-barranquillita'&&!!p.get('presentation')&&!!p.get('units')&&!!p.get('series')})",
+            "expected": "Every visible market-product href retains exact market/series/package/unit"
+          },
+          {
+            "id": "MKT-08",
+            "condition": "Array.from(document.querySelectorAll('a[href^=\"/compare/markets?\"]')).some(a=>new URL(a.href).searchParams.get('a')==='sipsa-barranquilla-barranquillita')",
+            "expected": "Comparison A is selected market"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "MKT-04",
+            "condition": "document.querySelectorAll('article a[href^=\"/product/\"]').length>12",
+            "expected": "Additional price rows can expand beyond initial12",
+            "observed": "({shown:document.querySelectorAll('article a[href^=\"/product/\"]').length,text:document.body.innerText.slice(-1500)})"
+          }
+        ],
+        "action": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Expandir lista completa')).click();",
+        "ready": "document.querySelectorAll('article a[href^=\"/product/\"]').length>12"
+      }
+    ]
+  },
+  {
+    "name": "DANE City filtered map popup and close",
+    "route": "/product/limon-tahiti?series=city&market=sipsa-barranquilla-barranquillita&presentation=Bulto&units=24+Kilogramo&region=&history=all",
+    "ready": "!!document.querySelector('[data-testid=current-product-price]') && !!document.querySelector('.price-chart')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "MAP-01",
+            "condition": "document.querySelector('select[aria-label=\"Tipo de precio en mapa\"]').value==='city' && document.querySelector('select[aria-label=\"Unidades en mapa\"]').value==='24 Kilogramo'",
+            "expected": "Map preserves city package24kg filters"
+          },
+          {
+            "id": "MAP-01",
+            "condition": "!!document.querySelector('dialog[open] .applied-filters')",
+            "expected": "Applied map filters remain visible",
+            "observed": "document.querySelector('dialog[open] .applied-filters').innerText"
+          }
+        ],
+        "action": "Array.from(document.querySelectorAll('button')).find(e=>e.textContent.includes(\"Ver mapa\")).click();",
+        "ready": "document.querySelector('.colombia-map')?.dataset.ready==='true' && !!document.querySelector('select[aria-label=\"Tipo de precio en mapa\"]')"
+      },
+      {
+        "checks": [
+          {
+            "id": "MAP-02",
+            "condition": "!!document.querySelector('.maplibregl-popup-content') && document.querySelector('.maplibregl-popup-content').textContent.includes('99.000')",
+            "expected": "Actual city package COP99000 appears in map popup",
+            "observed": "document.querySelector('.maplibregl-popup-content')?.innerText"
+          }
+        ],
+        "action": "const e=document.querySelector('.map-summary select');const o=[...e.options].find(x=>/atlántico/i.test(x.textContent));if(!o)throw Error('Atlántico unavailable');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,o.value);e.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "!!document.querySelector('.maplibregl-popup-content')"
+      },
+      {
+        "checks": [
+          {
+            "id": "EVI-23",
+            "condition": "!document.querySelector('dialog[open]') && document.body.style.overflow!=='hidden'",
+            "expected": "Closing overlay restores body interaction"
+          }
+        ],
+        "action": "document.querySelector('[aria-label=\"Cerrar ventana\"]').click();",
+        "ready": "!document.querySelector('dialog[open]')"
+      }
+    ]
+  },
+  {
+    "name": "DANE Supply retained month 2019-01-01",
+    "route": "/market/sipsa-armenia-mercar",
+    "ready": "!!document.querySelector('.entity-hero')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "(()=>{const dates=[...document.querySelector('.supply-filter-grid select').options].map(o=>o.value);return dates.filter(x=>x.startsWith('2019-')).length===12&&dates.filter(x=>x.startsWith('2020-')).length===12&&dates.every((x,i)=>!i||dates[i-1]>x)})()",
+            "expected": "All12months in2019 and2020 accessible; month options newest first",
+            "observed": "[...document.querySelector('.supply-filter-grid select').options].map(o=>o.value)"
+          }
+        ],
+        "action": "[...document.querySelectorAll('[role=tab]')].find(e=>e.textContent.includes('Abastecimiento')).click();",
+        "ready": "!!document.querySelector('.supply-summary') && !!document.querySelector('.supply-filter-grid select') && !document.querySelector('.supply-filter-grid select').disabled"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-02",
+            "condition": "document.querySelector('.supply-summary h2').innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(8950.631))",
+            "expected": "Displayed tonne total equals exact source kg sum/1000",
+            "observed": "document.querySelector('.supply-summary').innerText"
+          },
+          {
+            "id": "SUP-04",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-01-01'",
+            "expected": "Selected historical month remains explicit"
+          },
+          {
+            "id": "SUP-01",
+            "condition": "document.body.innerText.includes('llegadas reportadas, no existencias disponibles ni ofertas de venta')",
+            "expected": "Arrivals are explicitly distinct from stock/offers"
+          }
+        ],
+        "action": "const e=document.querySelector('.supply-filter-grid select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,'2019-01-01');e.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-01-01' && !document.querySelector('.supply-filter-grid select').disabled && !!document.querySelector('.supply-summary')"
+      }
+    ]
+  },
+  {
+    "name": "DANE Supply retained month 2020-01-01",
+    "route": "/market/sipsa-armenia-mercar",
+    "ready": "!!document.querySelector('.entity-hero')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "(()=>{const dates=[...document.querySelector('.supply-filter-grid select').options].map(o=>o.value);return dates.filter(x=>x.startsWith('2019-')).length===12&&dates.filter(x=>x.startsWith('2020-')).length===12&&dates.every((x,i)=>!i||dates[i-1]>x)})()",
+            "expected": "All12months in2019 and2020 accessible; month options newest first",
+            "observed": "[...document.querySelector('.supply-filter-grid select').options].map(o=>o.value)"
+          }
+        ],
+        "action": "[...document.querySelectorAll('[role=tab]')].find(e=>e.textContent.includes('Abastecimiento')).click();",
+        "ready": "!!document.querySelector('.supply-summary') && !!document.querySelector('.supply-filter-grid select') && !document.querySelector('.supply-filter-grid select').disabled"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-02",
+            "condition": "document.querySelector('.supply-summary h2').innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10508.613))",
+            "expected": "Displayed tonne total equals exact source kg sum/1000",
+            "observed": "document.querySelector('.supply-summary').innerText"
+          },
+          {
+            "id": "SUP-04",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-01-01'",
+            "expected": "Selected historical month remains explicit"
+          },
+          {
+            "id": "SUP-01",
+            "condition": "document.body.innerText.includes('llegadas reportadas, no existencias disponibles ni ofertas de venta')",
+            "expected": "Arrivals are explicitly distinct from stock/offers"
+          }
+        ],
+        "action": "const e=document.querySelector('.supply-filter-grid select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,'2020-01-01');e.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-01-01' && !document.querySelector('.supply-filter-grid select').disabled && !!document.querySelector('.supply-summary')"
+      }
+    ]
+  },
+  {
+    "name": "DANE Supply retained month 2026-08-01",
+    "route": "/market/sipsa-armenia-mercar",
+    "ready": "!!document.querySelector('.entity-hero')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "(()=>{const dates=[...document.querySelector('.supply-filter-grid select').options].map(o=>o.value);return dates.filter(x=>x.startsWith('2019-')).length===12&&dates.filter(x=>x.startsWith('2020-')).length===12&&dates.every((x,i)=>!i||dates[i-1]>x)})()",
+            "expected": "All12months in2019 and2020 accessible; month options newest first",
+            "observed": "[...document.querySelector('.supply-filter-grid select').options].map(o=>o.value)"
+          }
+        ],
+        "action": "[...document.querySelectorAll('[role=tab]')].find(e=>e.textContent.includes('Abastecimiento')).click();",
+        "ready": "!!document.querySelector('.supply-summary') && !!document.querySelector('.supply-filter-grid select') && !document.querySelector('.supply-filter-grid select').disabled"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-02",
+            "condition": "document.querySelector('.supply-summary h2').innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9639.741779999998))",
+            "expected": "Displayed tonne total equals exact source kg sum/1000",
+            "observed": "document.querySelector('.supply-summary').innerText"
+          },
+          {
+            "id": "SUP-04",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2026-08-01'",
+            "expected": "Selected historical month remains explicit"
+          },
+          {
+            "id": "SUP-01",
+            "condition": "document.body.innerText.includes('llegadas reportadas, no existencias disponibles ni ofertas de venta')",
+            "expected": "Arrivals are explicitly distinct from stock/offers"
+          }
+        ],
+        "action": "const e=document.querySelector('.supply-filter-grid select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,'2026-08-01');e.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2026-08-01' && !document.querySelector('.supply-filter-grid select').disabled && !!document.querySelector('.supply-summary')"
+      }
+    ]
+  },
+  {
+    "name": "DANE daily workbook literal native cells",
+    "route": "/evidence/5fc9d3a1d7814c9393b8e8d719b7f338a528586b019d4cdb7374f60922c84a70",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-06",
+            "condition": "document.body.innerText.includes(\"Viernes 25 de septiembre de 2026\") && document.body.innerText.includes(\"2.338\") && document.body.innerText.includes(\"Ahuyama\")",
+            "expected": "Original daily XLSX shows printed date and unrounded2338native cell"
+          },
+          {
+            "id": "EVI-07",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-scroll tbody tr')].find(e=>e.querySelector('th').textContent==='6'),c=r?.querySelectorAll('td');return c&&c[1].textContent==='n.d.'&&c[4].textContent.replace(/\\s/g,'')==='-2%'&&c[6].textContent.replace(/\\s/g,'')==='0%'&&c[10].textContent.replace(/\\s/g,'')==='2%'})()",
+            "expected": "Excel0% number formats display−2%,0%,2%, preserving n.d. asmissing",
+            "observed": "(()=>{const c=[...document.querySelectorAll('.workbook-scroll tbody tr')].find(e=>e.querySelector('th').textContent==='6').querySelectorAll('td');return {B6:c[1].innerText,D6:c[3].innerText,E6:c[4].innerText,G6:c[6].innerText,K6:c[10].innerText,source_number_format:'0%',source_values:[-0.02,0,0.02]}})()"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Core shell and credits metadata",
+    "route": "/credits",
+    "ready": "document.body.innerText.includes(\"Créditos de imágenes\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-04",
+            "condition": "Array.from(document.querySelectorAll('nav[aria-label=\"Navegación principal\"] a')).map(a=>({text:a.innerText,href:a.getAttribute('href')})).length===5",
+            "expected": "Five main desktop navigation destinations",
+            "observed": "Array.from(document.querySelectorAll('nav[aria-label=\"Navegación principal\"] a')).map(a=>({text:a.innerText,href:a.getAttribute('href')}))"
+          },
+          {
+            "id": "NAV-08",
+            "condition": "document.querySelectorAll('.credits-grid article').length>10 && Array.from(document.querySelectorAll('.credits-grid article')).every(a=>a.querySelector('img[alt]')&&a.querySelector('h2')&&a.querySelectorAll('a[href]').length===2)",
+            "expected": "Every credit has image/title, origin and license links",
+            "observed": "Array.from(document.querySelectorAll('.credits-grid article')).map(a=>({title:a.querySelector('h2').innerText,author:a.querySelector('p').innerText,links:Array.from(a.querySelectorAll('a')).map(x=>({text:x.innerText,href:x.href}))}))"
+          },
+          {
+            "id": "NAV-08",
+            "condition": "document.body.innerText.includes(\"Las variedades y los empaques comerciales pueden diferir\")",
+            "expected": "Images are illustrative, not exact variety evidence"
+          },
+          {
+            "id": "NAV-09",
+            "condition": "Array.from(document.querySelectorAll('.credits-grid a')).every(a=>a.target==='_blank'&&a.rel.includes('noreferrer'))",
+            "expected": "Credits link to source/license in a separate context"
+          },
+          {
+            "id": "NAV-08",
+            "condition": "(()=>{const expected=[{\"title\": \"Red Apple.jpg\", \"author\": \"Abhijit Tembhekar from Mumbai, India\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Red_Apple.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"Dish of blueberries.jpg\", \"author\": \"Petar Milošević\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Dish_of_blueberries.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Starr-150811-0583-Passiflora quadrangularis-fruit forming-Enchanting Floral Gardens of Kula-Maui (25269590186).jpg\", \"author\": \"Forest and Kim Starr\", \"license\": \"CC BY 3.0 us\", \"source\": \"https://commons.wikimedia.org/wiki/File:Starr-150811-0583-Passiflora_quadrangularis-fruit_forming-Enchanting_Floral_Gardens_of_Kula-Maui_(25269590186).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0/us/deed.en\"}, {\"title\": \"Borojó Fruto.jpg\", \"author\": \"Giovanny Garzon Pardo\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Boroj%C3%B3_Fruto.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Plums.jpg\", \"author\": \"Fir0002\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Plums.jpg\", \"licenseUrl\": \"http://creativecommons.org/licenses/by-sa/3.0/\"}, {\"title\": \"Coconuts - single and cracked open.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Coconuts_-_single_and_cracked_open.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Curuba.jpg\", \"author\": \"No machine-readable author provided. Fibonacci assumed (based on copyright claims).\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Curuba.jpg\", \"licenseUrl\": \"http://creativecommons.org/licenses/by-sa/3.0/\"}, {\"title\": \"Autumn Red peaches.jpg\", \"author\": \"Jack Dykinga, USDA\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Autumn_Red_peaches.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Autumn_Red_peaches.jpg\"}, {\"title\": \"Acca sellowiana Fruit MHNT Fronton.jpg\", \"author\": \"Didier Descouens\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Acca_sellowiana_Fruit_MHNT_Fronton.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Cut Fig 01.jpg\", \"author\": \"Jedesto\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Cut_Fig_01.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Still life with strawberries in a crystal bowl.jpg\", \"author\": \"W.carter\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Still_life_with_strawberries_in_a_crystal_bowl.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Sweet granadillas (Passiflora ligularis) - whole and cross section.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Sweet_granadillas_(Passiflora_ligularis)_-_whole_and_cross_section.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Soursop cutout.jpg\", \"author\": \"Zenyrgarden\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Soursop_cutout.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Goiaba vermelha.jpg\", \"author\": \"Rodrigo.Argenton\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Goiaba_vermelha.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Cut and uncut passion fruits.jpg\", \"author\": \"Nana Pearls\", \"license\": \"CC0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Cut_and_uncut_passion_fruits.jpg\", \"licenseUrl\": \"http://creativecommons.org/publicdomain/zero/1.0/deed.en\"}, {\"title\": \"A half cut kiwifruit in West Bengal, India.jpg\", \"author\": \"Billjones94\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:A_half_cut_kiwifruit_in_West_Bengal,_India.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Lime - whole and halved.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Lime_-_whole_and_halved.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Solanum quitoense unripe fruit flesh.jpg\", \"author\": \"Cozzycovers\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Solanum_quitoense_unripe_fruit_flesh.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Solanum_quitoense_unripe_fruit_flesh.jpg\"}, {\"title\": \"Mandarin Oranges (Citrus Reticulata).jpg\", \"author\": \"Joe Ravi\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Mandarin_Oranges_(Citrus_Reticulata).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"Mangos - single and halved.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Mangos_-_single_and_halved.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Oranges - whole-halved-segment.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Oranges_-_whole-halved-segment.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"03 Preparing papaya fruit - papaya peeled and cut in half.jpg\", \"author\": \"Marek Ślusarczyk ( Tupungato ) Photo portfolio\", \"license\": \"CC BY 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:03_Preparing_papaya_fruit_-_papaya_peeled_and_cut_in_half.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0\"}, {\"title\": \"Fresh & Juicy Watermelon.jpg\", \"author\": \"Anitah Pezz\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Fresh_%26_Juicy_Watermelon.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Four pears.jpg\", \"author\": \"Rhododendrites\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Four_pears.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"കൈതച്ചക്ക.jpg\", \"author\": \"Suniltg at Malayalam Wikipedia\", \"license\": \"CC BY 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:%E0%B4%95%E0%B5%88%E0%B4%A4%E0%B4%9A%E0%B5%8D%E0%B4%9A%E0%B4%95%E0%B5%8D%E0%B4%95.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0\"}, {\"title\": \"Yellow dragon fruit with spoon (50847s).jpg\", \"author\": \"Rhododendrites\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Yellow_dragon_fruit_with_spoon_(50847s).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Blackberries (Rubus fruticosus).jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Blackberries_(Rubus_fruticosus).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Tamarillo in Kerala, India.jpg\", \"author\": \"Sivahari\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Tamarillo_in_Kerala,_India.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Grapes, Dry Creek Valley-7705.jpg\", \"author\": \"Frank Schulenburg\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Grapes,_Dry_Creek_Valley-7705.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Roasted coffee beans.jpg\", \"author\": \"MarkSweep\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Roasted_coffee_beans.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Roasted_coffee_beans.jpg\"}, {\"title\": \"Homemade fresh cheese (22413233226).jpg\", \"author\": \"leesean from New York, USA\", \"license\": \"CC BY-SA 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Homemade_fresh_cheese_(22413233226).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/2.0\"}, {\"title\": \"Glass Milk Bottles.tif\", \"author\": \"Pkgx\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Glass_Milk_Bottles.tif\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Chicken Egg without Eggshell 5859.jpg\", \"author\": \"Biswarup Ganguly\", \"license\": \"CC BY 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Chicken_Egg_without_Eggshell_5859.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0\"}, {\"title\": \"A mound of butter.jpg\", \"author\": \"anokarina from United States\", \"license\": \"CC BY-SA 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:A_mound_of_butter.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/2.0\"}, {\"title\": \"Raw chicken slices.jpg\", \"author\": \"kakyusei\", \"license\": \"CC0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Raw_chicken_slices.jpg\", \"licenseUrl\": \"http://creativecommons.org/publicdomain/zero/1.0/deed.en\"}, {\"title\": \"HK food ingredient red meat frozen pork chop raw butt steak October 2021 SS2 013.jpg\", \"author\": \"Presixlla MOON\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:HK_food_ingredient_red_meat_frozen_pork_chop_raw_butt_steak_October_2021_SS2_013.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Beef.jpg\", \"author\": \"Flixtey\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Beef.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Fresh fish in market (27002392530).jpg\", \"author\": \"Thomas Quine\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Fresh_fish_in_market_(27002392530).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"Raw shrimp.jpg\", \"author\": \"Fumikas Sagisavas\", \"license\": \"CC0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Raw_shrimp.jpg\", \"licenseUrl\": \"http://creativecommons.org/publicdomain/zero/1.0/deed.en\"}, {\"title\": \"Physalis peruviana fruits close-up.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Physalis_peruviana_fruits_close-up.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Cantaloupe.jpg\", \"author\": \"Renee Comet (Photographer)\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Cantaloupe.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Cantaloupe.jpg\"}, {\"title\": \"Mamey (Pouteria sapota) - The Fruit Hunters - Eye Steel Film.jpg\", \"author\": \"Eye Steel Film from Canada\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Mamey_(Pouteria_sapota)_-_The_Fruit_Hunters_-_Eye_Steel_Film.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"Garlic bulbs and cloves.jpg\", \"author\": \"Ivar Leidus\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Garlic_bulbs_and_cloves.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Artichoke stack.JPG\", \"author\": \"Toby Hudson\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Artichoke_stack.JPG\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"Celery.jpg\", \"author\": \"26 May 2006 (original upload date)\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Celery.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Celery.jpg\"}, {\"title\": \"Green pea pods.jpg\", \"author\": \"Fumikas Sagisavas\", \"license\": \"CC0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Green_pea_pods.jpg\", \"licenseUrl\": \"http://creativecommons.org/publicdomain/zero/1.0/deed.en\"}, {\"title\": \"Green eggplant, potato, carrot etc. in A typical Bangladeshi vegetable shop.jpg\", \"author\": \"Sm faysal\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Green_eggplant,_potato,_carrot_etc._in_A_typical_Bangladeshi_vegetable_shop.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Broccoli.jpg\", \"author\": \"USDA  Lance Cheung\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Broccoli.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"Pumpkin.jpg\", \"author\": \"Fredde 99\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Pumpkin.jpg\", \"licenseUrl\": \"http://creativecommons.org/licenses/by-sa/3.0/\"}, {\"title\": \"Calabacín, Múnich, Alemania, 2013-03-30, DD 01.JPG\", \"author\": \"Diego Delso\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Calabac%C3%ADn,_M%C3%BAnich,_Alemania,_2013-03-30,_DD_01.JPG\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"Red Onion on White.JPG\", \"author\": \"Colin\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Red_Onion_on_White.JPG\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"2010-10-16 Scallions in Taipei.jpg\", \"author\": \"tomscoffin\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:2010-10-16_Scallions_in_Taipei.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"Coriander Leaves.jpg\", \"author\": \"Rupeshm364\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Coriander_Leaves.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Brassica oleracea var. botrytis (Coliflor).jpg\", \"author\": \"Rjcastillo\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Brassica_oleracea_var._botrytis_(Coliflor).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Spinach leaves.jpg\", \"author\": \"Nillerdk\", \"license\": \"CC BY 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Spinach_leaves.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0\"}, {\"title\": \"Green beans.jpg\", \"author\": \"Lin dafni\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Green_beans.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Lactuca sativa 'Ashbrook'.jpg\", \"author\": \"DeFacto\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Lactuca_sativa_%27Ashbrook%27.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Sundrying maize on cobs 04.jpg\", \"author\": \"Geossegawa\", \"license\": \"CC BY 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Sundrying_maize_on_cobs_04.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/4.0\"}, {\"title\": \"Ryerson Market cucumbers on sale.jpg\", \"author\": \"Jason Zhang\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Ryerson_Market_cucumbers_on_sale.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"Baby Bell pepper Capsicum annuum 3.jpg\", \"author\": \"W.Rebel\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Baby_Bell_pepper_Capsicum_annuum_3.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"Beetroots in a basket.jpg\", \"author\": \"W.carter\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Beetroots_in_a_basket.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Fresh Cabbage vegetables.jpg\", \"author\": \"Hajia Hijjah\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Fresh_Cabbage_vegetables.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Carrots of many colors.jpg\", \"author\": \"Stephen Ausmus\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Carrots_of_many_colors.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Carrots_of_many_colors.jpg\"}, {\"title\": \"Sechium edule dsc07767.jpg\", \"author\": \"\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Sechium_edule_dsc07767.jpg\", \"licenseUrl\": \"http://creativecommons.org/licenses/by-sa/3.0/\"}, {\"title\": \"Arracacia xanthorrhiza supermarket.jpg\", \"author\": \"Germarquezm\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Arracacia_xanthorrhiza_supermarket.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"Cassava roots.jpg\", \"author\": \"MEvalyn\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Cassava_roots.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Yam tubers.jpg\", \"author\": \"Hajia Hijjah\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Yam_tubers.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Ullucus tuberosus (South Peru).jpg\", \"author\": \"Eric Hunt\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Ullucus_tuberosus_(South_Peru).jpg\", \"licenseUrl\": \"http://creativecommons.org/licenses/by-sa/3.0/\"}, {\"title\": \"Rice grains (IRRI).jpg\", \"author\": \"IRRI Images\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Rice_grains_(IRRI).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"3 types of lentil.jpg\", \"author\": \"User:Justinc\", \"license\": \"CC BY-SA 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:3_types_of_lentil.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/2.0\"}, {\"title\": \"Red Speckled Kidney Beans.jpg\", \"author\": \"Sanjay Acharya\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Red_Speckled_Kidney_Beans.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Garbanzos · ilustración\", \"author\": \"AgroAmigo\", \"license\": \"Ilustración propia\", \"source\": \"https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations\", \"licenseUrl\": \"https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations\"}, {\"title\": \"Rolled oats.jpg\", \"author\": \"en:user:Hankwang\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Rolled_oats.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Rolled_oats.jpg\"}, {\"title\": \"Wheat close-up.JPG\", \"author\": \"User:Bluemoose\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Wheat_close-up.JPG\", \"licenseUrl\": \"http://creativecommons.org/licenses/by-sa/3.0/\"}, {\"title\": \"Peanut Kernels.jpg\", \"author\": \"Thamizhpparithi Maari\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Peanut_Kernels.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Panela.jpg\", \"author\": \"Jdvillalobos\", \"license\": \"CC BY 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Panela.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0\"}, {\"title\": \"Granulated White Sugar with Large Crystals, Light Through the Crystals.jpg\", \"author\": \"Tobias Erbsland\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Granulated_White_Sugar_with_Large_Crystals,_Light_Through_the_Crystals.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"All-Purpose Flour (4107895947).jpg\", \"author\": \"Veganbaking.net from USA\", \"license\": \"CC BY-SA 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:All-Purpose_Flour_(4107895947).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/2.0\"}, {\"title\": \"2022-05-30 21 06 43 A bottle of Wesson vegetable oil in the Mountainville section of Ewing Township, Mercer County, New Jersey.jpg\", \"author\": \"Famartin\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:2022-05-30_21_06_43_A_bottle_of_Wesson_vegetable_oil_in_the_Mountainville_section_of_Ewing_Township,_Mercer_County,_New_Jersey.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Salinas del Carmen 01.jpg\", \"author\": \"H. Zell\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Salinas_del_Carmen_01.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"(Pasta) by David Adam Kess (pic.2).jpg\", \"author\": \"David Adam Kess\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:(Pasta)_by_David_Adam_Kess_(pic.2).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Dark chocolate.jpg\", \"author\": \"jules:stonesoup on Flickr\", \"license\": \"CC BY 2.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Dark_chocolate.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/2.0\"}, {\"title\": \"Market in Bogotá.jpg\", \"author\": \"Mussi Katz\", \"license\": \"CC0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Market_in_Bogot%C3%A1.jpg\", \"licenseUrl\": \"http://creativecommons.org/publicdomain/zero/1.0/deed.en\"}, {\"title\": \"2018 Bogotá - Vista aérea de Corabastos.jpg\", \"author\": \"Felipe Restrepo Acosta\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:2018_Bogot%C3%A1_-_Vista_a%C3%A9rea_de_Corabastos.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Market in Bogotá.jpg\", \"author\": \"Mussi Katz\", \"license\": \"CC0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Market_in_Bogot%C3%A1.jpg\", \"licenseUrl\": \"http://creativecommons.org/publicdomain/zero/1.0/deed.en\"}, {\"title\": \"Minorista Plaza.jpg\", \"author\": \"Free Walking Tours Medellin\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Minorista_Plaza.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Mercado de Bazurto.jpg\", \"author\": \"Xemenendura\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Mercado_de_Bazurto.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Restaurante Basilia Valle Pacifico 01.jpg\", \"author\": \"ProtoplasmaKid\", \"license\": \"CC BY 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Restaurante_Basilia_Valle_Pacifico_01.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/4.0\"}, {\"title\": \"Coffee sacks.jpg\", \"author\": \"Downtowngal\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Coffee_sacks.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Coffee_sacks.jpg\"}, {\"title\": \"Rice sacks.jpg\", \"author\": \"ProjectManhattan\", \"license\": \"CC BY-SA 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Rice_sacks.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/3.0\"}, {\"title\": \"DAP (Diammonium Phosphate) Granules (3).jpg\", \"author\": \"Suyash Dwivedi\", \"license\": \"CC BY-SA 4.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:DAP_(Diammonium_Phosphate)_Granules_(3).jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by-sa/4.0\"}, {\"title\": \"Compost.jpg\", \"author\": \"en wikipedia\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Compost.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Compost.jpg\"}, {\"title\": \"Calcium carbonate.jpg\", \"author\": \"Picture taken August 2005 by User:Walkerma .\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Calcium_carbonate.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Calcium_carbonate.jpg\"}, {\"title\": \"Insumo líquido · ilustración\", \"author\": \"AgroAmigo\", \"license\": \"Ilustración propia\", \"source\": \"https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations\", \"licenseUrl\": \"https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations\"}, {\"title\": \"Bioinsumo · ilustración\", \"author\": \"AgroAmigo\", \"license\": \"Ilustración propia\", \"source\": \"https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations\", \"licenseUrl\": \"https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations\"}, {\"title\": \"Sulfur powder.jpg\", \"author\": \"This image was made by Serpens !? If you want to reuse this image, please credit to: „Serpens / Wikipedia“ An e-mail to me would be nice.\", \"license\": \"CC BY 3.0\", \"source\": \"https://commons.wikimedia.org/wiki/File:Sulfur_powder.jpg\", \"licenseUrl\": \"https://creativecommons.org/licenses/by/3.0\"}, {\"title\": \"Potassium chloride.jpg\", \"author\": \"\", \"license\": \"Public domain\", \"source\": \"https://commons.wikimedia.org/wiki/File:Potassium_chloride.jpg\", \"licenseUrl\": \"https://commons.wikimedia.org/wiki/File:Potassium_chloride.jpg\"}],actual=[...document.querySelectorAll('.credits-grid article')];return actual.length===expected.length&&expected.every((r,i)=>{const e=actual[i],a=e.querySelectorAll('a');return e.querySelector('h2').textContent===r.title&&e.querySelector('p').textContent===r.author&&a[0].getAttribute('href')===r.source&&a[1].getAttribute('href')===r.licenseUrl&&a[1].textContent===r.license})})()",
+            "expected": "Every credit title/author/license and both URLs exactly match checked-in image-library metadata"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "NAV-01",
+            "condition": "location.pathname==='/products' && !!document.querySelector('h1')",
+            "expected": "Products navigation works after credits",
+            "observed": "({url:location.href,heading:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "document.querySelector('nav[aria-label=\"Navegación principal\"] a[href=\"/products\"]').click();",
+        "ready": "location.pathname==='/products' && !!document.querySelector('h1')"
+      }
+    ]
+  },
+  {
+    "name": "Redirect /auth",
+    "route": "/auth",
+    "ready": "location.pathname===\"/saved\" && !!document.querySelector('h1')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-05",
+            "condition": "location.pathname===\"/saved\"",
+            "expected": "Redirect destination without loop",
+            "observed": "({url:location.href,heading:document.querySelector('h1').innerText})"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Redirect /settings",
+    "route": "/settings",
+    "ready": "location.pathname===\"/sources\" && !!document.querySelector('h1')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-05",
+            "condition": "location.pathname===\"/sources\"",
+            "expected": "Redirect destination without loop",
+            "observed": "({url:location.href,heading:document.querySelector('h1').innerText})"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Redirect /map",
+    "route": "/map",
+    "ready": "location.pathname===\"/markets\" && !!document.querySelector('h1')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-05",
+            "condition": "location.pathname===\"/markets\"",
+            "expected": "Redirect destination without loop",
+            "observed": "({url:location.href,heading:document.querySelector('h1').innerText})"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Private offers independent arithmetic",
+    "route": "/offers",
+    "ready": "!!document.querySelector('[aria-label=\"Precio oferta 1\"]') && document.body.innerText.includes('Guardado en este navegador')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "OFF-02",
+            "condition": "document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')?.textContent.replace(/[^0-9]/g,'')==='160000' && document.querySelector('.offer-editor')?.querySelector('[data-result=purchase]')?.textContent.replace(/[^0-9]/g,'')==='200000'",
+            "expected": "100kg x COP2000 less10% and20k costs gives160k sale /200k purchase",
+            "observed": "document.querySelector('.offer-editor').innerText"
+          },
+          {
+            "id": "OFF-08",
+            "condition": "!document.querySelector('.offer-best-label')",
+            "expected": "A single eligible quote has no comparison winner"
+          },
+          {
+            "id": "OFF-05",
+            "condition": "document.body.innerText.includes(\"Comparación privada · datos que tú ingresas\")",
+            "expected": "Offer is clearly private user-entered data"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Nombre oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"QA oferta A\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}{const e=document.querySelector('[aria-label=\"Precio oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"2000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}{const e=document.querySelector('[aria-label=\"Kilos oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"100\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}{const e=document.querySelector('[aria-label=\"Descuento oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"10\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}{const e=document.querySelector('[aria-label=\"Transporte oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"10000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}{const e=document.querySelector('[aria-label=\"Empaque oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"5000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}{const e=document.querySelector('[aria-label=\"Gastos oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"5000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}document.querySelector(\".offer-result\")?.scrollIntoView({block:\"center\"});",
+        "ready": "!!document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-06",
+            "condition": "!document.querySelector('.offer-editor')?.querySelector('[data-result=sale]') && document.querySelector('.offer-editor').innerText.includes('cantidades válidas')",
+            "expected": "Accepted quantity over available invalidates previous result"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Kilos oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"101\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}",
+        "ready": "!document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-07",
+            "condition": "JSON.parse(localStorage.getItem('agroamigo-private-offers-v1')).offers[0].name==='QA oferta A'",
+            "expected": "Entered private offer is stored locally with its identity"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Kilos oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"100\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}) );await new Promise(r=>setTimeout(r,50));}",
+        "ready": "!!document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-02",
+            "condition": "document.body.innerText.includes(\"160.000\") && document.body.innerText.includes(\"200.000\")",
+            "expected": "Sale/purchase results visible with explicit arithmetic"
+          }
+        ],
+        "action": "document.querySelector('.offer-result').scrollIntoView({block:'center'});"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-01",
+            "condition": "document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')?.textContent.replace(/[^0-9]/g,'')==='160000'",
+            "expected": "COP250000/125kg carga gives same COP2000/kg sale"
+          }
+        ],
+        "action": "const u=document.querySelector('.offer-common select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(u,'125');u.dispatchEvent(new Event('change',{bubbles:true}));await new Promise(r=>setTimeout(r,100));{const e=document.querySelector('[aria-label=\"Precio oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"250000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')?.textContent.replace(/[^0-9]/g,'')==='160000'"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-01",
+            "condition": "document.querySelector('.offer-editor')?.querySelector('[data-result=purchase]')?.textContent.replace(/[^0-9]/g,'')==='200000'",
+            "expected": "COP25000/12.5kg arroba gives same normalized purchase"
+          }
+        ],
+        "action": "const u=document.querySelector('.offer-common select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(u,'12.5');u.dispatchEvent(new Event('change',{bubbles:true}));await new Promise(r=>setTimeout(r,100));{const e=document.querySelector('[aria-label=\"Precio oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"25000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')?.textContent.replace(/[^0-9]/g,'')==='160000'"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-03",
+            "condition": "document.querySelectorAll('.offer-editor')[1].querySelector('.offer-best-label')?.innerText.includes('Mayor pago') && document.querySelectorAll('.offer-editor')[0].querySelector('.purchase-label')?.innerText.includes('Menor costo')",
+            "expected": "50kg higher per-kg sale wins sale ranking;100kg lower delivered unit cost wins purchase ranking",
+            "observed": "[...document.querySelectorAll('.offer-editor')].map(e=>e.innerText.slice(-900))"
+          },
+          {
+            "id": "OFF-02",
+            "condition": "document.body.innerText.includes(\"Quedan 50 kg fuera de esta oferta\")",
+            "expected": "Unaccepted quantity is explicit, not assumed sold"
+          }
+        ],
+        "action": "const u=document.querySelector('.offer-common select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(u,'1');u.dispatchEvent(new Event('change',{bubbles:true}));await new Promise(r=>setTimeout(r,100));{const e=document.querySelector('[aria-label=\"Precio oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"2000\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}{const e=document.querySelector('[aria-label=\"Nombre oferta 2\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"QA oferta B\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}{const e=document.querySelector('[aria-label=\"Precio oferta 2\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"2100\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}{const e=document.querySelector('[aria-label=\"Kilos oferta 2\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"50\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('.offer-best-label').length===2"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-04",
+            "condition": "document.querySelectorAll('.offer-editor')[1].innerText.includes('Oferta vencida') && !document.querySelector('.offer-best-label')",
+            "expected": "Expired offer retained visibly but excluded from ranking"
+          },
+          {
+            "id": "OFF-08",
+            "condition": "!document.querySelector('.offer-best-label')",
+            "expected": "Only one eligible offer has no winner"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Vigencia oferta 2\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"2000-01-01\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('.offer-editor')[1].innerText.includes('Oferta vencida')"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-06",
+            "condition": "!document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')",
+            "expected": "Negative cost suppresses previous valid result"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Transporte oferta 1\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"-1\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "!document.querySelector('.offer-editor')?.querySelector('[data-result=sale]')"
+      },
+      {
+        "checks": [
+          {
+            "id": "OFF-07",
+            "condition": "document.querySelector('[aria-label=\"Nombre oferta 1\"]').value==='QA oferta A' && document.querySelector('[aria-label=\"Precio oferta 1\"]').value==='2000' && document.querySelector('[aria-label=\"Vigencia oferta 2\"]').value==='2000-01-01'",
+            "expected": "Reload restores precise entered values and expiry locally"
+          }
+        ],
+        "action": "window.__reloadPending=true;location.reload();",
+        "ready": "typeof window.__reloadPending==='undefined' && document.querySelector('[aria-label=\"Nombre oferta 1\"]')?.value==='QA oferta A'"
+      }
+    ]
+  },
+  {
+    "name": "Unknown product does not reuse valid detail",
+    "route": "/product/qa-no-such-product-20260927",
+    "ready": "!!document.querySelector('[role=alert]') || document.body.innerText.includes('No encontrado')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-03",
+            "condition": "!document.querySelector('[data-testid=current-product-price]') && (!!document.querySelector('[role=alert]')||document.body.innerText.includes('No encontrado'))",
+            "expected": "Unknown identity produces explicit error and no previous price",
+            "observed": "document.body.innerText"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Credits main navigation /",
+    "route": "/credits",
+    "ready": "document.body.innerText.includes(\"Créditos de imágenes\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-01",
+            "condition": "location.pathname===\"/\" && !!document.querySelector(\"h1\")",
+            "expected": "Navigation tap exits credits to correct destination",
+            "observed": "({path:location.pathname,h1:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "window.scrollTo(0,document.body.scrollHeight);document.querySelector('nav[aria-label=\"Navegación principal\"] a[href=\"/\"]').click();",
+        "ready": "location.pathname===\"/\" && !!document.querySelector(\"h1\")"
+      }
+    ]
+  },
+  {
+    "name": "Credits main navigation /products",
+    "route": "/credits",
+    "ready": "document.body.innerText.includes(\"Créditos de imágenes\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-01",
+            "condition": "location.pathname===\"/products\" && !!document.querySelector(\"h1\")",
+            "expected": "Navigation tap exits credits to correct destination",
+            "observed": "({path:location.pathname,h1:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "window.scrollTo(0,document.body.scrollHeight);document.querySelector('nav[aria-label=\"Navegación principal\"] a[href=\"/products\"]').click();",
+        "ready": "location.pathname===\"/products\" && !!document.querySelector(\"h1\")"
+      }
+    ]
+  },
+  {
+    "name": "Credits main navigation /markets",
+    "route": "/credits",
+    "ready": "document.body.innerText.includes(\"Créditos de imágenes\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-01",
+            "condition": "location.pathname===\"/markets\" && !!document.querySelector(\"h1\")",
+            "expected": "Navigation tap exits credits to correct destination",
+            "observed": "({path:location.pathname,h1:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "window.scrollTo(0,document.body.scrollHeight);document.querySelector('nav[aria-label=\"Navegación principal\"] a[href=\"/markets\"]').click();",
+        "ready": "location.pathname===\"/markets\" && !!document.querySelector(\"h1\")"
+      }
+    ]
+  },
+  {
+    "name": "Credits main navigation /insumos",
+    "route": "/credits",
+    "ready": "document.body.innerText.includes(\"Créditos de imágenes\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-01",
+            "condition": "location.pathname===\"/insumos\" && !!document.querySelector(\"h1\")",
+            "expected": "Navigation tap exits credits to correct destination",
+            "observed": "({path:location.pathname,h1:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "window.scrollTo(0,document.body.scrollHeight);document.querySelector('nav[aria-label=\"Navegación principal\"] a[href=\"/insumos\"]').click();",
+        "ready": "location.pathname===\"/insumos\" && !!document.querySelector(\"h1\")"
+      }
+    ]
+  },
+  {
+    "name": "Credits main navigation /farm",
+    "route": "/credits",
+    "ready": "document.body.innerText.includes(\"Créditos de imágenes\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "NAV-01",
+            "condition": "location.pathname===\"/farm\" && !!document.querySelector(\"h1\")",
+            "expected": "Navigation tap exits credits to correct destination",
+            "observed": "({path:location.pathname,h1:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "window.scrollTo(0,document.body.scrollHeight);document.querySelector('nav[aria-label=\"Navegación principal\"] a[href=\"/farm\"]').click();",
+        "ready": "location.pathname===\"/farm\" && !!document.querySelector(\"h1\")"
+      }
+    ]
+  },
+  {
+    "name": "Catalog initial pages and saved restoration",
+    "route": "/products",
+    "ready": "document.querySelectorAll('.product-card').length>=24",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-01",
+            "condition": "new Set(Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')})).map(x=>x.identity)).size===Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')})).length",
+            "expected": "Rendered identities are distinct",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-02",
+            "condition": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')})).every(x=>Number(x.price)>0&&['COP','USD','US cents','USD cents'].includes(x.currency)&&/^\\/(product|references)\\//.test(x.href))",
+            "expected": "Cards have positive explicit currency prices and real detail hrefs"
+          },
+          {
+            "id": "CAT-07",
+            "condition": "Array.from(document.querySelectorAll('.product-card')).every(c=>{const b=c.getBoundingClientRect();return ['.product-image-link','.product-card-body','.product-price','.product-card-footer'].every(s=>{const d=c.querySelector(s)?.getBoundingClientRect();return d&&d.left>=b.left-1&&d.right<=b.right+1&&d.top>=b.top-1&&d.bottom<=b.bottom+1})})",
+            "expected": "First24 card components are contained within their own cards"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "CAT-07",
+            "condition": "document.querySelectorAll('.product-card').length>=24",
+            "expected": "First24 cards remain present after lower-page scroll"
+          }
+        ],
+        "action": "document.querySelectorAll('.product-card')[23].scrollIntoView({block:'center'});"
+      },
+      {
+        "checks": [
+          {
+            "id": "CAT-11",
+            "condition": "document.querySelector('.product-card .save-button').getAttribute('aria-pressed')===window.__originalSaved",
+            "expected": "Save toggled twice restores original first-card state"
+          }
+        ],
+        "action": "window.scrollTo(0,0);window.__originalSaved=document.querySelector('.product-card .save-button').getAttribute('aria-pressed');document.querySelector('.product-card .save-button').click();await new Promise(r=>setTimeout(r,100));document.querySelector('.product-card .save-button').click();",
+        "ready": "document.querySelector('.product-card .save-button').getAttribute('aria-pressed')===window.__originalSaved"
+      },
+      {
+        "checks": [
+          {
+            "id": "CAT-08",
+            "condition": "document.querySelectorAll('.product-card').length>24 && new Set(Array.from(document.querySelectorAll('.product-card')).map(e=>e.dataset.catalogIdentity)).size===document.querySelectorAll('.product-card').length",
+            "expected": "Second page extends catalog with unique identities",
+            "observed": "({count:document.querySelectorAll('.product-card').length,result:document.querySelector('.results-label')?.innerText})"
+          }
+        ],
+        "action": "Array.from(document.querySelectorAll('button')).find(e=>e.textContent.includes(\"Ver m\\u00e1s productos\")).click();",
+        "ready": "document.querySelectorAll('.product-card').length>24"
+      }
+    ]
+  },
+  {
+    "name": "Catalog family search café",
+    "route": "/products?q=caf%C3%A9",
+    "ready": "document.querySelectorAll('.product-card').length>0 && !document.querySelector('[aria-label=\"Cargando precios\"]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-06",
+            "condition": "document.querySelector('[aria-label=\"Buscar producto\"]').value===\"caf\\u00e9\" && document.querySelectorAll('.product-card').length>0",
+            "expected": "Unified search reaches requested source/product family",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-05",
+            "condition": "document.querySelector('.applied-filters')?.innerText.includes(document.querySelector('[aria-label=\"Buscar producto\"]').value)",
+            "expected": "Search remains visible as applied filter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Catalog family search cacao",
+    "route": "/products?q=cacao",
+    "ready": "document.querySelectorAll('.product-card').length>0 && !document.querySelector('[aria-label=\"Cargando precios\"]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-06",
+            "condition": "document.querySelector('[aria-label=\"Buscar producto\"]').value===\"cacao\" && document.querySelectorAll('.product-card').length>0",
+            "expected": "Unified search reaches requested source/product family",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-05",
+            "condition": "document.querySelector('.applied-filters')?.innerText.includes(document.querySelector('[aria-label=\"Buscar producto\"]').value)",
+            "expected": "Search remains visible as applied filter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Catalog family search banana",
+    "route": "/products?q=banana",
+    "ready": "document.querySelectorAll('.product-card').length>0 && !document.querySelector('[aria-label=\"Cargando precios\"]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-06",
+            "condition": "document.querySelector('[aria-label=\"Buscar producto\"]').value===\"banana\" && document.querySelectorAll('.product-card').length>0",
+            "expected": "Unified search reaches requested source/product family",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-05",
+            "condition": "document.querySelector('.applied-filters')?.innerText.includes(document.querySelector('[aria-label=\"Buscar producto\"]').value)",
+            "expected": "Search remains visible as applied filter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Catalog family search rosas",
+    "route": "/products?q=rosas",
+    "ready": "document.querySelectorAll('.product-card').length>0 && !document.querySelector('[aria-label=\"Cargando precios\"]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-06",
+            "condition": "document.querySelector('[aria-label=\"Buscar producto\"]').value===\"rosas\" && document.querySelectorAll('.product-card').length>0",
+            "expected": "Unified search reaches requested source/product family",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-05",
+            "condition": "document.querySelector('.applied-filters')?.innerText.includes(document.querySelector('[aria-label=\"Buscar producto\"]').value)",
+            "expected": "Search remains visible as applied filter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Catalog family search palma",
+    "route": "/products?q=palma",
+    "ready": "document.querySelectorAll('.product-card').length>0 && !document.querySelector('[aria-label=\"Cargando precios\"]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-06",
+            "condition": "document.querySelector('[aria-label=\"Buscar producto\"]').value===\"palma\" && document.querySelectorAll('.product-card').length>0",
+            "expected": "Unified search reaches requested source/product family",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-05",
+            "condition": "document.querySelector('.applied-filters')?.innerText.includes(document.querySelector('[aria-label=\"Buscar producto\"]').value)",
+            "expected": "Search remains visible as applied filter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Catalog family search cerdo",
+    "route": "/products?q=cerdo",
+    "ready": "document.querySelectorAll('.product-card').length>0 && !document.querySelector('[aria-label=\"Cargando precios\"]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CAT-06",
+            "condition": "document.querySelector('[aria-label=\"Buscar producto\"]').value===\"cerdo\" && document.querySelectorAll('.product-card').length>0",
+            "expected": "Unified search reaches requested source/product family",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          },
+          {
+            "id": "CAT-05",
+            "condition": "document.querySelector('.applied-filters')?.innerText.includes(document.querySelector('[aria-label=\"Buscar producto\"]').value)",
+            "expected": "Search remains visible as applied filter"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Home unified autocomplete cacao",
+    "route": "/",
+    "ready": "document.querySelectorAll('.product-card').length===4",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "HOM-01",
+            "condition": "document.querySelectorAll('.product-card').length===4 && Array.from(document.querySelectorAll('.product-price')).every(e=>Number(e.dataset.price)>0&&e.dataset.currency)",
+            "expected": "Four home cards show dated positive currency-labelled prices",
+            "observed": "Array.from(document.querySelectorAll('.product-card')).map(e=>({identity:e.dataset.catalogIdentity,id:e.dataset.productId,name:e.querySelector('.product-name').innerText,price:e.querySelector('[data-price]').dataset.price,currency:e.querySelector('[data-currency]').dataset.currency,href:e.querySelector('.product-name').getAttribute('href')}))"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "HOM-02",
+            "condition": "document.querySelectorAll('[role=option]').length>0",
+            "expected": "Cacao family is available in home autocomplete",
+            "observed": "Array.from(document.querySelectorAll('[role=option]')).map(e=>e.innerText)"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Buscar un producto\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"cacao\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('[role=option]').length>0"
+      },
+      {
+        "checks": [
+          {
+            "id": "HOM-03",
+            "condition": "location.pathname.startsWith('/references/') && document.querySelector('h1')?.innerText.toLowerCase().includes('cacao')",
+            "expected": "Actual cacao suggestion tap opens its named reference detail",
+            "observed": "({url:location.href,name:document.querySelector('h1')?.innerText})"
+          }
+        ],
+        "action": "document.querySelector('[role=option]').click();",
+        "ready": "location.pathname.startsWith('/references/') && !!document.querySelector('[data-price]')"
+      }
+    ]
+  },
+  {
+    "name": "Unknown source explicit failure",
+    "route": "/evidence/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "ready": "!!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-22",
+            "condition": "!!document.querySelector('[role=alert]') && !document.querySelector('.workbook-scroll,canvas[data-rendered=true],.evidence-records')",
+            "expected": "Missing source has retryable explicit failure and no unrelated content",
+            "observed": "document.body.innerText"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Market list full set search and metadata",
+    "route": "/markets",
+    "ready": "document.querySelectorAll('.market-card').length>0",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "MKT-01",
+            "condition": "(()=>{const rows=window.__qaMarkets;return Array.isArray(rows)&&[...document.querySelectorAll('.market-card')].every(e=>{const id=e.getAttribute('href').split('/').pop(),r=rows.find(x=>x.id===id);return r&&e.querySelector('h2').textContent===r.name&&e.textContent.includes(r.city)&&e.textContent.includes(r.region)&&e.textContent.includes(r.product_count+' productos')})})()",
+            "expected": "All initially rendered market identity/count/location fields equal public dataset",
+            "observed": "({count:window.__qaMarkets.length,shown:[...document.querySelectorAll('.market-card')].map(e=>e.innerText)})"
+          }
+        ],
+        "action": "window.__qaMarkets=null;fetch('/api/explore/markets').then(r=>r.json()).then(v=>window.__qaMarkets=v);",
+        "ready": "Array.isArray(window.__qaMarkets)"
+      },
+      {
+        "checks": [
+          {
+            "id": "MKT-02",
+            "condition": "document.querySelectorAll('.market-card').length===1 && document.querySelector('.market-card').getAttribute('href')==='/market/sipsa-bogota-d-c-corabastos' && document.querySelector('.applied-filters').innerText.includes('CORÁBASTOS')",
+            "expected": "Accent/case-insensitive market search keeps exact market ID and visible query"
+          }
+        ],
+        "action": "{const e=document.querySelector('[aria-label=\"Buscar mercado\"]');if(!e)throw Error('Missing field');Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"COR\\u00c1BASTOS\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('.market-card').length===1"
+      }
+    ]
+  }
+]

@@ -1,0 +1,455 @@
+[
+  {
+    "name": "planning-weather-exact-source-values",
+    "route": "/farm",
+    "ready": "!!document.querySelector('.location-workspace')",
+    "steps": [
+      {
+        "action": "localStorage.setItem('agroamigo-farms-v2',\"{\\\"version\\\": 2, \\\"farms\\\": [{\\\"id\\\": \\\"qa-planning-oracle\\\", \\\"profile\\\": {\\\"municipalityId\\\": \\\"41551\\\", \\\"name\\\": \\\"QA source audit Pitalito\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"latitude\\\": \\\"1.912345\\\", \\\"longitude\\\": \\\"-76.123456\\\", \\\"elevation\\\": \\\"1800\\\", \\\"locationMethod\\\": \\\"manual\\\", \\\"locationAccuracy\\\": \\\"\\\"}, \\\"crops\\\": [{\\\"id\\\": \\\"qa-coffee\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"name\\\": \\\"Caf\\u00e9\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"yieldKgHa\\\": \\\"\\\", \\\"planYear\\\": \\\"2026\\\", \\\"physicalState\\\": \\\"Pergamino o seco de trilla\\\"}], \\\"selectedCropId\\\": \\\"qa-coffee\\\"}], \\\"activeId\\\": \\\"qa-planning-oracle\\\"}\");localStorage.removeItem('agroamigo-location-v1');window.__qaReloadPending=true;location.reload();",
+        "ready": "!window.__qaReloadPending&&(!!document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"] a[href^=\"/evidence/weather-\"]')&&document.querySelector('.location-toolbar')?.textContent.includes('QA source audit Pitalito'))",
+        "checks": []
+      },
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};window.__pw=null;const a=document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"] a[href^=\"/evidence/weather-\"]');const id=a.getAttribute('href').split('/').pop();Promise.all([fetch('/api/evidence/'+id).then(r=>r.json()),fetch('/api/evidence/'+id+'/content').then(r=>r.json())]).then(([e,p])=>window.__pw={e,p});",
+        "ready": "!!window.__pw",
+        "checks": [
+          {
+            "id": "WEA-08",
+            "condition": "__pw.e.metadata.requested_latitude===1.912345&&__pw.e.metadata.requested_longitude===-76.123456",
+            "expected": "Exact farm point, not municipality centroid"
+          },
+          {
+            "id": "WEA-01",
+            "condition": "document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"]')?.textContent.includes(__pn(__pw.p.current.temperature_2m)+' °C')&&document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"]')?.textContent.includes(__pn(__pw.p.current.apparent_temperature)+' °C')",
+            "expected": "Current and apparent temperatures use linked original"
+          },
+          {
+            "id": "WEA-02",
+            "condition": "(()=>{const ds=[...document.querySelectorAll('[aria-label=\"Tiempo y pronóstico de mi finca\"] dl>div')];return ds[1].textContent.includes(__pn(__pw.p.current.interval/60)+' min')&&ds[1].textContent.includes(__pn(__pw.p.current.precipitation)+' mm')&&ds[2].textContent.includes(__pn(__pw.p.current.wind_speed_10m)+' km/h')&&ds[3].textContent.includes(__pn(__pw.p.current.wind_gusts_10m)+' km/h')})()",
+            "expected": "Seconds/60 precipitation period; exact mm and km/h"
+          },
+          {
+            "id": "WEA-14",
+            "condition": "__pw.e.metadata.timezone==='America/Bogota'&&__pw.p.current_units.temperature_2m==='°C'&&__pw.p.hourly_units.precipitation_probability==='%'",
+            "expected": "Source JSON retains timezone and literal units"
+          },
+          {
+            "id": "WEA-04",
+            "condition": "(()=>{const cards=[...document.querySelectorAll('[aria-label=\"Pronóstico por hora; desplaza para ver más\"]>article')];return cards.length===24&&cards.every(c=>{const t=c.querySelector('time').getAttribute('datetime').replace(/-05:00$/,'');const i=__pw.p.hourly.time.indexOf(t);return i>=0&&c.textContent.includes(__pn(__pw.p.hourly.temperature_2m[i])+' °C')&&c.textContent.includes(__pn(__pw.p.hourly.precipitation[i])+' mm')&&c.textContent.includes(__pn(__pw.p.hourly.wind_speed_10m[i])+' km/h')})})()",
+            "expected": "All24 rendered hourly rows align to exact timestamps and source indices"
+          }
+        ]
+      },
+      {
+        "action": "[...document.querySelectorAll('button')].find(x=>x.textContent==='Próximos 7 días').click();",
+        "ready": "document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"] [class*=days]')?.children.length>0",
+        "checks": [
+          {
+            "id": "WEA-05",
+            "condition": "(()=>{const cards=[...document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"] [class*=days]').children];return cards.length===7&&cards.every(c=>{const date=c.querySelector('small').textContent,i=__pw.p.daily.time.indexOf(date);return i>=0&&c.textContent.includes(__pn(__pw.p.daily.temperature_2m_max[i])+'°')&&c.textContent.includes(__pn(__pw.p.daily.temperature_2m_min[i])+'°')&&c.textContent.includes(__pn(__pw.p.daily.precipitation_sum[i])+' mm')})})()",
+            "expected": "Seven source dates/max/min/rain values"
+          },
+          {
+            "id": "WEA-08",
+            "condition": "document.querySelector('[aria-label=\"Tiempo y pronóstico de mi finca\"]')?.textContent.includes('no mediciones de un sensor')",
+            "expected": "Forecast is model estimate, not farm sensor"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-pitalito-eva-soil-and-aptitude",
+    "route": "/plan",
+    "ready": "!!document.querySelector('.planning-tabs')||!!document.querySelector('.farm-editor')",
+    "steps": [
+      {
+        "action": "localStorage.setItem('agroamigo-farms-v2',\"{\\\"version\\\": 2, \\\"farms\\\": [{\\\"id\\\": \\\"qa-planning-oracle\\\", \\\"profile\\\": {\\\"municipalityId\\\": \\\"41551\\\", \\\"name\\\": \\\"QA source audit Pitalito\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"latitude\\\": \\\"1.912345\\\", \\\"longitude\\\": \\\"-76.123456\\\", \\\"elevation\\\": \\\"1800\\\", \\\"locationMethod\\\": \\\"manual\\\", \\\"locationAccuracy\\\": \\\"\\\"}, \\\"crops\\\": [{\\\"id\\\": \\\"qa-coffee\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"name\\\": \\\"Caf\\u00e9\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"yieldKgHa\\\": \\\"\\\", \\\"planYear\\\": \\\"2026\\\", \\\"physicalState\\\": \\\"Pergamino o seco de trilla\\\"}], \\\"selectedCropId\\\": \\\"qa-coffee\\\"}], \\\"activeId\\\": \\\"qa-planning-oracle\\\"}\");localStorage.removeItem('agroamigo-location-v1');window.__qaReloadPending=true;location.reload();",
+        "ready": "!window.__qaReloadPending&&(!!document.querySelector('.crop-option')&&document.querySelector('.plan-intro')?.textContent.includes('PITALITO'))",
+        "checks": []
+      },
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};__pi(document.querySelector('input[aria-label=\"Buscar cultivo\"]'),'Café');",
+        "ready": "document.querySelectorAll('.crop-option').length===1",
+        "checks": [
+          {
+            "id": "CRP-01",
+            "condition": "document.querySelector('.plan-intro').textContent.includes('PITALITO, HUILA')",
+            "expected": "Pitalito/Huila municipal identity"
+          },
+          {
+            "id": "CRP-02",
+            "condition": "document.querySelector('.crop-option').textContent.includes('EVA 2025')&&document.querySelector('.crop-option').textContent.includes('Pergamino o seco de trilla')",
+            "expected": "Literal year/physical state"
+          },
+          {
+            "id": "CRP-03",
+            "condition": "document.querySelector('.crop-option').textContent.includes(__pn(1822.7333880082)+' kg/ha')&&document.querySelector('.crop-option').textContent.includes(__pn(13327.27)+' ha')",
+            "expected": "Independent24292.06tonnes /13327.27ha ×1000 =1822.733388kg/ha"
+          },
+          {
+            "id": "CRP-04",
+            "condition": "document.querySelector('.crop-option').textContent.includes(__pn(75.75572522936864)+' %')",
+            "expected": "Aptitude percentage is high+medium divided by all mapped area"
+          },
+          {
+            "id": "CRP-07",
+            "condition": "document.querySelector('.regional-context').textContent.includes('69 muestras')&&document.querySelector('.soil-stat strong').textContent==='5'&&document.querySelector('.soil-stat').textContent.includes('4,8 a 5,6')",
+            "expected": "69valid pH samples; median5, quartiles4.76/5.64 roundedone decimal"
+          },
+          {
+            "id": "CRP-09",
+            "condition": "!!document.querySelector('.crop-option a[href*=\"0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3\"][href*=\"municipality=41551\"]')",
+            "expected": "EVA exact original/municipality source link"
+          },
+          {
+            "id": "CRP-08",
+            "condition": "document.querySelector('.regional-context').textContent.includes('sin ubicación exacta de parcela')",
+            "expected": "Soil samples not represented as exact parcel analysis"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-coffee-calendar-and-complete-seasonal-provenance",
+    "route": "/plan?tab=budget",
+    "ready": "!!document.querySelector('.planning-tabs')||!!document.querySelector('.farm-editor')",
+    "steps": [
+      {
+        "action": "localStorage.setItem('agroamigo-farms-v2',\"{\\\"version\\\": 2, \\\"farms\\\": [{\\\"id\\\": \\\"qa-planning-oracle\\\", \\\"profile\\\": {\\\"municipalityId\\\": \\\"41551\\\", \\\"name\\\": \\\"QA source audit Pitalito\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"latitude\\\": \\\"1.912345\\\", \\\"longitude\\\": \\\"-76.123456\\\", \\\"elevation\\\": \\\"1800\\\", \\\"locationMethod\\\": \\\"manual\\\", \\\"locationAccuracy\\\": \\\"\\\"}, \\\"crops\\\": [{\\\"id\\\": \\\"qa-coffee\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"name\\\": \\\"Caf\\u00e9\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"yieldKgHa\\\": \\\"\\\", \\\"planYear\\\": \\\"2026\\\", \\\"physicalState\\\": \\\"Pergamino o seco de trilla\\\"}], \\\"selectedCropId\\\": \\\"qa-coffee\\\"}], \\\"activeId\\\": \\\"qa-planning-oracle\\\"}\");localStorage.removeItem('agroamigo-location-v1');window.__qaReloadPending=true;location.reload();",
+        "ready": "!window.__qaReloadPending&&(!!document.querySelector('.calendar-table')&&document.querySelector('.budget-header')?.textContent.includes('PITALITO'))",
+        "checks": []
+      },
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+        "ready": "!!document.querySelector('.seasonal-bars')||document.body.textContent.includes('No hay al menos 3 años completos y comparables')||document.body.textContent.includes('La referencia disponible no corresponde al precio por kg')||!!document.querySelector('.error-state')",
+        "checks": [
+          {
+            "id": "CAL-01",
+            "condition": "(()=>{const expected=[{\"department_id\": \"41\", \"crop\": \"Café\", \"activity\": \"Cosechas\", \"reference_year\": 2024, \"percentages\": [10.51, 15.68, 0, 17.97, 21.18, 6.27, 0, 0, 4.8, 8.28, 6.54, 8.77], \"document_id\": \"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\", \"source_row\": 503}];const rows=[...document.querySelectorAll('.calendar-table tbody tr')];return rows.length===expected.length&&rows.every(row=>{const r=expected.find(x=>x.activity===row.querySelector('th').textContent);return r&&[...row.querySelectorAll('td')].every((td,i)=>td.textContent===__pn(r.percentages[i]))})})()",
+            "expected": "All12monthly Huila coffee percentages/activity match immutable source row"
+          },
+          {
+            "id": "CAL-07",
+            "condition": "!!document.querySelector('a[href*=\"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\"][href*=\"department=41\"]')",
+            "expected": "Historical2024department41 source"
+          },
+          {
+            "id": "CAL-04",
+            "condition": "document.body.textContent.includes('27 de septiembre de 2026')&&document.body.textContent.includes('11 de octubre de 2026')",
+            "expected": "FloweringFeb1 +238/252days at1800m; visible source guide"
+          },
+          {
+            "id": "FIN-10",
+            "condition": "document.querySelectorAll('.seasonal-bars button').length===12",
+            "expected": "Fivecomplete coffee years allow12month seasonal pattern"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-fnc-factor-units-and-trm-source",
+    "route": "/coffee",
+    "ready": "!!document.querySelector('.coffee-big-price')",
+    "steps": [
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};window.__pc=null;fetch('/api/coffee').then(r=>r.json()).then(d=>window.__pc=d);",
+        "ready": "!!window.__pc",
+        "checks": [
+          {
+            "id": "COF-01",
+            "condition": "document.querySelector('.coffee-big-price').textContent.includes(__pm(__pc.price))&&document.querySelector('.coffee-published').textContent.includes(__pm(__pc.price/125))",
+            "expected": "Current exact FNC API carga125kg and price/125 displayed; snapshot independently verified2105000/16840"
+          },
+          {
+            "id": "COF-09",
+            "condition": "!!__pc.exchange.document_id&&!!document.querySelector('.explain-card a[href*=\"'+__pc.exchange.document_id+'\"]')",
+            "expected": "TRM exact retained source link (missing-document_id regression)"
+          },
+          {
+            "id": "COF-12",
+            "condition": "document.querySelector('.coffee-published').textContent.includes('Factor de rendimiento 94')",
+            "expected": "National125kg factor94 identified"
+          }
+        ]
+      },
+      {
+        "action": "__ps(document.querySelector('select[aria-label=\"Factor de rendimiento\"]'),'88');",
+        "ready": "document.querySelector('.calculation-result strong')?.textContent.includes(__pm(__pc.factors.find(x=>x.factor===88).price))",
+        "checks": [
+          {
+            "id": "COF-04",
+            "condition": "document.querySelector('.calculation-result').textContent.includes('Factor 88')&&document.querySelector('.calculation-result strong').textContent.includes(__pm(__pc.factors.find(x=>x.factor===88).price))",
+            "expected": "Printed factor88 price2169375/Carga"
+          },
+          {
+            "id": "COF-05",
+            "condition": "document.querySelector('.calculation-result').textContent.includes('125 kg')",
+            "expected": "One125kg carga quantity"
+          }
+        ]
+      },
+      {
+        "action": "__ps(document.querySelector('select[aria-label=\"Unidad\"]'),'1');__pi(document.querySelector('.calculator input'),'125');",
+        "ready": "document.querySelector('.calculation-result strong')?.textContent.includes(__pm(__pc.factors.find(x=>x.factor===88).price))",
+        "checks": [
+          {
+            "id": "COF-05",
+            "condition": "document.querySelector('.calculation-result').textContent.includes('125 kg')&&document.querySelector('.calculation-result strong').textContent.includes(__pm(__pc.factors.find(x=>x.factor===88).price))",
+            "expected": "125kilos same reference as1carga"
+          }
+        ]
+      },
+      {
+        "action": "__ps(document.querySelector('select[aria-label=\"Unidad\"]'),'12.5');__pi(document.querySelector('.calculator input'),'10');",
+        "ready": "document.querySelector('.calculation-result strong')?.textContent.includes(__pm(__pc.factors.find(x=>x.factor===88).price))",
+        "checks": [
+          {
+            "id": "COF-05",
+            "condition": "document.querySelector('.calculation-result').textContent.includes('125 kg')&&document.querySelector('.calculation-result strong').textContent.includes(__pm(__pc.factors.find(x=>x.factor===88).price))",
+            "expected": "10arrobas of12.5kg same125kg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-reference-international-worldbank-monthly-d72aa288",
+    "route": "/references/d72aa288d9ad1c44b6d4c805b392b0b45d5a6127626b56bc376c942f79ae14c5",
+    "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
+    "steps": [
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+        "ready": "true",
+        "checks": [
+          {
+            "id": "REF-02",
+            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='7.97'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"kg\"",
+            "expected": "Literal7.97USD/kg"
+          },
+          {
+            "id": "REF-07",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"Referencia internacional mensual\")",
+            "expected": "Exact market/statistic/basis visible"
+          },
+          {
+            "id": "REF-02",
+            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225'&&u.searchParams.get('locator')===\"Monthly Prices!M806\"})()",
+            "expected": "Exact original and locator in source link"
+          }
+        ]
+      },
+      {
+        "action": "const s=[...document.querySelectorAll('select')].find(x=>x.querySelector('option[value=\"all\"]'));__ps(s,'all');document.querySelector('details.chart-data').open=true;",
+        "ready": "document.querySelectorAll('.chart-data tbody tr').length===800",
+        "checks": [
+          {
+            "id": "REF-09",
+            "condition": "document.querySelectorAll('.chart-data tbody tr').length===800",
+            "expected": "All800retainedobservations"
+          },
+          {
+            "id": "REF-09",
+            "condition": "(()=>{const vals=[...document.querySelectorAll('.chart-data tbody tr td:nth-child(2)')].map(x=>Number(x.textContent.replace(/[^0-9,.-]/g,'').replace(/\\./g,'').replace(',','.')));return vals.every((v,i)=>!i||vals[i-1]>=v)})()",
+            "expected": "Numerical descending order"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-reference-international-worldbank-monthly-756ea9ab",
+    "route": "/references/756ea9ab1b1230301e031256999bc76d2c75c76b0cfc6ab8c972dca32b9af012",
+    "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
+    "steps": [
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+        "ready": "true",
+        "checks": [
+          {
+            "id": "REF-02",
+            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='1117'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"tonne\"",
+            "expected": "Literal1117USD/tonne"
+          },
+          {
+            "id": "REF-07",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"Referencia internacional mensual\")",
+            "expected": "Exact market/statistic/basis visible"
+          },
+          {
+            "id": "REF-02",
+            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225'&&u.searchParams.get('locator')===\"Monthly Prices!W806\"})()",
+            "expected": "Exact original and locator in source link"
+          }
+        ]
+      },
+      {
+        "action": "const s=[...document.querySelectorAll('select')].find(x=>x.querySelector('option[value=\"all\"]'));__ps(s,'all');document.querySelector('details.chart-data').open=true;",
+        "ready": "document.querySelectorAll('.chart-data tbody tr').length===800",
+        "checks": [
+          {
+            "id": "REF-09",
+            "condition": "document.querySelectorAll('.chart-data tbody tr').length===800",
+            "expected": "All800retainedobservations"
+          },
+          {
+            "id": "REF-09",
+            "condition": "(()=>{const vals=[...document.querySelectorAll('.chart-data tbody tr td:nth-child(2)')].map(x=>Number(x.textContent.replace(/[^0-9,.-]/g,'').replace(/\\./g,'').replace(',','.')));return vals.every((v,i)=>!i||vals[i-1]>=v)})()",
+            "expected": "Numerical descending order"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-reference-international-usda-boston-flowers-453bbbc9",
+    "route": "/references/453bbbc94d36f75ee3cc228cd141e3979d9a71f3899a7695b27cdd0943da8317",
+    "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
+    "steps": [
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+        "ready": "true",
+        "checks": [
+          {
+            "id": "REF-02",
+            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='15'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"per bunch\"",
+            "expected": "Literal15USD/per bunch"
+          },
+          {
+            "id": "REF-07",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"EE. UU. \\u00b7 ventas mayoristas en terminal\")",
+            "expected": "Exact market/statistic/basis visible"
+          },
+          {
+            "id": "REF-02",
+            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/c0c8eddfa358b456869ef80cd708e07370b0b497bd68f8e4daf4e48b89b7b078'&&u.searchParams.get('locator')===\"PDF page 1, commodity ASTILBE, quote 1\"})()",
+            "expected": "Exact original and locator in source link"
+          },
+          {
+            "id": "REF-04",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"Punto medio calculado\")",
+            "expected": "Literal statistic label"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-reference-dane-weekly-9489a60f",
+    "route": "/references/9489a60fd26cc0b726972a558800b3a3f19b9835878d9a9b3875493d4c13da36",
+    "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
+    "steps": [
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+        "ready": "true",
+        "checks": [
+          {
+            "id": "REF-02",
+            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='793'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='COP'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"kg\"",
+            "expected": "Literal793COP/kg"
+          },
+          {
+            "id": "REF-07",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"Precio mayorista semanal\")",
+            "expected": "Exact market/statistic/basis visible"
+          },
+          {
+            "id": "REF-02",
+            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/dd059a09eecb1fa01cadb24a4f21a7768d97d9e31684dee6a57222c536faf6a8'&&u.searchParams.get('locator')===\"PDF page 4,table 1,column 1,line 3\"})()",
+            "expected": "Exact original and locator in source link"
+          },
+          {
+            "id": "REF-04",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"Precio medio publicado\")",
+            "expected": "Literal statistic label"
+          },
+          {
+            "id": "REF-05",
+            "condition": "document.querySelector('.product-price-header').textContent.includes('Período:')",
+            "expected": "Weekly period displayed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-reference-fnc-ny-contract-c-daily-b43410bf",
+    "route": "/references/b43410bf00bf17e91d3c3fef47cc1e0d1fa0e35a20d1389d70a14dc4e3725f96",
+    "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
+    "steps": [
+      {
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
+        "ready": "true",
+        "checks": [
+          {
+            "id": "REF-02",
+            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='2.786'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"lb\"",
+            "expected": "Literal2.786USD/lb"
+          },
+          {
+            "id": "REF-07",
+            "condition": "document.querySelector('.product-price-header').textContent.includes(\"Cotizaci\\u00f3n de cierre de futuros contrato C; referencia externa, no precio al productor\")",
+            "expected": "Exact market/statistic/basis visible"
+          },
+          {
+            "id": "REF-02",
+            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/f2c4c670ea1ae46098cd4c00a29d77e63c8bd308aa2d96ecbd2de558428a7056'&&u.searchParams.get('locator')===\"PDF page 1; fnc-ny-contract-c-daily\"})()",
+            "expected": "Exact original and locator in source link"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "planning-dane-supply-papa-superior-source-row",
+    "route": "/market/sipsa-armenia-mercar",
+    "ready": "Array.from(document.querySelectorAll('[role=tab]')).some(x=>x.textContent.trim()==='Abastecimiento')",
+    "steps": [
+      {
+        "action": "Array.from(document.querySelectorAll('[role=tab]')).find(x=>x.textContent.trim()==='Abastecimiento').click();",
+        "ready": "!!document.querySelector('.supply-list article')&&!!Array.from(document.querySelectorAll('select option')).find(x=>x.value==='2026-08-01')",
+        "checks": []
+      },
+      {
+        "action": "const s=Array.from(document.querySelectorAll('select')).find(s=>Array.from(s.options).some(x=>x.value==='2026-08-01'));Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s,'2026-08-01');s.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "(()=>{const row=Array.from(document.querySelectorAll('.supply-list article')).find(x=>x.querySelector('div:first-child > a,div:first-child > strong')?.textContent==='Papa superior');return !!row&&row.textContent.includes('983,5')&&Array.from(document.querySelectorAll('select')).some(x=>x.value==='2026-08-01')})()",
+        "checks": [
+          {
+            "id": "SUP-05",
+            "condition": "(()=>{const row=Array.from(document.querySelectorAll('.supply-list article')).find(x=>x.querySelector('div:first-child > a,div:first-child > strong')?.textContent==='Papa superior');return row.querySelector('div:last-child > strong').textContent==='983,5 t'&&row.textContent.includes('25 días con reporte')})()",
+            "expected": "Printed source Papa superior arrivals983500kg displayed983.5tonnes,25reportingdays"
+          },
+          {
+            "id": "SUP-09",
+            "condition": "(()=>{const row=Array.from(document.querySelectorAll('.supply-list article')).find(x=>x.querySelector('div:first-child > a,div:first-child > strong')?.textContent==='Papa superior');const u=new URL(row.querySelector('a.evidence-link').href);return u.pathname==='/evidence/d37945a2ed0c54eb72347c5b86567655cfd517c476343e87e430d79eaaabf490'&&u.searchParams.get('food')==='papa-superior'&&u.searchParams.get('market')==='sipsa-armenia-mercar'&&u.searchParams.get('month')==='2026-08-01'})()",
+            "expected": "Evidence link binds exact retained2026original,food,market,andAugustmonth"
+          }
+        ]
+      },
+      {
+        "action": "const row=Array.from(document.querySelectorAll('.supply-list article')).find(x=>x.querySelector('div:first-child > a,div:first-child > strong')?.textContent==='Papa superior');window.__qaSupplyEvidenceUrl=new URL(row.querySelector('a.evidence-link').href);row.querySelector('a.evidence-link').click();",
+        "ready": "!!document.querySelector('.evidence-heading h2')&&document.querySelector('.evidence-heading h2').textContent.includes('anex-Microdato-abastecimiento-2026.xlsx')",
+        "checks": [
+          {
+            "id": "SUP-05",
+            "condition": "document.querySelector('.evidence-heading').textContent.includes('anex-Microdato-abastecimiento-2026.xlsx')",
+            "expected": "Actual retained2026DANEworkbook opens in source viewer"
+          }
+        ]
+      },
+      {
+        "action": "window.__qaSupplySource=null;window.__qaSupplySourceError=null;fetch('/api'+window.__qaSupplyEvidenceUrl.pathname+window.__qaSupplyEvidenceUrl.search).then(r=>{if(!r.ok)throw new Error('source '+r.status);return r.json()}).then(x=>window.__qaSupplySource=x).catch(e=>window.__qaSupplySourceError=String(e));",
+        "ready": "!!window.__qaSupplySource||!!window.__qaSupplySourceError",
+        "checks": [
+          {
+            "id": "SUP-05",
+            "condition": "(()=>{const r=window.__qaSupplySource?.records?.find(x=>x.food_name==='Papa superior'&&x.market_id==='sipsa-armenia-mercar');return r?.quantity_kg===983500&&r.reporting_days===25&&r.first_reported_on==='2026-08-01'&&r.observed_on==='2026-08-31'&&r.period_start==='2026-08-01'&&JSON.stringify(r.source_rows?.['2.2']?.[0])==='[595063,595065]'&&JSON.stringify(r.source_rows?.['2.2']?.at(-1))==='[780294,780296]'})()",
+            "expected": "Exact original worksheet2.2 native rowranges,kg,first/lastday,25reportingdays match independently audited original"
+          }
+        ]
+      }
+    ]
+  }
+]

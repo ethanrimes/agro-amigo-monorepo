@@ -1,0 +1,283 @@
+[
+  {
+    "name": "DANE milk revised market san-pedro",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-antioquia-san-pedro-de-los-milagros",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-antioquia-san-pedro-de-los-milagros\"&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
+        "ready": "!!window.__qaMilk||!!window.__qaMilkError",
+        "checks": [
+          {
+            "id": "PRD-03",
+            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-antioquia-san-pedro-de-los-milagros\"&&window.__qaMilk.filters.market===\"finca-antioquia-san-pedro-de-los-milagros\"&&window.__qaMilk.filters.history==='all'",
+            "expected": "Corrected municipality stays selected across current price and all-history data"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "expected": "Original farmgate milk remains COP per litre"
+          },
+          {
+            "id": "PRD-01",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').textContent.replace(/[^0-9]/g,''))===Math.round(Number(window.__qaMilk.current.price))",
+            "expected": "Top price equals exact eligible current API value rounded only for display; no fixed latest date"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "(()=>{const day=\"2018-12-31\";const p=window.__qaMilk.history.find(x=>x.date===day);const label=new Date(day+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const tr=Array.from(document.querySelectorAll('.chart-data tbody tr')).find(r=>r.children[0].textContent===label);return p&&Math.abs(Number(p.price)-1077)<1&&tr&&Number(tr.children[1].textContent.replace(/[^0-9]/g,''))===Math.round(Number(p.price))})()",
+            "expected": "Historic 2018-12-31 belongs to corrected market; nativePDF prints 1077COP/litre (preferred XLS may retain sub-peso precision), displayed table exactly matches eligible API"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "(()=>{const bad=[\"finca-cundinamarca-san-diego-de-ubate-villapinzon\", \"finca-cundinamarca-de-ubate-villapinzon\", \"finca-cundinamarca-ubate-villapinzon\", \"finca-antioquia-san-pedro-de-los-mi\", \"finca-bolivar-xx-magangue\"];return !Array.from(document.querySelectorAll('select[aria-label=Mercado] option')).some(x=>bad.includes(x.value))&&!window.__qaMilk.options.markets.some(x=>bad.includes(x.id))})()",
+            "expected": "Five independently proved malformed historical market identities absent from both selector and published API options"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk revised market ubate",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-cundinamarca-villa-de-san-diego-de-ubate",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
+        "ready": "!!window.__qaMilk||!!window.__qaMilkError",
+        "checks": [
+          {
+            "id": "PRD-03",
+            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&window.__qaMilk.filters.market===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&window.__qaMilk.filters.history==='all'",
+            "expected": "Corrected municipality stays selected across current price and all-history data"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "expected": "Original farmgate milk remains COP per litre"
+          },
+          {
+            "id": "PRD-01",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').textContent.replace(/[^0-9]/g,''))===Math.round(Number(window.__qaMilk.current.price))",
+            "expected": "Top price equals exact eligible current API value rounded only for display; no fixed latest date"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "(()=>{const day=\"2024-11-30\";const p=window.__qaMilk.history.find(x=>x.date===day);const label=new Date(day+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const tr=Array.from(document.querySelectorAll('.chart-data tbody tr')).find(r=>r.children[0].textContent===label);return p&&Math.abs(Number(p.price)-1976)<1&&tr&&Number(tr.children[1].textContent.replace(/[^0-9]/g,''))===Math.round(Number(p.price))})()",
+            "expected": "Historic 2024-11-30 belongs to corrected market; nativePDF prints 1976COP/litre (preferred XLS may retain sub-peso precision), displayed table exactly matches eligible API"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk revised market villapinzon",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-cundinamarca-villapinzon",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-cundinamarca-villapinzon\"&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
+        "ready": "!!window.__qaMilk||!!window.__qaMilkError",
+        "checks": [
+          {
+            "id": "PRD-03",
+            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-cundinamarca-villapinzon\"&&window.__qaMilk.filters.market===\"finca-cundinamarca-villapinzon\"&&window.__qaMilk.filters.history==='all'",
+            "expected": "Corrected municipality stays selected across current price and all-history data"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "expected": "Original farmgate milk remains COP per litre"
+          },
+          {
+            "id": "PRD-01",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').textContent.replace(/[^0-9]/g,''))===Math.round(Number(window.__qaMilk.current.price))",
+            "expected": "Top price equals exact eligible current API value rounded only for display; no fixed latest date"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "(()=>{const day=\"2024-11-30\";const p=window.__qaMilk.history.find(x=>x.date===day);const label=new Date(day+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const tr=Array.from(document.querySelectorAll('.chart-data tbody tr')).find(r=>r.children[0].textContent===label);return p&&Math.abs(Number(p.price)-1680)<1&&tr&&Number(tr.children[1].textContent.replace(/[^0-9]/g,''))===Math.round(Number(p.price))})()",
+            "expected": "Historic 2024-11-30 belongs to corrected market; nativePDF prints 1680COP/litre (preferred XLS may retain sub-peso precision), displayed table exactly matches eligible API"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk revised market magangue",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-bolivar-magangue",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-bolivar-magangue\"&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
+        "ready": "!!window.__qaMilk||!!window.__qaMilkError",
+        "checks": [
+          {
+            "id": "PRD-03",
+            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-bolivar-magangue\"&&window.__qaMilk.filters.market===\"finca-bolivar-magangue\"&&window.__qaMilk.filters.history==='all'",
+            "expected": "Corrected municipality stays selected across current price and all-history data"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "expected": "Original farmgate milk remains COP per litre"
+          },
+          {
+            "id": "PRD-01",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').textContent.replace(/[^0-9]/g,''))===Math.round(Number(window.__qaMilk.current.price))",
+            "expected": "Top price equals exact eligible current API value rounded only for display; no fixed latest date"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "(()=>{const day=\"2021-06-30\";const p=window.__qaMilk.history.find(x=>x.date===day);const label=new Date(day+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const tr=Array.from(document.querySelectorAll('.chart-data tbody tr')).find(r=>r.children[0].textContent===label);return p&&Math.abs(Number(p.price)-1070)<1&&tr&&Number(tr.children[1].textContent.replace(/[^0-9]/g,''))===Math.round(Number(p.price))})()",
+            "expected": "Historic 2021-06-30 belongs to corrected market; nativePDF prints 1070COP/litre (preferred XLS may retain sub-peso precision), displayed table exactly matches eligible API"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk revised market el-guamo",
+    "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-bolivar-el-guamo",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-bolivar-el-guamo\"&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
+        "ready": "!!window.__qaMilk||!!window.__qaMilkError",
+        "checks": [
+          {
+            "id": "PRD-03",
+            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-bolivar-el-guamo\"&&window.__qaMilk.filters.market===\"finca-bolivar-el-guamo\"&&window.__qaMilk.filters.history==='all'",
+            "expected": "Corrected municipality stays selected across current price and all-history data"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "expected": "Original farmgate milk remains COP per litre"
+          },
+          {
+            "id": "PRD-01",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').textContent.replace(/[^0-9]/g,''))===Math.round(Number(window.__qaMilk.current.price))",
+            "expected": "Top price equals exact eligible current API value rounded only for display; no fixed latest date"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "(()=>{const day=\"2021-06-30\";const p=window.__qaMilk.history.find(x=>x.date===day);const label=new Date(day+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const tr=Array.from(document.querySelectorAll('.chart-data tbody tr')).find(r=>r.children[0].textContent===label);return p&&Math.abs(Number(p.price)-920)<1&&tr&&Number(tr.children[1].textContent.replace(/[^0-9]/g,''))===Math.round(Number(p.price))})()",
+            "expected": "Historic 2021-06-30 belongs to corrected market; nativePDF prints 920COP/litre (preferred XLS may retain sub-peso precision), displayed table exactly matches eligible API"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk original review ubate-villapinzon",
+    "route": "/evidence/7bdeb21148f0ae14ef55259f30cd7f4806689bd67a149e4ccff59de226057343?page=6",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-17",
+            "condition": "document.querySelector('.evidence-heading').textContent.includes('identidad de mercado incorrecta')&&document.querySelector('.evidence-heading').textContent.includes('no se usan como precios publicados')",
+            "expected": "Original viewer explains prior invalid market identities are retained and excluded from published prices"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='6'&&!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Exact audited native page renders"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"San Diego de Ubaté\")&&t.includes(\"Villapinzón\")&&t.includes(\"1.976\")&&t.includes(\"1.680\")})()",
+            "expected": "Literal original municipality fragments and prices remain visible; source text is not rewritten"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')==='/api/evidence/7bdeb21148f0ae14ef55259f30cd7f4806689bd67a149e4ccff59de226057343/content'",
+            "expected": "Download targets exact immutable audited PDF SHA"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Review note and PDF controls remain within viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk original review san-pedro-hyphen",
+    "route": "/evidence/faadd1d85cab4e932923ebcb4f27f6e77f1d4bcdfd7af328cce025ca196f9e26?page=4",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-17",
+            "condition": "document.querySelector('.evidence-heading').textContent.includes('identidad de mercado incorrecta')&&document.querySelector('.evidence-heading').textContent.includes('no se usan como precios publicados')",
+            "expected": "Original viewer explains prior invalid market identities are retained and excluded from published prices"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='4'&&!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Exact audited native page renders"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"San Pedro\")&&t.includes(\"Santa Rosa\")&&t.includes(\"1.077\")&&t.includes(\"1.019\")})()",
+            "expected": "Literal original municipality fragments and prices remain visible; source text is not rewritten"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')==='/api/evidence/faadd1d85cab4e932923ebcb4f27f6e77f1d4bcdfd7af328cce025ca196f9e26/content'",
+            "expected": "Download targets exact immutable audited PDF SHA"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Review note and PDF controls remain within viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE milk original review magangue-trend",
+    "route": "/evidence/c39f07b80fbe039bc4b300fac6f29c21267cac4d287899b292846d602bde72cb?page=5",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-17",
+            "condition": "document.querySelector('.evidence-heading').textContent.includes('identidad de mercado incorrecta')&&document.querySelector('.evidence-heading').textContent.includes('no se usan como precios publicados')",
+            "expected": "Original viewer explains prior invalid market identities are retained and excluded from published prices"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='5'&&!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Exact audited native page renders"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"El Guamo\")&&t.includes(\"Magangué\")&&t.includes(\"920\")&&t.includes(\"1.070\")})()",
+            "expected": "Literal original municipality fragments and prices remain visible; source text is not rewritten"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')==='/api/evidence/c39f07b80fbe039bc4b300fac6f29c21267cac4d287899b292846d602bde72cb/content'",
+            "expected": "Download targets exact immutable audited PDF SHA"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Review note and PDF controls remain within viewport"
+          }
+        ]
+      }
+    ]
+  }
+]

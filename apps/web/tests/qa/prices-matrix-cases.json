@@ -1,0 +1,2433 @@
+[
+  {
+    "name": "DANE input 01 Iniciador Chanchitos · 40 kilogramos",
+    "route": "/insumo/iniciador-chanchitos-40-kilogramos-solla-7487?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Iniciador Chanchitos\"",
+            "expected": "Exact commercial article Iniciador Chanchitos"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Alimentos balanceados, suplementos, coadyuvantes, adsorbentes, enzimas y aditivos\"",
+            "expected": "Literal source category Alimentos balanceados, suplementos, coadyuvantes, adsorbentes, enzimas y aditivos"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"40 kilogramos\")",
+            "expected": "Exact presentation 40 kilogramos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===130500",
+            "expected": "COP 130500 per 40 kilogramos from retained 2.1!row 82294",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"40 kilogramos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.1!row 82294\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"SOLLA\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 7487\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===130500)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===130450)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 0.03832886163281923%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 02 Panacur 10% · 1 litro",
+    "route": "/insumo/panacur-10-1-litro-msd-salud-animal-s-a-s-1202?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Panacur 10%\"",
+            "expected": "Exact commercial article Panacur 10%"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Antibióticos, antimicóticos y antiparasitarios\"",
+            "expected": "Literal source category Antibióticos, antimicóticos y antiparasitarios"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Exact presentation 1 litro"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===371704",
+            "expected": "COP 371704 per 1 litro from retained 2.2!row 158960",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.2!row 158960\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"MSD SALUD ANIMAL S.A.S.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 1202\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===371704)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===357053)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 4.103239502791256%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 03 Vaquerina · 3.78 litros",
+    "route": "/insumo/vaquerina-3-78-litros-drogas-continente-veterina-s-a-4040?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Vaquerina\"",
+            "expected": "Exact commercial article Vaquerina"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Antisépticos, desinfectantes e higiene\"",
+            "expected": "Literal source category Antisépticos, desinfectantes e higiene"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"3.78 litros\")",
+            "expected": "Exact presentation 3.78 litros"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===83908",
+            "expected": "COP 83908.3333333 per 3.78 litros from retained 2.3!row 20360",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"3.78 litros\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.3!row 20360\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"DROGAS CONTINENTE VETERINA S.A.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 4040\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===83908)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===82815)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 1.3197411603842912%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 04 Hectárea anual para papa, terreno plano con agua · Hectárea anual para papa, terreno plano con agua",
+    "route": "/insumo/hectarea-anual-para-papa-terreno-plano-con-agua-hectarea-anual-para-papa-terreno-plano-con-agua?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Hectárea anual para papa, terreno plano con agua\"",
+            "expected": "Exact commercial article Hectárea anual para papa, terreno plano con agua"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Arrendamiento de tierras\"",
+            "expected": "Literal source category Arrendamiento de tierras"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Hectárea anual para papa, terreno plano con agua\")",
+            "expected": "Exact presentation Hectárea anual para papa, terreno plano con agua"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===9280000",
+            "expected": "COP 9280000 per Hectárea anual para papa, terreno plano con agua from retained 3.1!row 1953",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Hectárea anual para papa, terreno plano con agua\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.1!row 1953\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===9280000)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 05 CapsiAlil Ec · 1 litro",
+    "route": "/insumo/capsialil-ec-1-litro-gowan-colombia-s-a-s-12415?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"CapsiAlil Ec\"",
+            "expected": "Exact commercial article CapsiAlil Ec"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Bioinsumos\"",
+            "expected": "Literal source category Bioinsumos"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Exact presentation 1 litro"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===212392",
+            "expected": "COP 212392.3076923 per 1 litro from retained 1.1!row 2438",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.1!row 2438\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"GOWAN COLOMBIA S.A.S.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 12415\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===212392)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===212658)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -0.12509532865708772%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 06 Carrier · 4 litros",
+    "route": "/insumo/carrier-4-litros-colinagro-s-a-1531?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Carrier\"",
+            "expected": "Exact commercial article Carrier"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Coadyuvantes, molusquicidas, reguladores fisiológicos y otros\"",
+            "expected": "Literal source category Coadyuvantes, molusquicidas, reguladores fisiológicos y otros"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"4 litros\")",
+            "expected": "Exact presentation 4 litros"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===130653",
+            "expected": "COP 130652.75 per 4 litros from retained 1.2!row 21680",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"4 litros\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.2!row 21680\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"COLINAGRO S.A.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 1531\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===130653)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===130654)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -0.0010523969296794%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 07 Fumigadora plástica manual 20 litros (Royal Condor Progen Clásica) · unidad",
+    "route": "/insumo/fumigadora-plastica-manual-20-litros-royal-condor-progen-clasica-unidad-royal-condor-progen?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Fumigadora plástica manual 20 litros (Royal Condor Progen Clásica)\"",
+            "expected": "Exact commercial article Fumigadora plástica manual 20 litros (Royal Condor Progen Clásica)"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Elementos agropecuarios\"",
+            "expected": "Literal source category Elementos agropecuarios"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"unidad\")",
+            "expected": "Exact presentation unidad"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===435557",
+            "expected": "COP 435557.2727273 per unidad from retained 3.2!row 24903; full product identity",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-07-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"unidad\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.2!row 24903; full product identity\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"ROYAL CONDOR PROGEN\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: \")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===435557)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 08 Costal tres rayas o cafetero nro. 5 fique (50 kilogramos) · unidad",
+    "route": "/insumo/costal-tres-rayas-o-cafetero-nro-5-fique-50-kilogramos-unidad?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Costal tres rayas o cafetero nro. 5 fique (50 kilogramos)\"",
+            "expected": "Exact commercial article Costal tres rayas o cafetero nro. 5 fique (50 kilogramos)"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Empaques agropecuarios\"",
+            "expected": "Literal source category Empaques agropecuarios"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"unidad\")",
+            "expected": "Exact presentation unidad"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===8850",
+            "expected": "COP 8850 per unidad from retained 3.3!row 2364",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-07-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"unidad\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.3!row 2364\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===8850)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 09 Bovino Cebú macho 19-24 meses · kilogramo",
+    "route": "/insumo/bovino-cebu-macho-19-24-meses-kilogramo?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Bovino Cebú macho 19-24 meses\"",
+            "expected": "Exact commercial article Bovino Cebú macho 19-24 meses"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Especies productivas\"",
+            "expected": "Literal source category Especies productivas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"kilogramo\")",
+            "expected": "Exact presentation kilogramo"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===9240",
+            "expected": "COP 9240 per kilogramo from retained 3.4!row 2319",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-06-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-06-30"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"kilogramo\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.4!row 2319\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-06-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===9240)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 10 Nutrimon DAP - Fosfato Diamónico: 18-46-0 · 50 kilogramos",
+    "route": "/insumo/nutrimon-dap-fosfato-diamonico-18-46-0-50-kilogramos-monomeros-colombo-venezolanos-s-a-583?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Nutrimon DAP - Fosfato Diamónico: 18-46-0\"",
+            "expected": "Exact commercial article Nutrimon DAP - Fosfato Diamónico: 18-46-0"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Fertilizantes y enmiendas\"",
+            "expected": "Literal source category Fertilizantes y enmiendas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Exact presentation 50 kilogramos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===241156",
+            "expected": "COP 241156.25 per 50 kilogramos from retained 1.3!row 84829",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.3!row 84829\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"MONOMEROS COLOMBO VENEZOLANOS S.A.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 583\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===241156)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===243333)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -0.8946917808083432%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 11 Mertect 500 Sc · 1 litro",
+    "route": "/insumo/mertect-500-sc-1-litro-syngenta-s-a-pl0016892023?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Mertect 500 Sc\"",
+            "expected": "Exact commercial article Mertect 500 Sc"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Fungicidas\"",
+            "expected": "Literal source category Fungicidas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Exact presentation 1 litro"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===339191",
+            "expected": "COP 339190.9090909 per 1 litro from retained 1.4!row 87679",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.4!row 87679\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"SYNGENTA S.A.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: PL0016892023\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===339191)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===341864)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -0.7818109293897924%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 12 Panzer 480 Sl · 20 litros",
+    "route": "/insumo/panzer-480-sl-20-litros-invequimica-s-a-invesa-pl0016312023?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Panzer 480 Sl\"",
+            "expected": "Exact commercial article Panzer 480 Sl"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Herbicidas\"",
+            "expected": "Literal source category Herbicidas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"20 litros\")",
+            "expected": "Exact presentation 20 litros"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===311858",
+            "expected": "COP 311857.5 per 20 litros from retained 1.5!row 92373",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"20 litros\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.5!row 92373\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"INVEQUIMICA S.A. INVESA\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: PL0016312023\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===311858)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===313451)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -0.5085089510245888%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 13 Gestar · 100 centímetros cúbicos",
+    "route": "/insumo/gestar-100-centimetros-cubicos-organizacion-veterinaria-regional-s-r-l-over-6843?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Gestar\"",
+            "expected": "Exact commercial article Gestar"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Hormonales\"",
+            "expected": "Literal source category Hormonales"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"100 centímetros cúbicos\")",
+            "expected": "Exact presentation 100 centímetros cúbicos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===141143",
+            "expected": "COP 141142.5555556 per 100 centímetros cúbicos from retained 2.4!row 6358",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"100 centímetros cúbicos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.4!row 6358\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"ORGANIZACIÓN VETERINARIA REGIONAL S.R.L. OVER.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 6843\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===141143)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===140132)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 0.72085795690362%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 14 Coragen Sc · 1 litro",
+    "route": "/insumo/coragen-sc-1-litro-fmc-colombia-s-a-s-pl0007042023?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Coragen Sc\"",
+            "expected": "Exact commercial article Coragen Sc"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Insecticidas, acaricidas y nematicidas\"",
+            "expected": "Literal source category Insecticidas, acaricidas y nematicidas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Exact presentation 1 litro"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===635950",
+            "expected": "COP 635950 per 1 litro from retained 1.6!row 70903",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.6!row 70903\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"FMC COLOMBIA S.A.S.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: PL0007042023\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===635950)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===633950)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 0.31548229355626844%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 15 Agita 10 Wg · 250 gramos",
+    "route": "/insumo/agita-10-wg-250-gramos-elanco-colombia-s-a-s-6022?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Agita 10 Wg\"",
+            "expected": "Exact commercial article Agita 10 Wg"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Insecticidas, plaguicidas y repelentes\"",
+            "expected": "Literal source category Insecticidas, plaguicidas y repelentes"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"250 gramos\")",
+            "expected": "Exact presentation 250 gramos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===300100",
+            "expected": "COP 300100 per 250 gramos from retained 2.5!row 2889",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"250 gramos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.5!row 2889\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"ELANCO COLOMBIA S.A.S\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 6022\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===300100)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===300100)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 0.0%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 16 Jornal agrícola, sin alimentación · Jornal agrícola, sin alimentación",
+    "route": "/insumo/jornal-agricola-sin-alimentacion-jornal-agricola-sin-alimentacion?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Jornal agrícola, sin alimentación\"",
+            "expected": "Exact commercial article Jornal agrícola, sin alimentación"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Jornales\"",
+            "expected": "Literal source category Jornales"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Jornal agrícola, sin alimentación\")",
+            "expected": "Exact presentation Jornal agrícola, sin alimentación"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===82984",
+            "expected": "COP 82983.8709677 per Jornal agrícola, sin alimentación from retained 3.5!row 1274",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-06-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-06-30"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Jornal agrícola, sin alimentación\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.5!row 1274\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-06-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===82984)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 17 Zanahoria Híbrida Bangor · 500000 semillas",
+    "route": "/insumo/zanahoria-hibrida-bangor-500000-semillas-semillas-bejo?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Zanahoria Híbrida Bangor\"",
+            "expected": "Exact commercial article Zanahoria Híbrida Bangor"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Material de propagación\"",
+            "expected": "Literal source category Material de propagación"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"500000 semillas\")",
+            "expected": "Exact presentation 500000 semillas"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===2489000",
+            "expected": "COP 2489000 per 500000 semillas from retained 3.6!row 7048",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"500000 semillas\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.6!row 7048\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"SEMILLAS BEJO\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: \")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===2489000)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 18 Finadyne Inyectable · 50 centímetros cúbicos",
+    "route": "/insumo/finadyne-inyectable-50-centimetros-cubicos-schering-plough-s-a-2084?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Finadyne Inyectable\"",
+            "expected": "Exact commercial article Finadyne Inyectable"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Medicamentos\"",
+            "expected": "Literal source category Medicamentos"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"50 centímetros cúbicos\")",
+            "expected": "Exact presentation 50 centímetros cúbicos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===213063",
+            "expected": "COP 213063.0769231 per 50 centímetros cúbicos from retained 2.6!row 41229",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"50 centímetros cúbicos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.6!row 41229\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"SCHERING PLOUGH S.A.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 2084\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===213063)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===212690)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 0.17519139405908213%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 19 Cincel rígido, hora/máquina · Cincel rígido, hora/máquina",
+    "route": "/insumo/cincel-rigido-hora-maquina-cincel-rigido-hora-maquina?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Cincel rígido, hora/máquina\"",
+            "expected": "Exact commercial article Cincel rígido, hora/máquina"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Servicios agrícolas\"",
+            "expected": "Literal source category Servicios agrícolas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Cincel rígido, hora/máquina\")",
+            "expected": "Exact presentation Cincel rígido, hora/máquina"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===103214",
+            "expected": "COP 103214.2857143 per Cincel rígido, hora/máquina from retained 3.7!row 1873",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Cincel rígido, hora/máquina\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"3.7!row 1873\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===103214)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 20 Belamyl R · 500 centímetros cúbicos",
+    "route": "/insumo/belamyl-r-500-centimetros-cubicos-elanco-colombia-s-a-s-343?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Belamyl R\"",
+            "expected": "Exact commercial article Belamyl R"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Vitaminas, sales y minerales\"",
+            "expected": "Literal source category Vitaminas, sales y minerales"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"500 centímetros cúbicos\")",
+            "expected": "Exact presentation 500 centímetros cúbicos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===253838",
+            "expected": "COP 253838.1578947 per 500 centímetros cúbicos from retained 2.7!row 91899",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"500 centímetros cúbicos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"2.7!row 91899\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"ELANCO COLOMBIA S.A.S\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 343\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===253838)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===250747)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 1.2326887744021908%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 21 13-26-6 · 50 kilogramos",
+    "route": "/insumo/13-26-6-50-kilogramos-fertisa-colombia-s-a-6235?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"13-26-6\"",
+            "expected": "Exact commercial article 13-26-6"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Fertilizantes y enmiendas\"",
+            "expected": "Literal source category Fertilizantes y enmiendas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Exact presentation 50 kilogramos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===190000",
+            "expected": "COP 190000 per 50 kilogramos from retained 1.3!row 75346",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2025-09-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2025-09-30"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.3!row 75346\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"FERTISA COLOMBIA S.A.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 6235\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2025-09-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===190000)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 22 13-26-6 · 50 kilogramos",
+    "route": "/insumo/13-26-6-50-kilogramos-fertisa-colombia-s-a-6235-0?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"13-26-6\"",
+            "expected": "Exact commercial article 13-26-6"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Fertilizantes y enmiendas\"",
+            "expected": "Literal source category Fertilizantes y enmiendas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Exact presentation 50 kilogramos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===190000",
+            "expected": "COP 190000 per 50 kilogramos from retained Hoja 1.3, fila 75346; precio por presentación",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2025-09-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2025-09-30"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/6e6c13526416a1eb472c318f8b3e66db17df225556c4e3f85991799e9b086898\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"Hoja 1.3, fila 75346; precio por presentación\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2025-09-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===190000)",
+            "expected": "Current chart/table row equals independent source quote"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 23 Acarotal 1,8 Ec · 100 centímetros cúbicos",
+    "route": "/insumo/acarotal-1-8-ec-100-centimetros-cubicos-talanu-chemical-ltda-632?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Acarotal 1,8 Ec\"",
+            "expected": "Exact commercial article Acarotal 1,8 Ec"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Insecticidas, acaricidas y nematicidas\"",
+            "expected": "Literal source category Insecticidas, acaricidas y nematicidas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"100 centímetros cúbicos\")",
+            "expected": "Exact presentation 100 centímetros cúbicos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===8625",
+            "expected": "COP 8625 per 100 centímetros cúbicos from retained 1.6!row 70758",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"100 centímetros cúbicos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.6!row 70758\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"TALANU CHEMICAL LTDA.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 632\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===8625)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===8900)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -3.08988764044944%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 24 Acarotal 1,8 Ec · 1 litro",
+    "route": "/insumo/acarotal-1-8-ec-1-litro-talanu-chemical-ltda-632?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Acarotal 1,8 Ec\"",
+            "expected": "Exact commercial article Acarotal 1,8 Ec"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Insecticidas, acaricidas y nematicidas\"",
+            "expected": "Literal source category Insecticidas, acaricidas y nematicidas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Exact presentation 1 litro"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===51000",
+            "expected": "COP 51000 per 1 litro from retained 1.6!row 70760",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 litro\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.6!row 70760\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"TALANU CHEMICAL LTDA.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 632\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===51000)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===49917)",
+            "expected": "Exact preceding calendar-month source price; computed backend change 2.1702838062756635%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input 25 Acarotal 1,8 Ec · 250 centímetros cúbicos",
+    "route": "/insumo/acarotal-1-8-ec-250-centimetros-cubicos-talanu-chemical-ltda-632?department=Antioquia&scope=department&history=recent",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-02",
+            "condition": "document.querySelector(\".entity-hero h1\")?.innerText===\"Acarotal 1,8 Ec\"",
+            "expected": "Exact commercial article Acarotal 1,8 Ec"
+          },
+          {
+            "id": "INP-14",
+            "condition": "document.querySelector(\".entity-hero .eyebrow\")?.innerText===\"Insecticidas, acaricidas y nematicidas\"",
+            "expected": "Literal source category Insecticidas, acaricidas y nematicidas"
+          },
+          {
+            "id": "INP-07",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"250 centímetros cúbicos\")",
+            "expected": "Exact presentation 250 centímetros cúbicos"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===13875",
+            "expected": "COP 13875 per 250 centímetros cúbicos from retained 1.6!row 70759",
+            "observed": "document.querySelector(\".input-detail-summary\")?.innerText"
+          },
+          {
+            "id": "INP-03",
+            "condition": "(document.querySelector(\".input-detail-summary\")?.innerText||\"\").includes(new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}))",
+            "expected": "Exact observed date 2026-08-31"
+          },
+          {
+            "id": "INP-05",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"250 centímetros cúbicos\")",
+            "expected": "Visible same department and physical presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")?.startsWith(\"/evidence/c3556910021fc440ff4b532b8c5ba185ffd71aed098d0f6f76d009d1f0aa4e38\") && new URL(document.querySelector(\".input-detail-summary a.evidence-link\").href).searchParams.get(\"locator\")===\"1.6!row 70759\"",
+            "expected": "Exact immutable document and original row locator",
+            "observed": "document.querySelector(\".input-detail-summary a.evidence-link\")?.getAttribute(\"href\")"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"TALANU CHEMICAL LTDA.\") && (document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Registro ICA: 632\")",
+            "expected": "Literal brand and ICA registration, no merging"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rendered table prices descending"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===13875)",
+            "expected": "Current chart/table row equals independent source quote"
+          },
+          {
+            "id": "INP-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===15000)",
+            "expected": "Exact preceding calendar-month source price; computed backend change -7.499999999999996%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE city package limon-tahiti 24",
+    "route": "/product/limon-tahiti?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=24+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===99000",
+            "expected": "COP 99000 midpoint of literal 98000–100000 package range"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Bulto\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"24 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-07",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Frutas > Cítricos\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"24 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===99000)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE city package mora-de-castilla 2.5",
+    "route": "/product/mora-de-castilla?region=Atl%C3%A1ntico&series=city&presentation=Caja+de+cart%C3%B3n&units=2.5+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===22500",
+            "expected": "COP 22500 midpoint of literal 22000–23000 package range"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Caja de cartón\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"2.5 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-07",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Frutas > Otras frutas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"2.5 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===22500)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE city package mora-de-castilla 12.5",
+    "route": "/product/mora-de-castilla?region=Atl%C3%A1ntico&series=city&presentation=Caja+de+cart%C3%B3n&units=12.5+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===79000",
+            "expected": "COP 79000 midpoint of literal 78000–80000 package range"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Caja de cartón\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"12.5 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-07",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Frutas > Otras frutas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"12.5 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===79000)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE input complete retained history since2018",
+    "route": "/insumo/iniciador-chanchitos-40-kilogramos-solla-7487?department=Antioquia&scope=department&history=all",
+    "ready": "document.querySelectorAll(\".chart-data tbody tr\").length===94",
+    "steps": [
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "INP-09",
+            "condition": "document.querySelectorAll(\".chart-data tbody tr\").length===94",
+            "expected": "All 94 independently enumerated retained months"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2018-01-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===81250)",
+            "expected": "Earliest source row 2018-01-31 COP 81250.0"
+          },
+          {
+            "id": "INP-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "Every retained price stays descending"
+          },
+          {
+            "id": "INP-09",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Todo el historial\")",
+            "expected": "Explicit historical scope visible"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 01 0-5-0",
+    "route": "/insumo/0-5-0-50-kilogramos?department=Huila&municipality=Isnos&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Isnos\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Huila\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===98500",
+            "expected": "Exact municipal COP 98500 per 50 kilogramos"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"50 kilogramos\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"24cf45773d31dee2f02cf45ddddcf75c1980ffadaf098f1696f586ae4cd281e7\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===98500)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 02 Alambre de púas nro. 14",
+    "route": "/insumo/alambre-de-puas-nro-14-rollo-por-200-metros?department=Antioquia&municipality=Abejorral&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Abejorral\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Antioquia\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===116000",
+            "expected": "Exact municipal COP 116000 per rollo por 200 metros"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"rollo por 200 metros\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"820b90f64c9f3dd6e73c4f839d8803a17cbc9445a5376e1c13d789a6494cc799\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-07-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===116000)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 03 Army 400 Sc",
+    "route": "/insumo/army-400-sc-250-centimetros-cubicos?department=Tolima&municipality=Espinal&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Espinal\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Tolima\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===89240",
+            "expected": "Exact municipal COP 89240 per 250 centímetros cúbicos"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"250 centímetros cúbicos\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"1171dd7241a1d9018cfed88c03c934afce26ff187b6ba078dc037544e5bcd819\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2021-03-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===89240)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 04 Belamyl R",
+    "route": "/insumo/belamyl-r-30-centimetros-cubicos?department=Cauca&municipality=Popay%C3%A1n&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Popayán\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Cauca\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===34250",
+            "expected": "Exact municipal COP 34250 per 30 centímetros cúbicos"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"30 centímetros cúbicos\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"1171dd7241a1d9018cfed88c03c934afce26ff187b6ba078dc037544e5bcd819\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2021-01-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===34250)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 05 Bovino hembra cebú 400 kilogramos",
+    "route": "/insumo/bovino-hembra-cebu-400-kilogramos-kilogramo?department=Cesar&municipality=Valledupar&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Valledupar\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Cesar\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===2233",
+            "expected": "Exact municipal COP 2233.33 per kilogramo"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"kilogramo\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"1a13ada6199f60b15c94b4b0504330011d29348a9075d14d0562252f9dac9b58\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2013-03-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===2233)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 06 Usosaldaña",
+    "route": "/insumo/usosaldana-hectarea-semestral-cultivos-secanos-sorgo-maiz-hasta-8-000-metros-cubicos?department=Tolima&municipality=Salda%C3%B1a&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Saldaña\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Tolima\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===255760",
+            "expected": "Exact municipal COP 255760 per Hectárea/Semestral (Cultivos secanos -sorgo, maíz- hasta 8.000 metros cúbicos)"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"Hectárea/Semestral (Cultivos secanos -sorgo, maíz- hasta 8.000 metros cúbicos)\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"0f0e48935f8ad6a34adb2222b00ac742712da3c958a4c0aadfa0c8431082c107\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-04-30T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===255760)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE municipal input 07 Zorvec Encantia",
+    "route": "/insumo/zorvec-encantia-250-centimetros-cubicos?department=Boyac%C3%A1&municipality=Aquitania&scope=municipality&history=all",
+    "ready": "!!document.querySelector(\".input-detail-summary h2\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "INP-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Aquitania\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Boyacá\")",
+            "expected": "Exact municipal scope and department"
+          },
+          {
+            "id": "INP-03",
+            "condition": "Number((document.querySelector(\".input-detail-summary h2\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===114900",
+            "expected": "Exact municipal COP 114900 per 250 centímetros cúbicos"
+          },
+          {
+            "id": "INP-02",
+            "condition": "(document.querySelector(\".entity-hero\")?.innerText||\"\").includes(\"250 centímetros cúbicos\")",
+            "expected": "Exact commercial presentation"
+          },
+          {
+            "id": "INP-13",
+            "condition": "document.querySelector(\".input-detail-summary a.evidence-link\")?.href.includes(\"24cf45773d31dee2f02cf45ddddcf75c1980ffadaf098f1696f586ae4cd281e7\")",
+            "expected": "Exact independently checked source document"
+          },
+          {
+            "id": "INP-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===114900)",
+            "expected": "Literal historical observation date preserved"
+          }
+        ],
+        "action": "document.querySelector(\".chart-data\").open=true;"
+      }
+    ]
+  },
+  {
+    "name": "DANE comparison incompatible packages are unmatched",
+    "route": "/compare/markets?a=sipsa-barranquilla-barranquillita&b=sipsa-bucaramanga-centroabastos&series=city&product=mora-de-castilla&dates=latest",
+    "ready": "!!document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CMP-03",
+            "condition": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"Sin coincidencias\") && (document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"2 sin una cotización equivalente\")",
+            "expected": "Two exact physical combinations remain unmatched, never zero prices"
+          },
+          {
+            "id": "CMP-14",
+            "condition": "Array.from(document.querySelectorAll(\"article\")).filter(a=>a.innerText.includes(\"Sin dato equivalente\")).length===2",
+            "expected": "No 2.5kg/12.5kg substitution"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE national package mean and constituent sources",
+    "route": "/compare/markets?a=sipsa-barranquilla-barranquillita&b=__national__&series=city&product=mora-de-castilla&dates=same&sources=true",
+    "ready": "!!document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CMP-04",
+            "condition": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"-0,24 %\")",
+            "expected": "Unweighted mean of +1.740506329% and −2.222222222% = −0.2408579466%"
+          },
+          {
+            "id": "CMP-05",
+            "condition": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\"))?.innerText.includes(\"80.375\") && Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\"))?.innerText.includes(\"4 lugares\")",
+            "expected": "12.5kg national mean(79000,83500,85500,73500)=80375"
+          },
+          {
+            "id": "CMP-02",
+            "condition": "Array.from(document.querySelectorAll(\"article\")).some(a=>a.innerText.includes(\"2.5 Kilogramo\")&&!a.innerText.includes(\"12.5 Kilogramo\")&&a.innerText.includes(\"22.000\")&&a.innerText.includes(\"-2,22 %\"))",
+            "expected": "2.5kg national mean22500/21500=22000; diff−500/22500"
+          },
+          {
+            "id": "CMP-06",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Solo fechas iguales\")",
+            "expected": "Same-date constraint visible"
+          }
+        ]
+      },
+      {
+        "action": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").open=true;",
+        "ready": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\"))?.querySelector(\"details\")?.querySelectorAll(\"a.evidence-link\").length===4",
+        "checks": [
+          {
+            "id": "CMP-12",
+            "condition": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").querySelectorAll(\"a.evidence-link\").length===4",
+            "expected": "All four exact national constituents expose source links"
+          },
+          {
+            "id": "CMP-12",
+            "condition": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").innerText.includes(\"Cartagena\") && Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").innerText.includes(\"85.500\")",
+            "expected": "Independent Cartagena source85000–86000 midpoint85500"
+          }
+        ]
+      },
+      {
+        "action": "const select=Array.from(document.querySelectorAll(\"label\")).find(l=>l.innerText.trim().startsWith(\"Unidades\")).querySelector(\"select\");select.value=\"2.5 Kilogramo\";select.dispatchEvent(new Event(\"change\",{bubbles:true}));",
+        "ready": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"-2,22 %\")",
+        "checks": [
+          {
+            "id": "CMP-08",
+            "condition": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"-2,22 %\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"2.5 Kilogramo\")",
+            "expected": "Filtered single package recomputes overall mean and visible units"
+          },
+          {
+            "id": "CMP-04",
+            "condition": "(document.querySelector(\"[aria-label=\\\"Promedios por categoría\\\"]\")?.innerText||\"\").includes(\"-2,22 %\")",
+            "expected": "Category/subcategory totals use filtered population"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE rice mill original tonne to kg molino-arroz-paddy-verde",
+    "route": "/product/molino-arroz-paddy-verde?series=mill&presentation=Por+unidad+de+medida&units=1+kg&market=molino-atlantico-barranquilla&region=&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===1350",
+            "expected": "Literal 1350000.0 COP/tonne divided by1000 = 1350.00 COP/kg"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"1 kg\")",
+            "expected": "Normalized kilogram physical unit explicit"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"BARRANQUILLA · molinos\")",
+            "expected": "Exact mill municipality visible"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "(document.querySelector(\".notice\")?.innerText||\"\").includes(\"COP por tonelada\") && (document.querySelector(\".notice\")?.innerText||\"\").includes(\"1.000\")",
+            "expected": "Original-to-displayed unit conversion explained"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e\")&&new URL(a.href).searchParams.get(\"locator\")===\"precios de arroz en molino!row 803; COP/tonelada dividido entre 1000 = COP/kg\")",
+            "expected": "Original workbook plus explicit normalized-price locator"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===1350)",
+            "expected": "Exact dated normalized source value retained in history"
+          },
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rice history table values descending"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE rice mill original tonne to kg molino-arroz-blanco-empacado",
+    "route": "/product/molino-arroz-blanco-empacado?series=mill&presentation=Por+unidad+de+medida&units=1+kg&market=molino-casanare-aguazul&region=&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===3616",
+            "expected": "Literal 3616000.0 COP/tonne divided by1000 = 3616.00 COP/kg"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"1 kg\")",
+            "expected": "Normalized kilogram physical unit explicit"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"AGUAZUL · molinos\")",
+            "expected": "Exact mill municipality visible"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "(document.querySelector(\".notice\")?.innerText||\"\").includes(\"COP por tonelada\") && (document.querySelector(\".notice\")?.innerText||\"\").includes(\"1.000\")",
+            "expected": "Original-to-displayed unit conversion explained"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e\")&&new URL(a.href).searchParams.get(\"locator\")===\"precios de arroz en molino!row 738; COP/tonelada dividido entre 1000 = COP/kg\")",
+            "expected": "Original workbook plus explicit normalized-price locator"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===3616)",
+            "expected": "Exact dated normalized source value retained in history"
+          },
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rice history table values descending"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE rice mill original tonne to kg molino-harina-de-arroz",
+    "route": "/product/molino-harina-de-arroz?series=mill&presentation=Por+unidad+de+medida&units=1+kg&market=molino-atlantico-barranquilla&region=&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===1200",
+            "expected": "Literal 1200000.0 COP/tonne divided by1000 = 1200.00 COP/kg"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"1 kg\")",
+            "expected": "Normalized kilogram physical unit explicit"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"BARRANQUILLA · molinos\")",
+            "expected": "Exact mill municipality visible"
+          },
+          {
+            "id": "PRD-06",
+            "condition": "(document.querySelector(\".notice\")?.innerText||\"\").includes(\"COP por tonelada\") && (document.querySelector(\".notice\")?.innerText||\"\").includes(\"1.000\")",
+            "expected": "Original-to-displayed unit conversion explained"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e\")&&new URL(a.href).searchParams.get(\"locator\")===\"precios de arroz en molino!row 824; COP/tonelada dividido entre 1000 = COP/kg\")",
+            "expected": "Original workbook plus explicit normalized-price locator"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-09",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-08-31T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===1200)",
+            "expected": "Exact dated normalized source value retained in history"
+          },
+          {
+            "id": "PRD-10",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "All rice history table values descending"
+          }
+        ]
+      }
+    ]
+  }
+]
