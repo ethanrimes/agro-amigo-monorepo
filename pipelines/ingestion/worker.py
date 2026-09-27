@@ -1838,7 +1838,7 @@ def run(
                 except WorkDeferred as exc:
                     summary["deferred"].append({"url": url, "reason": str(exc)})
                     db.execute(
-                        "UPDATE ingestion_asset SET status='pending',checked_at=now()-interval '5 hours',error=%s WHERE url=%s",
+                        "UPDATE ingestion_asset SET status='pending',checked_at=now()-interval '6 hours',error=%s WHERE url=%s",
                         (str(exc), url),
                     )
                 except Exception as exc:

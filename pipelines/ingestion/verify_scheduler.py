@@ -146,8 +146,28 @@ def main():
         daily = {url for url, _, _ in queue_plan.daily_candidates(db, audit_day)}
         for kind in ("inputs", "inputs-municipal", "coffee", "coffee-pdf", "rice", "monthly", "supply", "supply-reference", "supply-index"):
             assert f"https://example.invalid/annual/{kind}-2026.xlsx" in daily, kind
+        # A :25 checkpoint should be eligible at the next :15 hourly run,
+        # fifty minutes later. The old five-hour backdate missed that run;
+        # expected deferral is not a source error with a six-hour retry delay.
+        for name, status, elapsed in [
+            ("checkpoint-next-hour", "pending", "6 hours 50 minutes"),
+            ("checkpoint-immediate-next-run", "pending", "6 hours 1 second"),
+            ("old-checkpoint-next-hour", "pending", "5 hours 50 minutes"),
+            ("failed-next-hour", "failed", "50 minutes"),
+        ]:
+            db.execute(
+                "INSERT INTO ingestion_asset(url,kind,status,checked_at,processor_version) VALUES(%s,'inputs',%s,now()-%s::interval,%s)",
+                ("https://example.invalid/" + name, status, elapsed, worker.parser_version("inputs")),
+            )
+        for candidates in (
+            queue_plan.daily_candidates(db, audit_day),
+            queue_plan.backfill_candidates(db, 1000),
+        ):
+            selected = {url.rsplit("/", 1)[-1] for url, _, _ in candidates}
+            assert {"checkpoint-next-hour", "checkpoint-immediate-next-run"} <= selected
+            assert not {"old-checkpoint-next-hour", "failed-next-hour"} & selected
         print(
-            "Temporary PostgreSQL queue: index/leaf fairness, NULL-date discovery, parser upgrades, stale review, retry cooldown, 11 milk annual/leaf cases, calendar-year rollover and 9 other mutable annual families passed."
+            "Temporary PostgreSQL queue: index/leaf fairness, NULL-date discovery, parser upgrades, stale review, retry cooldown, 11 milk annual/leaf cases, calendar-year rollover, 9 other mutable annual families and checkpoint continuation without failure cooldown passed."
         )
 
 

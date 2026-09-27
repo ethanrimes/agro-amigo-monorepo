@@ -232,6 +232,47 @@ class Runtime(unittest.TestCase):
         self.assertEqual(summary["phase"], "finished")
         self.assertNotIn("active_asset", summary)
 
+    def test_checkpoint_deferral_is_ready_next_run_but_not_retried_in_same_run(self):
+        from .resumable_inputs import WorkDeferred
+
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        source = ("https://example.invalid/resumable-input", "inputs-annex", None)
+        failed = ("https://example.invalid/failed-input", "inputs-annex", None)
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker, "discover", return_value=[]),
+            patch("pipelines.ingestion.official_sources.discover_roots"),
+            patch(
+                "pipelines.ingestion.queue_plan.daily_candidates",
+                return_value=[source, source, failed],
+            ) as candidates,
+            patch.object(
+                worker, "process_asset",
+                side_effect=[WorkDeferred("Committed batches will resume"), ValueError("Invalid source")],
+            ) as process,
+            patch("pipelines.ingestion.ocr.drain", return_value={}),
+            patch("pipelines.ingestion.retained_replays.drain", return_value={}),
+        ):
+            connect.return_value.__enter__.return_value = db
+            summary = worker.run("daily", limit=4)
+        # Both the duplicate initial candidate and the refreshed queue contain
+        # this still-eligible URL. Neither may repeat its work in this run.
+        self.assertEqual(candidates.call_count, 2)
+        self.assertEqual([c.args[1] for c in process.call_args_list], [source[0], failed[0]])
+        self.assertEqual(summary["assets"], 0)
+        self.assertEqual(summary["rows"], 0)
+        self.assertEqual(summary["deferred"], [{"url": source[0], "reason": "Committed batches will resume"}])
+        self.assertEqual(len(summary["errors"]), 1)
+        deferred = [c for c in db.execute.call_args_list if "SET status='pending',checked_at=now()-interval" in c.args[0]]
+        self.assertEqual(len(deferred), 1)
+        self.assertIn("interval '6 hours'", deferred[0].args[0])
+        self.assertEqual(deferred[0].args[1], ("Committed batches will resume", source[0]))
+        failures = [c for c in db.execute.call_args_list if "SET status=%s,attempts=attempts+1,checked_at=now()" in c.args[0]]
+        self.assertEqual(len(failures), 1)
+        self.assertEqual(failures[0].args[1][0], "failed")
+        self.assertEqual(failures[0].args[1][-1], failed[0])
+
     def test_overlap_is_durable_instead_of_silent(self):
         db = MagicMock()
         db.execute.return_value.fetchone.return_value = (False,)
