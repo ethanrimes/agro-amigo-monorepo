@@ -1092,6 +1092,7 @@ from pipelines.ingestion.inputs import parse_inputs
 
 
 def save_rows(db, did, rows):
+    """Archive parsed rows once; replays keep their immutable original identity."""
     count = 0
     with db.cursor() as cur:
         cur.execute(
@@ -1104,7 +1105,13 @@ def save_rows(db, did, rows):
                 cp.write_row((did, *row[:-1], Jsonb(row[-1])))
                 count += 1
         cur.execute(
-            "INSERT INTO historical_price SELECT * FROM ingestion_stage ON CONFLICT DO NOTHING"
+            """INSERT INTO historical_price SELECT staged.* FROM ingestion_stage staged
+            WHERE NOT EXISTS (
+              SELECT 1 FROM historical_price existing
+              WHERE existing.document_id=%s
+                AND existing.source_locator=staged.source_locator
+            ) ON CONFLICT DO NOTHING""",
+            (did,),
         )
     return count
 
