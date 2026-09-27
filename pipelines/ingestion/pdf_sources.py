@@ -163,9 +163,61 @@ class PDFOCRPending(ValueError):
     """Originals and failed pages are retained while independent OCR is pending."""
 
 
+def native_price_page_failure(page, text, native_prices, previous_price_grid=False):
+    """The shared native-first decision for parsing and old queued PDF pages."""
+    from .ocr import needs_ocr
+
+    if needs_ocr(page, text):
+        return True
+    if native_prices or not has_table_sized_image(page):
+        return False
+    # Readable percentage charts and decorative covers are not failed prices.
+    if re.search(
+        r"(?:cuadro|gr[aá]fico)[^\n]*variaci[oó]n\s+porcentual", text, re.IGNORECASE
+    ):
+        return False
+    return bool(
+        (
+            _MONEY_KG.search(text)
+            and sum(
+                city in text
+                for city in ("Bogotá", "Medellín", "Cali", "Armenia", "Pereira")
+            )
+            >= 3
+        )
+        or (
+            previous_price_grid
+            and re.search(r"precios?[^\n]*continuaci[oó]n", text, re.IGNORECASE)
+        )
+    )
+
+
+def queued_price_page_needs_ocr(data, day, kind, number):
+    """Recheck only a queued page and its immediate native-price predecessor."""
+    from .worker import parse_pdf_pages
+
+    if kind not in ("daily-pdf", "monthly-pdf") or day is None:
+        raise ValueError("Native OCR eligibility needs a supported dated PDF")
+    monthly = kind == "monthly-pdf"
+    with pdfplumber.open(io.BytesIO(data)) as pdf:
+        if not isinstance(number, int) or not 1 <= number <= len(pdf.pages):
+            raise ValueError("Native OCR eligibility has an invalid source page")
+        page = pdf.pages[number - 1]
+        native = list(parse_pdf_pages([page], day, monthly, allow_empty=True))
+        previous = number > 1 and bool(
+            list(
+                parse_pdf_pages(
+                    [pdf.pages[number - 2]], day, monthly, allow_empty=True
+                )
+            )
+        )
+        return native_price_page_failure(
+            page, page.extract_text() or "", native, previous
+        )
+
+
 def parse_archived_price_pdf(db, data, did, day, kind):
     """Native-first extraction for supported DANE daily/monthly price matrices."""
-    from .ocr import needs_ocr
     from .worker import parse_pdf_pages
 
     monthly = kind == "monthly-pdf"
@@ -178,38 +230,9 @@ def parse_archived_price_pdf(db, data, did, day, kind):
             native_prices = list(
                 parse_pdf_pages([page], day, monthly, allow_empty=True)
             )
-            failed = needs_ocr(page, text)
-            if not failed and has_table_sized_image(page):
-                # A readable percentage table/chart is a successful native
-                # extraction of non-price information, not an OCR failure.
-                percentage_heading = re.search(
-                    r"(?:cuadro|gr[aá]fico)[^\n]*variaci[oó]n\s+porcentual",
-                    text,
-                    re.IGNORECASE,
-                )
-                price_heading = not percentage_heading and (
-                    (
-                        _MONEY_KG.search(text)
-                        and sum(
-                            city in text
-                            for city in (
-                                "Bogotá",
-                                "Medellín",
-                                "Cali",
-                                "Armenia",
-                                "Pereira",
-                            )
-                        )
-                        >= 3
-                    )
-                    or (
-                        previous_price_grid
-                        and re.search(
-                            r"precios?[^\n]*continuaci[oó]n", text, re.IGNORECASE
-                        )
-                    )
-                )
-                failed = bool(price_heading) and not native_prices
+            failed = native_price_page_failure(
+                page, text, native_prices, previous_price_grid
+            )
             previous_price_grid = bool(native_prices)
             if not failed:
                 continue
