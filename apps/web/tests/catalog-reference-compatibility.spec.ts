@@ -163,48 +163,40 @@ async function fixtures(page: Page, historyUnit: string) {
   return seasonalityRequests;
 }
 
-for (const surface of ["budget", "cleansheet"] as const) {
-  for (const unit of ["kg", "pack"]) {
-    test(`${surface} excludes incompatible unified catalog quotes and ${unit === "kg" ? "retains COP/kg history" : "rejects package history"}`, async ({
-      page,
-    }) => {
-      const requests = await fixtures(page, unit);
-      await page.goto(surface === "budget" ? "/plan?tab=budget" : "/farm");
-      if (surface === "cleansheet")
-        await page.getByRole("tab", { name: /Costos y rentabilidad/ }).click();
-      const picker = page.getByLabel(
-        surface === "budget"
-          ? "Producto y presentación que venderías"
-          : "Producto comparable",
-      );
-      await expect(picker).toHaveValue("frijol-rojo");
-      await expect(picker.locator("option")).toHaveText([
-        surface === "budget" ? "Selecciona una presentación" : "Sin selección",
-        "Frijol rojo local",
-      ]);
+for (const unit of ["kg", "pack"]) {
+  test(`read-only references exclude incompatible catalog quotes and ${unit === "kg" ? "retain COP/kg history" : "reject package history"}`, async ({
+    page,
+  }) => {
+    const requests = await fixtures(page, unit);
+    await page.goto("/plan?tab=budget");
+    await page
+      .getByText("Consultar historia y estacionalidad de precios", {
+        exact: true,
+      })
+      .click();
+    const picker = page.getByLabel("Producto comparable");
+    await expect(picker).toHaveValue("frijol-rojo");
+    await expect(picker.locator("option")).toHaveText(["Frijol rojo local"]);
+    await expect(
+      page.getByRole("combobox", {
+        name: "Mercado de referencia",
+        exact: true,
+      }),
+    ).toHaveValue("safe-market");
+    await expect.poll(() => requests.length).toBeGreaterThan(0);
+    if (unit === "kg")
+      await expect(page.locator(".seasonal-bars button")).toHaveCount(12);
+    else {
+      await expect(page.locator(".seasonal-bars")).toHaveCount(0);
       await expect(
-        page.getByRole("combobox", {
-          name: "Mercado de referencia",
-          exact: true,
-        }),
-      ).toHaveValue("safe-market");
-      await expect.poll(() => requests.length).toBeGreaterThan(0);
-      if (unit === "kg") {
-        await expect(page.locator(".seasonal-bars button")).toHaveCount(12);
-        if (surface === "cleansheet")
-          await expect(page.locator(".clean-price b")).toContainText("5.000");
-      } else {
-        await expect(page.locator(".seasonal-bars")).toHaveCount(0);
-        if (surface === "cleansheet")
-          await expect(page.locator(".clean-price")).toHaveCount(0);
-        else
-          await expect(
-            page.getByText(
-              "La referencia disponible no corresponde al precio por kg",
-              { exact: false },
-            ),
-          ).toBeVisible();
-      }
-    });
-  }
+        page.getByText(
+          "La referencia disponible no corresponde al precio por kg",
+          { exact: false },
+        ),
+      ).toBeVisible();
+    }
+    await expect(
+      page.locator("input[type=number],.clean-price,.earnings-scenarios"),
+    ).toHaveCount(0);
+  });
 }

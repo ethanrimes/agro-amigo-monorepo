@@ -1,5 +1,7 @@
 # Mi finca: datos territoriales y análisis económico
 
+> UI update2026-09-27: manual profitability/budget calculators were removed. Mi finca retains pin, weather, terrain and crop references. `/plan` provides read-only calendars, published cost studies and historical prices, including old `?tab=budget` links. Earlier farm/scenario data remains stored without migration or deletion. Numerical budget methods below describe retained legacy methodology, not active editable UI.
+
 Rediseño informativo, septiembre de 2026. Sin alta obligatoria de fincas, registro de labores ni carga de análisis de suelo.
 
 ## Fuentes implementadas

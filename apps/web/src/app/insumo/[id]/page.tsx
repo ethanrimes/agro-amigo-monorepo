@@ -249,9 +249,7 @@ function Input({ id }: { id: string }) {
                       ))}
                   </div>
                 </section>
-                <Link className="button primary" href="/plan?tab=budget">
-                  Usar como referencia para mi presupuesto →
-                </Link>
+
               </>
             ) : (
               <section className="panel supply-empty">

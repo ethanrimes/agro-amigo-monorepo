@@ -79,64 +79,6 @@ test("municipal crop references remain available from the informational workspac
     ),
   ).toBe(true);
 });
-test("budget computes costs, commission and scenarios and preserves evidence", async ({
-  page,
-}, info) => {
-  await farm(page);
-  await page.goto("/plan?tab=budget");
-  await expect(
-    page.getByLabel("Cosecha de referencia (kg por hectárea)"),
-  ).toBeVisible();
-  await page.getByLabel("Área (hectáreas)", { exact: true }).fill("2");
-  await page.getByLabel("Cosecha de referencia (kg por hectárea)").fill("1000");
-  await page.getByLabel("Pérdida o producto no vendible (%)").fill("10");
-  for (const [label, value] of [
-    ["Preparación, siembra y labores por hectárea", "200000"],
-    ["Semilla e insumos por hectárea", "300000"],
-    ["Cosecha y poscosecha por hectárea", "100000"],
-    ["Otros costos de producción por hectárea", "0"],
-  ])
-    await page.getByLabel(label, { exact: true }).fill(value);
-  await page
-    .getByRole("button", { name: "Ingresar mi precio", exact: true })
-    .click();
-  await page.getByLabel("Precio que recibirías por kg (COP)").fill("2000");
-  await page
-    .getByLabel("Gastos adicionales de venta, total (COP)")
-    .fill("100000");
-  await page.getByLabel("Comisión sobre la venta (%)").fill("10");
-  await expect(page.locator(".break-even strong")).toContainText(
-    money(1300000 / (1800 * 0.9)),
-  );
-  await expect(page.locator(".earnings-scenarios .typical strong")).toHaveText(
-    money(1940000),
-  );
-  await page
-    .getByRole("button", { name: "Guardar escenario", exact: true })
-    .click();
-  await expect(page.locator(".saved-scenarios")).toContainText(money(1940000));
-  const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("agroamigo-scenarios-legacy-farm") || "[]"),
-  );
-  expect(saved[0].sourceDocuments[0]).toMatch(/^[a-f0-9]{64}$/);
-  await page.screenshot({
-    path: resolve(
-      __dirname,
-      "../../../artifacts",
-      `budget-${info.project.name}.png`,
-    ),
-    fullPage: true,
-  });
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth > innerWidth,
-    ),
-  ).toBe(false);
-  await page.getByLabel("Cosecha de referencia (kg por hectárea)").fill("0");
-  await expect(
-    page.getByRole("button", { name: "Guardar escenario", exact: true }),
-  ).toBeDisabled();
-});
 test("seasonal references use five complete years and crop cost templates link to original tables", async ({
   page,
   request,
@@ -152,24 +94,34 @@ test("seasonal references use five complete years and crop cost templates link t
   ).toBeNull();
   await farm(page);
   await page.goto("/plan?tab=budget");
-  await expect(page.locator(".seasonal-bars button")).toHaveCount(12);
   await page
-    .getByLabel("Cultivo y sistema del escenario")
-    .selectOption({ label: "Frijol" });
-  await page
-    .getByLabel("Comenzar con una referencia publicada")
-    .selectOption("frijol-2023-13");
-  await expect(page.locator(".cost-reference")).toContainText("2023");
-  await page
-    .getByRole("link", { name: "Ver tabla original de costos" })
+    .getByText("Consultar historia y estacionalidad de precios", {
+      exact: true,
+    })
     .click();
-  await expect(page).toHaveURL(/\/plan\?tab=budget$/);
+  await expect(page.locator(".seasonal-bars button")).toHaveCount(12);
+  const picker = page.getByLabel("Cultivo y sistema de referencia");
+  const bean = await picker
+    .locator("option")
+    .filter({ hasText: /^Frijol ·/ })
+    .getAttribute("value");
+  await picker.selectOption(bean!);
+  const study = page
+    .locator(".published-cost-references details")
+    .filter({ hasText: "región occidente (Huila)" })
+    .first();
+  await study.locator("summary").click();
+  await expect(study).toContainText("nominales");
+  await study
+    .getByRole("link", { name: /Ver tabla original de costos/ })
+    .click();
   await expect(page.locator("dialog")).toBeVisible();
   await expect(page.getByLabel("Página del documento")).toHaveValue("13");
   await expect(page.locator("canvas[data-rendered=true]")).toBeVisible({
     timeout: 35000,
   });
 });
+
 test("offers handle partial quantities, units, discounts, deadlines and buyer costs", async ({
   page,
 }, info) => {

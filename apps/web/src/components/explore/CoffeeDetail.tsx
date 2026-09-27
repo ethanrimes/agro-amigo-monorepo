@@ -292,9 +292,7 @@ export function CoffeeDetail() {
                   </aside>
                 </div>
                 <CoffeeCostReference />
-                <Link className="button secondary" href="/plan?tab=budget">
-                  Hacer el presupuesto de mi café →
-                </Link>
+
                 <div className="coffee-support">
                   <div>
                     <IoShieldCheckmarkOutline />

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   IoAddOutline,
   IoSwapHorizontalOutline,
@@ -376,9 +375,7 @@ export default function OffersPage() {
         </p>
         <div className="form-actions">
           <EvidenceLink id="planning-method">Comprobar la fórmula</EvidenceLink>
-          <Link className="button secondary" href="/plan?tab=budget">
-            <IoCalculatorOutlineFallback /> Calcular costos de producción
-          </Link>
+
         </div>
         <p className="privacy-note" role="status">
           {status}. No se enviaron ofertas a terceros.

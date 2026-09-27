@@ -99,107 +99,8 @@ test("map layers, month, source viewer and saved pin work independently", async 
     ),
   ).toBe(true);
 });
-test("cleansheet table and waterfall reconcile, retain assumptions between tabs and export sources", async ({
-  page,
-  browserName,
-}) => {
-  test.setTimeout(100000);
-  await location(page);
-  await page.getByRole("tab", { name: /Costos y rentabilidad/ }).click();
-  await page.getByRole("button", { name: "Mi precio", exact: true }).click();
-  await page.getByLabel("Mi precio esperado (COP/kg)").fill("20000");
-  await page.getByLabel("Área que quieres analizar (ha)").fill("2");
-  await page.getByLabel("Rendimiento esperado (kg/ha)").fill("1000");
-  await page.getByLabel("Pérdidas antes de vender (%)").fill("10");
-  for (const label of [
-    "Labores antes de cosecha",
-    "Semilla e insumos",
-    "Mano de obra de cosecha",
-    "Otros rubros del total publicado",
-  ])
-    await page.getByLabel(label + " (COP/ha)", { exact: true }).fill("1000000");
-  await page
-    .getByLabel("Transporte, empaque y venta (COP totales)")
-    .fill("500000");
-  await page
-    .getByLabel("Comisión sobre la venta (%)", { exact: true })
-    .fill("5");
-  await expect(page.locator(".clean-kpis")).toContainText(money(25700000));
-  await expect(page.locator(".clean-kpis")).toContainText(money(36000000));
-  await expect(page.locator(".clean-waterfall")).toBeVisible();
-  await page.getByRole("button", { name: "Tabla", exact: true }).click();
-  await expect(page.locator(".clean-result-table .total")).toContainText(
-    money(25700000),
-  );
-  await page.getByRole("tab", { name: /Explorar mi zona/ }).click();
-  await page.getByRole("tab", { name: /Costos y rentabilidad/ }).click();
-  await expect(page.getByLabel("Mi precio esperado (COP/kg)")).toHaveValue(
-    "20000",
-  );
-  const downloaded = page.waitForEvent("download");
-  await page
-    .getByRole("button", { name: "Descargar análisis con sus fuentes" })
-    .click();
-  expect((await downloaded).suggestedFilename()).toBe(
-    "analisis-agroamigo.json",
-  );
-  await page.getByLabel("Mi precio esperado (COP/kg)").fill("1000");
-  await expect(page.locator(".clean-kpis .loss")).toContainText(
-    money(-6790000),
-  );
-  await page.getByRole("button", { name: "Cascada", exact: true }).click();
-  await expect(page.locator(".clean-waterfall")).toContainText(
-    "Pérdida estimada",
-  );
-  await page.locator(".clean-results").scrollIntoViewIfNeeded();
-  await page.screenshot({
-    path: `../../artifacts/location/cleansheet-${browserName}.png`,
-  });
-  await page.getByLabel("Labores antes de cosecha (COP/ha)").fill("");
-  await expect(page.locator(".clean-results")).toContainText(
-    "Completa los supuestos",
-  );
-  await expect(page.locator(".clean-kpis")).toHaveCount(0);
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-});
-test("regional UPRA cost comparison preserves source year and requires comparability confirmation", async ({
-  page,
-}) => {
-  await location(page);
-  await page.getByRole("tab", { name: /Costos y rentabilidad/ }).click();
-  await page
-    .getByRole("combobox", { name: "Elegir cultivo para el análisis" })
-    .fill("Frijol");
-  await page
-    .getByRole("option", { name: /Frijol/ })
-    .first()
-    .click();
-  await expect(page.locator(".clean-template")).toContainText("2023");
-  await page
-    .getByRole("button", {
-      name: "Usar costos del estudio como punto de partida",
-    })
-    .click();
-  await expect(page.locator(".clean-comparison").first()).toContainText(
-    "Activa la comparación",
-  );
-  await page.getByRole("checkbox", { name: /El sistema, período/ }).check();
-  await page.getByLabel("Labores antes de cosecha (COP/ha)").fill("4000000");
-  await expect(page.locator(".clean-comparison").first()).toContainText(
-    "nominal",
-  );
-  await expect(page.locator(".clean-template .evidence-link")).toHaveAttribute(
-    "href",
-    /page=/,
-  );
-  await expect(page.locator(".clean-cost-panel")).toContainText(
-    "no mide eficiencia",
-  );
-});
+// Manual profitability and editable cost-scenario UI retired on2026-09-27.
+// Read-only source and byte-preservation regression: farm-references.spec.ts.
 test("denied GPS leaves the map usable without inventing a pin", async ({
   page,
 }) => {
@@ -215,7 +116,9 @@ test("denied GPS leaves the map usable without inventing a pin", async ({
     }),
   );
   await page.goto("/farm");
-  await page.getByRole("button", { name: "Usar mi ubicación", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Usar mi ubicación", exact: true })
+    .click();
   await expect(
     page.getByText("El permiso de ubicación está desactivado.", {
       exact: false,
@@ -373,15 +276,21 @@ test("GPS pin persists and old farm records are preserved in the informational w
   });
   await page.goto("/farm/old-farm");
   await expect(page.locator(".location-place")).toContainText("La Esperanza");
-  await page.getByRole("button", { name: "Usar mi ubicación", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Usar mi ubicación", exact: true })
+    .click();
   await expect(page.locator(".zone-map")).toHaveAttribute(
     "data-pin-lat",
     "1.9",
   );
-  const saved = await page.evaluate(() => localStorage.getItem("agroamigo-farms-v2"));
+  const saved = await page.evaluate(() =>
+    localStorage.getItem("agroamigo-farms-v2"),
+  );
   const profile = JSON.parse(saved!).farms[0].profile;
   expect(profile).toMatchObject({
-    name: "La Esperanza", municipalityId: "41551", area: "3",
+    name: "La Esperanza",
+    municipalityId: "41551",
+    area: "3",
     locationMethod: "gps",
   });
   expect(Number(profile.latitude)).toBeCloseTo(1.9, 6);

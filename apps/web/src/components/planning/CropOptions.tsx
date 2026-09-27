@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { photoFor } from "@/lib/images";
 import {
@@ -16,7 +17,7 @@ export function CropOptions({
   select,
 }: {
   data: FarmData;
-  select: (crop: CropReference) => void;
+  select?: (crop: CropReference) => void;
 }) {
   const [query, setQuery] = useState(""),
     [month, setMonth] = useState(new Date().getMonth() + 1),
@@ -50,8 +51,8 @@ export function CropOptions({
         <h2>Un punto de partida para elegir</h2>
         <p>
           Cultivos reportados en tu municipio, junto con su aptitud regional
-          cuando hay un mapa disponible. Explora una opción y después haz sus
-          cuentas.
+          cuando hay un mapa disponible. Consulta su calendario histórico y las
+          fuentes de cada referencia.
         </p>
         <div className="form-grid">
           <div className="form-field">
@@ -185,9 +186,24 @@ export function CropOptions({
               >
                 Ver producción y cálculo del rendimiento
               </EvidenceLink>
-              <button className="button primary" onClick={() => select(c)}>
-                Hacer cuentas con este cultivo <IoArrowForward />
-              </button>
+              {select ? (
+                <button className="button primary" onClick={() => select(c)}>
+                  Ver calendario y fuentes <IoArrowForward />
+                </button>
+              ) : (
+                <Link
+                  className="button primary"
+                  href={
+                    "/plan?" +
+                    new URLSearchParams({
+                      municipality: data.municipality.id,
+                      crop: c.crop_code,
+                    })
+                  }
+                >
+                  Ver calendario y fuentes <IoArrowForward />
+                </Link>
+              )}
             </article>
           ))}
       </div>
@@ -272,8 +288,8 @@ export function CropOptions({
             </li>
           </ol>
           <p>
-            Los mapas orientan la planificación regional. Aptitud y rentabilidad
-            se consultan por separado.
+            Los mapas orientan la planificación regional. No certifican la
+            aptitud de una parcela ni garantizan un resultado económico.
           </p>
           <a
             href="https://sipra.upra.gov.co/"
