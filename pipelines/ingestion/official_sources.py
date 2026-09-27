@@ -122,6 +122,19 @@ def process(db, data, document_id, url, kind):
             "UPDATE source_ocr_task SET status='published',checked_at=now(),error=NULL WHERE document_id=%s AND source_page=ANY(%s::integer[])",
             (document_id, list(ocr_pages)),
         )
+    elif kind == "dane-weekly-pdf":
+        # A parser upgrade can make previously queued image readings obsolete.
+        # Only retire them after the full native publication has completed;
+        # deferred/failed publication must retain its outstanding work.
+        db.execute(
+            "UPDATE source_ocr_task SET status='review',checked_at=now(),error=%s "
+            "WHERE document_id=%s AND source_kind='dane-weekly-pdf' "
+            "AND status IN ('pending','deferred')",
+            (
+                "Native extraction succeeded; no OCR needed. Original, image and prior readings retained",
+                document_id,
+            ),
+        )
     return count
 
 

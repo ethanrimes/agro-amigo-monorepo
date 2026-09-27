@@ -282,20 +282,31 @@ def publish_price_ocr(db, did, kind):
 
 
 def extract_pages(db, data, did):
+    # The immutable cache key is (document SHA, page, extraction version).
+    # Fetch only its small page-number index; retained text/tables need not be
+    # transferred or re-extracted on parser retries of the same original.
+    cached_pages = {
+        row[0]
+        for row in db.execute(
+            "SELECT page FROM source_pdf_page WHERE document_id=%s AND extraction_version=%s",
+            (did, VERSION),
+        ).fetchall()
+    }
     count = 0
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for number, page in enumerate(pdf.pages, 1):
-            db.execute(
-                """INSERT INTO source_pdf_page(document_id,page,text_content,tables,extraction_version)
-                VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
-                (
-                    did,
-                    number,
-                    page.extract_text() or "",
-                    Jsonb(page.extract_tables()),
-                    VERSION,
-                ),
-            )
+            if number not in cached_pages:
+                db.execute(
+                    """INSERT INTO source_pdf_page(document_id,page,text_content,tables,extraction_version)
+                    VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+                    (
+                        did,
+                        number,
+                        page.extract_text() or "",
+                        Jsonb(page.extract_tables()),
+                        VERSION,
+                    ),
+                )
             count += 1
             page.close()
     from .ocr import scan_document

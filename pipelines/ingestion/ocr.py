@@ -513,6 +513,31 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
         if not enough_time(0):
             summary["deferred"] += 1
             break
+        if kind == "dane-weekly-pdf":
+            from .worker import parser_version
+
+            # This immutable-document checkpoint is written only after every
+            # supported weekly page (native or required OCR) is published.
+            # Asset status alone is insufficient, especially for other source
+            # families which can publish native rows with image pages pending.
+            complete = db.execute(
+                "SELECT 1 FROM ingestion_checkpoint WHERE document_id=%s "
+                "AND processor_version=%s AND step='official:complete' LIMIT 1",
+                (did, parser_version(kind)),
+            ).fetchone()
+            if complete:
+                db.execute(
+                    "UPDATE source_ocr_task SET status='review',checked_at=now(),error=%s "
+                    "WHERE document_id=%s AND source_locator=%s "
+                    "AND status IN ('pending','deferred')",
+                    (
+                        "Current weekly publication is complete; no OCR needed for this queued page. Original, image and prior readings retained",
+                        did,
+                        loc,
+                    ),
+                )
+                summary["review"] += 1
+                continue
         if kind in ("daily-pdf", "monthly-pdf"):
             from datetime import date
 
