@@ -1,14 +1,16 @@
-"""Commit validated input originals once, then publish bounded calendar months.
+"""Validate complete originals, then publish durable exact-identity batches.
 
-All native rows must parse before the native checkpoint commits. Each subsequent
-month and checkpoint commit together; a timeout cannot expose half a month or
-make the next invocation repeat an entire multi-million-row workbook.
+Raw source rows finish before any projection. Each small batch and its progress
+marker commit together; month/source completion waits for all identity groups.
 """
 
+import hashlib
+import json
 import time
 from itertools import islice
 
 BATCH_SIZE = 25000
+PUBLICATION_BATCH_SIZE = 250
 
 
 class WorkDeferred(Exception):
@@ -18,7 +20,7 @@ class WorkDeferred(Exception):
 def publish(db, data, did, kind, day, *, deadline=None):
     from . import worker
     from .input_references import extract_reference_rows
-    from .inputs import parse_inputs, project_inputs
+    from .inputs import parse_inputs, prepare_input_stage, project_inputs
 
     version = worker.parser_version(kind)
     steps = dict(
@@ -94,14 +96,49 @@ def publish(db, data, did, kind, day, *, deadline=None):
         if step in steps:
             conflicts += steps[step]
             continue
-        if deadline is not None and time.monotonic() >= deadline:
-            raise WorkDeferred(
-                "Input months checkpointed; remaining months will resume"
-            )
-        with db.transaction():
-            count = project_inputs(db, did, period)
-            checkpoint(step, count)
-        conflicts += count
+        check_budget(
+            "Input identity batches checkpointed; remaining months will resume"
+        )
+        month_conflicts = 0
+        try:
+            # Stage all literal rows for the period once, without firing any
+            # publication/retention trigger. The index keeps each batch's range
+            # lookup bounded and all duplicate rows of one exact key together.
+            with db.transaction():
+                prepare_input_stage(db, did, period, preserve=True)
+            keys = db.execute(
+                "SELECT DISTINCT id,department,municipality,observed_on FROM input_stage ORDER BY id,department,municipality,observed_on"
+            ).fetchall()
+            for start in range(0, len(keys), PUBLICATION_BATCH_SIZE):
+                check_budget(
+                    "Input identity batches checkpointed; remaining groups will resume"
+                )
+                batch = keys[start : start + PUBLICATION_BATCH_SIZE]
+                digest = hashlib.sha256(
+                    json.dumps(
+                        [[*key[:3], key[3].isoformat()] for key in batch],
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                    ).encode()
+                ).hexdigest()
+                group_step = f"published-group-v1:{period.isoformat()}:{digest}"
+                if group_step in steps:
+                    month_conflicts += steps[group_step]
+                    continue
+                with db.transaction():
+                    count = project_inputs(
+                        db, did, period, staged=True, bounds=(batch[0], batch[-1])
+                    )
+                    checkpoint(group_step, count)
+                steps[group_step] = count
+                month_conflicts += count
+            # This marker means every exact identity in the immutable period is
+            # done; a failed/deferred group can never claim month completion.
+            with db.transaction():
+                checkpoint(step, month_conflicts)
+        finally:
+            db.execute("DROP TABLE IF EXISTS pg_temp.input_stage")
+        conflicts += month_conflicts
     if "references" not in steps:
         if deadline is not None and time.monotonic() >= deadline:
             raise WorkDeferred("Input prices published; reference tables will resume")

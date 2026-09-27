@@ -351,13 +351,14 @@ def identity(name, meta):
     return base
 
 
-def project_inputs(db, did, observed_on=None):
-    """Stream into COPY staging: avoid holding millions of municipal rows in RAM."""
+def prepare_input_stage(db, did, observed_on=None, *, preserve=False):
+    """Stage a complete immutable period before grouping its publication work."""
 
     columns = "id,department,observed_on,name,category,presentation,price,document_id,source_locator,brand,registration,product_line,municipality"
     with db.cursor() as cur:
         cur.execute(
-            "CREATE TEMP TABLE input_stage (LIKE input_municipal_price INCLUDING DEFAULTS) ON COMMIT DROP"
+            "CREATE TEMP TABLE input_stage (LIKE input_municipal_price INCLUDING DEFAULTS) "
+            + ("ON COMMIT PRESERVE ROWS" if preserve else "ON COMMIT DROP")
         )
         with db.cursor(name="input_source_rows") as source:
             source.itersize = 2000
@@ -391,18 +392,40 @@ def project_inputs(db, did, observed_on=None):
             "CREATE INDEX ON input_stage(id,department,municipality,observed_on)"
         )
         cur.execute("ANALYZE input_stage")
+
+
+def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
+    """Publish complete exact identities; a caller owns this transaction."""
+    if not staged:
+        prepare_input_stage(db, did, observed_on)
+    columns = "id,department,observed_on,name,category,presentation,price,document_id,source_locator,brand,registration,product_line,municipality"
+    stage = "input_stage"
+    with db.cursor() as cur:
+        if bounds is not None:
+            stage = "input_publication_stage"
+            cur.execute(
+                "CREATE TEMP TABLE IF NOT EXISTS input_publication_stage (LIKE input_stage INCLUDING DEFAULTS) ON COMMIT DROP"
+            )
+            cur.execute("TRUNCATE pg_temp.input_publication_stage")
+            cur.execute(
+                """INSERT INTO input_publication_stage SELECT * FROM input_stage
+                WHERE (id,department,municipality,observed_on)>=(%s,%s,%s,%s)
+                  AND (id,department,municipality,observed_on)<=(%s,%s,%s,%s)""",
+                (*bounds[0], *bounds[1]),
+            )
+            cur.execute("ANALYZE input_publication_stage")
         conflicts = cur.execute(
-            "SELECT count(*) FROM (SELECT 1 FROM input_stage GROUP BY id,department,municipality,observed_on HAVING min(price)<>max(price)) c"
+            f"SELECT count(*) FROM (SELECT 1 FROM {stage} GROUP BY id,department,municipality,observed_on HAVING min(price)<>max(price)) c"
         ).fetchone()[0]
         # Advance a narrow per-key watermark even if the value is unchanged.
         # Keeping original attribution for an equal value must not let an
         # intermediate older revision overwrite the latest validated value.
         # Ambiguous staged keys never publish or advance their watermark.
         cur.execute(
-            """INSERT INTO input_revision(id,department,municipality,observed_on,retrieved_at)
+            f"""INSERT INTO input_revision(id,department,municipality,observed_on,retrieved_at)
             SELECT id,department,municipality,observed_on,
                 (SELECT retrieved_at FROM source_document WHERE id=%s)
-            FROM input_stage GROUP BY id,department,municipality,observed_on
+            FROM {stage} GROUP BY id,department,municipality,observed_on
             HAVING min(price)=max(price)
             ON CONFLICT(id,department,municipality,observed_on) DO UPDATE
             SET retrieved_at=excluded.retrieved_at
@@ -426,7 +449,17 @@ def project_inputs(db, did, observed_on=None):
                 f"""INSERT INTO {table}({cols})
                 SELECT {cols} FROM (SELECT s.*,row_number() OVER(PARTITION BY id,department,municipality,observed_on ORDER BY source_locator) rn,
                 min(price) OVER(PARTITION BY id,department,municipality,observed_on) low,max(price) OVER(PARTITION BY id,department,municipality,observed_on) high
-                FROM input_stage s WHERE municipality {"<>" if municipal else "="} '') x WHERE rn=1 AND low=high
+                FROM {stage} s WHERE municipality {"<>" if municipal else "="} '') x WHERE rn=1 AND low=high
+                AND NOT EXISTS(SELECT 1 FROM {table} current
+                  WHERE current.id=x.id AND current.department=x.department AND current.observed_on=x.observed_on
+                    {"AND current.municipality=x.municipality" if municipal else ""}
+                    AND ((current.price,current.name,current.category,current.brand,current.registration,current.product_line)
+                      IS NOT DISTINCT FROM (x.price,x.name,x.category,x.brand,x.registration,x.product_line)
+                      OR (SELECT retrieved_at FROM source_document WHERE id=x.document_id)
+                        < (SELECT retrieved_at FROM source_document WHERE id=current.document_id)
+                      OR (SELECT retrieved_at FROM source_document WHERE id=x.document_id)
+                        < (SELECT retrieved_at FROM input_revision r WHERE r.id=x.id
+                          AND r.department=x.department AND r.municipality=x.municipality AND r.observed_on=x.observed_on)))
                 ON CONFLICT({keys}) DO UPDATE SET name=excluded.name,category=excluded.category,price=excluded.price,document_id=excluded.document_id,
                 source_locator=excluded.source_locator,brand=excluded.brand,registration=excluded.registration,product_line=excluded.product_line
                 WHERE ({table}.price,{table}.name,{table}.category,{table}.brand,{table}.registration,{table}.product_line)

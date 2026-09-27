@@ -117,7 +117,7 @@ def verify_native_batch_resume(db):
     )
     assert ocr_state() == original_ocr
 
-    def checked_project(connection, document, period):
+    def checked_project(connection, document, period, **kwargs):
         # No month may project from an incomplete native source, including the
         # first batch that survived the prior process failure.
         assert steps()["native"] == 3
@@ -128,7 +128,7 @@ def verify_native_batch_resume(db):
             == 3
         )
         assert ocr_state() == original_ocr
-        return project_inputs(connection, document, period)
+        return project_inputs(connection, document, period, **kwargs)
 
     def interrupted_references(*args):
         assert sum(step.startswith("published:") for step in steps()) == 3
@@ -166,7 +166,10 @@ def verify_native_batch_resume(db):
         assert [call.args[2] for call in project.call_args_list] == [
             row[2] for row in reversed(rows)
         ]
-    assert steps() == {
+    assert len([s for s in steps() if s.startswith("published-group-v1:")]) == 3
+    assert {
+        k: v for k, v in steps().items() if not k.startswith("published-group-v1:")
+    } == {
         "validated": 3,
         "native-batch:000001": 1,
         "native-batch:000002": 1,
@@ -274,13 +277,13 @@ def main():
         ]
         calls = []
 
-        def interrupted(db, doc, period):
+        def interrupted(db, doc, period, **kwargs):
             calls.append(period)
             if period == jan:
                 # Failure after an actual write must roll back that entire month.
-                project_inputs(db, doc, period)
+                project_inputs(db, doc, period, **kwargs)
                 raise RuntimeError("simulated interrupted month")
-            return project_inputs(db, doc, period)
+            return project_inputs(db, doc, period, **kwargs)
 
         with (
             patch(
@@ -306,7 +309,9 @@ def main():
             (feb,)
         ]
         assert {
-            r[0] for r in db.execute("SELECT step FROM ingestion_checkpoint").fetchall()
+            r[0]
+            for r in db.execute("SELECT step FROM ingestion_checkpoint").fetchall()
+            if not r[0].startswith("published-group-v1:")
         } == {"validated", "native-batch:000001", "native", "published:2026-02-28"}
         with (
             patch(
