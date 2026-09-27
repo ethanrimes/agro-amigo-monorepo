@@ -15,6 +15,7 @@ DROP TRIGGER IF EXISTS immutable_history ON price_observation_review;
 CREATE TRIGGER immutable_history BEFORE UPDATE ON price_observation_review
  FOR EACH STATEMENT EXECUTE FUNCTION prevent_history_removal();
 GRANT SELECT ON price_observation_review TO agro_reader;
+GRANT SELECT,INSERT ON price_observation_review TO agro_ingestor;
 CREATE OR REPLACE VIEW published_price_observation AS
 SELECT p.* FROM price_observation p WHERE NOT EXISTS (
  SELECT 1 FROM ingestion_asset a WHERE a.document_id=p.document_id AND a.status='review'

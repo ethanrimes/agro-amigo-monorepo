@@ -161,6 +161,7 @@ DROP TRIGGER IF EXISTS immutable_history ON price_observation_review;
 CREATE TRIGGER immutable_history BEFORE UPDATE ON price_observation_review
  FOR EACH STATEMENT EXECUTE FUNCTION prevent_history_removal();
 GRANT SELECT ON price_observation_review TO agro_reader;
+GRANT SELECT,INSERT ON price_observation_review TO agro_ingestor;
 
 -- Retain invalidated versions, while removing them from public price results.
 -- A corrected publisher file or independently dated PDF can replace the quote.
@@ -176,15 +177,29 @@ SELECT p.* FROM price_observation p WHERE NOT EXISTS (
 );
 GRANT SELECT ON published_price_observation TO agro_reader;
 
+-- Also declared by the additive automation migration; needed before the views
+-- when installing this schema into a new database.
+CREATE TABLE IF NOT EXISTS ingestion_checkpoint (
+ document_id text NOT NULL REFERENCES source_document(id),processor_version text NOT NULL,
+ step text NOT NULL,records bigint NOT NULL DEFAULT 0,completed_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(document_id,processor_version,step)
+);
+GRANT SELECT,INSERT ON ingestion_checkpoint TO agro_ingestor;
+GRANT SELECT ON ingestion_checkpoint TO agro_reader;
+
 CREATE OR REPLACE VIEW published_input_price AS
 SELECT p.* FROM input_price p WHERE NOT EXISTS (
- SELECT 1 FROM ingestion_asset a WHERE a.document_id=p.document_id AND a.kind='inputs-pdf'
- AND a.processor_version='inputs-pdf-v4' AND p.source_locator NOT LIKE '%; inputs-pdf-v4'
+ SELECT 1 FROM ingestion_checkpoint c WHERE c.document_id=p.document_id
+ AND c.step='inputs-pdf:published' AND c.processor_version ~ '^inputs-pdf-v[0-9]+$'
+ AND substring(c.processor_version from '([0-9]+)$')::numeric
+   > coalesce(substring(p.source_locator from '; inputs-pdf-v([0-9]+)$')::numeric,0)
 );
 CREATE OR REPLACE VIEW published_input_municipal_price AS
 SELECT p.* FROM input_municipal_price p WHERE NOT EXISTS (
- SELECT 1 FROM ingestion_asset a WHERE a.document_id=p.document_id AND a.kind='inputs-pdf'
- AND a.processor_version='inputs-pdf-v4' AND p.source_locator NOT LIKE '%; inputs-pdf-v4'
+ SELECT 1 FROM ingestion_checkpoint c WHERE c.document_id=p.document_id
+ AND c.step='inputs-pdf:published' AND c.processor_version ~ '^inputs-pdf-v[0-9]+$'
+ AND substring(c.processor_version from '([0-9]+)$')::numeric
+   > coalesce(substring(p.source_locator from '; inputs-pdf-v([0-9]+)$')::numeric,0)
 );
 GRANT SELECT ON published_input_price,published_input_municipal_price TO agro_reader;
 

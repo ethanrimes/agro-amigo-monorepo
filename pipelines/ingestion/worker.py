@@ -63,7 +63,7 @@ PARSER_VERSIONS = {
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
-    "inputs-pdf": "inputs-pdf-v5",
+    "inputs-pdf": "inputs-pdf-v6",
     "inputs-reference": "inputs-reference-v5",
     "city-zip": "city-v4",
     "monthly": "monthly-units-v2",
@@ -73,7 +73,7 @@ PARSER_VERSIONS = {
     "daily-pdf": "daily-pdf-v4",
     "monthly-pdf": "monthly-pdf-v3",
     "milk": "milk-v4",
-    "milk-pdf": "milk-pdf-v6",
+    "milk-pdf": "milk-pdf-v7",
     "rice": "rice-v2",
     "supply": "supply-v5",
     "supply-index": "supply-index-v1",
@@ -1081,7 +1081,11 @@ def save_rows(db, did, rows):
 
 def project(db, did, url, kind):
     """Publish values and their matching immutable evidence in the same transaction."""
-    if kind in ("inputs", "inputs-municipal", "inputs-annex", "inputs-pdf"):
+    if kind == "inputs-pdf":
+        from pipelines.ingestion.inputs import project_pdf_inputs
+
+        return project_pdf_inputs(db, did)
+    if kind in ("inputs", "inputs-municipal", "inputs-annex"):
         from pipelines.ingestion.inputs import project_inputs
 
         return project_inputs(db, did)

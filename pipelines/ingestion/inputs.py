@@ -549,3 +549,53 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
                 (did, did),
             )
     return conflicts
+
+
+def project_pdf_inputs(db, did):
+    """Publish a validated PDF and its successful version in one transaction.
+
+    The caller's transaction includes every parsed row and all projections.
+    Failed parsing/publication therefore cannot change view eligibility. A
+    zero-row narrative never calls this function; reviewed literal rows do.
+    """
+    from .pdf_sources import INPUT_PDF_VERSION
+
+    version = re.fullmatch(r"inputs-pdf-v([0-9]+)", INPUT_PDF_VERSION)
+    if version is None:
+        raise ValueError("Unsupported input PDF publication version")
+    if db.execute(
+        """SELECT 1 FROM ingestion_checkpoint WHERE document_id=%s
+        AND step='inputs-pdf:published' AND processor_version ~ '^inputs-pdf-v[0-9]+$'
+        AND substring(processor_version from '([0-9]+)$')::numeric>%s LIMIT 1""",
+        (did, int(version[1])),
+    ).fetchone():
+        return 0  # A rolled-back deployment may retain, but never republish, old parsing.
+    conflicts = project_inputs(db, did)
+    # Only reattribute the identical business value from the SAME original.
+    # This is safe even when a newer, equal-valued original advanced the
+    # per-key freshness watermark while retaining this original's provenance.
+    # Actual price changes still pass project_inputs' full revision guards.
+    for table, municipal in (("input_price", False), ("input_municipal_price", True)):
+        db.execute(
+            f"""UPDATE {table} p SET source_locator=x.source_locator
+            FROM (SELECT s.*,
+              row_number() OVER(PARTITION BY id,department,municipality,observed_on ORDER BY source_locator) rn,
+              min(price) OVER(PARTITION BY id,department,municipality,observed_on) low,
+              max(price) OVER(PARTITION BY id,department,municipality,observed_on) high
+              FROM input_stage s WHERE municipality {"<>" if municipal else "="} '') x
+            WHERE x.rn=1 AND x.low=x.high AND p.document_id=x.document_id
+              AND p.id=x.id AND p.department=x.department AND p.observed_on=x.observed_on
+              {"AND p.municipality=x.municipality" if municipal else ""}
+              AND (p.price,p.name,p.category,p.presentation,p.brand,p.registration,p.product_line)
+                IS NOT DISTINCT FROM (x.price,x.name,x.category,x.presentation,x.brand,x.registration,x.product_line)
+              AND substring(x.source_locator from '; (inputs-pdf-v[0-9]+)$')=%s
+              AND coalesce(substring(p.source_locator from '; inputs-pdf-v([0-9]+)$')::numeric,0)<%s""",
+            (INPUT_PDF_VERSION, int(version[1])),
+        )
+    db.execute(
+        """INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records)
+        SELECT %s,%s,'inputs-pdf:published',count(*) FROM input_stage
+        ON CONFLICT DO NOTHING""",
+        (did, INPUT_PDF_VERSION),
+    )
+    return conflicts
