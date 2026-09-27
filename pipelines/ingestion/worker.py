@@ -74,7 +74,7 @@ PARSER_VERSIONS = {
     "milk": "milk-v4",
     "milk-pdf": "milk-pdf-v5",
     "rice": "rice-v2",
-    "supply": "supply-v4",
+    "supply": "supply-v5",
     "supply-index": "supply-index-v1",
     "supply-reference-pdf": "source-v1",
 }
@@ -1333,12 +1333,15 @@ def _process_asset(db, url, kind, day):
     # eligible, so successful evaluation is tracked by Colombia calendar day.
     coffee_day = today() if kind in ("coffee", "coffee-pdf") else None
     coffee_step = f"as-of:{coffee_day.isoformat()}" if coffee_day else None
-    coffee_rollover = coffee_step is not None and not db.execute(
-        """SELECT 1 FROM ingestion_asset a JOIN ingestion_checkpoint c
+    coffee_rollover = (
+        coffee_step is not None
+        and not db.execute(
+            """SELECT 1 FROM ingestion_asset a JOIN ingestion_checkpoint c
         ON c.document_id=a.document_id WHERE a.url=%s
         AND c.processor_version=%s AND c.step=%s""",
-        (url, parser_version(kind), coffee_step),
-    ).fetchone()
+            (url, parser_version(kind), coffee_step),
+        ).fetchone()
+    )
     resume = None
     if kind in ("inputs", "inputs-municipal", "inputs-annex"):
         resume = db.execute(
@@ -1347,6 +1350,17 @@ def _process_asset(db, url, kind, day):
               SELECT 1 FROM ingestion_checkpoint c WHERE c.document_id=d.id
               AND c.processor_version=%s AND c.step IN ('validated','native'))""",
             (url, parser_version(kind)),
+        ).fetchone()
+    elif kind == "supply":
+        resume = db.execute(
+            """SELECT d.content FROM ingestion_asset a JOIN source_document d ON d.id=a.document_id
+            WHERE a.url=%s AND a.status IN ('pending','failed') AND EXISTS(
+              SELECT 1 FROM ingestion_checkpoint c WHERE c.document_id=d.id
+              AND c.processor_version=%s AND c.step='supply:validated')
+            AND NOT EXISTS(
+              SELECT 1 FROM ingestion_checkpoint c WHERE c.document_id=d.id
+              AND c.processor_version=%s AND c.step='supply:complete')""",
+            (url, parser_version(kind), parser_version(kind)),
         ).fetchone()
     # Finish the exact retained revision before downloading a newer mutable
     # workbook. The following regular refresh checks the publisher again.
