@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v2"
+VERSION = "official-international-v3"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -350,7 +350,11 @@ FLOWER_NAMES = {
 PRICE = re.compile(
     r"(?<![\d.])(?P<low>\d*\.\d{1,2})(?:\s*-\s*(?P<high>\d*\.\d{1,2}))?(?!\d|\.\d)"
 )
-UNIT = re.compile(r"(?:on stem )?per (?:stem|bunch|bloom|box)|bunched \d+s", re.I)
+UNIT = re.compile(
+    r"per carton(?: \d+ bunches of \d+ stems)?|"
+    r"(?:on stem )?per (?:stem|bunch|bloom|box)|bunched \d+s",
+    re.I,
+)
 
 
 def _pdf_parts(body, report, columns):
@@ -483,9 +487,12 @@ def _legacy_miami_narrative_ends(lines):
                 break
             narrative += " " + line
             last = start + offset
+        market_narrative = re.sub(
+            r"\bFIRST REPORT\b[^.]*\.|\bno offerings\.", "", narrative
+        )
         if (
             not narrative.endswith(".")
-            or narrative != narrative.upper()
+            or market_narrative != market_narrative.upper()
             or PRICE.search(narrative)
         ):
             raise ValueError("Unrecognized USDA historical narrative boundary")
@@ -539,21 +546,72 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 in_intro = False
             continue
         original_line, locator_rows = line, str(index)
+        # A printed color or "mostly" qualifier can wrap independently of its
+        # price. Keep that qualifier with the next physical line, or a mostly
+        # range becomes a second quote for the parent color. Join only within
+        # this column and retain every original line in the source locator.
+        end_index = index
+        while PRICE.search(line):
+            tail = list(PRICE.finditer(line))[-1]
+            suffix = line[tail.end() :].strip(" ,;:.")
+            needs_continuation = bool(suffix) and not re.fullmatch(
+                r"(?:(?:occasional|few) (?:higher|lower)(?: and (?:higher|lower))?|"
+                r"(?:and )?(?:higher|lower)|FIRST REPORT)",
+                suffix,
+                re.I,
+            )
+            if not needs_continuation or suffix.endswith("-"):
+                break
+            if re.fullmatch(r"(?:occasional|few) (?:higher|lower) and", suffix, re.I):
+                break
+            if end_index >= len(lines):
+                raise ValueError("Unfinished USDA quote qualifier")
+            following, next_page, next_column = lines[end_index]
+            if not PRICE.search(following) and re.search(
+                r"\bsupplies (?:in too few hands|insufficient and in too few hands) "
+                r"to establish a market\.?$",
+                suffix + " " + following,
+                re.I,
+            ):
+                break
+            if (
+                (page, column) != (next_page, next_column)
+                or following.startswith("---")
+                or UNIT.match(following)
+                or not PRICE.search(following)
+            ):
+                # Existing standalone higher/lower wrapping is handled below.
+                if re.fullmatch(
+                    r"(?:occasional|few) (?:higher|lower) and", suffix, re.I
+                ):
+                    break
+                # A complete no-market notice contains no quote to continue.
+                if re.search(
+                    r"(?:establish a market|insufficient to quote)\.?$", suffix, re.I
+                ):
+                    break
+                raise ValueError("Unrecognized USDA quote qualifier continuation")
+            line += " " + following
+            original_line += "\n" + following
+            end_index += 1
+            continued_rows.add(end_index)
+            locator_rows = f"{index}-{end_index}"
         if re.search(r"(?<![\d.])\d*\.\d{1,2}-\s*$", line):
             # USDA sometimes wraps a literal price range after its hyphen.
             # Join only an adjacent numeric continuation in the same column;
             # retain both exact source lines and their original row numbers.
-            if index >= len(lines):
+            if end_index >= len(lines):
                 raise ValueError("Unfinished USDA printed price range")
-            following, next_page, next_column = lines[index]
+            following, next_page, next_column = lines[end_index]
             if (page, column) != (next_page, next_column) or not re.match(
                 r"^\d*\.\d{1,2}(?!\d|\.\d)", following
             ):
                 raise ValueError("Unrecognized USDA price range continuation")
             line += following
             original_line += "\n" + following
-            locator_rows = f"{index}-{index + 1}"
-            continued_rows.add(index + 1)
+            end_index += 1
+            locator_rows = f"{index}-{end_index}"
+            continued_rows.add(end_index)
         unit_match = UNIT.search(line)
         if unit_match:
             if unit_match.start() != 0:
@@ -563,7 +621,13 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
         else:
             line_body = line
         if no_quote_continuation:
-            if not re.fullmatch(r"(?:(?:to )?establish a )?market\.?", line_body, re.I):
+            if not (
+                re.fullmatch(r"(?:(?:to )?establish a )?market\.?", line_body, re.I)
+                or (
+                    line_body == "REPORT."
+                    and re.search(r"establish a market\. LAST$", lines[index - 2][0])
+                )
+            ):
                 raise ValueError("Unrecognized USDA no-quote notice continuation")
             no_quote_continuation = False
             continue
@@ -571,6 +635,11 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             raise ValueError("Malformed USDA printed price range")
         matches = list(PRICE.finditer(line_body))
         if not matches:
+            if re.search(
+                r"(?:supplies insufficient to quote|no offerings)\.?$", line_body, re.I
+            ):
+                last = None
+                continue
             if (
                 "supplies in" in line_body.lower()
                 or "too few hands" in line_body
@@ -588,7 +657,7 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 "and higher",
             }:
                 continue
-            if line_body in {"Select", "Super Select", "Fancy"}:
+            if line_body in {"Select", "Super Select", "Fancy", "Standard"}:
                 grade = line_body
             elif not re.search(r"\d", line_body):
                 variant, grade = line_body, ""
@@ -599,10 +668,37 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
         for j, match in enumerate(matches):
             prefix = line_body[
                 (matches[j - 1].end() if j else 0) : match.start()
-            ].strip(" ;")
+            ].strip(" ,;:.")
+            # An unquoted inline color must not become part of the next
+            # quoted color's identity. Its literal notice remains in evidence.
+            prefix = re.sub(
+                r"^.*?\bsupplies (?:in too few hands|insufficient and in too few hands) "
+                r"to establish a market[;. ]+",
+                "",
+                prefix,
+                flags=re.I,
+            )
             if re.search(r"\d*\.\d", prefix):
                 raise ValueError("Unrecognized USDA numeric quote qualifier")
             lo, hi = float(match["low"]), float(match["high"] or match["low"])
+            quote_qualifier = None
+            if re.fullmatch(r"(?:few|occasional)(?: (?:higher|lower))?", prefix, re.I):
+                if lo <= 0 or hi < lo or (j and last is None):
+                    raise ValueError("USDA exceptional price lacks its main quote")
+                if j:
+                    last["details"].setdefault("exceptional_prices", []).append(
+                        {
+                            "qualifier": prefix,
+                            "min": lo,
+                            "max": hi,
+                            "source_locator": f"PDF page {page}, col {column}, text row {locator_rows}, quote {j + 1}",
+                            "original_quote": original_line,
+                        }
+                    )
+                    continue
+                # "per bunch few 2.62" is the sole printed market quote;
+                # retain its qualifier without inventing a flower variety.
+                quote_qualifier, prefix = prefix, ""
             if re.search(r"\bmostly\s*$", prefix, re.I):
                 if last is None or lo < last["min"] or hi > last["max"] or hi < lo:
                     raise ValueError("USDA mostly range is outside full quote")
@@ -642,21 +738,42 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 "Imports through Miami; country not specified per quote",
             )
             found.append(last)
+            if quote_qualifier:
+                last["details"]["quote_qualifier"] = quote_qualifier
         if re.search(r"\d*\.\d", line_body[matches[-1].end() :]):
             raise ValueError("Unrecognized USDA trailing numeric quote")
     if not found:
         raise ValueError("No Miami flower prices parsed")
-    identities = [(r["product_id"], r["date"]) for r in found]
-    if len(identities) != len(set(identities)):
-        raise ValueError("Ambiguous duplicate USDA Miami flower identity")
+    identities = {}
+    for row in found:
+        key = (row["product_id"], row["date"])
+        # Some original bulletins repeat a whole commodity block. Preserve
+        # every locator, but accept repeats only when the literal quotation and
+        # all its numeric values agree; never merge competing source prices.
+        value = (
+            row["min"],
+            row["max"],
+            row["details"].get("mostly_min"),
+            row["details"].get("mostly_max"),
+            tuple(
+                (p["qualifier"], p["min"], p["max"])
+                for p in row["details"].get("exceptional_prices", [])
+            ),
+            row["details"]["original_quote"],
+        )
+        if key in identities and identities[key] != value:
+            raise ValueError("Ambiguous duplicate USDA Miami flower identity")
+        identities[key] = value
     return found
 
 
 # Only countries/states actually represented in the validated Boston source
 # family are recognized. Unexpected origin context fails instead of silently
 # assigning a new price to a previous country.
-ORIGINS = "THAILAND|SOUTH AFRICA|COLOMBIA|ECUADOR|COSTA RICA|GUATEMALA|CANADA|CHILE|NETHERLANDS|MEXICO|ISRAEL|KENYA|ETHIOPIA|PERU|CALIFORNIA|FLORIDA|NEW JERSEY|NEW ENGLAND|MASSACHUSETTS|NEW YORK|OREGON|WASHINGTON|PENNSYLVANIA|VERMONT|MAINE|CONNECTICUT|HAWAII"
-ORIGIN = re.compile(r"\b(?:" + ORIGINS + r")\b")
+ORIGINS = "THAILAND|SOUTH AFRICA|COLOMBIA|ECUADOR|COSTA RICA|GUATEMALA|CANADA|CHILE|NETHERLANDS|MEXICO|ISRAEL|KENYA|ETHIOPIA|PERU|ITALY|FRANCE|CALIFORNIA|FLORIDA|NEW JERSEY|NEW ENGLAND|MASSACHUSETTS|NEW YORK|OREGON|WASHINGTON|PENNSYLVANIA|VERMONT|MAINE|CONNECTICUT|HAWAII|TEXAS"
+ORIGIN = re.compile(
+    r"\b(?:NEW ENGLAND MASSACHUSETTS AND NEARBY PRODUCING AREAS|" + ORIGINS + r")\b"
+)
 
 
 def parse_boston_flowers(body, url=USDA_BOSTON):
@@ -675,6 +792,8 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
             if PRICE.search(text):
                 raise ValueError("Boston flower price has no package")
             continue
+        if PRICE.search(text[: first_unit.start()]):
+            raise ValueError("Boston flower price appears before its package")
         text = text[first_unit.start() :]
         unit, origin, variant, last = None, None, "", None
         matches = list(PRICE.finditer(text))
@@ -693,7 +812,7 @@ def parse_boston_flowers(body, url=USDA_BOSTON):
                 prefix = prefix[units[-1].end() :].strip()
             origins = list(ORIGIN.finditer(prefix))
             if origins:
-                if len(origins) > 1:
+                if len({m[0] for m in origins}) > 1:
                     raise ValueError("Ambiguous Boston flower origin")
                 origin = origins[0][0]
                 prefix = prefix[origins[0].end() :].strip()

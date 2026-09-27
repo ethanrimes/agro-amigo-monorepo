@@ -14,6 +14,7 @@ import openpyxl
 from . import international_sources as src
 
 FIXTURES = Path(__file__).resolve().parents[2] / "artifacts" / "official-sources"
+AUDIT_FIXTURES = FIXTURES.parent / "automation-audit-2026-09-26" / "international"
 
 
 def workbook():
@@ -46,6 +47,18 @@ def encode(book):
 
 
 class WorldBankTests(unittest.TestCase):
+    def test_mutable_url_reparses_corrected_cells_and_new_months(self):
+        before = workbook()
+        initial = src.parse_world_bank(encode(before), src.WORLD_BANK_MONTHLY)
+        before["Monthly Prices"]["C5"] = 2.75
+        before["Monthly Prices"].append(["1960M02", *[3.0 for _ in src.WB_SERIES]])
+        revised = src.parse_world_bank(encode(before), src.WORLD_BANK_MONTHLY)
+        coffee = [r for r in revised if r["product_id"] == "wb-coffee-arabica"]
+        self.assertEqual(len(revised), 90)
+        self.assertEqual([r["price"] for r in coffee], [2.75, 3.0])
+        self.assertEqual(coffee[0]["source_locator"], initial[1]["source_locator"])
+        self.assertEqual(coffee[0]["details"]["source_url"], src.WORLD_BANK_MONTHLY)
+
     def test_original_units_dates_and_exact_locator(self):
         rows = src.parse(
             encode(workbook()),
@@ -142,6 +155,176 @@ class FlowerIdentityTests(unittest.TestCase):
         self.assertTrue(
             all("country not specified" in r["details"]["origin"] for r in rows)
         )
+
+    def test_wrapped_mostly_and_inline_color_keep_distinct_identities(self):
+        rows = self.parse_lines(
+            [
+                "---CARNATIONS, MINIATURE:",
+                "Assorted Colors",
+                "per bunch 2.64-3.75 mostly 2.64-2.86; Purple 3.23-3.75 mostly",
+                "3.23-3.29; Lavender",
+                "2.34-2.70; Peach 2.34-2.70",
+            ]
+        )
+        self.assertEqual(len(rows), 4)
+        self.assertEqual(len({r["product_id"] for r in rows}), 4)
+        self.assertEqual(rows[1]["details"]["variety"], "Assorted Colors; Purple")
+        self.assertEqual(rows[1]["details"]["mostly_max"], 3.29)
+        self.assertEqual(rows[2]["details"]["variety"], "Assorted Colors; Lavender")
+        self.assertIn("text row 3-5", rows[2]["source_locator"])
+        self.assertIn("Lavender\n2.34", rows[2]["details"]["original_quote"])
+
+    def test_inline_no_market_notice_does_not_pollute_following_color(self):
+        rows = self.parse_lines(
+            [
+                "---CARNATIONS, MINIATURE:",
+                "Assorted Colors",
+                "per bunch 2.64-3.75 mostly 2.64-2.86; Burgundy supplies in too few hands to",
+                "establish a market; Lavender 2.91-3.75 mostly 2.91-3.44",
+            ]
+        )
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[1]["details"]["variety"], "Assorted Colors; Lavender")
+        self.assertIn("Burgundy", rows[1]["details"]["original_quote"])
+        self.assertTrue(all("Burgundy" not in r["product_name"] for r in rows))
+
+    def test_explicit_unavailable_notices_and_first_report_are_not_prices(self):
+        rows = self.parse_lines(
+            [
+                "---ROSE, SPRAY TYPE: DEMAND GOOD. FIRST REPORT on red rose spray type 50cm.",
+                "Red Varieties",
+                "per stem",
+                "50 cm 0.78-0.80 FIRST REPORT.",
+                "40 cm no offerings",
+                "per stem Supplies insufficient to quote.",
+            ]
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["details"]["variety"], "Red Varieties / 50 cm")
+
+    def test_wrapped_color_cannot_cross_layout_boundary_or_lose_quote(self):
+        with self.assertRaisesRegex(ValueError, "qualifier continuation"):
+            self.parse_lines(
+                [
+                    "---ASTER:",
+                    "per bunch 2.00; Purple",
+                    "---CARNATIONS:",
+                    "per stem 1.00",
+                ]
+            )
+
+    def test_repeated_miami_block_preserves_locators_but_conflicts_fail(self):
+        lines = ["---ASTER:", "Purple", "per bunch 2.00-3.00"]
+        rows = self.parse_lines(lines + lines)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["product_id"], rows[1]["product_id"])
+        self.assertNotEqual(rows[0]["source_locator"], rows[1]["source_locator"])
+        with self.assertRaisesRegex(ValueError, "Ambiguous duplicate"):
+            self.parse_lines(lines + ["---ASTER:", "Purple", "per bunch 2.00-4.00"])
+
+    def test_standard_grade_and_exceptional_prices_keep_the_parent_quote(self):
+        rows = self.parse_lines(
+            [
+                "---CARNATIONS:",
+                "Red",
+                "Standard",
+                "per stem 0.25",
+                "White",
+                "Standard",
+                "per stem 0.20-0.26",
+                "---ROSE, HYBRID TEA:",
+                "Red Varieties Freedom",
+                "per stem",
+                "60 cm 0.40-0.50 few 0.75",
+                "50 cm 0.38-0.55 few 0.35",
+            ]
+        )
+        self.assertEqual(len(rows), 4)
+        self.assertEqual(rows[0]["details"]["variety"], "Red / Standard")
+        self.assertEqual(rows[1]["details"]["variety"], "White / Standard")
+        self.assertEqual(rows[2]["details"]["variety"], "Red Varieties Freedom / 60 cm")
+        self.assertEqual(rows[2]["price"], 0.45)
+        self.assertEqual(rows[2]["details"]["exceptional_prices"][0]["min"], 0.75)
+        self.assertEqual(rows[3]["details"]["exceptional_prices"][0]["max"], 0.35)
+        sparse = self.parse_lines(["---ASTER:", "Purple", "per bunch few 2.62"])
+        self.assertEqual(sparse[0]["details"]["variety"], "Purple")
+        self.assertEqual(sparse[0]["details"]["quote_qualifier"], "few")
+        self.assertEqual(sparse[0]["price"], 2.62)
+
+    def test_boston_verified_origins_and_repeated_producer_origin(self):
+        parts = (
+            date(2024, 6, 18),
+            [
+                (
+                    "---SWEET WILLIAM: MARKET STEADY. per bunch NEW ENGLAND NEW ENGLAND PRODUCE 8.50",
+                    1,
+                    1,
+                ),
+                (
+                    "---ASTER: MARKET STEADY. per bunch ITALY long 10.00 FRANCE open field long 12.00 TEXAS long 11.00",
+                    1,
+                    1,
+                ),
+            ],
+        )
+        with patch.object(src, "_pdf_parts", return_value=parts):
+            rows = src.parse_boston_flowers(b"fixture")
+        self.assertEqual(
+            [r["details"]["origin"] for r in rows],
+            ["NEW ENGLAND", "ITALY", "FRANCE", "TEXAS"],
+        )
+        self.assertEqual(rows[0]["details"]["variety"], "NEW ENGLAND PRODUCE")
+        with patch.object(
+            src,
+            "_pdf_parts",
+            return_value=(
+                date(2024, 6, 18),
+                [("---ASTER: per bunch COLOMBIA ECUADOR long 10.00", 1, 1)],
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "Ambiguous Boston flower origin"):
+                src.parse_boston_flowers(b"fixture")
+
+    def test_boston_composite_origin_and_carton_preserve_literal_basis(self):
+        parts = (
+            date(2024, 6, 18),
+            [
+                (
+                    "---DAFFODIL: MARKET STEADY. per carton 50 bunches of 10 stems WASHINGTON field grown medium 3.50",
+                    1,
+                    1,
+                ),
+                (
+                    "---LISIANTHUS: MARKET STEADY. per bunch NEW ENGLAND MASSACHUSETTS AND NEARBY PRODUCING AREAS open field long 15.00",
+                    1,
+                    1,
+                ),
+            ],
+        )
+        with patch.object(src, "_pdf_parts", return_value=parts):
+            rows = src.parse_boston_flowers(b"fixture")
+        self.assertEqual(rows[0]["unit"], "per carton 50 bunches of 10 stems")
+        self.assertEqual(rows[0]["price"], 3.50)
+        self.assertEqual(
+            rows[1]["details"]["origin"],
+            "NEW ENGLAND MASSACHUSETTS AND NEARBY PRODUCING AREAS",
+        )
+        with patch.object(
+            src,
+            "_pdf_parts",
+            return_value=(
+                date(2024, 6, 18),
+                [
+                    (
+                        "---PAEONIA: NETHERLANDS long 3.50-4.00 per stem TEXAS long 3.50",
+                        1,
+                        1,
+                    )
+                ],
+            ),
+        ):
+            with self.assertRaisesRegex(ValueError, "before its package"):
+                src.parse_boston_flowers(b"fixture")
 
     def test_unquoted_product_does_not_inherit_neighbor_price(self):
         rows = self.parse_lines(
@@ -428,6 +611,99 @@ class DownloadedSourceTests(unittest.TestCase):
         # September 29, 2025 literally prints "0.25-.0.29" in the source.
         with self.assertRaises(ValueError):
             src.parse_miami_flowers((FIXTURES / "miami-2025-09-29.pdf").read_bytes())
+
+
+@unittest.skipUnless(
+    (AUDIT_FIXTURES / "miami-current.pdf").exists(),
+    "September 26 audit fixture not installed",
+)
+class September2026LiveSourceRegressions(unittest.TestCase):
+    def test_current_and_recovered_reports_reconcile_every_printed_range(self):
+        for filename, market, count, day in [
+            ("miami-current.pdf", "miami", 76, date(2026, 9, 21)),
+            ("boston-current.pdf", "boston", 35, date(2026, 9, 22)),
+            ("failed-00.pdf", "boston", 130, date(2024, 1, 23)),
+            ("failed-01.pdf", "boston", 79, date(2024, 6, 18)),
+            ("failed-03.pdf", "boston", 112, date(2024, 4, 2)),
+            ("failed-04.pdf", "boston", 116, date(2024, 2, 20)),
+            ("failed-07.pdf", "miami", 76, date(2024, 8, 22)),
+            ("failed-09.pdf", "miami", 71, date(2025, 4, 22)),
+            ("failed-10.pdf", "miami", 62, date(2025, 1, 21)),
+            ("failed-11.pdf", "miami", 68, date(2025, 3, 18)),
+            ("failed-13.pdf", "miami", 63, date(2025, 1, 23)),
+        ]:
+            with self.subTest(filename=filename):
+                body = (AUDIT_FIXTURES / filename).read_bytes()
+                rows = src.parse(body, filename, f"international-usda-{market}-flowers")
+                report_day, lines = src._pdf_parts(
+                    body,
+                    "MH_FV221" if market == "miami" else "BH_FV201",
+                    2 if market == "miami" else 1,
+                )
+                self.assertEqual((len(rows), report_day), (count, day))
+                printed = Counter(
+                    (float(m["low"]), float(m["high"] or m["low"]))
+                    for m in src.PRICE.finditer(" ".join(line for line, _, _ in lines))
+                )
+                extracted = Counter((r["min"], r["max"]) for r in rows)
+                extracted.update(
+                    (r["details"]["mostly_min"], r["details"]["mostly_max"])
+                    for r in rows
+                    if "mostly_min" in r["details"]
+                )
+                extracted.update(
+                    (quote["min"], quote["max"])
+                    for row in rows
+                    for quote in row["details"].get("exceptional_prices", [])
+                )
+                self.assertEqual(printed, extracted)
+                self.assertEqual(len({r["source_locator"] for r in rows}), len(rows))
+
+    def test_latest_wrapped_colors_and_colombian_boston_quote(self):
+        rows = src.parse_miami_flowers(
+            (AUDIT_FIXTURES / "miami-current.pdf").read_bytes()
+        )
+        purple = next(
+            r
+            for r in rows
+            if r["details"]["source_product"] == "CARNATIONS, MINIATURE"
+            and r["details"]["variety"] == "Assorted Colors; Purple"
+        )
+        self.assertEqual(
+            (purple["min"], purple["max"], purple["details"]["mostly_max"]),
+            (3.23, 3.75, 3.29),
+        )
+        self.assertEqual(
+            purple["source_locator"], "PDF page 1, col 2, text row 74-75, quote 3"
+        )
+        self.assertTrue(all("Burgundy" not in r["product_name"] for r in rows))
+        boston = src.parse_boston_flowers(
+            (AUDIT_FIXTURES / "boston-current.pdf").read_bytes()
+        )
+        clavel = next(
+            r for r in boston if r["details"]["source_product"] == "CARNATIONS"
+        )
+        self.assertEqual(
+            (clavel["details"]["origin"], clavel["min"], clavel["max"], clavel["unit"]),
+            ("COLOMBIA", 0.60, 0.70, "per stem"),
+        )
+
+    def test_genuinely_contradictory_publications_remain_rejected(self):
+        for filename, market, reason in [
+            ("failed-06.pdf", "boston", "Ambiguous duplicate"),
+            ("failed-08.pdf", "miami", "Malformed USDA printed price range"),
+            ("failed-12.pdf", "miami", "mostly range is outside"),
+            ("historical-4af6bea32800ca79.pdf", "boston", "before its package"),
+        ]:
+            with (
+                self.subTest(filename=filename),
+                self.assertRaisesRegex(ValueError, reason),
+            ):
+                src.parse(
+                    (AUDIT_FIXTURES / filename).read_bytes(),
+                    filename,
+                    f"international-usda-{market}-flowers",
+                )
 
 
 if __name__ == "__main__":
