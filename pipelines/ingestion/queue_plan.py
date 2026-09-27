@@ -36,6 +36,7 @@ def daily_candidates(db, today):
             kind IN ('inputs','inputs-municipal','coffee','coffee-pdf','rice') OR
             (kind IN ('monthly','supply','supply-reference','supply-index') AND
              (url ~ %s OR observed_on>=%s OR kind='supply-reference')) OR
+            (kind='milk' AND url ~* %s) OR
             (kind IN ('milk','monthly-annex','inputs-annex','inputs-reference','inputs-pdf','milk-pdf','monthly-pdf','supply-reference-pdf') AND (observed_on IS NULL OR observed_on>=%s)) OR
             (kind IN ('daily','daily-pdf','city-zip') AND observed_on>=%s)
           )) OR ((kind LIKE 'international-%%' OR kind LIKE 'colombia-%%') AND observed_on>=%s)
@@ -52,6 +53,10 @@ def daily_candidates(db, today):
             roots,
             str(today.year) + "|" + str(today.year - 1),
             today.replace(month=1, day=1),
+            # DANE revises this annual workbook in place, sometimes months
+            # after its last ingested observation. Individual monthly leaves
+            # must still use the recency cutoff below.
+            rf"/anex-SIPSALeche-SerieHistoricaPrecios-({today.year}|{today.year - 1})\.xlsx?([?].*)?$",
             today - timedelta(days=70),
             today - timedelta(days=14),
             today - timedelta(days=14),
