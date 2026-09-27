@@ -112,38 +112,38 @@
     ]
   },
   {
-    "name": "planning-coffee-calendar-and-complete-seasonal-provenance",
-    "route": "/plan?tab=budget",
-    "ready": "!!document.querySelector('.planning-tabs')||!!document.querySelector('.farm-editor')",
+    "name": "planning-coffee-readonly-historical-provenance",
+    "route": "/plan?municipality=41551&crop=2030300",
+    "ready": "!!document.querySelector('.crop-references')",
     "steps": [
       {
-        "action": "localStorage.setItem('agroamigo-farms-v2',\"{\\\"version\\\": 2, \\\"farms\\\": [{\\\"id\\\": \\\"qa-planning-oracle\\\", \\\"profile\\\": {\\\"municipalityId\\\": \\\"41551\\\", \\\"name\\\": \\\"QA source audit Pitalito\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"latitude\\\": \\\"1.912345\\\", \\\"longitude\\\": \\\"-76.123456\\\", \\\"elevation\\\": \\\"1800\\\", \\\"locationMethod\\\": \\\"manual\\\", \\\"locationAccuracy\\\": \\\"\\\"}, \\\"crops\\\": [{\\\"id\\\": \\\"qa-coffee\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"name\\\": \\\"Caf\\u00e9\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"yieldKgHa\\\": \\\"\\\", \\\"planYear\\\": \\\"2026\\\", \\\"physicalState\\\": \\\"Pergamino o seco de trilla\\\"}], \\\"selectedCropId\\\": \\\"qa-coffee\\\"}], \\\"activeId\\\": \\\"qa-planning-oracle\\\"}\");localStorage.removeItem('agroamigo-location-v1');window.__qaReloadPending=true;location.reload();",
-        "ready": "!window.__qaReloadPending&&(!!document.querySelector('.calendar-table')&&document.querySelector('.budget-header')?.textContent.includes('PITALITO'))",
+        "action": "[...document.querySelectorAll('summary')].find(s=>s.innerText==='Consultar historia y estacionalidad de precios').click();window.__qaSeasonal=null;fetch('/api/planning/seasonality?product=cafe-pergamino-seco&market=fnc-national').then(r=>{if(!r.ok)throw Error('Seasonality HTTP '+r.status);return r.json()}).then(x=>window.__qaSeasonal=x).catch(e=>window.__qaSeasonalError=String(e));",
+        "ready": "!!window.__qaSeasonal && !!document.querySelector('.seasonal-panel')",
         "checks": []
       },
       {
-        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
-        "ready": "!!document.querySelector('.seasonal-bars')||document.body.textContent.includes('No hay al menos 3 años completos y comparables')||document.body.textContent.includes('La referencia disponible no corresponde al precio por kg')||!!document.querySelector('.error-state')",
+        "action": "document.querySelector('.seasonal-panel .source-explanation').open=true;",
         "checks": [
           {
-            "id": "CAL-01",
-            "condition": "(()=>{const expected=[{\"department_id\": \"41\", \"crop\": \"Café\", \"activity\": \"Cosechas\", \"reference_year\": 2024, \"percentages\": [10.51, 15.68, 0, 17.97, 21.18, 6.27, 0, 0, 4.8, 8.28, 6.54, 8.77], \"document_id\": \"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\", \"source_row\": 503}];const rows=[...document.querySelectorAll('.calendar-table tbody tr')];return rows.length===expected.length&&rows.every(row=>{const r=expected.find(x=>x.activity===row.querySelector('th').textContent);return r&&[...row.querySelectorAll('td')].every((td,i)=>td.textContent===__pn(r.percentages[i]))})})()",
-            "expected": "All12monthly Huila coffee percentages/activity match immutable source row"
+            "id": "AGR-05",
+            "condition": "(()=>{const ys=window.__qaSeasonal.years.filter(y=>y.monthly_prices.length===12&&y.monthly_prices.every(v=>Number.isFinite(v)&&v>0));const rows=[...document.querySelectorAll('.seasonal-panel tbody tr')];const money=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,'');return window.__qaSeasonal.unit==='kg de pergamino seco'&&rows.length===ys.length&&ys.length>=3&&rows.every((row,i)=>Number(row.querySelector('th').innerText)===ys[i].reference_year&&[...row.querySelectorAll('td')].slice(0,12).every((td,m)=>td.childNodes[0].textContent.replace(/\\s/g,'')===money(ys[i].monthly_prices[m])))})()",
+            "expected": "All retained complete FNC years/months and literal COP/kg amounts reach read-only table",
+            "observed": "({years:window.__qaSeasonal.years.map(y=>y.reference_year),rows:document.querySelectorAll('.seasonal-panel tbody tr').length})"
           },
           {
-            "id": "CAL-07",
-            "condition": "!!document.querySelector('a[href*=\"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\"][href*=\"department=41\"]')",
-            "expected": "Historical2024department41 source"
+            "id": "AGR-05",
+            "condition": "(()=>{const ys=window.__qaSeasonal.years.filter(y=>y.monthly_prices.length===12&&y.monthly_prices.every(v=>Number.isFinite(v)&&v>0));const expected=Array.from({length:12},(_,m)=>{const a=ys.map(y=>y.monthly_prices[m]*1200/y.monthly_prices.reduce((a,b)=>a+b,0)).sort((a,b)=>a-b);const k=(a.length-1)/2;return Math.round((a[Math.floor(k)]+a[Math.ceil(k)])/2)});return JSON.stringify([...document.querySelectorAll('.seasonal-bars .bar-value')].map(e=>Number(e.innerText)))===JSON.stringify(expected)})()",
+            "expected": "All12 descriptive seasonal indices independently equal medians of month/annual-mean ratios; no future price calculation"
           },
           {
-            "id": "CAL-04",
-            "condition": "document.body.textContent.includes('27 de septiembre de 2026')&&document.body.textContent.includes('11 de octubre de 2026')",
-            "expected": "FloweringFeb1 +238/252days at1800m; visible source guide"
+            "id": "EVI-01",
+            "condition": "(()=>{const ys=window.__qaSeasonal.years.filter(y=>y.monthly_prices.length===12&&y.monthly_prices.every(v=>Number.isFinite(v)&&v>0));return [...document.querySelectorAll('.seasonal-panel tbody tr')].every((row,i)=>[...row.querySelectorAll('td')].slice(0,12).every((td,m)=>JSON.stringify([...td.querySelectorAll('a')].map(a=>a.getAttribute('href')))===JSON.stringify(ys[i].source_documents[m].map(id=>'/evidence/'+id))))})()",
+            "expected": "Every monthly price retains its exact source document link(s)"
           },
           {
-            "id": "FIN-10",
-            "condition": "document.querySelectorAll('.seasonal-bars button').length===12",
-            "expected": "Fivecomplete coffee years allow12month seasonal pattern"
+            "id": "AGR-07",
+            "condition": "!document.querySelector('input[type=number],input[type=date],.clean-kpis,.earnings-scenarios')",
+            "expected": "Historical references do not reopen a manual profitability or harvest-date calculator"
           }
         ]
       }
