@@ -27,19 +27,30 @@ def daily_candidates(db, today):
           FROM ingestion_asset WHERE (kind LIKE 'colombia-%%' OR kind LIKE 'international-%%')
           AND observed_on IS NULL AND status='pending'
           AND discovered_at>=now()-interval '48 hours'
-        ) SELECT a.url,a.kind,a.observed_on FROM ingestion_asset a WHERE
+        ), candidates AS (SELECT a.*,row_number() OVER(PARTITION BY kind ORDER BY
+          CASE WHEN status='pending' THEN 0 ELSE 1 END, observed_on DESC NULLS LAST,
+          checked_at ASC NULLS FIRST,url) turn FROM ingestion_asset a WHERE (
           a.url=ANY(%s::text[]) OR kind IN ('international-worldbank-monthly','colombia-fedegan-csv') OR
           (kind NOT LIKE 'international-%%' AND kind NOT LIKE 'colombia-%%' AND (
-            kind IN ('monthly','inputs','inputs-municipal','coffee','coffee-pdf','rice') OR
-            (kind IN ('milk','monthly-annex','inputs-annex','inputs-reference','inputs-pdf','milk-pdf','monthly-pdf') AND (observed_on IS NULL OR observed_on>=%s)) OR
+            kind IN ('inputs','inputs-municipal','coffee','coffee-pdf','rice') OR
+            (kind IN ('monthly','supply','supply-reference','supply-index') AND
+             (url ~ %s OR observed_on>=%s OR kind='supply-reference')) OR
+            (kind IN ('milk','monthly-annex','inputs-annex','inputs-reference','inputs-pdf','milk-pdf','monthly-pdf','supply-reference-pdf') AND (observed_on IS NULL OR observed_on>=%s)) OR
             (kind IN ('daily','daily-pdf','city-zip') AND observed_on>=%s)
           )) OR ((kind LIKE 'international-%%' OR kind LIKE 'colombia-%%') AND observed_on>=%s)
-          OR a.url IN (SELECT url FROM fresh WHERE turn<=3)
-          ORDER BY CASE WHEN kind='coffee' THEN 0 WHEN kind='coffee-pdf' THEN 1
-            WHEN a.url=ANY(%s::text[]) THEN 2 WHEN kind IN ('daily','daily-pdf','city-zip') THEN 3 ELSE 4 END,
-            checked_at ASC NULLS FIRST,observed_on DESC NULLS LAST,a.url""",
+          OR a.url IN (SELECT url FROM fresh WHERE turn<=3))
+          AND status<>'awaiting-ocr' AND (status<>'review' OR checked_at<now()-interval '1 day')
+          AND (checked_at IS NULL OR checked_at<now()-interval '6 hours')
+        ) SELECT url,kind,observed_on FROM candidates
+          ORDER BY CASE WHEN url=ANY(%s::text[]) THEN 0 ELSE 1 END,turn,
+            CASE WHEN kind='coffee-pdf' THEN 0 WHEN kind='coffee' THEN 1
+                 WHEN kind IN ('daily','city-zip') THEN 2
+                 WHEN kind IN ('inputs','inputs-municipal','supply') THEN 4 ELSE 3 END,
+            observed_on DESC NULLS LAST,checked_at ASC NULLS FIRST,url""",
         (
             roots,
+            str(today.year) + "|" + str(today.year - 1),
+            today.replace(month=1, day=1),
             today - timedelta(days=70),
             today - timedelta(days=14),
             today - timedelta(days=14),
@@ -62,7 +73,7 @@ def backfill_candidates(db, limit):
                  (outdated AND status IN ('complete','processed','archived','review','awaiting-ocr')))
         ), fair AS (
           SELECT *,row_number() OVER(PARTITION BY kind ORDER BY
-            CASE WHEN status IN ('pending','failed') OR outdated THEN 0 ELSE 1 END,
+            CASE WHEN status='pending' OR outdated THEN 0 WHEN status='failed' THEN 2 ELSE 1 END,
             CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' THEN observed_on END DESC NULLS LAST,
             CASE WHEN kind LIKE 'colombia-%%' OR kind LIKE 'international-%%' THEN discovered_at END DESC,
             coalesce(observed_on,'1900-01-01'),url) AS turn

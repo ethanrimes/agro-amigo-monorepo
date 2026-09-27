@@ -55,6 +55,35 @@ def main():
         daily = {url for url, _, _ in queue_plan.daily_candidates(db, worker.today())}
         assert "https://example.invalid/leaf" in daily
         assert "https://example.invalid/international-leaf" in daily
+        # New files must not sit behind hundreds of successful old workbooks;
+        # mutable current supply must be revisited even when its URL is stable.
+        for name, kind, day, checked in [
+            (
+                "microdato-abastecimiento-2026.xlsx",
+                "supply",
+                None,
+                "now()-interval '1 day'",
+            ),
+            (
+                "microdato-abastecimiento-2013.xlsx",
+                "supply",
+                None,
+                "now()-interval '1 day'",
+            ),
+            ("fresh-daily", "daily", worker.today(), "NULL"),
+            ("recent-daily", "daily", worker.today(), "now()"),
+        ]:
+            db.execute(
+                f"INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at) VALUES(%s,%s,'complete',%s,{checked})",
+                ("https://example.invalid/" + name, kind, day),
+            )
+        daily = {
+            url.rsplit("/", 1)[-1]
+            for url, _, _ in queue_plan.daily_candidates(db, worker.today())
+        }
+        assert "microdato-abastecimiento-2026.xlsx" in daily
+        assert "microdato-abastecimiento-2013.xlsx" not in daily
+        assert "fresh-daily" in daily and "recent-daily" not in daily
         print(
             "Temporary PostgreSQL queue: index/leaf fairness, NULL-date discovery, parser upgrades, stale review and retry cooldown passed."
         )

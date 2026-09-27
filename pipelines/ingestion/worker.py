@@ -18,6 +18,7 @@ import time
 import unicodedata
 import uuid
 from collections import defaultdict
+from contextvars import ContextVar
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -57,23 +58,26 @@ MONTH_NUM = {m: i + 1 for i, m in enumerate(MONTHS)}
 MONTH_NUM.update({m[:3]: i + 1 for i, m in enumerate(MONTHS)})
 MONTH_NUM.update({"sept": 9, "agos": 8})
 LOCK = 914070912
+RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
     "daily-index": "source-v2",
-    "inputs": "inputs-v2",
-    "inputs-municipal": "inputs-v2",
-    "inputs-annex": "inputs-v2",
+    "inputs": "inputs-v3",
+    "inputs-municipal": "inputs-v3",
+    "inputs-annex": "inputs-v3",
     "inputs-pdf": "inputs-pdf-v4",
-    "inputs-reference": "inputs-reference-v2",
-    "city-zip": "city-v3",
+    "inputs-reference": "inputs-reference-v3",
+    "city-zip": "city-v4",
     "monthly": "monthly-units-v2",
     "monthly-annex": "monthly-annex-v1",
     "daily": "daily-units-v2",
     "daily-pdf": "daily-pdf-v3",
     "monthly-pdf": "monthly-pdf-v2",
     "milk": "milk-v3",
-    "milk-pdf": "milk-pdf-v3",
+    "milk-pdf": "milk-pdf-v4",
     "rice": "rice-v1",
     "supply": "supply-v3",
+    "supply-index": "supply-index-v1",
+    "supply-reference-pdf": "source-v1",
 }
 
 
@@ -110,6 +114,8 @@ def today():
 RELEASE_FILES = [
     "pipelines/ingestion/workbook_preview.py",
     "pipelines/ingestion/queue_plan.py",
+    "pipelines/ingestion/resumable_inputs.py",
+    "pipelines/ingestion/retained_replays.py",
     "pipelines/ingestion/official_sources.py",
     "pipelines/ingestion/international_sources.py",
     "pipelines/ingestion/colombia_sources.py",
@@ -169,6 +175,7 @@ def connect():
         sslrootcert=certifi.where(),
         connect_timeout=20,
         autocommit=True,
+        options="-c statement_timeout=300000 -c lock_timeout=10000 -c idle_in_transaction_session_timeout=180000",
     )
     if os.environ.get("DATABASE_URL"):
         return psycopg.connect(os.environ["DATABASE_URL"], **options)
@@ -400,14 +407,32 @@ def discover_price_daily(db):
 
 def discover_coffee(db):
     fnc_links = links(FNC)
-    queue(
-        db,
-        next(u for _, u in fnc_links if u.endswith(".xlsx") and "Precios" in u),
-        "coffee",
-    )
-    queue(
-        db, next(u for _, u in fnc_links if u.endswith("precio_cafe.pdf")), "coffee-pdf"
-    )
+    # The publisher can leave an older workbook in its prominent link while
+    # posting the updated file under a second "Descargar" link. Retain and
+    # refresh every explicitly linked workbook instead of choosing the first.
+    from urllib.parse import urlparse
+
+    found = {"coffee": set(), "coffee-pdf": set()}
+    for _, url in fnc_links:
+        parsed = urlparse(url)
+        if (
+            parsed.scheme != "https"
+            or parsed.hostname
+            not in {"federaciondecafeteros.org", "www.federaciondecafeteros.org"}
+            or parsed.username
+            or parsed.password
+        ):
+            continue
+        name = parsed.path.rsplit("/", 1)[-1].lower()
+        if name.endswith(".xlsx") and "precios" in name:
+            found["coffee"].add(url)
+        elif name == "precio_cafe.pdf":
+            found["coffee-pdf"].add(url)
+    for kind, urls in found.items():
+        if not urls:
+            raise ValueError(f"FNC index has no trusted {kind} original")
+        for url in sorted(urls):
+            queue(db, url, kind)
 
 
 def discover_inputs(db):
@@ -423,11 +448,9 @@ def discover_inputs(db):
 
 
 def discover_supply(db):
-    for label, u in links(SUPPLY):
-        if re.search(r"microdato-abastecimiento-20\d{2}\.xlsx$", u, re.I):
-            queue(db, u, "supply")
-        elif "Series-historicas-abastecimiento" in u and u.endswith(".xlsx"):
-            queue(db, u, "supply-reference")
+    from .supply import discover_supply_sources
+
+    return discover_supply_sources(db, SUPPLY)
 
 
 def discover(db):
@@ -989,7 +1012,6 @@ def project(db, did, url, kind):
     conflicts = set()
     daily = {}
     coffee = {}
-    inputs = {}
     for loc, series, d, name, market, unit, price, variation, meta in rows:
         if series == "dane-monthly":
             pid, mid = slug(name), "sipsa-" + slug(market)
@@ -1139,6 +1161,15 @@ def enqueue_failed_workbook(db, url, kind, error):
 
 
 def _process_asset(db, url, kind, day):
+    if kind == "supply-index":
+        from .supply import discover_supply_sources
+
+        n = discover_supply_sources(db, url)
+        db.execute(
+            "UPDATE ingestion_asset SET status='complete',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
+            (n, url),
+        )
+        return n
     if kind == "daily-index":
         n = discover_daily(db, url)
         db.execute(
@@ -1150,7 +1181,18 @@ def _process_asset(db, url, kind, day):
         "SELECT processor_version FROM ingestion_asset WHERE url=%s", (url,)
     ).fetchone()
     outdated = not version or version[0] != parser_version(kind)
-    data = fetch_asset(db, url, force=outdated)
+    resume = None
+    if kind in ("inputs", "inputs-municipal", "inputs-annex"):
+        resume = db.execute(
+            """SELECT d.content FROM ingestion_asset a JOIN source_document d ON d.id=a.document_id
+            WHERE a.url=%s AND a.status IN ('pending','failed') AND EXISTS(
+              SELECT 1 FROM ingestion_checkpoint c WHERE c.document_id=d.id
+              AND c.processor_version=%s AND c.step IN ('validated','native'))""",
+            (url, parser_version(kind)),
+        ).fetchone()
+    # Finish the exact retained revision before downloading a newer mutable
+    # workbook. The following regular refresh checks the publisher again.
+    data = bytes(resume[0]) if resume else fetch_asset(db, url, force=outdated)
     if data is None:
         return 0
     did = archive(db, url, data, kind, day)
@@ -1174,7 +1216,7 @@ def _process_asset(db, url, kind, day):
     # Retain the original even when parsing fails; pending also resumes safely
     # after a host interruption before this source's transaction commits.
     db.execute(
-        "UPDATE ingestion_asset SET document_id=%s,status='pending',checked_at=NULL WHERE url=%s",
+        "UPDATE ingestion_asset SET document_id=%s,status='pending',checked_at=now() WHERE url=%s",
         (did, url),
     )
     if kind.startswith(("international-", "colombia-")):
@@ -1221,9 +1263,19 @@ def _process_asset(db, url, kind, day):
         )
         return count
     if kind == "city-zip":
-        from pipelines.ingestion.city_reports import publish_city_zip
+        from pipelines.ingestion.city_reports import (
+            CityZipPartialReview,
+            publish_city_zip,
+        )
 
-        count = publish_city_zip(db, data, did, url, day)
+        member_error = None
+        try:
+            count = publish_city_zip(
+                db, data, did, url, day, processor_version=parser_version(kind)
+            )
+        except CityZipPartialReview as exc:
+            count = exc.count
+            member_error = str(exc)
         db.execute(
             """INSERT INTO product(id,name,category)
             SELECT DISTINCT ON (r.product_id) r.product_id,r.product_name,coalesce(c.category_path[1],r.category)
@@ -1233,8 +1285,8 @@ def _process_asset(db, url, kind, day):
             (did,),
         )
         db.execute(
-            "UPDATE ingestion_asset SET document_id=%s,status='complete',records=(SELECT count(*) FROM regional_price WHERE document_id IN (SELECT document_id FROM source_archive_member WHERE archive_id=%s)),checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
-            (did, did, url),
+            "UPDATE ingestion_asset SET document_id=%s,status=%s,records=(SELECT count(*) FROM regional_price WHERE document_id IN (SELECT document_id FROM source_archive_member WHERE archive_id=%s)),checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
+            (did, "review" if member_error else "complete", did, member_error, url),
         )
         return count
     if kind.endswith("pdf"):
@@ -1252,6 +1304,24 @@ def _process_asset(db, url, kind, day):
         )
         LOG.info("Imported supply: %s monthly aggregates (%s)", count, url)
         return count
+    if kind in ("inputs", "inputs-municipal", "inputs-annex"):
+        from .resumable_inputs import publish
+
+        # Reserve time for other source families; large mutable workbooks resume
+        # from committed monthly projections instead of restarting all history.
+        deadline = min(RUN_DEADLINE.get() or float("inf"), time.monotonic() + 600)
+        count, conflicts = publish(db, data, did, kind, day, deadline=deadline)
+        db.execute(
+            "UPDATE ingestion_asset SET status='complete',records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
+            (
+                count,
+                f"Conflicting source keys retained but excluded from app: {conflicts}"
+                if conflicts
+                else None,
+                url,
+            ),
+        )
+        return count
     parser = {
         "monthly": parse_monthly,
         "monthly-annex": lambda b: parse_monthly_summary(b, day),
@@ -1267,9 +1337,17 @@ def _process_asset(db, url, kind, day):
 
         parser = lambda b: parse_special(b, kind, day)
     if kind == "milk-pdf":
-        from pipelines.ingestion.special_prices import parse_milk_pdf
+        from pipelines.ingestion.special_prices import MilkNarrativeOnly, parse_milk_pdf
 
-        parser = lambda b: parse_milk_pdf(b, day)
+        try:
+            milk_rows = list(parse_milk_pdf(data, day))
+        except MilkNarrativeOnly:
+            db.execute(
+                "UPDATE ingestion_asset SET document_id=%s,status='processed',records=0,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
+                (did, "Native narrative; no municipal price table", url),
+            )
+            return 0
+        parser = lambda b: iter(milk_rows)
     if kind == "daily-pdf":
         parser = lambda b: parse_pdf(b, day)
     if kind == "inputs-pdf":
@@ -1481,79 +1559,131 @@ def run(
     ocr_scan_limit=3,
     asset_url=None,
 ):
+    from .queue_plan import backfill_candidates, daily_candidates
+    from .resumable_inputs import WorkDeferred
+
     started = time.monotonic()
+    deadline_token = RUN_DEADLINE.set(started + time_budget)
     ident = uuid.uuid4()
-    summary = {"assets": 0, "rows": 0, "errors": []}
+    summary = {"assets": 0, "rows": 0, "errors": [], "deferred": []}
     with connect() as db:
         if not db.execute("SELECT pg_try_advisory_lock(%s)", (LOCK,)).fetchone()[0]:
-            LOG.info(
-                "Another ingestion is active; next scheduled invocation will resume"
+            db.execute(
+                "INSERT INTO ingestion_run(id,mode,status,finished_at,summary) VALUES(%s,%s,'skipped_overlap',now(),%s)",
+                (
+                    ident,
+                    mode,
+                    Jsonb({"reason": "Another ingestion owns the database lock"}),
+                ),
             )
+            RUN_DEADLINE.reset(deadline_token)
             return {"status": "skipped_overlap"}
         db.execute(
             "UPDATE ingestion_run SET status='interrupted',finished_at=now() WHERE status='running'"
         )
         db.execute("INSERT INTO ingestion_run(id,mode) VALUES(%s,%s)", (ident, mode))
+
+        def progress(phase, **fields):
+            summary.update(
+                fields, phase=phase, heartbeat=datetime.now(ZoneInfo("UTC")).isoformat()
+            )
+            summary["seconds"] = round(time.monotonic() - started, 1)
+            db.execute(
+                "UPDATE ingestion_run SET summary=%s WHERE id=%s",
+                (Jsonb(summary), ident),
+            )
+
         try:
-            if mode in ("daily", "discover", "all"):
+            # Hourly catch-up makes freshness independent of one nightly timer.
+            # Discovery is due every six hours, including after a failed daily run.
+            periodic = not asset_url and mode != "discover"
+            discovery_due = mode in ("daily", "discover", "all")
+            if periodic and not discovery_due:
+                discovery_due = not db.execute(
+                    "SELECT 1 FROM ingestion_run WHERE summary ? 'discovery_finished_at' AND started_at>now()-interval '6 hours' LIMIT 1"
+                ).fetchone()
+            if discovery_due and not asset_url:
+                progress("discovery")
                 summary["errors"].extend(discover(db))
                 from .official_sources import discover_roots
 
                 discover_roots(db)
+                progress(
+                    "discovered",
+                    discovery_finished_at=datetime.now(ZoneInfo("UTC")).isoformat(),
+                )
             if asset_url:
-                # Operational repair is limited to a registered source. Never
-                # fetch an arbitrary URL supplied to the authenticated endpoint.
                 candidates = db.execute(
                     "SELECT url,kind,observed_on FROM ingestion_asset WHERE url=%s",
                     (asset_url,),
                 ).fetchall()
             elif mode == "discover":
                 candidates = []
-            elif mode == "daily":
-                from .queue_plan import daily_candidates
-
-                candidates = daily_candidates(db, today())
             else:
-                from .queue_plan import backfill_candidates
-
-                candidates = backfill_candidates(db, limit)
-            # Re-select once after root processing so newly linked price files can
-            # be fetched during this daily run, with the same elapsed-time bound.
-            remaining_passes = 1 if mode == "daily" else 0
+                fresh = daily_candidates(db, today())
+                if mode == "daily":
+                    candidates = fresh
+                else:
+                    # Reserve half the hourly slots for archive progress.
+                    candidates = fresh[: max(1, limit // 2)] + backfill_candidates(
+                        db, limit
+                    )
             processed = set()
+            remaining_passes = 1 if periodic else 0
             index = 0
-            while index < len(candidates):
+            while index < len(candidates) and len(processed) < limit:
                 url, kind, day = candidates[index]
                 index += 1
-                processed.add(url)
-                if time.monotonic() - started > time_budget:
+                if url in processed:
+                    continue
+                if time.monotonic() - started >= time_budget:
                     summary["time_budget_reached"] = True
                     break
+                processed.add(url)
+                progress(
+                    "asset",
+                    active_asset={
+                        "url": url,
+                        "kind": kind,
+                        "started_at": datetime.now(ZoneInfo("UTC")).isoformat(),
+                    },
+                )
+                # A killed host must not leave its poison asset at the head of
+                # every subsequent queue. Existing checkpoints and bytes survive.
+                db.execute(
+                    "UPDATE ingestion_asset SET checked_at=now() WHERE url=%s", (url,)
+                )
                 try:
                     summary["rows"] += process_asset(db, url, kind, day)
                     summary["assets"] += 1
+                except WorkDeferred as exc:
+                    summary["deferred"].append({"url": url, "reason": str(exc)})
+                    db.execute(
+                        "UPDATE ingestion_asset SET status='pending',checked_at=now()-interval '5 hours',error=%s WHERE url=%s",
+                        (str(exc), url),
+                    )
                 except Exception as exc:
                     message = type(exc).__name__ + ": " + str(exc)
-                    # Source errors only; database connection strings are never logged.
                     LOG.error("Asset failed %s: %s", url, message)
                     summary["errors"].append({"url": url, "error": message[:500]})
                     db.execute(
-                        "UPDATE ingestion_asset SET status=%s,attempts=attempts+1,checked_at=now(),error=%s WHERE url=%s",
+                        "UPDATE ingestion_asset SET status=%s,attempts=attempts+1,checked_at=now(),error=%s,processor_version=%s WHERE url=%s",
                         (
                             "review"
                             if isinstance(exc, SourceDateMismatch)
                             else "failed",
                             message[:1000],
+                            parser_version(kind),
                             url,
                         ),
                     )
                     if kind == "daily":
-                        # An unavailable or invalid workbook must not prevent
-                        # extraction from its available official daily bulletin.
                         db.execute(
                             "UPDATE ingestion_asset SET status='pending',checked_at=NULL WHERE kind='daily-pdf' AND observed_on=%s AND status='archived'",
                             (day,),
                         )
+                summary.pop("active_asset", None)
+                progress("asset_finished")
                 if index == len(candidates) and remaining_passes:
                     remaining_passes -= 1
                     candidates.extend(
@@ -1561,14 +1691,55 @@ def run(
                         for row in daily_candidates(db, today())
                         if row[0] not in processed
                     )
-            if mode in ("daily", "all"):
-                summary["trm"] = refresh_trm(db)
-                refresh_seasons(db)
+            if len(processed) >= limit and index < len(candidates):
+                summary["asset_limit_reached"] = True
+            # Auxiliary work has the same deadline and cannot prevent final run
+            # accounting after an expensive asset. It catches up hourly as well.
+            auxiliary_due = (
+                periodic
+                and not db.execute(
+                    "SELECT 1 FROM ingestion_run WHERE summary ? 'auxiliary_finished_at' AND started_at>now()-interval '18 hours' LIMIT 1"
+                ).fetchone()
+            )
+            if auxiliary_due and time.monotonic() - started < time_budget - 300:
+                progress("auxiliary")
+                try:
+                    summary["trm"] = refresh_trm(db)
+                    refresh_seasons(db)
+                    summary["auxiliary_finished_at"] = datetime.now(
+                        ZoneInfo("UTC")
+                    ).isoformat()
+                except Exception as exc:
+                    summary["errors"].append(
+                        {
+                            "source": "TRM/seasonality",
+                            "error": type(exc).__name__ + ": " + str(exc)[:400],
+                        }
+                    )
+            if periodic and time.monotonic() < started + time_budget - 10:
+                from .retained_replays import drain as replay_retained
+
+                progress("retained_replay")
+                summary["retained_replay"] = replay_retained(
+                    db, deadline=min(started + time_budget, time.monotonic() + 60)
+                )
+                summary["errors"].extend(
+                    {"source": "retained_replay", **error}
+                    for error in summary["retained_replay"].get("errors", [])
+                )
             from .ocr import drain
 
-            summary["ocr"] = drain(db, limit=ocr_limit, scan_limit=ocr_scan_limit)
-            summary["seconds"] = round(time.monotonic() - started, 1)
-            status = "partial" if summary["errors"] else "succeeded"
+            progress("ocr")
+            summary["ocr"] = drain(
+                db,
+                limit=ocr_limit,
+                scan_limit=ocr_scan_limit,
+                deadline=started + time_budget,
+            )
+            progress("finished")
+            status = (
+                "partial" if summary["errors"] or summary["deferred"] else "succeeded"
+            )
             db.execute(
                 "UPDATE ingestion_run SET status=%s,finished_at=now(),summary=%s WHERE id=%s",
                 (status, Jsonb(summary), ident),
@@ -1579,10 +1750,8 @@ def run(
                 ),
                 flush=True,
             )
-            if mode == "daily" and summary["errors"]:
-                raise RuntimeError(
-                    "Daily ingestion has failed assets; see ingestion_run and ingestion_asset"
-                )
+            # Source-specific failures already have durable retry cooldowns.
+            # Raising here made one malformed old file rerun all fresh sources.
             return summary
         except Exception as exc:
             db.execute(
@@ -1592,6 +1761,7 @@ def run(
             raise
         finally:
             db.execute("SELECT pg_advisory_unlock(%s)", (LOCK,))
+            RUN_DEADLINE.reset(deadline_token)
 
 
 if __name__ == "__main__":

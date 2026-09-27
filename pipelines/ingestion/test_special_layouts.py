@@ -246,5 +246,152 @@ class MilkPDFMonth(unittest.TestCase):
                 self.assertEqual({r[2] for r in inferred}, {day})
 
 
+class MilkNarrativeClassification(unittest.TestCase):
+    def narrative_page(self, extra="", *, image=False):
+        text = (
+            "Boletín técnico\nPrecios de Leche Cruda en Finca (SIPSA-L)\nJulio de 2026\n"
+            "Contenido\nIntroducción\nFicha metodológica\n"
+            "Comportamiento de los precios promedio y condiciones de producción.\n"
+            + extra
+        )
+        return SimpleNamespace(
+            width=600,
+            height=800,
+            images=[{"x0": 0, "x1": 600, "top": 200, "bottom": 700}] if image else [],
+            extract_text=lambda: text,
+            close=lambda: None,
+        )
+
+    def test_explicit_native_narrative_has_a_distinct_non_price_outcome(self):
+        from .special_prices import MilkNarrativeOnly
+
+        with self.assertRaises(MilkNarrativeOnly):
+            parse_pdf_pages(
+                [self.narrative_page("Gráfico 1. Tendencia de precios", image=True)],
+                date(2026, 7, 31),
+            )
+        with self.assertRaises(SourceDateMismatch):
+            parse_pdf_pages([self.narrative_page()], date(2026, 8, 31))
+
+    def test_announced_table_or_unlabelled_image_stays_a_parser_failure(self):
+        from .special_prices import MilkNarrativeOnly
+
+        for page in (
+            self.narrative_page("Cuadro 1. Precios de leche cruda en finca"),
+            self.narrative_page(image=True),
+            SimpleNamespace(
+                width=600,
+                height=800,
+                images=[],
+                extract_text=lambda: "",
+                close=lambda: None,
+            ),
+        ):
+            with self.subTest(page=page):
+                with self.assertRaises(ValueError) as error:
+                    parse_pdf_pages([page], date(2026, 7, 31))
+                self.assertNotIsInstance(error.exception, MilkNarrativeOnly)
+
+    def test_current_july_2026_original_is_readable_narrative(self):
+        from .special_prices import MilkNarrativeOnly
+
+        path = Path(
+            "artifacts/automation-audit-2026-09-26/dane/originals/bol-SIPSALeche-jul2026.pdf"
+        )
+        if not path.exists():
+            self.skipTest("Current DANE original not downloaded")
+        data = path.read_bytes()
+        self.assertEqual(
+            sha256(data).hexdigest(),
+            "83679d9a32073fe406bf45e1b56d01ca427ffda81a711819ea8c4cd459e0c912",
+        )
+        with self.assertRaises(MilkNarrativeOnly):
+            list(parse_milk_pdf(data, date(2026, 7, 31)))
+
+    def test_worker_records_only_explicit_narrative_as_processed(self):
+        from .special_prices import MilkNarrativeOnly
+        from .worker import _process_asset
+
+        db = MagicMock()
+        db.execute.return_value.fetchone.side_effect = [
+            ("old-parser",),
+            ("old-document", "failed", 0),
+        ]
+        with (
+            patch(
+                "pipelines.ingestion.worker.fetch_asset", return_value=b"native report"
+            ),
+            patch(
+                "pipelines.ingestion.worker.archive", return_value="retained-original"
+            ),
+            patch("pipelines.ingestion.pdf_sources.extract_pages"),
+            patch(
+                "pipelines.ingestion.special_prices.parse_milk_pdf",
+                side_effect=MilkNarrativeOnly("native narrative"),
+            ),
+            patch("pipelines.ingestion.worker.save_rows") as save,
+        ):
+            self.assertEqual(
+                _process_asset(
+                    db,
+                    "https://www.dane.gov.co/report.pdf",
+                    "milk-pdf",
+                    date(2026, 7, 31),
+                ),
+                0,
+            )
+        save.assert_not_called()
+        self.assertTrue(
+            any(
+                "status='processed'" in call.args[0]
+                for call in db.execute.call_args_list
+            )
+        )
+        self.assertTrue(
+            any(
+                "Native narrative; no municipal price table" in str(call.args)
+                for call in db.execute.call_args_list
+            )
+        )
+        self.assertFalse(
+            any(
+                "UPDATE source_document" in call.args[0]
+                for call in db.execute.call_args_list
+            )
+        )
+
+    def test_worker_does_not_swallow_other_missing_table_failures(self):
+        from .worker import _process_asset
+
+        db = MagicMock()
+        db.execute.return_value.fetchone.side_effect = [
+            ("old-parser",),
+            ("old-document", "failed", 0),
+        ]
+        with (
+            patch(
+                "pipelines.ingestion.worker.fetch_asset", return_value=b"unknown report"
+            ),
+            patch(
+                "pipelines.ingestion.worker.archive", return_value="retained-original"
+            ),
+            patch("pipelines.ingestion.pdf_sources.extract_pages"),
+            patch(
+                "pipelines.ingestion.special_prices.parse_milk_pdf",
+                side_effect=ValueError("Unknown grid"),
+            ),
+            self.assertRaisesRegex(ValueError, "Unknown grid"),
+        ):
+            _process_asset(
+                db, "https://www.dane.gov.co/report.pdf", "milk-pdf", date(2026, 7, 31)
+            )
+        self.assertFalse(
+            any(
+                "status='processed'" in call.args[0]
+                for call in db.execute.call_args_list
+            )
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

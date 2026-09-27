@@ -67,6 +67,10 @@ def database():
         db.execute(
             "GRANT INSERT,UPDATE ON source_ocr_task TO agro_ingestor; GRANT INSERT ON regional_classification,source_ocr_scan,source_ocr_result,source_ocr_attempt TO agro_ingestor; GRANT USAGE ON SEQUENCE source_ocr_attempt_id_seq TO agro_ingestor"
         )
+        for migration in sorted(
+            (ROOT / "pipelines/ingestion/migrations").glob("*.sql")
+        ):
+            db.execute(migration.read_text())
     worker["url"] = (
         f"postgresql://agro_ingestor:{quote(worker['password'], safe='')}@{c['host']}:5432/{c['database']}"
     )
@@ -115,6 +119,8 @@ def deploy(code_only=False):
             for name in ["function_app.py", "host.json", "requirements.txt"]:
                 archive.write(ROOT / "pipelines/ingestion" / name, name)
             for name in [
+                "pipelines/ingestion/resumable_inputs.py",
+                "pipelines/ingestion/retained_replays.py",
                 "pipelines/ingestion/workbook_preview.py",
                 "pipelines/ingestion/queue_plan.py",
                 "pipelines/ingestion/official_sources.py",
