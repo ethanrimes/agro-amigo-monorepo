@@ -1,5 +1,7 @@
 """Exercise real PostgreSQL scheduling SQL using only a temporary queue table."""
 
+from datetime import date, timedelta
+
 from . import queue_plan, worker
 
 
@@ -104,8 +106,48 @@ def main():
         assert "microdato-abastecimiento-2026.xlsx" in daily
         assert "microdato-abastecimiento-2013.xlsx" not in daily
         assert "fresh-daily" in daily and "recent-daily" not in daily
+        # Reproduce the Sep 2026 milk gap: the current annual URL was revised
+        # in September, while its stored observation was still in May. The
+        # URL's annual scope, not that old observation, requires revalidation.
+        audit_day = date(2026, 9, 27)
+        milk_root = "https://www.dane.gov.co/files/operaciones/SIPSA/"
+        milk_cases = [
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx", date(2026, 5, 1), "complete", "now()-interval '1 day'", True),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2025.xlsx", date(2025, 5, 1), "complete", "now()-interval '1 day'", True),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2024.xlsx", date(2024, 5, 1), "complete", "now()-interval '1 day'", False),
+            ("anex-SIPSALeche-may2026.xlsx", date(2026, 5, 1), "complete", "now()-interval '1 day'", False),
+            ("anex-SIPSALeche-ago2026.xlsx", date(2026, 8, 1), "complete", "now()-interval '1 day'", True),
+            ("ANEX-SIPSALECHE-SERIEHISTORICAPRECIOS-2026.XLS", date(2026, 5, 1), "complete", "now()-interval '1 day'", True),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?cooldown", date(2026, 5, 1), "complete", "now()", False),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?ocr", date(2026, 5, 1), "awaiting-ocr", "now()-interval '1 day'", False),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?review", date(2026, 5, 1), "review", "now()-interval '7 hours'", False),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?stale-review", date(2026, 5, 1), "review", "now()-interval '2 days'", True),
+            ("anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx?changed", date(2026, 5, 1), "complete", "now()-interval '1 day'", True),
+        ]
+        for name, observed_on, status, checked, _ in milk_cases:
+            db.execute(
+                f"INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at) VALUES(%s,'milk',%s,%s,{checked})",
+                (milk_root + name, status, observed_on),
+            )
+        daily = {url for url, _, _ in queue_plan.daily_candidates(db, audit_day)}
+        for name, _, _, _, expected in milk_cases:
+            assert ((milk_root + name) in daily) == expected, name
+        next_year = {url for url, _, _ in queue_plan.daily_candidates(db, date(2027, 9, 27))}
+        assert milk_root + "anex-SIPSALeche-SerieHistoricaPrecios-2026.xlsx" in next_year
+        assert milk_root + "anex-SIPSALeche-SerieHistoricaPrecios-2025.xlsx" not in next_year
+        # All other mutable annual families already have an independent
+        # eligibility rule. Guard them against the same old-observation bug.
+        for kind in ("inputs", "inputs-municipal", "coffee", "coffee-pdf", "rice", "monthly", "supply", "supply-reference", "supply-index"):
+            source = f"https://example.invalid/annual/{kind}-2026.xlsx"
+            db.execute(
+                "INSERT INTO ingestion_asset(url,kind,status,observed_on,checked_at) VALUES(%s,%s,'complete',%s,now()-interval '1 day')",
+                (source, kind, audit_day - timedelta(days=150)),
+            )
+        daily = {url for url, _, _ in queue_plan.daily_candidates(db, audit_day)}
+        for kind in ("inputs", "inputs-municipal", "coffee", "coffee-pdf", "rice", "monthly", "supply", "supply-reference", "supply-index"):
+            assert f"https://example.invalid/annual/{kind}-2026.xlsx" in daily, kind
         print(
-            "Temporary PostgreSQL queue: index/leaf fairness, NULL-date discovery, parser upgrades, stale review and retry cooldown passed."
+            "Temporary PostgreSQL queue: index/leaf fairness, NULL-date discovery, parser upgrades, stale review, retry cooldown, 11 milk annual/leaf cases, calendar-year rollover and 9 other mutable annual families passed."
         )
 
 
