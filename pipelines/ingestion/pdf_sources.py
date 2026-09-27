@@ -7,7 +7,7 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v6"
+INPUT_PDF_VERSION = "inputs-pdf-v7"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
@@ -396,6 +396,32 @@ def _input_presentation(heading, heading_lines):
     return None
 
 
+def _input_location_prefix(previous, words, price_left):
+    """Recover an adjacent, visibly wrapped municipality without guessing names.
+
+    Only a grammatical connector at the line boundary permits joining. The
+    first line must contain location-column text only, not a product heading,
+    price, note, or another complete municipality/department row.
+    """
+    if not previous or not words:
+        return ""
+    prior = previous[1]
+    if not prior or any("Bold" in w["fontname"] for w in prior):
+        return ""
+    prefix = " ".join(previous[2])
+    connectors = {"de", "del", "la", "las", "los"}
+    if (
+        len(prefix) > 80
+        or not re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*", prefix)
+        or max(w["x1"] for w in prior) >= price_left
+        or abs(min(w["x0"] for w in prior) - min(w["x0"] for w in words)) > 2
+        or not -1 <= min(w["top"] for w in words) - max(w["bottom"] for w in prior) <= 5
+        or not (words[0]["text"] in connectors or prefix.split()[-1] in connectors)
+    ):
+        return ""
+    return prefix
+
+
 def parse_input_pdf(data, day):
     """Read each dated two-column table, including layouts without variation.
 
@@ -502,9 +528,18 @@ def parse_input_pdf(data, day):
                     previous_heading = False
                     heading_bottom = None
                     unresolved = False
+                    last_line = None
                     for line_no, (top, ws) in enumerate(lines, 1):
                         ws.sort(key=lambda w: w["x0"])
                         line = clean(_input_line_text(ws))
+                        preceding_line = last_line
+                        location_prefix = _input_location_prefix(
+                            preceding_line, ws, price_left
+                        )
+                        location_lines = (
+                            preceding_line[2] + [line] if location_prefix else [line]
+                        )
+                        last_line = (top, ws, location_lines)
                         if len(line) == 1 and line.isalpha():
                             continue  # Decorative vertical margin lettering.
                         # Preserve overprinted product identities for review;
@@ -538,6 +573,10 @@ def parse_input_pdf(data, day):
                             )
                         ):
                             location, price = numeric.group(1, 2)
+                            printed_location_lines = [location]
+                            if location_prefix:
+                                printed_location_lines = preceding_line[2] + [location]
+                                location = location_prefix + " " + location
                             variation = numeric[3] if percentage_headers else "n.d."
                             place = re.match(r"^(.*?)\s*\(([^)]+)\)\s*\*?$", location)
                             if place:
@@ -608,6 +647,7 @@ def parse_input_pdf(data, day):
                                     "ica": "",
                                     "department": department,
                                     "municipality": municipality,
+                                    "printed_location_lines": printed_location_lines,
                                     "page": page_no,
                                     "printed_heading": heading,
                                     "printed_heading_lines": heading_lines.copy(),
