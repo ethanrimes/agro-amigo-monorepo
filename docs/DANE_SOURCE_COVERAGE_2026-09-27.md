@@ -27,6 +27,59 @@ This is an exhaustive inventory of **registered DANE source kinds**, with repres
 | `supply-index` | 0 (14 expected) | Canonical archive index2013–26 discovered and enumerated | Index queue records are not data observations |
 | `context-pdf` | 2 (14 expected) | Twelve additional official PDFs retained:6 quarterly,May2021 special,2 launch documents,Acerca,certification note,April2013 press. Strict official-host/name matcher tested | Monetary prose, charts, aggregate indicators and methodology remain reference context. EgQ2 2026 prose saysAprilBucaramanga chócolo1,325/kg; not yet a structured quote row. No guessed period from filename typo`20133` |
 
+## Weekly bulletins added on 27 September
+
+The weekly family is now registered through `dane_weekly.py` (`dane-weekly-v1`)
+and the official-source publication path. The observed-link inventory covers
+**16 index pages** (current root and 2012–2026 archives) and **1,453 originals**:
+730 PDFs, 415 XLSX and 308 XLS. These are additional to the 9,645-entry baseline
+manifest above. Discovery now includes legacy `Anexo_`, `anex_` and `bol_`
+filenames and removes fragment-only index duplicates; all 1,453 observed links
+are recognized without synthesizing missing weeks.
+
+| Weekly kind | Observed inventory | Validated behavior |
+|---|---:|---|
+| `dane-weekly-index` | 16 pages | Current and historical child discovery; current/previous-year indexes and recent 70-day files receive recurring checks. Unknown-date leaves retain bounded daily/backfill eligibility. |
+| `dane-weekly-pdf` | 730 files | Explicit weekly period, literal product/market, COP, printed minimum/maximum/**mean**, unit and page/table locator; supported native failures request OCR only for failed pages. |
+| `dane-weekly-xlsx` | 723 files, including 308 XLS | Native monetary cells and declared unit exceptions; original XLS/XLSX bytes and worksheet/row locators retained. Same-URL byte revisions remain separate originals. |
+
+Twelve retained originals spanning June 2012, August/November 2012, 2017–2018,
+December 2018, 2025–2026 and September 2026 completed native stress validation:
+**49,006 literal rows, 39,529 publishable and 9,477 review rows**. These counts
+include companion-file overlap; they are not unique database observations.
+The current September 19–25 workbook/PDF pair matches all **4,571 literal
+product/market keys and 13,713 min/max/mean cells** against independently decoded
+workbook XML. No precision discrepancy was found in that pair; the published
+mean is preserved, not replaced by a range midpoint. Weekly prices remain a
+separate period/basis from daily and monthly quotations.
+
+Source ambiguity remains explicit:
+
+- The current workbook declares 84 egg quotes per unit and 47 liquid quotes per
+  litre. Its PDF lacks those exception notes, so those 131 PDF rows retain their
+  literal figures as unit reviews; the workbook provides verified quotations.
+- Early grouped XLS annexes without any unit declaration are retained for review.
+  A price magnitude or a companion publication is not silently treated as a
+  declaration in that original.
+- The first June 16–22, 2012 PDF contains 1,428 rows: 1,340 publishable, 62 unit
+  reviews and 26 rows in blocks with absent/conflicting product headings. The
+  cross-year 2018 PDF also genuinely prints conflicting Trucha/Pasto prices;
+  its affected block is reviewed rather than choosing an arbitrary value.
+- Native layout regressions cover unbolded product headings, centered category
+  captions, wrapped market names and cross-year periods. Pure cached-OCR tests
+  cover image tables under readable headings; no provider OCR was requested for
+  this weekly validation. **Image-only weekly workbooks remain explicit layout
+  review:** the legacy workbook OCR publisher does not supply typed weekly
+  period/basis semantics.
+
+Evidence is under `artifacts/automation-audit-2026-09-26/weekly-assessment/`:
+`weekly-observed-manifest.json`, `weekly-discovery-recheck.json`,
+`final-parser-results.json`, independent current/historical reconciliations and
+`FINAL-VALIDATION.md`. Sixteen adapter tests pass; shared wiring has separate
+isolated PostgreSQL and scheduler proof. Registration and local validation do
+not establish live publication or completion of all 1,453 historical files;
+cloud original/Blob and API verification are recorded separately.
+
 ## Defects found and bounded fixes
 
 1. **False monetary interpretation:** modern monthly city percentage matrices resembled old monetary grids. July2026's0.09 and63.99 are percentages. Strict table-local `Precio $/Kg`, printed period, price-only columns and versioned provenance now distinguish them. Original bytes/raw rows remain; review quarantine is additive.
@@ -49,4 +102,4 @@ This is an exhaustive inventory of **registered DANE source kinds**, with repres
 - `older-input-layout-after.json`:36-original full native batch review;35 complete source cell mappings,1 conflicting period.
 - All audit scripts are read-only local-original parsing; no production writes were performed by this audit agent.
 
-Remaining breadth is explicit: many registered historical files remain pending/failed/review; current retained-only charts/prose/aggregate supply have not all become structured observations. The SIPSA root also links **weekly bulletins**, an additional family not currently registered by this pipeline; weekly aggregate prices/trends should not be claimed covered merely because daily/monthly prices exist. A complete URL inventory plus representative validation is stronger than claiming all historical files passed, and still does not substitute for the parent's post-recovery publication/retention reconciliation.
+Remaining breadth is explicit: many registered historical files remain pending/failed/review; current retained-only charts/prose/aggregate supply have not all become structured observations. Weekly bulletins are now registered and independently validated as described above, with historical loading and unsupported source layouts still explicit. A complete URL inventory plus representative validation is stronger than claiming all historical files passed, and still does not substitute for the parent's post-recovery publication/retention reconciliation.

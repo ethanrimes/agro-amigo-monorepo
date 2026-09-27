@@ -26,9 +26,11 @@ class WorkerPackage(unittest.TestCase):
                 [
                     sys.executable,
                     "-c",
-                    "import json, function_app; "
-                    "from pipelines.ingestion import dane_weekly,worker; "
-                    "print(json.dumps([dane_weekly.VERSION,worker.release_fingerprint()]))",
+                    (
+                        "import json, function_app; "
+                        "from pipelines.ingestion import dane_weekly,worker; "
+                        "print(json.dumps([dane_weekly.VERSION,worker.release_fingerprint()]))"
+                    ),
                 ],
                 cwd=folder,
                 env={key: value for key, value in os.environ.items() if key != "PYTHONPATH"},
