@@ -362,6 +362,32 @@ export async function evidence(
     const dates = sourceReviews.map((review) => review.observed_on).filter(Boolean);
     r.metadata.review_note = `La fuente tiene referencias pendientes de verificación${dates.length ? ": " + dates.join(", ") : ""}. Conservamos el archivo original; la fecha del enlace no sustituye la fecha validada de cada precio.`;
   }
+  if (r.metadata.ingestion_kind === "daily") {
+    let resolution = (await db.query<{
+      resolution: {
+        observation_date: string; printed_heading: string; corroborating_url: string;
+        price_disagreements?: { product_name: string; market_name: string; workbook_price: number; companion_pdf_price: number }[];
+      };
+    }>(
+      "SELECT details->'date_resolution' AS resolution FROM historical_price WHERE document_id=$1 AND details ? 'date_resolution' LIMIT 1",
+      [r.id],
+    )).rows[0]?.resolution;
+    if (!resolution) {
+      resolution = (await db.query<{ resolution: NonNullable<typeof resolution> }>(
+        "SELECT record AS resolution FROM retained_record WHERE table_name='source_date_resolution' AND record->>'document_id'=$1 ORDER BY captured_at DESC LIMIT 1",
+        [r.id],
+      )).rows[0]?.resolution;
+    }
+    if (resolution) {
+      r.metadata.date_resolution_note = `Fecha verificada: ${resolution.observation_date}. El encabezado original dice «${resolution.printed_heading}». Corroboramos la fecha con otra publicación oficial de DANE.`;
+      r.metadata.date_evidence_url = resolution.corroborating_url;
+      if (resolution.price_disagreements?.length) {
+        r.metadata.price_disagreement_note = resolution.price_disagreements.map((item) =>
+          `${item.product_name}, ${item.market_name}: el anexo publica $${item.workbook_price.toLocaleString("es-CO")} y el boletín $${item.companion_pdf_price.toLocaleString("es-CO")}. Conservamos el precio literal del anexo; las dos publicaciones difieren.`,
+        ).join(" ");
+      }
+    }
+  }
   r.parents = (
     await db.query(
       "SELECT id,title FROM source_document WHERE id=ANY($1::text[])",

@@ -69,10 +69,11 @@ PARSER_VERSIONS = {
     "monthly": "monthly-units-v2",
     "monthly-annex": "monthly-annex-v3",
     "daily": "daily-units-v3",
+    "dane-daily-query": "dane-daily-query-v1",
     "daily-pdf": "daily-pdf-v4",
     "monthly-pdf": "monthly-pdf-v3",
     "milk": "milk-v4",
-    "milk-pdf": "milk-pdf-v5",
+    "milk-pdf": "milk-pdf-v6",
     "rice": "rice-v2",
     "supply": "supply-v5",
     "supply-index": "supply-index-v1",
@@ -83,6 +84,14 @@ PARSER_VERSIONS = {
 def parser_version(kind):
     from .official_sources import VERSION, adapter, is_reference_kind
 
+    if kind in ("daily", "dane-daily-query"):
+        from .dane_daily_query import VERSION as QUERY_VERSION
+
+        return (
+            (PARSER_VERSIONS["daily"] if kind == "daily" else VERSION)
+            + ":"
+            + QUERY_VERSION
+        )
     if kind in ("coffee", "coffee-pdf") or is_reference_kind(kind):
         return VERSION + ":" + adapter(kind).VERSION
     return PARSER_VERSIONS.get(kind, "source-v1")
@@ -111,6 +120,9 @@ def today():
 
 
 RELEASE_FILES = [
+    "pipelines/ingestion/city_link_recovery.py",
+    "pipelines/ingestion/dane_daily_query.py",
+    "pipelines/ingestion/query_publication.py",
     "pipelines/ingestion/daily_recovery.py",
     "pipelines/ingestion/daily_publication.py",
     "pipelines/ingestion/source_link_recovery.py",
@@ -496,7 +508,15 @@ def discover(db):
 
 
 def archive(
-    db, url, data, kind, day=None, filename=None, parents=None, publisher_override=None
+    db,
+    url,
+    data,
+    kind,
+    day=None,
+    filename=None,
+    parents=None,
+    publisher_override=None,
+    register_alias=True,
 ):
     digest = hashlib.sha256(data).hexdigest()
     suffix = Path(filename or urlparse(url).path).suffix.lower()
@@ -613,7 +633,7 @@ def archive(
         if kind in ("daily", "daily-pdf")
         else {"coffee": "fnc-workbook", "inputs": "inputs-workbook"}.get(kind)
     )
-    if alias:
+    if alias and register_alias:
         db.execute(
             "INSERT INTO document_alias VALUES(%s,%s) ON CONFLICT(alias) DO UPDATE SET document_id=excluded.document_id",
             (alias, digest),
@@ -1324,9 +1344,48 @@ def _process_asset(db, url, kind, day):
     except requests.HTTPError as exc:
         from .source_link_recovery import recover_link
 
+        def fetch_candidate(candidate_url, candidate_day=day):
+            from .daily_publication import retain_resolution
+
+            body = fetch(candidate_url)
+            candidate_id = archive(
+                db, candidate_url, body, kind, candidate_day, register_alias=False
+            )
+            retain_resolution(
+                db,
+                "source_link_candidate",
+                {
+                    "document_id": candidate_id,
+                    "original_url": url,
+                    "candidate_url": candidate_url,
+                },
+            )
+            return body
+
         status = exc.response.status_code if exc.response is not None else None
-        recovered = recover_link(url, status, day, fetch) if kind == "daily" else None
+        if kind == "city-zip":
+            from .city_link_recovery import ALIASES, recover_link as recover_city_link
+
+            rule = ALIASES.get(url)
+            recovered = recover_city_link(
+                url,
+                status,
+                day,
+                lambda candidate_url: fetch_candidate(candidate_url, rule.archive_day),
+            )
+        else:
+            recovered = (
+                recover_link(url, status, day, fetch_candidate)
+                if kind == "daily"
+                else None
+            )
         if recovered is None:
+            if kind == "daily":
+                from .query_publication import recover
+
+                query_count = recover(db, url, status, day)
+                if query_count is not None:
+                    return query_count
             raise
         data = recovered.body
     if data is None and coffee_rollover:
@@ -1339,7 +1398,9 @@ def _process_asset(db, url, kind, day):
         data = bytes(retained[0]) if retained else None
     if data is None:
         return 0
-    did = archive(db, recovered.canonical_url if recovered else url, data, kind, day)
+    canonical_url = recovered.canonical_url if recovered else url
+    archive_day = getattr(recovered, "archive_day", day)
+    did = archive(db, canonical_url, data, kind, archive_day)
     if recovered:
         from .daily_publication import retain_resolution
 
@@ -1371,7 +1432,7 @@ def _process_asset(db, url, kind, day):
     # Retain the original even when parsing fails; pending also resumes safely
     # after a host interruption before this source's transaction commits.
     db.execute(
-        "UPDATE ingestion_asset SET document_id=%s,status='pending',checked_at=now() WHERE url=%s",
+        "UPDATE ingestion_asset SET document_id=%s,status=CASE WHEN status='review' THEN 'review' ELSE 'pending' END,checked_at=now() WHERE url=%s",
         (did, url),
     )
     from .official_sources import is_reference_kind
@@ -1391,8 +1452,23 @@ def _process_asset(db, url, kind, day):
         scan_document(db, data, did, kind)
     if kind == "daily":
         from .daily_publication import publish
+        from .query_publication import recover
 
-        return publish(db, data, did, url, day)
+        try:
+            count = publish(db, data, did, url, day)
+        except SourceDateMismatch as exc:
+            db.execute(
+                "UPDATE ingestion_asset SET status='review',error=%s WHERE url=%s",
+                (str(exc), url),
+            )
+            alternate = recover(db, url, None, day, original_data=data, original_id=did)
+            if alternate is None:
+                raise
+            return alternate
+        # Known mislinked originals can be correctly dated themselves yet leave
+        # the archive's requested day missing. Query that exact day independently.
+        alternate = recover(db, url, None, day, original_data=data, original_id=did)
+        return count + (alternate or 0)
     if kind == "inputs-reference":
         from pipelines.ingestion.input_references import (
             extract_context,
@@ -1432,7 +1508,12 @@ def _process_asset(db, url, kind, day):
         member_error = None
         try:
             count = publish_city_zip(
-                db, data, did, url, day, processor_version=parser_version(kind)
+                db,
+                data,
+                did,
+                canonical_url,
+                archive_day,
+                processor_version=parser_version(kind),
             )
         except CityZipPartialReview as exc:
             count = exc.count
@@ -1447,8 +1528,29 @@ def _process_asset(db, url, kind, day):
         )
         db.execute(
             "UPDATE ingestion_asset SET document_id=%s,status=%s,records=(SELECT count(*) FROM regional_price WHERE document_id IN (SELECT document_id FROM source_archive_member WHERE archive_id=%s)),checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
-            (did, "review" if member_error else "complete", did, member_error, url),
+            (
+                did,
+                "review" if member_error else "complete",
+                did,
+                member_error
+                or (recovered.evidence["coverage_note"] if recovered else None),
+                url,
+            ),
         )
+        if recovered:
+            from .query_publication import recover
+
+            count += (
+                recover(
+                    db,
+                    url,
+                    recovered.evidence["original_http_status"],
+                    day,
+                    original_id=did,
+                    preserve_original_status=True,
+                )
+                or 0
+            )
         return count
     if kind.endswith("pdf"):
         from pipelines.ingestion.pdf_sources import extract_pages
@@ -1831,7 +1933,7 @@ def run(
                 except WorkDeferred as exc:
                     summary["deferred"].append({"url": url, "reason": str(exc)})
                     db.execute(
-                        "UPDATE ingestion_asset SET status='pending',checked_at=now()-interval '6 hours',error=%s WHERE url=%s",
+                        "UPDATE ingestion_asset SET status=CASE WHEN status='review' THEN 'review' ELSE 'pending' END,checked_at=now()-interval '6 hours',error=%s WHERE url=%s",
                         (str(exc), url),
                     )
                 except Exception as exc:
@@ -1839,7 +1941,7 @@ def run(
                     LOG.error("Asset failed %s: %s", url, message)
                     summary["errors"].append({"url": url, "error": message[:500]})
                     db.execute(
-                        "UPDATE ingestion_asset SET status=%s,attempts=attempts+1,checked_at=now(),error=%s,processor_version=%s WHERE url=%s",
+                        "UPDATE ingestion_asset SET status=CASE WHEN status='review' THEN 'review' ELSE %s END,attempts=attempts+1,checked_at=now(),error=%s,processor_version=%s WHERE url=%s",
                         (
                             "review"
                             if isinstance(exc, SourceDateMismatch)

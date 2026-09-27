@@ -341,7 +341,7 @@ class FlowerIdentityTests(unittest.TestCase):
         self.assertIn("White", rows[0]["product_name"])
 
     def test_invalid_ranges_fail(self):
-        for quote in ["per stem 2.00-1.00", "per stem 1.00-2.00 mostly 3.00"]:
+        for quote in ["per stem 2.00-1.00"]:
             with self.subTest(quote=quote), self.assertRaises(ValueError):
                 self.parse_lines(
                     [
@@ -690,9 +690,7 @@ class September2026LiveSourceRegressions(unittest.TestCase):
 
     def test_genuinely_contradictory_publications_remain_rejected(self):
         for filename, market, reason in [
-            ("failed-06.pdf", "boston", "Ambiguous duplicate"),
             ("failed-08.pdf", "miami", "Malformed USDA printed price range"),
-            ("failed-12.pdf", "miami", "mostly range is outside"),
             ("historical-4af6bea32800ca79.pdf", "boston", "before its package"),
         ]:
             with (
@@ -703,6 +701,26 @@ class September2026LiveSourceRegressions(unittest.TestCase):
                     (AUDIT_FIXTURES / filename).read_bytes(),
                     filename,
                     f"international-usda-{market}-flowers",
+                )
+
+    def test_isolatable_contradictions_review_quotes_without_losing_siblings(self):
+        for filename, market, count, reviews in [
+            ("failed-06.pdf", "boston", 39, 0),
+            ("failed-12.pdf", "miami", 56, 1),
+        ]:
+            with self.subTest(filename=filename):
+                rows = src.parse(
+                    (AUDIT_FIXTURES / filename).read_bytes(),
+                    filename,
+                    f"international-usda-{market}-flowers",
+                )
+                self.assertEqual(len(rows), count)
+                self.assertEqual(sum(r["price"] is None for r in rows), reviews)
+                self.assertTrue(
+                    all(
+                        bool(r["details"].get("quality_issue")) == (r["price"] is None)
+                        for r in rows
+                    )
                 )
 
     def test_repeated_conflicting_mostly_qualifier_reviews_only_affected_quote(self):

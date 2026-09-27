@@ -300,6 +300,40 @@ class MilkNarrativeOnly(ValueError):
     """Readable modern bulletin with labelled figures, without a price table."""
 
 
+def _milk_full_width_table(page):
+    """Identify one monetary grid crossing the page midpoint from its headers.
+
+    September 2021 uses one wide table rather than the historical two-column
+    layout. Requiring all four aligned native labels keeps a narrative, scan or
+    two independent narrow tables out of this fallback.
+    """
+    if not hasattr(page, "extract_words"):
+        return False
+    words = page.extract_words()
+    headers = {}
+    for label in ("Departamentos", "Mínimo", "Máximo", "Promedio"):
+        matches = [word for word in words if word["text"] == label]
+        if len(matches) != 1:
+            return False
+        headers[label] = matches[0]
+    department, low, high, mean = (headers[label] for label in headers)
+    return (
+        department["x0"] < low["x0"] < page.width / 2 < high["x0"] < mean["x0"]
+        and max(word["top"] for word in headers.values())
+        - min(word["top"] for word in headers.values())
+        < 30
+        and len(
+            [
+                word
+                for word in words
+                if word["text"] == "Precio"
+                and abs(word["top"] - low["top"]) < 30
+            ]
+        )
+        == 3
+    )
+
+
 def _milk_narrative_month(texts, native_pages):
     """Recognize the explicit modern report structure, never an unreadable grid."""
     from .worker import MONTH_NUM
@@ -343,6 +377,7 @@ def parse_milk_pdf(data, day):
     if day is not None and day > today():
         raise SourceDateMismatch("Milk PDF table month is in the future")
     lookup = {slug(d): d for d in DEPARTMENTS}
+    compact_departments = {key.replace("-", ""): value for key, value in lookup.items()}
     found = 0
     department = ""
     texts = []
@@ -374,9 +409,10 @@ def parse_milk_pdf(data, day):
             ):
                 page.close()
                 continue
+            full_width = _milk_full_width_table(page)
             # A bulletin's publication date can be months after its observations.
-            # Use only a date immediately following the price-table caption, never
-            # the masthead, narrative, unrelated chart or a two-digit filename year.
+            # Historical tables state their observation month after the caption.
+            # Do not substitute the publication date or an unrelated chart date.
             stamps = re.finditer(
                 r"Precios\s+de\s+leche\s+cruda\s+en\s+finca"
                 r"(?:\s+\((?:continuaci[oó]n|conclusi[oó]n)\))?"
@@ -397,11 +433,34 @@ def parse_milk_pdf(data, day):
                         "Milk PDF table month differs from archive link or another table"
                     )
                 day = printed_day
+            if full_width:
+                # This layout prints its observation month in the repeated
+                # report heading above every table. The cover's separate
+                # publication date and unrelated narrative dates are excluded.
+                heading = text.split("Departamentos", 1)[0]
+                stamp = re.search(
+                    r"(?:^|\n)Leche\s+Cruda\s+en\s+Finca\s*\n"
+                    r"([a-záéíóú]+)\s+de\s+(20\d{2})(?:\s*\n|$)",
+                    heading,
+                    re.IGNORECASE,
+                )
+                if not stamp or stamp[1].lower() not in MONTH_NUM:
+                    raise ValueError("Milk wide table has no verifiable report month")
+                month, year = MONTH_NUM[stamp[1].lower()], int(stamp[2])
+                printed_day = date(year, month, calendar.monthrange(year, month)[1])
+                if printed_day > today() or (day is not None and day != printed_day):
+                    raise SourceDateMismatch(
+                        "Milk PDF report month differs from archive link or another table"
+                    )
+                day = printed_day
             if day is None:
                 raise ValueError("Milk bulletin has no verifiable publication month")
-            for column, (left, right) in enumerate(
-                [(0, page.width / 2), (page.width / 2, page.width)], 1
-            ):
+            columns = (
+                [(0, page.width)]
+                if full_width
+                else [(0, page.width / 2), (page.width / 2, page.width)]
+            )
+            for column, (left, right) in enumerate(columns, 1):
                 lines = (
                     page.crop((left, 0, right, page.height)).extract_text() or ""
                 ).splitlines()
@@ -429,8 +488,16 @@ def parse_milk_pdf(data, day):
                     key = slug(
                         re.sub(r"\s*\(continuaci[oó]n\)", "", line, flags=re.IGNORECASE)
                     )
-                    if key in lookup:
-                        department = lookup[key]
+                    # Native PDF glyph spacing can split a department word
+                    # ("Santa nder"). Accept only the exact letters of a known
+                    # department, never a fuzzy name or an inherited guess.
+                    printed_department = lookup.get(key) or (
+                        compact_departments.get(key.replace("-", ""))
+                        if full_width
+                        else None
+                    )
+                    if printed_department:
+                        department = printed_department
                         town_prefix = ""
                         continue
                     if line.startswith(("TENDENCIAS", "Fuente:")):
