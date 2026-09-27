@@ -7,8 +7,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { Client } = require('pg');
-const source = fs.readFileSync(path.join(__dirname, '../src/lib/server/official-references.ts'), 'utf8');
-const sql = source.split('export const LATEST_OFFICIAL_REFERENCES_SQL = `')[1].split('`;')[0];
+const source = fs.readFileSync(path.join(__dirname, '../../../pipelines/ingestion/official_catalog.py'), 'utf8');
+const sql = source.split('LATEST_FOR_KEYS_SQL = \"\"\"')[1].split('\"\"\"')[0].replace('%s', '$1');
 const schema = fs.readFileSync(path.join(__dirname, '../../../pipelines/ingestion/schema.sql'), 'utf8');
 const view = schema.split('CREATE OR REPLACE VIEW published_official_price AS')[1].split('GRANT SELECT ON published_official_price')[0];
 const socket = process.env.AGRO_REFERENCE_TEST_SOCKET;
@@ -51,7 +51,8 @@ async function asset(doc, day) {
   await db.query("INSERT INTO ingestion_asset(url,kind,document_id,observed_on,status) VALUES($1,'colombia-pork-pdf',$2,$3,'review')", ['https://example.invalid/' + crypto.randomUUID(), doc, day]);
 }
 async function equivalent() {
-  const actual = (await db.query(sql)).rows.sort((a, b) => a.quote_key.localeCompare(b.quote_key));
+  const keys = (await db.query('SELECT DISTINCT quote_key FROM official_price_quote')).rows.map((row) => row.quote_key);
+  const actual = (await db.query(sql, [keys])).rows.sort((a, b) => a.quote_key.localeCompare(b.quote_key));
   const expected = (await db.query(`SELECT * FROM (
     SELECT p.*,d.source_url,lead(p.price) OVER(PARTITION BY p.quote_key ORDER BY p.observed_on DESC) AS previous_price,
       row_number() OVER(PARTITION BY p.quote_key ORDER BY p.observed_on DESC) AS rank
@@ -116,7 +117,8 @@ check('long histories and unrelated reviews keep identical values without a full
   await db.query(`INSERT INTO official_source_review SELECT $1,'unrelated:'||n::text,'review-v1','{}','Test unrelated review',now() FROM generate_series(1,1000) n`, [old]);
   await db.query('ANALYZE official_price_quote; ANALYZE official_source_review; ANALYZE ingestion_asset');
   const rows = await equivalent(); assert.equal(rows.length, 30); assert.ok(rows.every((row) => row.price === '1002' && row.previous_price === '1001'));
-  const plan = (await db.query('EXPLAIN (ANALYZE,FORMAT JSON) ' + sql)).rows[0]['QUERY PLAN'][0];
+  const keys = (await db.query('SELECT DISTINCT quote_key FROM official_price_quote')).rows.map((row) => row.quote_key);
+  const plan = (await db.query('EXPLAIN (ANALYZE,FORMAT JSON) ' + sql, [keys])).rows[0]['QUERY PLAN'][0];
   function inspect(node) {
     if (node['Node Type'].includes('Sort')) {
       assert.ok(node['Actual Rows'] <= 2, 'Only same-date revisions should be sorted');
@@ -125,4 +127,19 @@ check('long histories and unrelated reviews keep identical values without a full
     for (const child of node.Plans || []) inspect(child);
   }
   inspect(plan.Plan);
+});
+check('frontend reads only clean current payloads, excluding tombstones and future dates', async () => {
+  const frontend = fs.readFileSync(path.join(__dirname, '../src/lib/server/official-references.ts'), 'utf8');
+  const readSql = frontend.split('export const LATEST_OFFICIAL_REFERENCES_SQL = `')[1].split('`;')[0];
+  await db.query('CREATE TEMP TABLE official_catalog_current(quote_key text PRIMARY KEY,payload jsonb,dirty boolean,version text)');
+  const valid = { quote_key: hash('read-model'), observed_on: '2026-09-25', price: 16000, previous_price: 15000 };
+  for (const [key, payload, dirty, version] of [
+    ['valid', valid, false, 'official-catalog-v1'],
+    ['dirty', valid, true, 'official-catalog-v1'],
+    ['withdrawn', null, false, 'official-catalog-v1'],
+    ['old-version', valid, false, 'old-version'],
+    ['future', { ...valid, observed_on: '2999-01-01' }, false, 'official-catalog-v1'],
+  ]) await db.query('INSERT INTO official_catalog_current VALUES($1,$2,$3,$4)', [key, payload, dirty, version]);
+  assert.deepEqual((await db.query(readSql)).rows, [{ payload: valid }]);
+  assert.ok(!readSql.includes('official_price_quote'));
 });

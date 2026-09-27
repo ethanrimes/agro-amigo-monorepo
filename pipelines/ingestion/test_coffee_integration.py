@@ -63,6 +63,13 @@ def identity(row):
 )
 class CoffeeIntegrationPostgresTests(unittest.TestCase):
     def setUp(self):
+        # This suite isolates raw batching/routing; dedicated catalog tests cover
+        # the derived refresh hook against the actual migration and SQL.
+        self.enterContext(
+            patch(
+                "pipelines.ingestion.official_catalog.refresh_document", return_value=0
+            )
+        )
         self.db = worker.connect()
         self.addCleanup(self.db.close)
         # Fail closed before touching application relations. LIKE copies column
@@ -198,7 +205,7 @@ class CoffeeIntegrationPostgresTests(unittest.TestCase):
             ).fetchall()
             for item in self.items:
                 count = worker.process_asset(self.db, item["url"], item["kind"], None)
-                self.assertEqual(count, 0 if item["kind"] == "coffee" else 2)
+                self.assertEqual(count, 0)
             self.assertEqual(
                 self.db.execute(
                     "SELECT document_id,source_locator,parser_version,parsed_at FROM official_price_quote ORDER BY 1,2,3"

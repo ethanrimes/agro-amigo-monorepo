@@ -145,6 +145,13 @@ class RetainedReplayTests(unittest.TestCase):
 )
 class RetainedReplayPostgresTests(unittest.TestCase):
     def setUp(self):
+        # This suite isolates raw batching/routing; dedicated catalog tests cover
+        # the derived refresh hook against the actual migration and SQL.
+        self.enterContext(
+            patch(
+                "pipelines.ingestion.official_catalog.refresh_document", return_value=0
+            )
+        )
         self.db = worker.connect()
         # Every application table referenced by replay/process is shadowed.
         # LIKE copies structure/indexes, never public rows, triggers or FKs.

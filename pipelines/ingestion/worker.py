@@ -71,10 +71,10 @@ PARSER_VERSIONS = {
     "daily": "daily-units-v2",
     "daily-pdf": "daily-pdf-v4",
     "monthly-pdf": "monthly-pdf-v3",
-    "milk": "milk-v3",
-    "milk-pdf": "milk-pdf-v4",
-    "rice": "rice-v1",
-    "supply": "supply-v3",
+    "milk": "milk-v4",
+    "milk-pdf": "milk-pdf-v5",
+    "rice": "rice-v2",
+    "supply": "supply-v4",
     "supply-index": "supply-index-v1",
     "supply-reference-pdf": "source-v1",
 }
@@ -121,6 +121,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/seasonality.py",
     "pipelines/ingestion/dane_context.py",
     "pipelines/ingestion/official_sources.py",
+    "pipelines/ingestion/official_catalog.py",
     "pipelines/ingestion/international_sources.py",
     "pipelines/ingestion/colombia_sources.py",
     "pipelines/ingestion/ocr.py",
@@ -1327,6 +1328,17 @@ def _process_asset(db, url, kind, day):
         "SELECT processor_version FROM ingestion_asset WHERE url=%s", (url,)
     ).fetchone()
     outdated = not version or version[0] != parser_version(kind)
+    # A retained FNC original can already contain tomorrow's observations. Its
+    # HTTP validators and content hash need not change when those rows become
+    # eligible, so successful evaluation is tracked by Colombia calendar day.
+    coffee_day = today() if kind in ("coffee", "coffee-pdf") else None
+    coffee_step = f"as-of:{coffee_day.isoformat()}" if coffee_day else None
+    coffee_rollover = coffee_step is not None and not db.execute(
+        """SELECT 1 FROM ingestion_asset a JOIN ingestion_checkpoint c
+        ON c.document_id=a.document_id WHERE a.url=%s
+        AND c.processor_version=%s AND c.step=%s""",
+        (url, parser_version(kind), coffee_step),
+    ).fetchone()
     resume = None
     if kind in ("inputs", "inputs-municipal", "inputs-annex"):
         resume = db.execute(
@@ -1338,7 +1350,19 @@ def _process_asset(db, url, kind, day):
         ).fetchone()
     # Finish the exact retained revision before downloading a newer mutable
     # workbook. The following regular refresh checks the publisher again.
-    data = bytes(resume[0]) if resume else fetch_asset(db, url, force=outdated)
+    data = (
+        bytes(resume[0])
+        if resume
+        else fetch_asset(db, url, force=outdated or coffee_rollover)
+    )
+    if data is None and coffee_rollover:
+        # Some upstream caches answer 304 even without request validators. The
+        # forced HTTP check still happened; evaluate its retained original today.
+        retained = db.execute(
+            "SELECT d.content FROM ingestion_asset a JOIN source_document d ON d.id=a.document_id WHERE a.url=%s",
+            (url,),
+        ).fetchone()
+        data = bytes(retained[0]) if retained else None
     if data is None:
         return 0
     did = archive(db, url, data, kind, day)
@@ -1347,9 +1371,9 @@ def _process_asset(db, url, kind, day):
     ).fetchone()
     if (
         not outdated
+        and not coffee_rollover
         and prior[0] == did
         and prior[1] in ("complete", "archived", "processed")
-        and kind != "coffee-pdf"
         and (
             not kind.endswith("pdf")
             or db.execute(
@@ -1553,6 +1577,12 @@ def _process_asset(db, url, kind, day):
                 url,
             ),
         )
+        if coffee_step is not None:
+            db.execute(
+                """INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records)
+                VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+                (did, parser_version(kind), coffee_step, count),
+            )
     if kind == "monthly-annex":
         db.execute(
             "INSERT INTO document_alias VALUES('monthly-summary',%s) ON CONFLICT(alias) DO UPDATE SET document_id=excluded.document_id WHERE (SELECT reference_period FROM source_document WHERE id=excluded.document_id)>=(SELECT reference_period FROM source_document WHERE id=document_alias.document_id)",
@@ -1655,6 +1685,12 @@ def refresh_seasons(db):
     return refresh(db, today().year)
 
 
+def refresh_catalog(db):
+    from .official_catalog import refresh_dirty
+
+    return refresh_dirty(db, limit=100)
+
+
 def run(
     mode="daily",
     limit=100,
@@ -1716,6 +1752,17 @@ def run(
                     "discovered",
                     discovery_finished_at=datetime.now(ZoneInfo("UTC")).isoformat(),
                 )
+            if not asset_url and mode != "discover":
+                progress("catalog")
+                try:
+                    summary["catalog"] = refresh_catalog(db)
+                except Exception as exc:
+                    summary["errors"].append(
+                        {
+                            "source": "official_catalog",
+                            "error": type(exc).__name__ + ": " + str(exc)[:400],
+                        }
+                    )
             # A permanent historical backlog must not starve exchange rates or
             # derived seasonal evidence. These bounded daily projections run
             # before large assets, once per successful eighteen-hour interval.
@@ -1729,10 +1776,14 @@ def run(
                 progress("auxiliary")
                 try:
                     summary["trm"] = refresh_trm(db)
-                    refresh_seasons(db)
+                    summary["seasonality"] = refresh_seasons(db)
                     summary["auxiliary_finished_at"] = datetime.now(
                         ZoneInfo("UTC")
                     ).isoformat()
+                except WorkDeferred as exc:
+                    summary["deferred"].append(
+                        {"source": "seasonality", "reason": str(exc)}
+                    )
                 except Exception as exc:
                     summary["errors"].append(
                         {
@@ -1841,6 +1892,21 @@ def run(
                 scan_limit=ocr_scan_limit,
                 deadline=started + time_budget,
             )
+            if (
+                not asset_url
+                and mode != "discover"
+                and time.monotonic() < started + time_budget - 30
+            ):
+                progress("catalog")
+                try:
+                    summary["catalog_after_publication"] = refresh_catalog(db)
+                except Exception as exc:
+                    summary["errors"].append(
+                        {
+                            "source": "official_catalog",
+                            "error": type(exc).__name__ + ": " + str(exc)[:400],
+                        }
+                    )
             progress("finished")
             status = (
                 "partial" if summary["errors"] or summary["deferred"] else "succeeded"

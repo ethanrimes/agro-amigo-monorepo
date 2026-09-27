@@ -278,9 +278,21 @@ def publish_rows(db, rows, document_id, kind=None):
             "UPDATE ingestion_asset SET observed_on=%s WHERE document_id=%s",
             (max(value[13] for value in values), document_id),
         )
-    db.execute(
-        "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) "
-        "VALUES(%s,%s,'official:complete',%s) ON CONFLICT DO NOTHING",
-        (document_id, revision, len(values)),
-    )
+    from .resumable_inputs import WorkDeferred
+    from .worker import RUN_DEADLINE
+
+    deadline = RUN_DEADLINE.get()
+    if deadline is not None and time.monotonic() >= deadline:
+        raise WorkDeferred(
+            "Official quote batches retained; catalog completion will resume"
+        )
+    with db.transaction():
+        from .official_catalog import refresh_document
+
+        refresh_document(db, document_id)
+        db.execute(
+            "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) "
+            "VALUES(%s,%s,'official:complete',%s) ON CONFLICT DO NOTHING",
+            (document_id, revision, len(values)),
+        )
     return len(values)
