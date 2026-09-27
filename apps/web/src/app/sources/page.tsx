@@ -24,7 +24,7 @@ const sources = [
     subtitle: "Estructuras regionales y primera venta",
     status: "Integrado",
     description:
-      "22 estructuras verificadas de costos de 2023 y 2024 para siete cultivos. Se mantienen los valores de ese año para editar. La biblioteca incluye precios en primer mercado de diciembre de 2025 y el índice de insumos de junio de 2026; no son cotizaciones actuales.",
+      "22 estructuras verificadas de costos de 2023 y 2024 para siete cultivos. Se mantienen los valores nominales del año y sistema publicados. La biblioteca incluye precios en primer mercado de diciembre de 2025 y el índice de insumos de junio de 2026; no son cotizaciones actuales.",
     url: "https://upra.gov.co/es-co/eva/eva-2023",
   },
   {
@@ -148,9 +148,10 @@ export default function Sources() {
       <section className="panel">
         <h2>Cómo pasamos del dato a una decisión</h2>
         <p>
-          Rendimientos, escenarios de precio, costos, ventanas de cosecha y
-          tareas del clima tienen fórmulas y supuestos visibles. Puedes
-          cambiarlos y comprobar el documento de origen.
+          Los rendimientos municipales, calendarios, estudios de costos e
+          historias de precios conservan su año, unidad y alcance. Puedes
+          consultar sus fuentes y el método de los cálculos publicados;
+          no describen por sí solos las condiciones de tu finca.
         </p>
         <EvidenceLink id="planning-method">Ver el método completo</EvidenceLink>
       </section>
@@ -180,7 +181,7 @@ export default function Sources() {
             seleccionar todo el histórico disponible. La carga de archivos
             históricos continúa. La historia estacional se guarda por separado:
             cinco años completos,
-            con al menos tres años comparables para calcular escenarios. Las
+            con al menos tres años comparables para mostrar un patrón estacional. Las
             referencias técnicas conservan su año de publicación. No inventa
             registros para completar períodos faltantes.
           </p>

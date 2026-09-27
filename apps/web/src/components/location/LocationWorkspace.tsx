@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
   IoMapOutline,
-  IoCalculatorOutline,
   IoLocateOutline,
   IoLocationOutline,
 } from "react-icons/io5";
@@ -15,7 +14,6 @@ import type { Municipality, FarmData } from "@/lib/planning-types";
 import { EMPTY_PROFILE, hasPin } from "@/lib/farm-types";
 import { inColombia, type LocationPoint } from "@/lib/location-types";
 import { ZoneExplorer } from "./ZoneExplorer";
-import { CleanSheet } from "./CleanSheet";
 import { FarmWeather } from "./FarmWeather";
 const STORAGE = "agroamigo-location-v1";
 type SavedLocation = {
@@ -37,13 +35,10 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
     }),
     [ready, setReady] = useState(false),
     [focus, setFocus] = useState<LocationPoint | null>(null),
-    [tab, setTab] = useState("map"),
     [query, setQuery] = useState(""),
     [message, setMessage] = useState(""),
     [gps, setGps] = useState(false),
-    [crops, setCrops] = useState(false),
-    [financeVisited, setFinanceVisited] = useState(false),
-    [selectedCrop, setSelectedCrop] = useState("");
+    [crops, setCrops] = useState(false);
   const live = useRef(true);
   useEffect(() => {
     live.current = true;
@@ -220,11 +215,11 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           <h1>
             Conoce tu tierra.
             <br />
-            Haz tus cuentas.
+            Consulta sus referencias.
           </h1>
           <p>
             Ubica tu finca con un punto exacto para consultar el clima, el
-            terreno y tus cuentas.
+            terreno y las referencias agrícolas de la zona.
           </p>
         </div>
         <div className="location-header-icon">
@@ -259,16 +254,23 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           </div>
         </div>
         <div className="location-actions">
-          <button className="button secondary" onClick={() => {
-            setTab("map");
-            requestAnimationFrame(() => document.getElementById("zone-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }));
-          }}><IoMapOutline /> Buscar en el mapa</button>
+          <button
+            className="button secondary"
+            onClick={() => {
+              requestAnimationFrame(() =>
+                document
+                  .getElementById("zone-panel")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+              );
+            }}
+          >
+            <IoMapOutline /> Buscar en el mapa
+          </button>
           {location.point && (
             <button
               className="button secondary"
               onClick={() => {
                 setFocus({ ...location.point! });
-                setTab("map");
               }}
             >
               Volver a mi pin
@@ -276,12 +278,13 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           )}
           <button className="button primary" disabled={gps} onClick={locate}>
             <IoLocateOutline />
-          {gps ? "Buscando…" : "Usar mi ubicación"}
+            {gps ? "Buscando…" : "Usar mi ubicación"}
           </button>
         </div>
         <p className="privacy-note">
-          Usa el GPS cuando estés en la finca. También puedes buscar un municipio
-          o un lugar en el mapa, acercarte y tocar el punto de tu finca.
+          Usa el GPS cuando estés en la finca. También puedes buscar un
+          municipio o un lugar en el mapa, acercarte y tocar el punto de tu
+          finca.
         </p>
         <div className="location-search">
           <label>
@@ -303,7 +306,6 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
               const p = places.data!.find((p) => p.id === o.id)!;
               save({ ...location, municipalityId: p.id });
               setFocus({ latitude: p.latitude, longitude: p.longitude });
-              setTab("map");
               setMessage(
                 "Referencias municipales: " +
                   p.name +
@@ -377,47 +379,21 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           {message}
         </p>
       )}
-      {location.point && <FarmWeather point={location.point} name={location.name} />}
-      <div
-        className="location-main-tabs"
-        role="tablist"
-        aria-label="Información de Mi finca"
-      >
-        <button
-          id="zone-tab"
-          role="tab"
-          aria-selected={tab === "map"}
-          aria-controls="zone-panel"
-          onClick={() => setTab("map")}
-        >
-          <IoMapOutline />
-          <span>
-            Explorar mi zona<small>Clima, terreno y suelos</small>
-          </span>
-        </button>
-        <button
-          id="clean-tab"
-          role="tab"
-          aria-selected={tab === "finance"}
-          aria-controls="clean-panel"
-          onClick={() => {
-            setFinanceVisited(true);
-            setTab("finance");
-          }}
-        >
-          <IoCalculatorOutline />
-          <span>
-            Costos y rentabilidad<small>Ingresos, costos y equilibrio</small>
-          </span>
-        </button>
-      </div>
-      <div
-        id="zone-panel"
-        role="tabpanel"
-        aria-labelledby="zone-tab"
-        hidden={tab !== "map"}
-      >
-        <ZoneExplorer pin={location.point} focus={focus} onPin={setPin} onExplore={setFocus} />
+      {location.point && (
+        <FarmWeather point={location.point} name={location.name} />
+      )}
+      <section id="zone-panel" aria-label="Explorar mi zona">
+        <h2>Explorar mi zona</h2>
+        <ZoneExplorer
+          pin={location.point}
+          focus={focus}
+          onPin={setPin}
+          onExplore={setFocus}
+        />
+        {location.municipalityId && data.loading && (
+          <p role="status">Consultando las referencias agrícolas…</p>
+        )}
+        {data.error && <ErrorState message={data.error} retry={data.retry} />}
         {data.data && (
           <div className="location-crop-context">
             <button
@@ -429,56 +405,15 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
                 ? "Cerrar cultivos de la zona"
                 : "¿Qué se cultiva en este municipio?"}
             </button>
-            {crops && (
-              <CropOptions
-                data={data.data}
-                select={(c) => {
-                  setSelectedCrop(c.crop_code);
-                  setFinanceVisited(true);
-                  setTab("finance");
-                  setCrops(false);
-                }}
-              />
-            )}
+            {crops && <CropOptions data={data.data} />}
           </div>
         )}
-      </div>
-      {financeVisited && (
-        <div
-          hidden={tab !== "finance"}
-          id="clean-panel"
-          role="tabpanel"
-          aria-labelledby="clean-tab"
-        >
-          {!location.municipalityId ? (
-            <section className="panel clean-incomplete">
-              <IoCalculatorOutline />
-              <h2>Elige el municipio del análisis</h2>
-              <p>
-                Usa la búsqueda de arriba. Así podemos mostrar cultivos,
-                rendimientos y estudios regionales con su fuente.
-              </p>
-            </section>
-          ) : data.loading ? (
-            <p role="status">Consultando referencias agrícolas…</p>
-          ) : data.error ? (
-            <ErrorState message={data.error} retry={data.retry} />
-          ) : (
-            data.data && (
-              <CleanSheet
-                key={location.municipalityId + "-" + selectedCrop}
-                data={data.data}
-                initialCrop={selectedCrop}
-              />
-            )
-          )}
-        </div>
-      )}
+      </section>
       <p className="privacy-note">
         El pin se guarda en este dispositivo. Consultar capas envía sus
         coordenadas al servidor y a la fuente pública; conservamos la respuesta
-        de datos en Azure para que puedas verificarla. Los supuestos económicos
-        permanecen en esta sesión y puedes descargarlos con sus fuentes.
+        de datos en Azure para que puedas verificarla. Los registros y
+        presupuestos anteriores siguen conservados en este dispositivo.
       </p>
     </div>
   );

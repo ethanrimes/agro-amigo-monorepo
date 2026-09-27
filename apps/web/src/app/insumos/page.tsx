@@ -214,7 +214,7 @@ function Inputs() {
         <>
           <div className="results-label">
             <span>{rows.length} insumos y presentaciones</span>
-            <Link href="/plan?tab=budget">Ir a mi presupuesto →</Link>
+
           </div>
           <div className="input-grid">
             {rows.slice(0, limit).map((i) => {

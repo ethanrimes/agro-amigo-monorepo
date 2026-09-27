@@ -1,0 +1,155 @@
+[
+  {
+    "name": "MiFinca read-only coffee sources and calendar",
+    "route": "/plan?tab=budget&municipality=41551&crop=2030300",
+    "ready": "!!document.querySelector('.calendar-table tbody tr') && !!document.querySelector('.cost-reference .evidence-link')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AGR-01",
+            "condition": "document.querySelector('h1').innerText==='Cultivos, calendarios y fuentes' && document.querySelector('select').value==='41551'",
+            "expected": "Legacy budget URL opens exact Pitalito coffee references",
+            "observed": "true"
+          },
+          {
+            "id": "AGR-07",
+            "condition": "!document.querySelector('input[type=number],input[type=date],.earnings-scenarios,.clean-kpis,.break-even')",
+            "expected": "No manual finance/date tool remains",
+            "observed": "true"
+          },
+          {
+            "id": "CRP-03",
+            "condition": "(()=>{const n=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);let t=document.querySelector('.crop-references .panel').innerText;return t.includes(n(1822.7333880082)+' kg/ha') && t.includes(n(24292.06)+' toneladas') && t.includes(n(13327.27)+' ha')})()",
+            "expected": "Independent EVA2025 source production24292.06t/13327.27ha and yield1822.733388kg/ha",
+            "observed": "document.querySelector('.crop-references .panel').innerText"
+          },
+          {
+            "id": "AGR-02",
+            "condition": "JSON.stringify([...document.querySelectorAll('.calendar-table tbody tr:first-child td')].slice(0,12).map(x=>x.innerText))===JSON.stringify([10.51, 15.68, 0, 17.97, 21.18, 6.27, 0, 0, 4.8, 8.28, 6.54, 8.77].map(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v)))",
+            "expected": "All12 Huila coffee percentages match UPRA2024 source row503",
+            "observed": "[...document.querySelectorAll('.calendar-table tbody tr:first-child td')].map(x=>x.innerText)"
+          },
+          {
+            "id": "CAL-07",
+            "condition": "document.querySelector('.calendar-table a').getAttribute('href')===\"/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f?department=41\"",
+            "expected": "Exact calendar document/department link preserved",
+            "observed": "true"
+          },
+          {
+            "id": "AGR-10",
+            "condition": "document.querySelector('a[href=\"/evidence/coffee-development?page=2\"]')!==null && document.querySelector('.cost-reference').innerText.includes('1.550.805') && document.querySelector('.cost-reference').innerText.includes('125 kg')",
+            "expected": "Cenicafé page2 and FEPCafé1550805COP/125kg remain readable without farm prediction",
+            "observed": "true"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Reference panels fit viewport; wide tables scroll within their container",
+            "observed": "true"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "MiFinca published Huila bean cost source exact rubrics",
+    "route": "/plan?municipality=41551&crop=1060200",
+    "ready": "[...document.querySelectorAll('.published-cost-references details')].some(d=>d.querySelector('summary').innerText.includes('occidente (Huila)'))",
+    "steps": [
+      {
+        "action": "window.__qaStudy=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes('occidente (Huila)'));window.__qaStudy.open=true;window.__qaStudy.scrollIntoView({block:'center'});",
+        "checks": [
+          {
+            "id": "AGR-03",
+            "condition": "window.__qaStudy.innerText.includes('2023') && window.__qaStudy.innerText.includes(\"Sistema regional reportado por UPRA; consultar variedades y tecnolog\\u00eda en la tabla\") && window.__qaStudy.innerText.includes('COP por hectárea')",
+            "expected": "Printed study year, system and cost-per-hectare unit remain explicit",
+            "observed": "window.__qaStudy.innerText"
+          },
+          {
+            "id": "AGR-03",
+            "condition": "JSON.stringify([...window.__qaStudy.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 3400000], [\"Semilla e insumos\", 3069030], [\"Mano de obra de cosecha\", 1575000], [\"Otros rubros del total publicado\", 187625]].map(([n,p])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(p)]))",
+            "expected": "All four original Huila2023 cost rubrics/amounts equal independently audited PDF table",
+            "observed": "true"
+          },
+          {
+            "id": "AGR-03",
+            "condition": "Number(window.__qaStudy.querySelector('tfoot td').innerText.replace(/[^0-9]/g,''))===8231655",
+            "expected": "Published cost components sum8231655COP/ha exactly before display",
+            "observed": "true"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "window.__qaStudy.querySelector('a').getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=13\"",
+            "expected": "Exact original cost table page13",
+            "observed": "true"
+          },
+          {
+            "id": "AGR-07",
+            "condition": "!document.querySelector('input[type=number],.clean-kpis,.earnings-scenarios')",
+            "expected": "Published costs are read-only, no editable private budget",
+            "observed": "true"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "MiFinca reference browsing preserves existing stored bytes",
+    "route": "/plan?tab=budget&municipality=41551&crop=2030300",
+    "ready": "!!document.querySelector('.crop-references')",
+    "steps": [
+      {
+        "action": "window.__qaPriorScenario=localStorage.getItem('agroamigo-scenarios-qa-readonly');localStorage.setItem('agroamigo-scenarios-qa-readonly','[{\"legacy\":true,\"manualPrice\":\"2011.35\",\"sourceDocuments\":[\"retained-original\"]}]');window.__qaReferenceStore=Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('agroamigo-farm')||k.startsWith('agroamigo-scenarios')||k.startsWith('agroamigo-location')));const s=document.querySelectorAll('.form-grid select')[1];s.value='1060200';s.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "document.querySelector('.crop-references h2')?.innerText==='Frijol'",
+        "checks": [
+          {
+            "id": "AGR-09",
+            "condition": "Object.keys(window.__qaReferenceStore).length>0 && JSON.stringify(window.__qaReferenceStore)===JSON.stringify(Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('agroamigo-farm')||k.startsWith('agroamigo-scenarios')||k.startsWith('agroamigo-location'))))",
+            "expected": "Changing reference crop preserves the seeded legacy scenario and every existing farm/scenario/location storage byte",
+            "observed": "Object.keys(window.__qaReferenceStore)"
+          },
+          {
+            "id": "AGR-04",
+            "condition": "document.querySelector('.crop-references .panel').innerText.includes('Grano seco')",
+            "expected": "Explicit bean physical state replaces coffee reference rather than retaining its old state",
+            "observed": "true"
+          },
+          {
+            "id": "AGR-07",
+            "condition": "!document.querySelector('input[type=number],#clean-tab,#clean-panel')",
+            "expected": "No finance input reappears when changing crop",
+            "observed": "true"
+          }
+        ]
+      },
+      {
+        "action": "if(window.__qaPriorScenario===null)localStorage.removeItem('agroamigo-scenarios-qa-readonly');else localStorage.setItem('agroamigo-scenarios-qa-readonly',window.__qaPriorScenario);",
+        "checks": []
+      }
+    ]
+  },
+  {
+    "name": "MiFinca unknown farm and old route remain explicit",
+    "route": "/plan?tab=budget&farm=qa-nonexistent-reference-check",
+    "ready": "document.body.innerText.includes('No encontramos esa finca en este dispositivo')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AGR-08",
+            "condition": "!document.querySelector('.crop-references')",
+            "expected": "Unknown farm never displays another farm/crop data",
+            "observed": "true"
+          },
+          {
+            "id": "AGR-01",
+            "condition": "document.querySelector('a[href=\"/farm\"]')!==null",
+            "expected": "Unknown legacy reference has working Mi finca return",
+            "observed": "true"
+          }
+        ]
+      }
+    ]
+  }
+]

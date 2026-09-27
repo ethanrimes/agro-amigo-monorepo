@@ -1,204 +1,151 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useFarm } from "@/components/planning/FarmContext";
-import { FarmEditor } from "@/components/planning/FarmEditor";
-import { CropOptions } from "@/components/planning/CropOptions";
-import { CropBudget } from "@/components/planning/CropBudget";
+import { CropReferences } from "@/components/planning/CropReferences";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
-import { profileFor } from "@/lib/farm-types";
-import type { FarmData, CropReference } from "@/lib/planning-types";
-function Planner() {
+import type { FarmData, Municipality } from "@/lib/planning-types";
+
+function References() {
   const context = useFarm(),
-    { ready } = context,
-    params = useSearchParams(),
-    [tab, setTab] = useState(
-      params.get("tab") === "budget" ? "budget" : "crops",
-    ),
-    [chosen, setChosen] = useState("");
-  const record =
-    context.farms.find((f) => f.id === params.get("farm")) ||
-    context.activeFarm;
-  const managed =
-    record?.crops.find(
-      (c) => c.id === (params.get("crop") || record.selectedCropId),
-    ) || record?.crops[0];
-  const farm = record ? profileFor(record, managed?.id) : context.farm;
-  useEffect(() => {
-    if (record) context.selectFarm(record.id);
-  }, [record?.id, context.activeFarm?.id]);
+    params = useSearchParams();
+  const farmId = params.get("farm");
+  const record = farmId
+    ? context.farms.find((f) => f.id === farmId)
+    : context.activeFarm;
+  const unknownFarm = !!farmId && !record;
+  const [selectedMunicipality, setMunicipality] = useState<string | null>(null);
+  const [selectedCrop, setCrop] = useState<string | null>(null);
+  const municipality =
+    selectedMunicipality ??
+    params.get("municipality") ??
+    record?.profile.municipalityId ??
+    "";
+  const managed = record?.crops.find(
+    (c) => c.id === (params.get("crop") || record.selectedCropId),
+  );
+  const requestedCrop =
+    selectedCrop ?? params.get("crop") ?? managed?.cropCode ?? "";
+  const places = useData<Municipality[]>("/api/planning/municipalities");
   const info = useData<FarmData>(
-    ready && farm.municipalityId
-      ? "/api/planning/farm?id=" + farm.municipalityId
+    context.ready && municipality && !unknownFarm
+      ? "/api/planning/farm?id=" + encodeURIComponent(municipality)
       : null,
   );
   const crop =
-    info.data?.crops.find((c) => c.crop_code === (chosen || farm.cropCode)) ||
-    (!chosen && managed?.cropCode.startsWith("manual-")
-      ? ({
-          crop_code: managed.cropCode,
-          crop: managed.name,
-          variety: managed.variety || managed.name,
-          reference_year: 0,
-          cycle: "Transitorio",
-          physical_state: managed.physicalState,
-          planted_ha: 0,
-          harvested_ha: 0,
-          production_t: 0,
-          yield_kg_ha: null,
-          document_id: "",
-          source_rows: [],
-        } as CropReference)
-      : info.data?.crops[0]);
+    info.data?.crops.find(
+      (c) =>
+        c.crop_code ===
+        (managed?.id === requestedCrop ? managed.cropCode : requestedCrop),
+    ) || (!requestedCrop ? info.data?.crops[0] : undefined);
   return (
     <>
-      <div className="page-heading">
+      <header className="page-heading">
         <div>
-          <span className="eyebrow">PLANEA TU PRÓXIMA COSECHA</span>
-          <h1>¿Qué sembrar y cuánto puede dejar?</h1>
+          <span className="eyebrow">REFERENCIAS AGRÍCOLAS</span>
+          <h1>Cultivos, calendarios y fuentes</h1>
           <p>
-            {info.data
-              ? info.data.municipality.name +
-                ", " +
-                info.data.municipality.department
-              : "Elige tu ubicación para empezar con referencias locales."}
+            Consulta los datos publicados para el municipio y el cultivo. Cada
+            referencia conserva su año y alcance.
           </p>
         </div>
-        {farm.municipalityId && (
-          <Link className="button secondary" href="/farm">
-            Ver mis fincas
-          </Link>
-        )}
-      </div>
-      {!ready ? (
-        <p role="status">Cargando tu ubicación…</p>
-      ) : !farm.municipalityId ? (
-        <FarmEditor />
+        <Link className="button secondary" href="/farm">
+          Volver a Mi finca
+        </Link>
+      </header>
+      {!context.ready ? (
+        <p role="status">Leyendo las ubicaciones guardadas…</p>
+      ) : unknownFarm ? (
+        <section className="panel">
+          <h2>No encontramos esa finca en este dispositivo</h2>
+          <p>El enlace no modifica ni sustituye tus registros guardados.</p>
+        </section>
       ) : (
         <>
-          <div
-            className="planning-tabs"
-            role="tablist"
-            aria-label="Herramientas para planear"
-          >
-            <button
-              role="tab"
-              aria-selected={tab === "crops"}
-              onClick={() => setTab("crops")}
-            >
-              1. Explorar cultivos
-            </button>
-            <button
-              role="tab"
-              aria-selected={tab === "budget"}
-              onClick={() => setTab("budget")}
-            >
-              2. Presupuesto y cosecha
-            </button>
-          </div>
-          {info.loading ? (
-            <div className="panel" role="status">
-              Consultando producción, aptitud y calendarios…
-            </div>
-          ) : info.error ? (
-            <ErrorState message={info.error} retry={info.retry} />
-          ) : (
-            info.data && (
-              <div role="tabpanel">
-                {tab === "crops" ? (
-                  <CropOptions
-                    data={info.data}
-                    select={(c) => {
-                      setChosen(c.crop_code);
-                      setTab("budget");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  />
-                ) : crop ? (
-                  <>
-                    <label className="form-field budget-crop-picker">
-                      Cultivo y sistema del escenario
-                      <select
-                        value={crop.crop_code}
-                        onChange={(e) => setChosen(e.target.value)}
-                      >
-                        {!info.data.crops.some(
-                          (c) => c.crop_code === crop.crop_code,
-                        ) && (
-                          <option value={crop.crop_code}>{crop.variety}</option>
-                        )}
-                        {info.data.crops.map((c) => (
-                          <option key={c.crop_code} value={c.crop_code}>
-                            {c.variety}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <CropBudget
-                      key={
-                        (record?.id || farm.municipalityId) +
-                        "-" +
-                        (managed?.id || "") +
-                        "-" +
-                        crop.crop_code
-                      }
-                      crop={crop}
-                      data={info.data}
-                      farm={farm}
-                      managed={
-                        managed?.cropCode === crop.crop_code
-                          ? managed
-                          : undefined
-                      }
-                      scenarioKey={
-                        record
-                          ? "agroamigo-scenarios-" + record.id
-                          : "agroamigo-scenarios-v1"
-                      }
-                      onApply={
-                        record && managed?.cropCode === crop.crop_code
-                          ? (plan) =>
-                              context.saveCrop(record.id, {
-                                ...managed,
-                                area: String(plan.areaHa),
-                                yieldKgHa: String(plan.yieldKgHa),
-                                budget: plan,
-                              })
-                          : undefined
-                      }
-                    />
-                    {record && (
-                      <Link
-                        className="button secondary"
-                        href={"/farm/" + record.id}
-                      >
-                        Ver las cuentas de {record.profile.name} →
-                      </Link>
-                    )}
-                  </>
-                ) : (
-                  <div className="empty-state">
-                    <h2>Sin producción municipal disponible</h2>
-                    <p>
-                      Prueba otro municipio desde Mi finca. No hay datos
-                      suficientes para precargar este escenario.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )
+          {params.get("tab") === "budget" && (
+            <p className="inline-note">
+              Este enlace ahora muestra las referencias publicadas. Los
+              presupuestos y registros anteriores se conservan en este
+              dispositivo.
+            </p>
           )}
+          <section className="panel">
+            <div className="form-grid">
+              <label className="form-field">
+                Municipio de referencia
+                <select
+                  value={municipality}
+                  onChange={(e) => {
+                    setMunicipality(e.target.value);
+                    setCrop("");
+                  }}
+                >
+                  <option value="">Elige un municipio</option>
+                  {places.data?.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}, {m.department}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {info.data && (
+                <label className="form-field">
+                  Cultivo y sistema de referencia
+                  <select
+                    value={crop?.crop_code || ""}
+                    onChange={(e) => setCrop(e.target.value)}
+                  >
+                    <option value="">Elige un cultivo reportado</option>
+                    {info.data.crops.map((c) => (
+                      <option key={c.crop_code} value={c.crop_code}>
+                        {c.variety} · {c.physical_state}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+            <p className="privacy-note">
+              Cambiar estas referencias no cambia el pin, el municipio ni los
+              cultivos guardados de tu finca.
+            </p>
+          </section>
+          {places.error && (
+            <ErrorState message={places.error} retry={places.retry} />
+          )}
+          {info.loading && (
+            <p role="status">Consultando las fuentes del municipio…</p>
+          )}
+          {info.error && <ErrorState message={info.error} retry={info.retry} />}
+          {info.data &&
+            (crop ? (
+              <CropReferences
+                key={info.data.municipality.id + "-" + crop.crop_code}
+                data={info.data}
+                crop={crop}
+              />
+            ) : (
+              <p className="inline-note">
+                No hay una referencia EVA que corresponda al cultivo solicitado.
+                Elige uno de los sistemas reportados; no se sustituyó tu cultivo
+                guardado.
+              </p>
+            ))}
         </>
       )}
     </>
   );
 }
+function LinkedReferences() {
+  const params = useSearchParams();
+  return <References key={params.toString()} />;
+}
 export default function PlanPage() {
   return (
-    <Suspense fallback={<p>Preparando tus herramientas…</p>}>
-      <Planner />
+    <Suspense fallback={<p>Cargando referencias…</p>}>
+      <LinkedReferences />
     </Suspense>
   );
 }

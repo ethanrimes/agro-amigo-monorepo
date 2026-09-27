@@ -137,7 +137,7 @@ export default function Home() {
           <h2>
             {farm.municipalityId ? farm.name : "Tu finca, tus decisiones"}
           </h2>
-          <p>Explora el clima y los suelos. Compara costos y rentabilidad.</p>
+          <p>Explora el clima y los suelos. Consulta cultivos, calendarios y sus fuentes.</p>
         </div>
         <IoArrowForward />
       </Link>
