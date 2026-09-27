@@ -50,6 +50,7 @@ For the path from a source adapter to its API and screen, see
 | `worker.py` | DANE monthly/daily workbooks and PDFs, FNC, HTTP conditional requests, source archival, row persistence and application projections. |
 | `inputs.py`, `input_references.py`, `pdf_sources.py` | Department and municipality input prices, input PDF grids, summaries and ancillary production-factor annexes. Non-price context remains reference data. |
 | `city_reports.py` | All discovered informes por ciudades ZIPs, individual PDF members, source package/quantity/unit, rounds and category paths. |
+| `dane_weekly.py` | Weekly SIPSA PDF/XLS/XLSX quotations, printed weekly min/max/mean and explicit units; separate official quote identities and review records. |
 | `special_prices.py` | DANE raw milk at farm and rice/mill byproducts, with distinct physical products and price bases. |
 | `supply.py` | Full-source validation and resumable 250-identity batches of reported arrivals, newest month first. |
 | `colombia_sources.py` | AgroNET cacao, Fedepalma statutory palm references, Fedegán cattle/milk, Porkcolombia and Corabastos. |
@@ -68,6 +69,31 @@ for original URLs, verified formats, historical limits and price semantics.
 International benchmarks, statutory references, wholesale packages, live animals,
 carcasses and farm prices are separate series. Their original currencies and units
 are not silently converted into one Colombian wholesale price.
+
+### Weekly SIPSA bulletins
+
+`dane-weekly-index`, `dane-weekly-pdf` and `dane-weekly-xlsx` use the trusted
+`official_sources.py` path. The observed inventory contains 1,453 files across
+16 current/year indexes back to June 2012. Current/previous-year indexes and
+recent 70-day leaves are rechecked; undated leaves receive bounded daily slots
+and ordinary backfill. An unchanged URL with new bytes creates a new immutable
+original and quote revision. PDF and Excel source viewers retain exact document
+IDs and page or worksheet/row locators.
+
+Quotes preserve the printed weekly minimum, maximum and **mean**, explicit
+period, currency, unit and literal product/market. They are not daily prices or
+computed midpoints. Missing unit declarations and conflicting product blocks
+remain `official_source_review` evidence. Native extraction precedes PDF OCR;
+only failed pages enter the cached-reading bridge. Image-only weekly workbooks
+remain explicit layout review because the legacy workbook OCR publisher cannot
+safely supply weekly period/basis semantics.
+
+The [DANE source coverage audit](../../docs/DANE_SOURCE_COVERAGE_2026-09-27.md)
+records 12-original native stress, current full-cell reconciliation, historical
+visual checks and limits. It distinguishes registered links and locally validated
+rows from cloud publication. Run focused checks with
+`.venv/bin/python -m unittest pipelines.ingestion.test_dane_weekly pipelines.ingestion.test_dane_weekly_wiring`;
+real-original and PostgreSQL fixtures require their documented local setup.
 
 ## File changes, checkpoints and OCR
 

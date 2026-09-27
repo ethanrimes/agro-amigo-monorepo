@@ -46,6 +46,7 @@ The worker archives originals before parsing. A changed file at the same URL rec
 | DANE input prices and ancillary annexes | [inputs.py](../pipelines/ingestion/inputs.py), [input_references.py](../pipelines/ingestion/input_references.py) | Department/municipality prices in `input_price` / `input_municipal_price`; production factors, costs and other context in `input_reference_row`. Context is not relabeled as a quoted input price. |
 | DANE PDF extraction | [pdf_sources.py](../pipelines/ingestion/pdf_sources.py) | Versioned native text/tables in `source_pdf_page`, parsed observations with page/row locators. |
 | City reports inside ZIPs | [city_reports.py](../pipelines/ingestion/city_reports.py) | ZIP and individual PDFs, `source_archive_member`, `regional_price`, `regional_classification`; package quantity, unit, price round and category path stay explicit. |
+| Weekly SIPSA bulletins | [dane_weekly.py](../pipelines/ingestion/dane_weekly.py), [official_sources.py](../pipelines/ingestion/official_sources.py) | `dane-weekly-index/pdf/xlsx` discovery and native parsing → immutable `official_price_quote` or explicit `official_source_review` → current official catalog. Printed weekly period, min/max/mean and unit remain distinct from daily/monthly prices. See [DANE coverage](DANE_SOURCE_COVERAGE_2026-09-27.md). |
 | Raw milk and mill rice/byproducts | [special_prices.py](../pipelines/ingestion/special_prices.py) | Separate farm/mill price series and units, then validated app projections. |
 | Supply | [supply.py](../pipelines/ingestion/supply.py) | Source-grounded monthly `supply_observation`; reported arrivals are not inventory. |
 | Official Colombian alternatives | [colombia_sources.py](../pipelines/ingestion/colombia_sources.py), [official_sources.py](../pipelines/ingestion/official_sources.py) | `official_price_quote`, `official_source_review`, `published_official_price`. See [verified Colombian sources](OFFICIAL_COLOMBIA_SOURCES.md). |
@@ -88,7 +89,9 @@ Run these from the repository root unless a working directory is shown. Local ca
 | Change | Command / evidence |
 | --- | --- |
 | Source parsers, OCR, runtime and original formats | `.venv/bin/python -m unittest pipelines.ingestion.test_worker pipelines.ingestion.test_pdf_layouts pipelines.ingestion.test_ocr pipelines.ingestion.test_colombia_sources pipelines.ingestion.test_international_sources pipelines.ingestion.test_runtime pipelines.ingestion.test_city_ocr_fallback pipelines.ingestion.test_special_layouts pipelines.ingestion.test_supply_layouts` |
+| Weekly native formats and source wiring | `.venv/bin/python -m unittest pipelines.ingestion.test_dane_weekly pipelines.ingestion.test_dane_weekly_wiring` — literal cell parity, dates/units, historical headings, review conflicts, failed-page OCR, discovery and publication dispatch. Optional original/PostgreSQL fixtures are reported separately. |
 | Azure plan capacity defaults | `.venv/bin/python -m unittest infra.test_provision` — preserves the deployed SKU unless an explicit override is supplied. |
+| Worker deployment package | `.venv/bin/python -m unittest infra.test_ingestion_package` — imports the extracted host and weekly adapter from an isolated directory and verifies its complete runtime fingerprint. |
 | Large supply import | `.venv/bin/python -m pipelines.ingestion.verify_supply_cloud` — performs a targeted, authenticated cloud import of the registered 2020 source, then checks published totals and original Blob hash; this writes real source data. |
 | Scheduling SQL | `.venv/bin/python -m pipelines.ingestion.verify_scheduler` — tests index/file fairness, parser upgrades, null-date discovery, stale review and cooldowns in a temporary PostgreSQL queue table. |
 | Full downloaded extraction fixtures | `.venv/bin/python -m pipelines.ingestion.stress_sources` — uses local caches, writes a stress report, does not publish database prices. |
@@ -134,3 +137,13 @@ PostgreSQL parity tests live beside the web tests; additive read indexes are in
 identities before fetching winning quote payloads. `price-quotes.ts` keeps
 product filter choices and stored classifications consistent with the selected
 quote; migrations011–013 cover those exact read paths without deleting history.
+
+Weekly source navigation: `dane_weekly.py` owns pure discovery/period/native/OCR
+semantics; `official_sources.py` owns archival publication and reviews;
+`queue_plan.py` owns current/year-index and recent-file selection. The observed
+1,453-link/16-index inventory and 12-original stress evidence live under
+`artifacts/automation-audit-2026-09-26/weekly-assessment/`. Original PDF/Excel
+bytes and immutable locators reach the ordinary evidence viewer. Image-only
+weekly workbooks currently stop at explicit layout review; do not route them
+through the legacy workbook price publisher or imply that every queued weekly
+original has been published.

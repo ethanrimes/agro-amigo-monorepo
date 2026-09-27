@@ -332,3 +332,149 @@ source metadata explicitly identifies that statistic. Published weekly means
 retain their literal value and a distinct label. Six desktop/mobile browser
 checks passed with deliberately unequal mean/midpoint fixtures; build and
 TypeScript also passed. Browser emulation is not a native simulator run.
+
+### Final read-path and resumable-work checks, 08:40 UTC
+
+Web release `6f409a4464e1481d82fd00f459c83427` includes the final market-directory
+and regional-catalog aggregation fixes. The unchanged deployed `data.spec.ts`
+passed in 16 seconds: unified identities, monthly/farmgate/mill/city card-to-detail
+price and filter parity, summary selections, coffee history/markets/factors/TRM,
+regional exclusion and missing-product responses. Both deployed supply-history
+browser tests had already passed against release `5f733149`. Six statistic-label
+tests passed on desktop/mobile browser fixtures. These checks do not assert a
+new native iOS or Android simulator run.
+
+The market-directory query fell from 8.815 to 4.949 seconds with exactly the same
+388 rows. The Cundinamarca regional catalog fell from 12.571 to 0.520 seconds,
+with the same eligible identities. Seven market and thirteen catalog PostgreSQL
+parity checks passed. All three final covering indexes are valid/ready:
+`regional_classification_lookup_cover` (273 MB), `regional_product_options_cover`
+(294 MB), and `observation_market_options` (138 MB). No capacity upgrade was made.
+
+After maintenance ended, an isolated refresh using the actual restricted
+`agro_ingestor` role and normal advisory lock committed 35 complete-year batches,
+including 7,750 changed year rows. It yielded with `WorkDeferred` after 354.188
+seconds against its cooperative 300-second budget. Individual statements still
+run to completion within their own timeout; the longest observed statements were
+129.837 and 96.403 seconds. This demonstrates durable progress, not completion of
+all seasonal history or a diagnosis of the earlier maintenance-time timeout.
+Evidence: `seasonal-quiet-proof.json` and `seasonal-quiet.log`.
+
+The August municipal-input follow-up ended at 08:15:27 UTC with 34 committed
+250-identity group checkpoints, up from seven. Its 38,248 source observations
+were validated natively, but application publication remains partial; no complete
+month/source checkpoint was written. The 08:15 hourly trigger correctly recorded
+`skipped_overlap` while this targeted catch-up held the shared lock.
+
+### Newly covered DANE weekly reports
+
+The source audit found an omitted weekly family: 16 official index pages link
+1,453 distinct originals (730 PDF, 415 XLSX, 308 XLS), reaching June 2012.
+The new versioned adapter preserves explicit weekly periods, printed mean/min/max,
+currency, unit, exact product/market and page/cell provenance. Twelve original-file
+stress checks yielded 49,006 literal rows: 39,529 publishable and 9,477 retained
+reviews, including companion-file duplicates. This is not a unique database count.
+
+All 4,571 current PDF/Excel product-market keys and 13,713 price cells agree with
+an independent XML oracle. The PDF omits explicit unit exceptions for 131 egg and
+liquid quotes; those PDF rows stay reviewable while the workbook supplies verified
+units. Early historical missing headings and genuine conflicting publisher values
+also remain reviews. See [DANE coverage](DANE_SOURCE_COVERAGE_2026-09-27.md).
+
+The full combined runtime suite ran 363 tests: 284 passed, 79 opt-in PostgreSQL
+cases skipped in that invocation. Eleven weekly wiring tests were separately
+enabled against real local PostgreSQL and passed, including all three database
+cases; the existing scheduler verifier also passed. The deployment packaging
+check caught a duplicate-manifest omission before upload. Packaging now uses the
+verified runtime manifest, and an isolated extracted-package import/fingerprint
+test passes. Runtime changes are in `127a81d`; packaging repair is in `8bc9721`.
+Cloud publication and final source delivery are separate verification steps below.
+
+### Weekly cloud publication and independent reconciliation
+
+Worker release `b4797cc9a732e585d5d0f3772ce2a846950c94f8f2f042da58114f33c00e116f`
+was deployed and health/release-verified. Nineteen sequential authenticated cloud
+checks completed with no errors: all 16 observed index pages, the current weekly
+Excel/PDF pair and the first June 2012 PDF. These were targeted verification runs,
+separate from the automatic execution already recorded above.
+
+| Original | Run | Published quotes | Retained reviews |
+| --- | --- | ---: | ---: |
+| September 19–25, 2026 XLSX | `3ab8ac3f-831f-4fd4-b1eb-5a468326e4d6` | 4,571 | 0 |
+| September 19–25, 2026 PDF | `f3fe716f-0439-41fd-97fd-351aa12978de` | 4,440 | 131 |
+| June 16–22, 2012 PDF | `512bc835-b932-4c76-9fc7-f71170222804` | 1,340 | 88 |
+
+The independent post-publication verifier passed in 14.186 seconds. It reconciled
+every current workbook row and all 13,713 monetary cells, all 4,440 published PDF
+rows and 131 literal unit reviews, and all 4,571 current frontend catalog keys.
+The historical check verified the printed June period, expected retained counts,
+the Acelga/Bogotá 767–800/mean 793 anchor, and both conflicting Higo/Bogotá rows
+remaining reviewable. It does not claim independent cell-by-cell coverage of the
+entire historical PDF.
+
+All three originals passed full database-content, Azure Blob and public
+source-content API SHA-256 checks. Ten public API checks passed, including six
+quote anchors across kg/unit/litre and the read-only Excel viewer displaying the
+literal 333/533/418 Acelga row. All 16 index originals are retained as HTML and
+complete under the deployed parser. All 1,453 observed leaf URLs are registered
+with the expected kind and verified filename date where available: three complete,
+1,450 pending. The hourly automatic queue owns the remaining historical work.
+
+Evidence: `weekly-assessment/cloud-publication-results.json`,
+`weekly-assessment/weekly-publication-after-publication.json`. Rows from companion
+PDF and Excel files overlap and must not be added as unique product quotations.
+
+The deployed weekly browser flow passed in 5.7 seconds with screenshots inspected:
+the unified catalog opens the exact Acelga/Corabastos quotation, shows COP 418/kg,
+September 19–25 and the published 333–533 range/mean, and preserves visible filters.
+The retained PDF opens at page 10 and supports page navigation; the retained Excel
+opens sheet 1.1 at row 13, shows 333/533/418, supports sheet selection and 125% zoom,
+and remains read-only. Closing the viewer restores the product page. No page/API
+errors occurred. An earlier harness attempt used an incorrect exact Zoom selector;
+that attempt remains in the evidence, and the corrected check required no app edit.
+Evidence: `weekly-ui/browser-results.json` and inspected PNGs.
+
+The unchanged catalog regression also passed after weekly publication: 7,595
+catalog entries and 76,771 assertion steps, 58.7 seconds overall. The eleven API
+requests together took 4.673 seconds; the catalog request took 0.946 seconds and
+no request exceeded 1.260 seconds. Most elapsed time was local assertion/reporting
+work over the expanded catalog. These are warm serialized observations, not a
+controlled cold-cache benchmark. Evidence: `data-ui-weekly-final/timings.json`.
+
+### Final automatic-operation state and remaining work
+
+The final health check identified one aged recent city ZIP still pending from the
+earlier automatic budget deferral. Targeted run
+`7598bc62-0bcb-470e-afde-1a3d589418f8` resumed September 18 and completed in 16.4
+seconds with 2,105 observations, no errors and all 32 member checkpoints. The
+907,022-byte original's full database and Azure Blob hashes match. Actual member
+dates remain September 17 or 18 as printed; San Gil's 57 September 17 observations
+are not reassigned to the archive's September 18 date.
+
+At 08:56:43 UTC the deployed worker fingerprint matched, its automation health
+was `ok` with no current-source issues, and no ingestion writer/advisory lock was
+active. Always On is enabled and all four Azure timers are enabled. DailyRefresh
+is scheduled at 23:00 UTC (18:00 Colombia); HistoricalBackfill at minute 15 each
+hour; OcrRecovery at minute 05; PipelineWatchdog at minute 45. Azure's persisted
+timer monitors include the next invocation times. Remote Gemini configuration is
+preserved. The temporary audit firewall rule is removed after final read-only
+checks; all other rules remain unchanged.
+
+The database is 28 GB. The final queue contains 12,503 source URLs:
+
+| Status | URLs |
+| --- | ---: |
+| complete | 3,122 |
+| processed | 1,645 |
+| archived | 9 |
+| pending | 6,693 |
+| awaiting OCR | 456 |
+| failed / eligible for bounded retry | 477 |
+| review | 101 |
+
+These are URL workflow states, not unique documents or price counts. Automatic
+backfill, OCR recovery and source-specific review work remain; this audit does
+not claim that the historical archive or August municipal inputs have finished.
+No historical data was deleted and no database capacity upgrade was performed.
+Evidence: `automation-after-weekly-final.json`, `cloud-automation-final.json`,
+`final-city-retention.json`, and `firewall-cleanup-final.json`.
