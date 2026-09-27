@@ -511,6 +511,41 @@ def drain(db, limit=5, scan_limit=3, document_id=None, deadline=None):
         if not enough_time(0):
             summary["deferred"] += 1
             break
+        if kind in ("daily-pdf", "monthly-pdf"):
+            from datetime import date
+
+            from .pdf_sources import queued_price_page_needs_ocr
+
+            # Tasks can outlive the parser that enqueued them. Re-evaluate the
+            # original before using cached OCR or spending a provider request.
+            original = db.execute(
+                """SELECT d.content,d.reference_period,a.observed_on
+                FROM source_document d LEFT JOIN ingestion_asset a
+                ON a.document_id=d.id AND a.kind=%s WHERE d.id=%s
+                ORDER BY a.checked_at DESC NULLS LAST LIMIT 1""",
+                (kind, did),
+            ).fetchone()
+            try:
+                if not original:
+                    raise ValueError("Native OCR eligibility original is missing")
+                day = original[2] or date.fromisoformat(original[1])
+                eligible = queued_price_page_needs_ocr(
+                    bytes(original[0]), day, kind, page
+                )
+                reason = (
+                    None
+                    if eligible
+                    else "Native extraction rechecked: no OCR needed for this readable or non-price PDF page; original, image and prior readings retained"
+                )
+            except (TypeError, ValueError) as exc:
+                reason = "Native OCR eligibility could not be verified: " + str(exc)[:350]
+            if reason:
+                db.execute(
+                    "UPDATE source_ocr_task SET status='review',checked_at=now(),error=%s WHERE document_id=%s AND source_locator=%s",
+                    (reason, did, loc),
+                )
+                summary["review"] += 1
+                continue
         cached = [
             db.execute(
                 "SELECT result FROM source_ocr_result WHERE image_id=%s AND version=%s AND reading=%s",
