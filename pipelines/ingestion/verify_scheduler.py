@@ -6,8 +6,28 @@ from . import queue_plan, worker
 def main():
     with worker.connect() as db, db.transaction():
         db.execute(
-            "CREATE TEMP TABLE ingestion_asset (LIKE public.ingestion_asset INCLUDING DEFAULTS) ON COMMIT DROP"
+            "CREATE TEMP TABLE ingestion_asset (LIKE public.ingestion_asset INCLUDING ALL) ON COMMIT DROP"
         )
+        # Repeated discovery should not create new tuples or even take an
+        # UPDATE row lock for unchanged known sources. New dates/kinds still
+        # update metadata and preserve the original first-discovery time.
+        source = "https://example.invalid/repeated.xlsx"
+        worker.queue(db, source, "daily")
+        original = db.execute(
+            "SELECT ctid,xmin,xmax,discovered_at FROM ingestion_asset WHERE url=%s",
+            (source,),
+        ).fetchone()
+        worker.queue(db, source, "daily")
+        assert db.execute(
+            "SELECT ctid,xmin,xmax,discovered_at FROM ingestion_asset WHERE url=%s",
+            (source,),
+        ).fetchone() == original
+        worker.queue(db, source, "daily", worker.today())
+        worker.queue(db, source, "daily-pdf", worker.today())
+        assert db.execute(
+            "SELECT kind,observed_on,discovered_at FROM ingestion_asset WHERE url=%s",
+            (source,),
+        ).fetchone() == ("daily-pdf", worker.today(), original[3])
         for number in range(200):
             db.execute(
                 "INSERT INTO ingestion_asset(url,kind) VALUES(%s,'colombia-pork-index')",
