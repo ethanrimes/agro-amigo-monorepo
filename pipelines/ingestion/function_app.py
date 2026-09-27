@@ -108,10 +108,19 @@ def run_check(req: func.HttpRequest) -> func.HttpResponse:
     asset_url = req.params.get("asset_url")
     if asset_url and len(asset_url) > 4096:
         return func.HttpResponse("Invalid source URL", status_code=400)
+    try:
+        time_budget = int(req.params.get("time_budget", "120"))
+    except ValueError:
+        return func.HttpResponse("Invalid time budget", status_code=400)
+    if not 30 <= time_budget <= 2100 or (time_budget > 120 and not asset_url):
+        return func.HttpResponse(
+            "Use 30–120 seconds, or up to 2100 seconds for one registered source",
+            status_code=400,
+        )
     result = run(
         "backfill",
         limit=4,
-        time_budget=120,
+        time_budget=time_budget,
         ocr_limit=0,
         ocr_scan_limit=0,
         asset_url=asset_url,
