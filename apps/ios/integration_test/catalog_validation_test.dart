@@ -79,9 +79,6 @@ const _supplyWidth = r'''(() => {
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
-  binding.shouldPropagateDevicePointerEvents = const bool.fromEnvironment(
-    'NATIVE_CATALOG_GESTURES',
-  );
   testWidgets(
     'iOS catalog scrolling and retained supply months',
     (tester) async {
@@ -262,34 +259,18 @@ void main() {
       await until(
         'document.querySelector(\'$coffee .save-button\').getAttribute("aria-pressed")==="${wasSaved == true ? 'true' : 'false'}"',
       );
-      const nativeGestures = bool.fromEnvironment('NATIVE_CATALOG_GESTURES');
-      if (nativeGestures) {
-        await run(
-          'document.querySelector(\'$coffee .product-name\').scrollIntoView({block:"center"})',
-        );
-        debugPrint('AWAIT_NATIVE_TAP coffee product name');
-      } else {
-        await click('$coffee .product-name');
-      }
+      await click('$coffee .product-name');
       await until(
         'location.pathname==="/product/cafe-pergamino-seco" && !document.querySelector(".catalog-heading") && document.querySelector("h1")',
-        seconds: nativeGestures ? 300 : 90,
       );
       expect(state.failed, false);
       await shot('coffee-detail');
       expect(await web.canGoBack(), true);
-      if (nativeGestures) {
-        debugPrint('AWAIT_NATIVE_BACK left-edge swipe');
-      } else {
-        // Synthetic JS clicks do not create user-activated WKWebView history
-        // entries. Exercise the visible back link here; the optional native
-        // mode uses a real simulator tap and edge swipe for browser history.
-        await click('.back-link');
-      }
-      await until(
-        'location.pathname==="/products" && $cards.length===24',
-        seconds: nativeGestures ? 300 : 90,
-      );
+      // Synthetic JS clicks do not create user-activated WKWebView history
+      // entries. Test the visible back link here; native edge gestures are
+      // exercised separately with Maestro against the normal app build.
+      await click('.back-link');
+      await until('location.pathname==="/products" && $cards.length===24');
       expect((await json(_geometry))['errors'], isEmpty);
       expect(
         await js('localStorage.getItem("agroamigo-preferences-v2")'),
@@ -320,9 +301,13 @@ void main() {
       expect((await json(_geometry))['errors'], isEmpty);
       await shot('unified-coffee-usd-results');
       final quote = await json(
-        r'''JSON.stringify((()=>{const c=document.querySelector('.product-card'),p=c.querySelector('.product-price');return {price:Number(p.dataset.price),currency:p.dataset.currency,key:c.dataset.productId,returnTo:location.pathname+location.search};})())''',
+        // FNC and World Bank both publish USD coffee references. Only the
+        // World Bank series has the 1960 history asserted below.
+        r'''JSON.stringify((()=>{const c=[...document.querySelectorAll('.product-card')].find(e=>e.textContent.includes('Banco Mundial'));if(!c)throw Error('World Bank coffee reference missing');const p=c.querySelector('.product-price');return {price:Number(p.dataset.price),currency:p.dataset.currency,key:c.dataset.productId,returnTo:location.pathname+location.search};})())''',
       );
-      await click('.product-card .product-name');
+      await click(
+        '.product-card[data-product-id="${quote['key']}"] .product-name',
+      );
       await until(
         'location.pathname.startsWith("/references/") && document.querySelector(".current-product-price")?.dataset.currency==="USD"',
       );
