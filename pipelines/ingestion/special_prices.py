@@ -5,6 +5,8 @@ import re
 from datetime import date, datetime
 from decimal import Decimal
 
+MILK_PDF_VERSION = "milk-pdf-v7"
+
 DEPARTMENTS = "Amazonas|Antioquia|Arauca|Atlántico|Bogotá D.C.|Bolívar|Boyacá|Caldas|Caquetá|Casanare|Cauca|Cesar|Chocó|Córdoba|Cundinamarca|Guainía|Guaviare|Huila|La Guajira|Magdalena|Meta|Nariño|Norte de Santander|Putumayo|Quindío|Risaralda|San Andrés|Santander|Sucre|Tolima|Valle del Cauca|Vaupés|Vichada".split(
     "|"
 )
@@ -207,8 +209,13 @@ def project_special(db, did, url):
     markets = {}
     values = {}
     conflicts = set()
+    native_revisions = []
     for loc, series, day, name, town, unit, price, meta in db.execute(
-        "SELECT source_locator,series,observed_on,product_name,market_name,unit,price,details FROM historical_price WHERE document_id=%s",
+        """SELECT DISTINCT ON(regexp_replace(source_locator,'; parser milk-pdf-v[0-9]+$',''))
+          source_locator,series,observed_on,product_name,market_name,unit,price,details
+        FROM historical_price WHERE document_id=%s
+        ORDER BY regexp_replace(source_locator,'; parser milk-pdf-v[0-9]+$',''),
+          coalesce(substring(source_locator from '; parser milk-pdf-v([0-9]+)$')::int,0) DESC""",
         (did,),
     ).fetchall():
         if not town or not meta.get("department"):
@@ -260,6 +267,8 @@ def project_special(db, did, url):
                 else "; precio en finca, COP/litro"
             ),
         )
+        if not rice and re.search(r"; parser milk-pdf-v[0-9]+$", loc):
+            native_revisions.append((key, values[key]))
     with db.transaction(), db.cursor() as cur:
         cur.executemany(
             "INSERT INTO product(id,name,category) VALUES(%s,%s,%s) ON CONFLICT DO NOTHING",
@@ -293,6 +302,55 @@ def project_special(db, did, url):
              OR (SELECT media_type FROM source_document WHERE id=price_observation.document_id)='application/pdf'
              OR EXISTS(SELECT 1 FROM ingestion_asset WHERE document_id=price_observation.document_id AND status='review'))""",
         )
+        if native_revisions:
+            # Native name identity and monetary conflicts are independent:
+            # a proven old name error is reviewed even when two valid native
+            # rows disagree on the price of their shared corrected identity.
+            cur.execute(
+                f"CREATE TEMP TABLE IF NOT EXISTS special_native_revision_stage ON COMMIT DROP "
+                f"AS SELECT {columns},false AS canonical_price_conflict FROM price_observation WITH NO DATA"
+            )
+            cur.execute("TRUNCATE pg_temp.special_native_revision_stage")
+            with cur.copy(
+                f"COPY pg_temp.special_native_revision_stage ({columns},canonical_price_conflict) FROM STDIN"
+            ) as copy:
+                for key, row in native_revisions:
+                    copy.write_row((*row, key in conflicts))
+            cur.execute(
+                """INSERT INTO price_observation_review(
+                  document_id,source_locator,product_id,market_id,source_id,
+                  observed_on,period,unit,reason,evidence)
+                SELECT old.document_id,old.source_locator,old.product_id,
+                  old.market_id,old.source_id,old.observed_on,old.period,old.unit,
+                  'Milk PDF municipality corrected from the original native word coordinates',
+                  jsonb_build_object(
+                    'physical_source_locator',regexp_replace(new.source_locator,
+                      '(; parser milk-pdf-v[0-9]+)?; precio en finca, COP/litro$',''),
+                    'corrected_market_id',new.market_id,
+                    'corrected_source_locator',new.source_locator,
+                    'literal_price',new.price,'unit',new.unit,
+                    'parser_version',substring(new.source_locator from 'milk-pdf-v[0-9]+'),
+                    'original_retained',true,
+                    'canonical_price_conflict',new.canonical_price_conflict)
+                FROM pg_temp.special_native_revision_stage new
+                JOIN price_observation old
+                  ON old.document_id=new.document_id AND old.product_id=new.product_id
+                  AND old.source_id=new.source_id AND old.observed_on=new.observed_on
+                  AND old.period=new.period AND old.unit=new.unit
+                  AND old.market_id<>new.market_id
+                  AND regexp_replace(old.source_locator,
+                    '(; parser milk-pdf-v[0-9]+)?; precio en finca, COP/litro$','')
+                    =regexp_replace(new.source_locator,
+                    '(; parser milk-pdf-v[0-9]+)?; precio en finca, COP/litro$','')
+                WHERE new.document_id=%s AND new.source_id='dane-milk-farm'
+                  AND new.source_locator ~ '; parser milk-pdf-v[0-9]+; precio en finca, COP/litro$'
+                  AND coalesce(substring(old.source_locator from
+                    '; parser milk-pdf-v([0-9]+); precio en finca, COP/litro$')::int,0)
+                    <substring(new.source_locator from
+                    '; parser milk-pdf-v([0-9]+); precio en finca, COP/litro$')::int
+                ON CONFLICT DO NOTHING""",
+                (did,),
+            )
     return len(conflicts)
 
 
@@ -326,8 +384,7 @@ def _milk_full_width_table(page):
             [
                 word
                 for word in words
-                if word["text"] == "Precio"
-                and abs(word["top"] - low["top"]) < 30
+                if word["text"] == "Precio" and abs(word["top"] - low["top"]) < 30
             ]
         )
         == 3
@@ -363,6 +420,214 @@ def _milk_narrative_month(texts, native_pages):
         return None
     month, year = MONTH_NUM[stamp[1].lower()], int(stamp[2])
     return date(year, month, calendar.monthrange(year, month)[1])
+
+
+def _milk_column_native_lines(page, lines):
+    """Bind native name/trend cells to aligned price triples before line parsing.
+
+    PDF text lines can put the first half of a wrapped name beside its price,
+    leaving the second half beside the following row. Native coordinates retain
+    the correct cell boundary. Keep each price's original text-line locator and
+    require a one-to-one match of every literal monetary triple before using
+    this path; never repair a price or infer a municipality from a name list.
+    """
+    from .worker import slug
+
+    if not hasattr(page, "extract_words"):
+        return lines
+    department_keys = {slug(name) for name in DEPARTMENTS}
+    words = [word for word in page.extract_words() if word.get("upright", True)]
+    headers = []
+    for labels in (("Mínimo",), ("Máximo",), ("Medio", "Promedio")):
+        matches = [word for word in words if word["text"] in labels]
+        if len(matches) != 1:
+            return lines
+        headers.append(matches[0])
+    centers = [(word["x0"] + word["x1"]) / 2 for word in headers]
+    if not centers[0] < centers[1] < centers[2]:
+        return lines
+    top = max(word["bottom"] for word in headers)
+    parent_words = (
+        page.parent_page.extract_words() if hasattr(page, "parent_page") else words
+    )
+    end = min(
+        [
+            word["top"]
+            for word in parent_words
+            if word["top"] > top and word["text"].casefold().rstrip(":") == "tendencias"
+        ]
+        + [
+            word["top"]
+            for word in words
+            if word["top"] > top and word["text"].casefold() == "fuente:"
+        ],
+        default=page.height,
+    )
+    words = [word for word in words if word["top"] < end - 2]
+    boundaries = [
+        centers[0] - (centers[1] - centers[0]) / 2,
+        (centers[0] + centers[1]) / 2,
+        (centers[1] + centers[2]) / 2,
+        centers[2] + (centers[2] - centers[1]) / 2,
+    ]
+    numeric = [
+        [
+            word
+            for word in words
+            if word["top"] > top
+            and re.fullmatch(r"\d[\d.,]*", word["text"])
+            and boundaries[index]
+            <= (word["x0"] + word["x1"]) / 2
+            < boundaries[index + 1]
+        ]
+        for index in range(3)
+    ]
+    triples = []
+    for low in numeric[0]:
+        matches = [
+            [word for word in column if abs(word["top"] - low["top"]) < 2]
+            for column in numeric[1:]
+        ]
+        if any(len(match) != 1 for match in matches):
+            raise ValueError(
+                "Milk PDF native monetary columns do not align: "
+                + repr((low["text"], low["top"]))
+            )
+        triples.append((low, matches[0][0], matches[1][0]))
+    triples.sort(key=lambda row: row[0]["top"])
+    if not triples:
+        return lines
+    if any(len(column) != len(triples) for column in numeric):
+        raise ValueError("Milk PDF native monetary columns have unequal row counts")
+    # Existing line numbering is part of immutable provenance; do not renumber
+    # the report merely because a municipality wraps over two native baselines.
+    printed = []
+    enabled = False
+    for index, line in enumerate(lines):
+        if (
+            "Mínimo" in line
+            and "Máximo" in line
+            and ("Medio" in line or "Promedio" in line)
+        ):
+            enabled = True
+            continue
+        if not enabled:
+            continue
+        if line.startswith(("TENDENCIAS", "Fuente:")):
+            break
+        match = re.fullmatch(
+            r"(?:.+?\s+)?(\d[\d.,]*)\s+(\d[\d.,]*)\s+(\d[\d.,]*)(?:\s+.*)?",
+            line.strip(),
+        )
+        if match:
+            printed.append((index, match.groups()))
+    if [values for _, values in printed] != [
+        tuple(word["text"] for word in row) for row in triples
+    ]:
+        raise ValueError("Milk PDF native price triples disagree with text rows")
+    # Department headings can sit less than one text line above the first
+    # town in older tables. Exclude only their exact printed native wording.
+    name_baselines = []
+    for word in sorted(
+        (word for word in words if (word["x0"] + word["x1"]) / 2 < boundaries[0]),
+        key=lambda word: (word["top"], word["x0"]),
+    ):
+        if not name_baselines or abs(word["top"] - name_baselines[-1][0]["top"]) > 2:
+            name_baselines.append([])
+        name_baselines[-1].append(word)
+    heading_words = set()
+    for baseline in name_baselines:
+        label = " ".join(
+            word["text"] for word in sorted(baseline, key=lambda word: word["x0"])
+        )
+        label = re.sub(
+            r"\s*\(continuaci[oó]n\)", "", label, flags=re.IGNORECASE
+        ).strip()
+        if slug(label) in department_keys or not label:
+            # An identically named town (Arauca) has its own monetary row;
+            # this exclusion applies only above/between those priced rows.
+            if not any(abs(baseline[0]["top"] - row[0]["top"]) < 2 for row in triples):
+                heading_words.update(id(word) for word in baseline)
+    names = [[] for _ in triples]
+    trends = [[] for _ in triples]
+    used_lines = set()
+    for word in words:
+        if word["top"] <= top or id(word) in heading_words:
+            continue
+        x = (word["x0"] + word["x1"]) / 2
+        target = names if x < boundaries[0] else trends if x >= boundaries[3] else None
+        if target is None:
+            continue
+        center = (word["top"] + word["bottom"]) / 2
+        distances = [
+            abs(center - (row[0]["top"] + row[0]["bottom"]) / 2) for row in triples
+        ]
+        best = min(distances)
+        # One extra native line of a wrapped cell is allowed, but a distant
+        # heading/footer must not be borrowed into a price's place identity.
+        if best > (word["bottom"] - word["top"]) * 1.4:
+            continue
+        candidates = [
+            index
+            for index, distance in enumerate(distances)
+            if abs(distance - best) < 0.1
+        ]
+        if len(candidates) != 1 and target is names:
+            # Dense older tables align the price with the second name line.
+            # At an exact halfway baseline, only an explicit lowercase
+            # continuation or a printed terminal hyphen resolves the binding.
+            continuations = []
+            for candidate in candidates:
+                line_index, values = printed[candidate]
+                prefix = lines[line_index].split(values[0], 1)[0].strip()
+                if re.match(r"[a-zà-ÿ]", prefix) or prefix.endswith("-"):
+                    continuations.append(candidate)
+            candidates = continuations
+        if len(candidates) != 1:
+            raise ValueError(
+                "Milk PDF name/trend cell is equidistant between price rows"
+            )
+        target[candidates[0]].append(word)
+    result = list(lines)
+    for (index, values), name_words, trend_words in zip(printed, names, trends):
+        groups = []
+        for word in sorted(name_words, key=lambda word: (word["top"], word["x0"])):
+            if not groups or abs(word["top"] - groups[-1][0]["top"]) > 2:
+                groups.append([])
+            groups[-1].append(word)
+        segments = [
+            " ".join(
+                word["text"] for word in sorted(group, key=lambda word: word["x0"])
+            )
+            for group in groups
+        ]
+        town = " ".join(segments)
+        town = re.sub(r"([A-Za-zÀ-ÿ])-\s+(?=[a-zà-ÿ])", r"\1", town)
+        if not re.fullmatch(r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ .'-]{1,99}", town):
+            raise ValueError(
+                "Milk PDF municipality has no unambiguous native cell: "
+                + repr((index, town, values))
+            )
+        trend = "".join(
+            word["text"]
+            for word in sorted(trend_words, key=lambda word: (word["top"], word["x0"]))
+        )
+        if trend and not re.fullmatch(r"[xXᵡ=°ºᵒo.\s]+|n\.\s*d\.?", trend):
+            raise ValueError(
+                "Milk PDF trend cell contains unexpected text: " + repr(trend)
+            )
+        result[index] = " ".join((town, *values, trend)).strip()
+        used_lines.update(segments)
+        used_lines.update(word["text"] for word in trend_words)
+    price_indexes = {index for index, _ in printed}
+    for index, line in enumerate(lines):
+        if (
+            index not in price_indexes
+            and line.strip() in used_lines
+            and slug(line) not in department_keys
+        ):
+            result[index] = ""
+    return result
 
 
 def parse_milk_pdf(data, day):
@@ -461,9 +726,10 @@ def parse_milk_pdf(data, day):
                 else [(0, page.width / 2), (page.width / 2, page.width)]
             )
             for column, (left, right) in enumerate(columns, 1):
-                lines = (
-                    page.crop((left, 0, right, page.height)).extract_text() or ""
-                ).splitlines()
+                native_column = page.crop((left, 0, right, page.height))
+                lines = (native_column.extract_text() or "").splitlines()
+                if not full_width:
+                    lines = _milk_column_native_lines(native_column, lines)
                 enabled = False
                 town_prefix = ""
                 pending_price = ""
@@ -538,7 +804,7 @@ def parse_milk_pdf(data, day):
                         town,
                         "litre",
                         mean,
-                        f"PDF page {number},col {column},line {line_no}",
+                        f"PDF page {number},col {column},line {line_no}; parser {MILK_PDF_VERSION}",
                         details={
                             "department": department,
                             "municipality": town,

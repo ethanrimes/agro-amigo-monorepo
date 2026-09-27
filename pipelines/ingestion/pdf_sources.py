@@ -7,7 +7,7 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v5"
+INPUT_PDF_VERSION = "inputs-pdf-v6"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
