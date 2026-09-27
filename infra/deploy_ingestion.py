@@ -217,6 +217,7 @@ def deploy(code_only=False):
         "AzureWebJobsStorage": storage,
         "DAILY_SCHEDULE": "0 0 23 * * *",
         "BACKFILL_SCHEDULE": "0 15 * * * *",
+        "OCR_SCHEDULE": "0 5 * * * *",
         "GEMINI_OCR_MODEL": "gemini-3.5-flash",
         "GEMINI_OCR_DAILY_REQUESTS": "40",
     }

@@ -353,3 +353,10 @@ a superseded original with partial rows remains eligible for retained replay.
 Review-aware publication views withhold ambiguous observations without deleting
 them. See the dated DANE, Colombia and international coverage matrices in `docs/`
 for actual source tests and boundaries between structured prices and context.
+
+The scheduled `OcrRecovery` job runs at minute05 each hour (`OCR_SCHEDULE`),
+with a ten-minute budget, at most two OCR tasks and the existing daily provider
+request cap. It uses the same ingestion lock. Due exchange-rate and seasonal
+refreshes run before large native assets, so a permanent backlog cannot starve
+these datasets. Daily discovery and historical catch-up remain independently
+scheduled; all schedules are configured remotely in Azure App Settings.
