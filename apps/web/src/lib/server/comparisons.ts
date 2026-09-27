@@ -1,7 +1,7 @@
 import "server-only";
 import { database, WINDOW } from "./db";
 import { reconcileInputCatalog } from "./input-identities";
-import { PRICE_QUOTES } from "./price-quotes";
+import { PRICE_QUOTE_VALUES, withQuoteClassifications } from "./price-quotes";
 import { compareQuotes, summarizeComparisons } from "../comparison-math";
 import type {
   ComparisonData,
@@ -35,7 +35,18 @@ async function options(
     if (kind === "markets") {
       const rows = (
         await database().query(
-          `WITH quotes AS (${PRICE_QUOTES}) SELECT DISTINCT market_id AS id,market_name AS name,series FROM quotes WHERE ${period} ORDER BY name`,
+          // Availability labels need retained market/series identities, not
+          // round winners or classification lookups for every historical row.
+          `SELECT DISTINCT m.id,m.name,
+            CASE o.source_id WHEN 'dane-milk-farm' THEN 'farmgate' WHEN 'dane-rice-mill' THEN 'mill' WHEN 'fnc' THEN 'coffee' ELSE 'monthly' END AS series
+          FROM published_price_observation o JOIN market m ON m.id=o.market_id
+          JOIN product p ON p.id=o.product_id
+          WHERE ${period}
+          UNION
+          SELECT DISTINCT m.id,m.name,'city'::text AS series
+          FROM regional_price r JOIN market m ON m.name=r.market_name
+          WHERE ${period}
+          ORDER BY name`,
         )
       ).rows;
       return {
@@ -57,11 +68,27 @@ async function options(
       };
     }
     const municipal = scope === "municipality";
+    const latestAllowedDate = history === "all"
+      ? "CURRENT_DATE"
+      : "(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date";
     // Location names carry no price claims. Avoid running publication checks on
     // millions of historical observations just to build these picker labels.
     const rows = (
       await database().query(
-        `SELECT DISTINCT department${municipal ? ",municipality" : ""} FROM ${municipal ? "input_municipal_price" : "input_price"} WHERE ${period} ORDER BY department${municipal ? ",municipality" : ""}`,
+        municipal ? `WITH RECURSIVE locations AS (
+          (SELECT department,municipality,observed_on FROM input_municipal_price
+            WHERE observed_on<=${latestAllowedDate}
+            ORDER BY department,municipality,observed_on DESC LIMIT 1)
+          UNION ALL
+          SELECT next.* FROM locations previous CROSS JOIN LATERAL (
+            SELECT department,municipality,observed_on FROM input_municipal_price
+            WHERE (department,municipality)>(previous.department,previous.municipality)
+              AND observed_on<=${latestAllowedDate}
+            ORDER BY department,municipality,observed_on DESC LIMIT 1
+          ) next
+        ) SELECT department,municipality FROM locations WHERE ${period}
+          ORDER BY department,municipality`
+        : `SELECT DISTINCT department FROM input_price WHERE ${period} ORDER BY department`,
       )
     ).rows;
     return {
@@ -88,19 +115,23 @@ async function marketQuotes(
   series: string,
   history: string,
   product: string,
+  identities?: string[],
 ): Promise<ComparisonQuote[]> {
   const period = history === "all" ? "observed_on <= CURRENT_DATE" : WINDOW;
   const result = await database().query(
-    `WITH quotes AS (${PRICE_QUOTES})
+    `WITH quotes AS (${PRICE_QUOTE_VALUES})
     SELECT DISTINCT ON(product_id,market_id,presentation,units,unit,series)
       product_id AS id,product_name AS name,category,category_path,presentation,units,unit,series,
       market_id AS location_id,market_name AS location_name,region AS department,
       price,min_price,max_price,observed_on AS date,document_id,source_locator,source_page
-    FROM quotes WHERE ($1='' OR market_id=$1) AND series=$2 AND ($3='' OR product_id=$3) AND ${period}
+    FROM quotes WHERE ($1='' OR market_id=$1) AND series=$2 AND ($3='' OR product_id=$3)
+      AND ($4::text[] IS NULL OR product_id=ANY($4)) AND ${period}
     ORDER BY product_id,market_id,presentation,units,unit,series,observed_on DESC,document_id`,
-    [location === NATIONAL ? "" : location, series, product],
+    [location === NATIONAL ? "" : location, series, product, identities || null],
   );
-  return result.rows;
+  // Classification cannot affect quote winners or arithmetic. Enrich only the
+  // selected current rows, preserving the exact original/locator correction.
+  return withQuoteClassifications(result.rows);
 }
 
 async function inputQuotes(
@@ -248,10 +279,17 @@ async function computeComparison(
       }
     }
   } else if (a) {
-    [base, other] = await Promise.all([
-      read(a),
-      requested.view === "prices" ? Promise.resolve([]) : read(b),
-    ]);
+    base = await read(a);
+    if (requested.view !== "prices" && base.length) {
+      // A's product identities define every possible match. Reading all other
+      // products nationwide adds history scans without adding a comparison.
+      // Retain all markets/packages/dates for these IDs so unmatched rows and
+      // the national-average population remain unchanged.
+      const identities = [...new Set(base.map((quote) => quote.id))];
+      for (let offset = 0; offset < identities.length; offset += 12) {
+        other.push(...await marketQuotes(b, series, history, product, identities.slice(offset, offset + 12)));
+      }
+    }
   }
   const rows = compareQuotes(
     base,
