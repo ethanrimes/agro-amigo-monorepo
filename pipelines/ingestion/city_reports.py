@@ -10,6 +10,8 @@ from hashlib import sha256
 
 import pdfplumber
 
+VERSION = "city-v5"
+
 
 class CityZipPartialReview(ValueError):
     """Valid members were published; identified members still need review."""
@@ -164,7 +166,11 @@ def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False
                                 group + " > " if group else ""
                             ) + name.capitalize()
                     continue
-                qty = re.fullmatch(r"(\d+(?:[.,]\d+)?)\s+(.+)", units)
+                # Some native PDFs omit the space between quantity and unit.
+                # Require a letter at the unit boundary so a numeric quantity
+                # cannot backtrack into a bogus suffix (e.g. bare "12.5").
+                # Compound units remain literal and receive no base conversion.
+                qty = re.fullmatch(r"(\d+(?:[.,]\d+)?)\s*([A-Za-zÀ-ÿ].*)", units)
                 if not name or not qty:
                     raise ValueError(
                         f"Unknown city quantity on page {page_no}: {units}"
@@ -283,7 +289,7 @@ def _member_step(member, day):
     return "city-member:" + sha256(json.dumps(identity).encode()).hexdigest()
 
 
-def publish_city_zip(db, data, zip_id, url, day, *, processor_version="city-v4"):
+def publish_city_zip(db, data, zip_id, url, day, *, processor_version=VERSION):
     from .pdf_sources import extract_pages
     from .resumable_inputs import WorkDeferred
     from .worker import RUN_DEADLINE, archive
