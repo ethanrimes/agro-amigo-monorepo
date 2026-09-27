@@ -4,7 +4,9 @@ test("Unified catalog preserves dated source identities and exact detail prices"
 }) => {
   test.setTimeout(90000);
   expect((await request.get("/api/health")).ok()).toBeTruthy();
-  const catalog = await (await request.get("/api/catalog")).json();
+  const response = await request.get("/api/catalog");
+  expect(response.ok(), `Catalog HTTP ${response.status()}: ${await response.text()}`).toBeTruthy();
+  const catalog = await response.json();
   expect(catalog.products.length).toBeGreaterThan(100);
   expect(new Set(catalog.products.map((p: any) => p.identity)).size).toBe(catalog.products.length);
   expect(new Set(catalog.products.map((p: any) => p.saved_key)).size).toBe(catalog.products.length);
