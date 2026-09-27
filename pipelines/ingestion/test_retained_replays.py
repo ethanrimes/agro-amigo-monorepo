@@ -222,15 +222,22 @@ class RetainedReplayPostgresTests(unittest.TestCase):
             "SELECT document_id,source_locator,parser_version,parsed_at FROM official_price_quote ORDER BY 1,2,3"
         ).fetchall()
         self.db.execute("DELETE FROM pg_temp.ingestion_checkpoint")
+        # Model an interrupted publication: a retained source has a footprint
+        # but is missing one literal quote. The deletion is TEMP fixture only.
+        missing = before[0][:3]
+        self.db.execute(
+            "DELETE FROM pg_temp.official_price_quote WHERE document_id=%s AND source_locator=%s AND parser_version=%s",
+            missing,
+        )
         result = replay.drain(self.db)
         self.assertEqual((result["selected"], result["completed"]), (2, 2))
         self.assertEqual(result["errors"], [])
-        self.assertEqual(
-            self.db.execute(
-                "SELECT document_id,source_locator,parser_version,parsed_at FROM official_price_quote ORDER BY 1,2,3"
-            ).fetchall(),
-            before,
-        )
+        after = self.db.execute(
+            "SELECT document_id,source_locator,parser_version,parsed_at FROM official_price_quote ORDER BY 1,2,3"
+        ).fetchall()
+        self.assertEqual(len(after), len(before))
+        self.assertEqual(after[0][:3], missing)
+        self.assertEqual(after[1:], before[1:])
 
     def test_failure_rolls_back_partial_work_and_version_upgrade_retries_review(self):
         bad = self.add_document(b"malformed source", "2026-09-09")
