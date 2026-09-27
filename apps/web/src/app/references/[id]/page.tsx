@@ -91,10 +91,12 @@ export default function Reference({
               {dateLabel(r.details.period_end)}
             </p>
           )}
-          {r.min_price !== null && (
+          {r.min_price !== null && r.max_price !== null && (
             <p>
               Rango: {officialMoney(r.min_price, r.currency)} –{" "}
-              {officialMoney(r.max_price!, r.currency)} · Punto medio calculado
+              {officialMoney(r.max_price, r.currency)}
+              {r.details.price_statistic === "range_midpoint" && " · Punto medio calculado"}
+              {r.details.price_statistic === "published_mean" && " · Precio medio publicado"}
             </p>
           )}
         </div>
