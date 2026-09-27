@@ -1,0 +1,18 @@
+[
+  {
+    "name": "DANE source help retained history and image attribution",
+    "route": "/sources",
+    "ready": "document.querySelector('h1')?.textContent==='Conoce de dónde viene.'",
+    "steps": [
+      {
+        "action": "[...document.querySelectorAll('.faq details')].find(x=>x.querySelector('summary').textContent.includes('algunos precios')).open=true;",
+        "checks": [
+          {"id":"EVI-01","condition":"(()=>{const t=[...document.querySelectorAll('.faq details')].find(x=>x.querySelector('summary').textContent.includes('algunos precios')).innerText;return t.includes('La historia incorporada y sus documentos se mantienen')&&t.includes('todo el histórico disponible')&&t.includes('La carga de archivos históricos continúa')})()","expected":"Visible help distinguishes retained full history, recent default view and ongoing backfill","observed":"[...document.querySelectorAll('.faq details')].find(x=>x.open)?.innerText"},
+          {"id":"EVI-01","condition":"(()=>{const t=[...document.querySelectorAll('.faq details')].find(x=>x.querySelector('summary').textContent.includes('algunos precios')).innerText;return t.includes('diarios, semanales y mensuales')&&t.includes('leche en finca')&&t.includes('arroz en molino')&&t.includes('período y unidad')})()","expected":"Help names actual DANE source periods and price bases instead of monthly-only claim"},
+          {"id":"SUP-01","condition":"(()=>{const c=[...document.querySelectorAll('.source-card')].find(x=>x.querySelector('h2').textContent==='DANE · Abastecimiento');return c.querySelector('.source-status').textContent==='Integrado'&&c.innerText.includes('producto, mercado y mes')&&c.innerText.includes('no equivale a inventario disponible')})()","expected":"Source help accurately describes structured arrivals and preserves no-stock caveat"},
+          {"id":"NAV-08","condition":"(()=>{const t=document.querySelector('p.privacy-note');return t.innerText.includes('Imágenes ilustrativas')&&t.innerText.includes('autor, el origen y la licencia')&&t.querySelector('a[href=\"/credits\"]')!==null&&!t.innerText.includes('Unsplash')})()","expected":"Photo attribution points to each actual image's credits instead of naming one incorrect provider","observed":"document.querySelector('p.privacy-note').innerText"}
+        ]
+      }
+    ]
+  }
+]

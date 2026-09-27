@@ -1,0 +1,801 @@
+[
+  {
+    "name": "DANE extended auxiliary summary",
+    "route": "/data-references?kind=summary",
+    "ready": "document.querySelectorAll('.input-grid article').length===60&&document.querySelector('select')?.value===\"summary\"",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AUX-01",
+            "condition": "document.querySelector('.results-label').textContent.includes('1811')&&document.querySelectorAll('.input-grid article').length===60",
+            "expected": "summary: published count 1811 and first page 60 rows",
+            "observed": "({heading:document.querySelector('h1').innerText,total:document.querySelector('.results-label').innerText})"
+          },
+          {
+            "id": "AUX-02",
+            "condition": "(()=>{const wanted={\"document_id\": \"05d573b725771fc451ca6914167b9c136fa7ab1f9410621defe0fa06c025c138\", \"source_locator\": \"Cuadro_resumen!row 92\", \"observed_on\": \"2026-08-31\", \"name\": \"0-5-0, 50 kilogramos\", \"category\": \"Fertilizantes, enmiendas y acondicionadores de suelo\", \"details\": {\"Grupo\": \"Fertilizantes, enmiendas y acondicionadores de suelo\", \"Insumo o factor\": \"Insumos agrícolas\", \"Total municipios\": 1, \"Código CPC 2.1 A.C.\": 3462901, \"Municipios precio bajó\": null, \"Máximo precio promedio\": 98500, \"Mínimo precio promedio\": 98500, \"Municipios precio subió\": null, \"Producto y presentación\": \"0-5-0, 50 kilogramos\", \"Municipios precio estable - sin información\": 1}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native summary source row Cuadro_resumen!row 92, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-07",
+            "condition": "[...document.querySelectorAll('.input-grid article')][0].querySelector('a.evidence-link').pathname==='/evidence/05d573b725771fc451ca6914167b9c136fa7ab1f9410621defe0fa06c025c138'",
+            "expected": "Source link keeps independently downloaded original SHA"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE extended auxiliary electricity",
+    "route": "/data-references?kind=electricity",
+    "ready": "document.querySelectorAll('.input-grid article').length===60&&document.querySelector('select')?.value===\"electricity\"",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AUX-01",
+            "condition": "document.querySelector('.results-label').textContent.includes('126')&&document.querySelectorAll('.input-grid article').length===60",
+            "expected": "electricity: published count 126 and first page 60 rows",
+            "observed": "({heading:document.querySelector('h1').innerText,total:document.querySelector('.results-label').innerText})"
+          },
+          {
+            "id": "AUX-03",
+            "condition": "(()=>{const wanted={\"document_id\": \"6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129\", \"source_locator\": \"3.5!row 2716\", \"observed_on\": \"2026-06-30\", \"name\": \"Afinia Grupo-epm\", \"category\": \"Energía eléctrica\", \"details\": {\"Mes\": \"Junio\", \"Año\": 2026, \"Estrato\": 1, \"Subsidio\": -0.5952237758733023, \"Tarifa mes\": 503.96, \"Contribución\": null, \"Proveedor de servicios\": \"Afinia Grupo-epm\"}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native electricity source row 3.5!row 2716, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-03",
+            "condition": "(()=>{const wanted={\"document_id\": \"6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129\", \"source_locator\": \"3.5!row 2717\", \"observed_on\": \"2026-06-30\", \"name\": \"Afinia Grupo-epm\", \"category\": \"Energía eléctrica\", \"details\": {\"Mes\": \"Junio\", \"Año\": 2026, \"Estrato\": 2, \"Subsidio\": -0.4940359845637248, \"Tarifa mes\": 629.95, \"Contribución\": null, \"Proveedor de servicios\": \"Afinia Grupo-epm\"}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native electricity source row 3.5!row 2717, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-03",
+            "condition": "(()=>{const wanted={\"document_id\": \"6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129\", \"source_locator\": \"3.5!row 2718\", \"observed_on\": \"2026-06-30\", \"name\": \"Afinia Grupo-epm\", \"category\": \"Energía eléctrica\", \"details\": {\"Mes\": \"Junio\", \"Año\": 2026, \"Estrato\": 3, \"Subsidio\": -0.1500025058888388, \"Tarifa mes\": 827.33, \"Contribución\": null, \"Proveedor de servicios\": \"Afinia Grupo-epm\"}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native electricity source row 3.5!row 2718, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-03",
+            "condition": "(()=>{const wanted={\"document_id\": \"6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129\", \"source_locator\": \"3.5!row 2719\", \"observed_on\": \"2026-06-30\", \"name\": \"Afinia Grupo-epm\", \"category\": \"Energía eléctrica\", \"details\": {\"Mes\": \"Junio\", \"Año\": 2026, \"Estrato\": 4, \"Subsidio\": 0, \"Tarifa mes\": 973.33, \"Contribución\": 0, \"Proveedor de servicios\": \"Afinia Grupo-epm\"}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native electricity source row 3.5!row 2719, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-03",
+            "condition": "(()=>{const wanted={\"document_id\": \"6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129\", \"source_locator\": \"3.5!row 2720\", \"observed_on\": \"2026-06-30\", \"name\": \"Afinia Grupo-epm\", \"category\": \"Energía eléctrica\", \"details\": {\"Mes\": \"Junio\", \"Año\": 2026, \"Estrato\": 5, \"Subsidio\": null, \"Tarifa mes\": 1167.99, \"Contribución\": 0.19999498822232242, \"Proveedor de servicios\": \"Afinia Grupo-epm\"}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native electricity source row 3.5!row 2720, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-03",
+            "condition": "(()=>{const wanted={\"document_id\": \"6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129\", \"source_locator\": \"3.5!row 2721\", \"observed_on\": \"2026-06-30\", \"name\": \"Afinia Grupo-epm\", \"category\": \"Energía eléctrica\", \"details\": {\"Mes\": \"Junio\", \"Año\": 2026, \"Estrato\": 6, \"Subsidio\": null, \"Tarifa mes\": 1167.99, \"Contribución\": 0.19999498822232242, \"Proveedor de servicios\": \"Afinia Grupo-epm\"}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native electricity source row 3.5!row 2721, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-07",
+            "condition": "[...document.querySelectorAll('.input-grid article')][0].querySelector('a.evidence-link').pathname==='/evidence/6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129'",
+            "expected": "Source link keeps independently downloaded original SHA"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE extended auxiliary wholesale",
+    "route": "/data-references?kind=wholesale",
+    "ready": "document.querySelectorAll('.input-grid article').length===60&&document.querySelector('select')?.value===\"wholesale\"",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AUX-01",
+            "condition": "document.querySelector('.results-label').textContent.includes('463')&&document.querySelectorAll('.input-grid article').length===60",
+            "expected": "wholesale: published count 463 and first page 60 rows",
+            "observed": "({heading:document.querySelector('h1').innerText,total:document.querySelector('.results-label').innerText})"
+          },
+          {
+            "id": "AUX-04",
+            "condition": "(()=>{const wanted={\"document_id\": \"f5d71069f7e57759ed675ff9a003c37854eca7f13e17d68f7f39845ae36b3d02\", \"source_locator\": \"1!row 64,col 2; monthly-annex-v2\", \"observed_on\": \"2026-08-31\", \"name\": \"Aceite vegetal mezcla**\", \"category\": \"Productos mayoristas\", \"details\": {\"Ciudad\": \"Barranquilla\", \"Unidad\": \"litre\", \"Producto\": \"Aceite vegetal mezcla**\", \"Precio (COP)\": 10189, \"Variación (%)\": 0.45}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native wholesale source row 1!row 64,col 2; monthly-annex-v2, including zero vs absent fields",
+            "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
+          },
+          {
+            "id": "AUX-07",
+            "condition": "[...document.querySelectorAll('.input-grid article')][0].querySelector('a.evidence-link').pathname==='/evidence/f5d71069f7e57759ed675ff9a003c37854eca7f13e17d68f7f39845ae36b3d02'",
+            "expected": "Source link keeps independently downloaded original SHA"
+          },
+          {
+            "id": "AUX-04",
+            "condition": "document.querySelector('.input-grid article').innerText.includes('litre')&&document.querySelector('.input-grid article').innerText.includes('10.189')",
+            "expected": "Oil is COP/litre with printed 10189, not kg and not its0.45% variation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE extended auxiliary pagination and older source month",
+    "route": "/data-references?kind=summary",
+    "ready": "document.querySelectorAll('.input-grid article').length===60&&document.querySelector('select')?.value==='summary'",
+    "steps": [
+      {
+        "checks": [],
+        "action": "window.__qaFirstRefs=[...document.querySelectorAll('.input-grid article a.evidence-link')].map(x=>x.href);[...document.querySelectorAll('.load-more button')].find(x=>x.textContent.includes('Siguiente')).click();",
+        "ready": "!!document.querySelector('.input-grid article')&&!window.__qaFirstRefs.includes(document.querySelector('.input-grid article a.evidence-link').href)"
+      },
+      {
+        "checks": [
+          {
+            "id": "AUX-06",
+            "condition": "document.querySelectorAll('.input-grid article').length===60&&[...document.querySelectorAll('.input-grid article a.evidence-link')].every(x=>!window.__qaFirstRefs.includes(x.href))",
+            "expected": "Second60-row summary page has no overlapping source identities"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "AUX-05",
+            "condition": "document.querySelectorAll('select')[1].value==='2025-12-31'&&document.querySelector('.applied-filters').textContent.includes('2025')",
+            "expected": "Older December2025 stays explicit after page reset"
+          },
+          {
+            "id": "AUX-06",
+            "condition": "document.querySelector('.load-more button').disabled",
+            "expected": "Changing month resets page to first"
+          }
+        ],
+        "action": "const s=document.querySelectorAll('select')[1];s.value='2025-12-31';s.dispatchEvent(new Event('change',{bubbles:true}));",
+        "ready": "document.querySelectorAll('select')[1]?.value==='2025-12-31'&&!!document.querySelector('.input-grid article')&&document.querySelector('.load-more button')?.disabled"
+      },
+      {
+        "checks": [
+          {
+            "id": "AUX-01",
+            "condition": "document.querySelector('h1').textContent==='Energía eléctrica'&&document.querySelectorAll('select')[1].value==='2026-06-30'&&document.querySelectorAll('select')[2].value===''&&document.querySelector('.load-more button').disabled",
+            "expected": "Switch kind resets month/category/page to electricity without old summary rows"
+          }
+        ],
+        "action": "{const e=document.querySelector(\".price-filter-grid select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"electricity\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelector('h1').textContent==='Energía eléctrica'&&!!document.querySelector('.input-grid article dl')&&document.querySelector('.input-grid article').textContent.includes('Tarifa mes')"
+      }
+    ]
+  },
+  {
+    "name": "DANE extended city pagination zero rounds and exact source links",
+    "route": "/regional",
+    "ready": "document.querySelectorAll('.input-card').length===36",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CTY-05",
+            "condition": "document.querySelector('.results-label').textContent.startsWith('53 rangos')&&document.querySelectorAll('.input-card').length===36",
+            "expected": "Barranquillita53 retained ranges, first36 visible"
+          }
+        ],
+        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Barranquilla, Barranquillita\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelector('.results-label')?.textContent.startsWith('53 rangos')"
+      },
+      {
+        "checks": [
+          {
+            "id": "CTY-05",
+            "condition": "document.querySelectorAll('.input-card').length===53&&!document.querySelector('.load-more button')",
+            "expected": "Load beyond36 reaches all53 ranges without leftover button"
+          },
+          {
+            "id": "CTY-04",
+            "condition": "[...document.querySelectorAll('.input-card')].every(x=>x.innerText.includes('Ronda 1')&&!x.innerText.includes('Ronda 2')&&x.querySelector('.input-price').innerText!=='$ 0 – $ 0')",
+            "expected": "Native Sept25 original has only priced round1; zero round2 not sale quotes"
+          },
+          {
+            "id": "CTY-08",
+            "condition": "[...document.querySelectorAll('.input-card a.evidence-link')].every(a=>a.pathname==='/evidence/6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30'&&['1','2'].includes(new URL(a.href).searchParams.get('page')))",
+            "expected": "All53 source links retain correct2-page member, rather than national ZIP as PDF"
+          }
+        ],
+        "action": "[...document.querySelectorAll('button')].find(x=>x.textContent.includes('Ver más rangos')).click();",
+        "ready": "document.querySelectorAll('.input-card').length===53"
+      }
+    ]
+  },
+  {
+    "name": "DANE extended city positive rounds coexist",
+    "route": "/regional?q=Acelga",
+    "ready": "!!document.querySelector('.input-card')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "CTY-04",
+            "condition": "(()=>{const expected=[{\"document_id\": \"197c11ba0726970df6140993ec4ce3b2266891f2e9d079b5e95bc3229cfb6345\", \"source_locator\": \"PDF page 3,table 1,row 17,round 1\", \"observed_on\": \"2026-09-26\", \"product_id\": \"acelga\", \"product_name\": \"Acelga\", \"market_name\": \"Bogotá, D.C., Corabastos\", \"category\": \"Verduras y hortalizas > Hortalizas\", \"presentation\": \"Atado/manojo\", \"quantity\": 15, \"source_unit\": \"Kilogramo\", \"round\": 1, \"round_label\": \"Ronda 1 * 03:00 - 04:00\", \"min_price\": 7000, \"max_price\": 8000, \"unit\": \"kg\", \"min_unit_price\": 466.6666666666667, \"max_unit_price\": 533.3333333333334, \"source_page\": 3, \"market_id\": \"sipsa-bogota-d-c-corabastos\", \"category_path\": [\"Verduras y hortalizas\", \"Hortalizas\"], \"rn\": 1}, {\"document_id\": \"197c11ba0726970df6140993ec4ce3b2266891f2e9d079b5e95bc3229cfb6345\", \"source_locator\": \"PDF page 3,table 1,row 17,round 2\", \"observed_on\": \"2026-09-26\", \"product_id\": \"acelga\", \"product_name\": \"Acelga\", \"market_name\": \"Bogotá, D.C., Corabastos\", \"category\": \"Verduras y hortalizas > Hortalizas\", \"presentation\": \"Atado/manojo\", \"quantity\": 15, \"source_unit\": \"Kilogramo\", \"round\": 2, \"round_label\": \"Ronda 2 04:00 - 05:00\", \"min_price\": 6000, \"max_price\": 7000, \"unit\": \"kg\", \"min_unit_price\": 400, \"max_unit_price\": 466.6666666666667, \"source_page\": 3, \"market_id\": \"sipsa-bogota-d-c-corabastos\", \"category_path\": [\"Verduras y hortalizas\", \"Hortalizas\"], \"rn\": 1}];const cards=[...document.querySelectorAll('.input-card')];return cards.length===expected.length&&expected.every(r=>cards.some(a=>a.innerText.includes(r.round_label)&&a.innerText.includes(new Intl.NumberFormat('es-CO').format(r.min_price))&&a.innerText.includes(new Intl.NumberFormat('es-CO').format(r.max_price))))})()",
+            "expected": "Bogotá Sept26 Acelga positive rounds retain separate min/max and printed time labels",
+            "observed": "[...document.querySelectorAll('.input-card')].map(x=>x.innerText)"
+          }
+        ],
+        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Bogot\\u00e1, D.C., Corabastos\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "[...document.querySelectorAll('.input-card')].every(x=>x.innerText.includes('Bogotá, D.C., Corabastos'))"
+      }
+    ]
+  },
+  {
+    "name": "DANE extended supply every retained 2019 and 2020 month",
+    "route": "/market/sipsa-armenia-mercar",
+    "ready": "!!document.querySelector('[role=tab]')",
+    "steps": [
+      {
+        "checks": [],
+        "action": "[...document.querySelectorAll('[role=tab]')].find(x=>x.textContent==='Abastecimiento').click();",
+        "ready": "!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-01-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-01-01')",
+            "expected": "2019-01-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(8950631/1000))",
+            "expected": "2019-01-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-01-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-01-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-02-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-02-01')",
+            "expected": "2019-02-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9260584/1000))",
+            "expected": "2019-02-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-02-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-02-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-03-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-03-01')",
+            "expected": "2019-03-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9362956/1000))",
+            "expected": "2019-03-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-03-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-03-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-04-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-04-01')",
+            "expected": "2019-04-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9633139.2/1000))",
+            "expected": "2019-04-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-04-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-04-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-05-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-05-01')",
+            "expected": "2019-05-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(11360627/1000))",
+            "expected": "2019-05-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-05-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-05-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-06-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-06-01')",
+            "expected": "2019-06-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(8852608/1000))",
+            "expected": "2019-06-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-06-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-06-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-07-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-07-01')",
+            "expected": "2019-07-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9785287.5/1000))",
+            "expected": "2019-07-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-07-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-07-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-08-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-08-01')",
+            "expected": "2019-08-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10335092/1000))",
+            "expected": "2019-08-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-08-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-08-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-09-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-09-01')",
+            "expected": "2019-09-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10448897/1000))",
+            "expected": "2019-09-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-09-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-09-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-10-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-10-01')",
+            "expected": "2019-10-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9953860/1000))",
+            "expected": "2019-10-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-10-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-10-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-11-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-11-01')",
+            "expected": "2019-11-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9515017/1000))",
+            "expected": "2019-11-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-11-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-11-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2019-12-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2019-12-01')",
+            "expected": "2019-12-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10218974/1000))",
+            "expected": "2019-12-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2019-12-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2019-12-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-01-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-01-01')",
+            "expected": "2020-01-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10508613/1000))",
+            "expected": "2020-01-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-01-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-01-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-02-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-02-01')",
+            "expected": "2020-02-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9758042/1000))",
+            "expected": "2020-02-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-02-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-02-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-03-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-03-01')",
+            "expected": "2020-03-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10325882.92/1000))",
+            "expected": "2020-03-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-03-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-03-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-04-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-04-01')",
+            "expected": "2020-04-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9992373.72/1000))",
+            "expected": "2020-04-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-04-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-04-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-05-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-05-01')",
+            "expected": "2020-05-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10350057.86/1000))",
+            "expected": "2020-05-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-05-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-05-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-06-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-06-01')",
+            "expected": "2020-06-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10348535/1000))",
+            "expected": "2020-06-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-06-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-06-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-07-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-07-01')",
+            "expected": "2020-07-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(11738567/1000))",
+            "expected": "2020-07-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-07-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-07-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-08-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-08-01')",
+            "expected": "2020-08-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10774156/1000))",
+            "expected": "2020-08-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-08-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-08-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-09-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-09-01')",
+            "expected": "2020-09-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10577915.24/1000))",
+            "expected": "2020-09-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-09-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-09-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-10-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-10-01')",
+            "expected": "2020-10-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10054309/1000))",
+            "expected": "2020-10-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-10-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-10-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-11-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-11-01')",
+            "expected": "2020-11-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9333093/1000))",
+            "expected": "2020-11-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-11-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-11-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      },
+      {
+        "checks": [
+          {
+            "id": "SUP-03",
+            "condition": "document.querySelector('.supply-filter-grid select').value==='2020-12-01'&&[...document.querySelectorAll('.supply-list a.evidence-link')].every(a=>new URL(a.href).searchParams.get('month')==='2020-12-01')",
+            "expected": "2020-12-01: selected month and every original link remain exact"
+          },
+          {
+            "id": "SUP-07",
+            "condition": "document.querySelectorAll('.supply-bars button[aria-pressed=true]').length===1&&document.querySelector('.supply-summary h2').textContent.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(10876927/1000))",
+            "expected": "2020-12-01: graph selection and visible tonne total match archived published snapshot",
+            "observed": "({selected:document.querySelector('.supply-filter-grid select').value,total:document.querySelector('.supply-summary h2').innerText,pressed:document.querySelector('.supply-bars [aria-pressed=true]').getAttribute('aria-label')})"
+          }
+        ],
+        "action": "{const label=new Date('2020-12-01T12:00:00Z').toLocaleDateString('es-CO',{month:'long',year:'numeric',timeZone:'America/Bogota'});[...document.querySelectorAll('.supply-bars button')].find(x=>x.getAttribute('aria-label').startsWith(label+':')).click();}",
+        "ready": "document.querySelector('.supply-filter-grid select')?.value==='2020-12-01'&&!document.querySelector('.supply-filter-grid select').disabled&&!!document.querySelector('.supply-summary')"
+      }
+    ]
+  },
+  {
+    "name": "DANE extended daily filters and arrivals original",
+    "route": "/daily",
+    "ready": "document.querySelectorAll('.input-card').length===431",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "DLY-05",
+            "condition": "(()=>{const a=[...document.querySelectorAll('a.evidence-link')].find(x=>x.textContent.includes('Ver abastecimiento'));const u=new URL(a.href);return u.pathname==='/evidence/daily-2026-09-25-bulletin'&&u.searchParams.get('page')==='4'&&document.body.innerText.includes('no inventario disponible')})()",
+            "expected": "Daily arrivals link uses separate Sept25 PDF/page4 and explicitly excludes inventory claim"
+          },
+          {
+            "id": "DLY-05",
+            "condition": "[...document.querySelectorAll('.input-card a.evidence-link')].every(a=>a.pathname==='/evidence/5fc9d3a1d7814c9393b8e8d719b7f338a528586b019d4cdb7374f60922c84a70')",
+            "expected": "All431daily prices link exact retained native XLSX"
+          }
+        ]
+      },
+      {
+        "checks": [
+          {
+            "id": "DLY-04",
+            "condition": "[...document.querySelectorAll('.input-card h2')].every(x=>/tomate/i.test(x.textContent))&&document.querySelector('[aria-label=\"Buscar producto en el boletín\"]').value==='Tomate'",
+            "expected": "Product filter remains visible and all rendered names match"
+          }
+        ],
+        "action": "{const e=document.querySelector(\"[aria-label=\\\"Buscar producto en el bolet\\u00edn\\\"]\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Tomate\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('.input-card').length>0&&document.querySelectorAll('.input-card').length<431"
+      },
+      {
+        "checks": [
+          {
+            "id": "DLY-04",
+            "condition": "[...document.querySelectorAll('.input-card')].every(x=>x.querySelector('.eyebrow').textContent==='Bogotá, Corabastos')&&document.querySelector('select').value==='Bogotá, Corabastos'",
+            "expected": "Plaza filter applies to every displayed daily price"
+          }
+        ],
+        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Bogot\\u00e1, Corabastos\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('.input-card').length>0&&[...document.querySelectorAll('.input-card')].every(x=>x.querySelector('.eyebrow').textContent==='Bogotá, Corabastos')"
+      }
+    ]
+  },
+  {
+    "name": "DANE extended original summary exact sheet and row",
+    "route": "/evidence/05d573b725771fc451ca6914167b9c136fa7ab1f9410621defe0fa06c025c138?sheet=Cuadro_resumen&row=92",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AUX-07",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"Cuadro_resumen\"&&document.querySelector('.workbook-scroll tbody tr th').textContent==='92'",
+            "expected": "Actual source viewer starts at exact independently audited sheet/row",
+            "observed": "({range:document.querySelector('.workbook-range').innerText,row:document.querySelector('.workbook-scroll tbody tr').innerText})"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('.workbook-scroll tbody tr').innerText.includes(\"0-5-0, 50 kilogramos\")&&document.querySelector('.workbook-scroll tbody tr').innerText.includes(\"98.500\")",
+            "expected": "Native original product/provider and monetary cells visible, not only API equality"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE extended original electricity exact sheet and row",
+    "route": "/evidence/6e9527973913df6418c91e6471eacd15f97d60d4becea3d574399dabb965e129?sheet=3.5&row=2716",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AUX-07",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"3.5\"&&document.querySelector('.workbook-scroll tbody tr th').textContent==='2716'",
+            "expected": "Actual source viewer starts at exact independently audited sheet/row",
+            "observed": "({range:document.querySelector('.workbook-range').innerText,row:document.querySelector('.workbook-scroll tbody tr').innerText})"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('.workbook-scroll tbody tr').innerText.includes(\"Afinia Grupo-epm\")&&document.querySelector('.workbook-scroll tbody tr').innerText.includes(\"503,96\")",
+            "expected": "Native original provider and raw503.96 tariff display as503,96 without discarding stored precision"
+          },
+          {
+            "id": "EVI-07",
+            "condition": "document.querySelector('.workbook-scroll tbody tr').querySelectorAll('td')[5].textContent.replace(/\\s/g,'')==='-60%'",
+            "expected": "Original0% format of −0.5952237758733023 is −60%; raw source value retained separately"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE extended original wholesale exact sheet and row",
+    "route": "/evidence/f5d71069f7e57759ed675ff9a003c37854eca7f13e17d68f7f39845ae36b3d02?sheet=1&row=64",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "AUX-07",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"1\"&&document.querySelector('.workbook-scroll tbody tr th').textContent==='64'",
+            "expected": "Actual source viewer starts at exact independently audited sheet/row",
+            "observed": "({range:document.querySelector('.workbook-range').innerText,row:document.querySelector('.workbook-scroll tbody tr').innerText})"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('.workbook-scroll tbody tr').innerText.includes(\"Aceite vegetal mezcla**\")&&document.querySelector('.workbook-scroll tbody tr').innerText.includes(\"10.189\")",
+            "expected": "Native original product/provider and monetary cells visible, not only API equality"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE extended workbook paging last row and horizontal zoom",
+    "route": "/evidence/05d573b725771fc451ca6914167b9c136fa7ab1f9410621defe0fa06c025c138?sheet=Cuadro_resumen&row=92",
+    "ready": "!!document.querySelector('.workbook-scroll tbody tr')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-08",
+            "condition": "document.querySelector('.workbook-scroll tbody tr th').textContent==='192'",
+            "expected": "Next page advances exactly100native source rows"
+          }
+        ],
+        "action": "[...document.querySelectorAll('.workbook-paging button')].find(x=>x.textContent.includes('Siguientes')).click();",
+        "ready": "document.querySelector('.workbook-scroll tbody tr th')?.textContent==='192'"
+      },
+      {
+        "checks": [
+          {
+            "id": "EVI-08",
+            "condition": "document.querySelector('.workbook-scroll tbody tr th').textContent===window.__qaLastRow&&document.querySelectorAll('.workbook-scroll tbody tr').length===1&&[...document.querySelectorAll('.workbook-paging button')].find(x=>x.textContent.includes('Siguientes')).disabled",
+            "expected": "Beyond-end request clamps to real last row; next page disabled"
+          }
+        ],
+        "action": "const e=document.querySelector('[aria-label=\"Ir a la fila\"]');window.__qaLastRow=e.max;Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,String(Number(e.max)+500));e.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));",
+        "ready": "document.querySelector('.workbook-scroll tbody tr th')?.textContent===window.__qaLastRow"
+      },
+      {
+        "checks": [
+          {
+            "id": "EVI-09",
+            "condition": "document.querySelector('.workbook-scroll table').style.fontSize==='21px'&&document.querySelector('.workbook-scroll').scrollLeft>=0&&document.documentElement.scrollWidth<=innerWidth+2",
+            "expected": "150%zoom stays within horizontally scrollable workbook, no body overflow"
+          }
+        ],
+        "action": "const e=document.querySelectorAll('.workbook-toolbar select')[1];e.value='1.5';e.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.workbook-scroll').scrollLeft=100000;",
+        "ready": "document.querySelector('.workbook-scroll table').style.fontSize==='21px'"
+      }
+    ]
+  }
+]

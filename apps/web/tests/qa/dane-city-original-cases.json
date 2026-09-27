@@ -1,0 +1,461 @@
+[
+  {
+    "name": "DANE original PDF page1 banano-criollo 1kg",
+    "route": "/product/banano-criollo?region=Atl%C3%A1ntico&series=city&presentation=Kilogramo&units=1+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===1440",
+            "expected": "COP 1440 midpoint of manually read original range 1440–1440, page 1"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Kilogramo\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"1 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Frutas > Otras frutas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===1440)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page1 coco 1kg",
+    "route": "/product/coco?region=Atl%C3%A1ntico&series=city&presentation=Kilogramo&units=1+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===3450",
+            "expected": "COP 3450 midpoint of manually read original range 3400–3500, page 1"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Kilogramo\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"1 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Frutas > Otras frutas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"1 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===3450)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page1 guayaba-comun 25kg",
+    "route": "/product/guayaba-comun?region=Atl%C3%A1ntico&series=city&presentation=Canastilla&units=25+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===74500",
+            "expected": "COP 74500 midpoint of manually read original range 74000–75000, page 1"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Canastilla\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"25 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Frutas > Otras frutas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"25 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===74500)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page1 papa-criolla-limpia 50kg",
+    "route": "/product/papa-criolla-limpia?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=50+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===311000",
+            "expected": "COP 311000 midpoint of manually read original range 310000–312000, page 1"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Bulto\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"50 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Tuberculos, raices y platanos > Papa\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"50 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===311000)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page1 habichuela 20kg",
+    "route": "/product/habichuela?region=Atl%C3%A1ntico&series=city&presentation=Saco&units=20+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===117500",
+            "expected": "COP 117500 midpoint of manually read original range 115000–120000, page 1"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Saco\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"20 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Verduras y hortalizas > Leguminosas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"20 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===117500)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page2 pimenton 12kg",
+    "route": "/product/pimenton?region=Atl%C3%A1ntico&series=city&presentation=Caja+de+cart%C3%B3n&units=12+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===45500",
+            "expected": "COP 45500 midpoint of manually read original range 45000–46000, page 2"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Caja de cartón\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"12 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Verduras y hortalizas > Otras hortalizas y verduras\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"12 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===45500)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page2 zanahoria 60kg",
+    "route": "/product/zanahoria?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=60+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===88000",
+            "expected": "COP 88000 midpoint of manually read original range 86000–90000, page 2"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Bulto\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"60 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Verduras y hortalizas > Zanahorias\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"60 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===88000)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page2 cebolla-cabezona-roja-peruana 46kg",
+    "route": "/product/cebolla-cabezona-roja-peruana?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=46+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===119000",
+            "expected": "COP 119000 midpoint of manually read original range 118000–120000, page 2"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Bulto\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"46 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Verduras y hortalizas > Cebollas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"46 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===119000)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE original PDF page2 repollo-blanco 70kg",
+    "route": "/product/repollo-blanco?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=70+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all",
+    "ready": "!!document.querySelector(\".price-chart\") && !document.querySelector(\"[role=alert]\")",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "PRD-01",
+            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===124500",
+            "expected": "COP 124500 midpoint of manually read original range 123000–126000, page 2"
+          },
+          {
+            "id": "PRD-02",
+            "condition": "(document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"Bulto\") && (document.querySelector(\".product-price-header\")?.innerText||\"\").includes(\"70 Kilogramo\")",
+            "expected": "Exact original presentation and quantity"
+          },
+          {
+            "id": "PRD-05",
+            "condition": "document.querySelector(\".detail-intro .eyebrow\")?.innerText===\"Verduras y hortalizas > Hortalizas\"",
+            "expected": "Full current selected source classification"
+          },
+          {
+            "id": "PRD-04",
+            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Barranquilla, Barranquillita\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"70 Kilogramo\")",
+            "expected": "Market and units always visible"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
+            "expected": "Exact archived Sep25 member PDF reachable"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector(\".chart-data\").open=true;",
+        "checks": [
+          {
+            "id": "PRD-08",
+            "condition": "(()=>{const v=Array.from(document.querySelectorAll(\".chart-data tbody tr\"),r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\")));return v.length>0&&v.every((p,i)=>i===0||v[i-1]>=p)})()",
+            "expected": "History table is descending by price"
+          },
+          {
+            "id": "PRD-08",
+            "condition": "Array.from(document.querySelectorAll(\".chart-data tbody tr\")).some(r=>r.cells[0].innerText===new Date(\"2026-09-25T12:00:00Z\").toLocaleDateString(\"es-CO\",{day:\"numeric\",month:\"long\",year:\"numeric\",timeZone:\"America/Bogota\"}) && Number(r.cells[1].innerText.replace(/[^0-9]/g,\"\"))===124500)",
+            "expected": "Exact source-date package midpoint present in history"
+          }
+        ]
+      }
+    ]
+  }
+]
