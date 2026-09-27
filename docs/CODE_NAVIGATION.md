@@ -24,6 +24,12 @@ flowchart LR
 
 The worker archives originals before parsing. A changed file at the same URL receives a new content hash. Existing observations retain their original document identifiers. OCR is a fallback for unreadable text or image tables and preserves its rendered input and independent readings. `pdf_sources.py` owns shared verified-page handling; `city_reports.py` reconstructs the entire city document to retain date, market, classification and page identity when a continuation table requires OCR. `test_city_ocr_fallback.py` covers real PDF objects with native headings, image-only prices and logos.
 
+Milk PDFs have two separate paths: `special_prices.py` retains municipal table
+observations, while `milk_macroregions.py` reads printed regional chart labels
+and queues unreadable chart images for paired OCR. `milk_publication.py` owns
+their independent coverage, counts and publication status. Regional means stay
+in `official_price_quote`; they never become municipal price observations.
+
 ## Repository map
 
 | Area | Entry points | Responsibility |
