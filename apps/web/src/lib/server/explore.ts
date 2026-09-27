@@ -11,6 +11,7 @@ import type {
 import { inputs } from "./planning";
 import { PRICE_QUOTES, filteredProduct } from "./price-quotes";
 import type { MapFilters } from "../explore-types";
+import { supplyQueries } from "./supply-sql";
 export async function markets(): Promise<Market[]> {
   return (
     await database()
@@ -70,24 +71,15 @@ export async function supply(
 ): Promise<SupplyData> {
   const db = database();
   const window = historical ? "observed_on<=CURRENT_DATE" : WINDOW;
-  const history = (
-    await db.query(
-      `SELECT period_start AS date,sum(quantity_kg) quantity_kg FROM supply_observation WHERE ($1='' OR product_id=$1) AND ($2='' OR market_id=$2) AND ${window} GROUP BY period_start ORDER BY period_start`,
-      [product, market],
-    )
-  ).rows;
+  const queries = supplyQueries(product, market, window);
+  const history = (await db.query(queries.history)).rows;
   const latest_period = history.at(-1)?.date || null;
   const selected_period = history.some((h) => h.date === month)
     ? month
     : latest_period;
   if (!selected_period)
     return { rows: [], history, latest_period, selected_period };
-  const rows = (
-    await db.query(
-      `SELECT s.market_id,m.name market_name,m.region,s.food_id,s.food_name,s.product_id,s.period_start,s.observed_on,s.first_reported_on,s.quantity_kg,s.document_id,s.reporting_days FROM supply_observation s JOIN market m ON m.id=s.market_id WHERE ($1='' OR product_id=$1) AND ($2='' OR market_id=$2) AND period_start=$3 AND ${window} ORDER BY quantity_kg DESC`,
-      [product, market, selected_period],
-    )
-  ).rows;
+  const rows = (await db.query(queries.month(selected_period))).rows;
   return { rows, history, latest_period, selected_period };
 }
 export async function mapData(
