@@ -8,6 +8,7 @@ from psycopg.types.json import Jsonb
 
 VERSION = "seasonality-kg-v2"
 BATCH_SIZE = 250
+REFRESH_BUDGET_SECONDS = 300
 
 
 def derive(monthly, coffee):
@@ -134,8 +135,15 @@ def refresh(db, current_year, *, deadline=None):
     from .resumable_inputs import WorkDeferred
     from .worker import RUN_DEADLINE
 
-    if deadline is None:
-        deadline = RUN_DEADLINE.get()
+    # Derived history must leave time for fresh source ingestion. Honor both
+    # caller/run limits and this independent allowance; finish atomic batches
+    # before yielding so already published complete years remain durable.
+    limits = [time.monotonic() + REFRESH_BUDGET_SECONDS]
+    if deadline is not None:
+        limits.append(deadline)
+    if RUN_DEADLINE.get() is not None:
+        limits.append(RUN_DEADLINE.get())
+    deadline = min(limits)
 
     def check_budget():
         if deadline is not None and time.monotonic() >= deadline:

@@ -2,7 +2,11 @@
 
 import unittest
 from datetime import date
+from types import SimpleNamespace
+from unittest.mock import MagicMock, Mock, patch
 
+from . import seasonality, worker
+from .resumable_inputs import WorkDeferred
 from .seasonality import derive
 
 
@@ -45,6 +49,51 @@ class SeasonalEvidence(unittest.TestCase):
         self.assertEqual(valid[0][3], [1500] + [1000] * 11)
         self.assertEqual(valid[0][6][0], ["a", "b"])
         self.assertIn("2 published daily references", valid[0][5][0])
+
+
+class SeasonalBudget(unittest.TestCase):
+    def test_shorter_remaining_run_deadline_wins_over_explicit_caller_deadline(self):
+        token = worker.RUN_DEADLINE.set(5)
+        self.addCleanup(worker.RUN_DEADLINE.reset, token)
+        db = MagicMock()
+        with (
+            patch.object(seasonality, "time", SimpleNamespace(monotonic=Mock(side_effect=[0, 5]))),
+            self.assertRaises(WorkDeferred),
+        ):
+            seasonality.refresh(db, 2026, deadline=1000)
+        db.execute.assert_not_called()
+
+    def test_seasonal_deferral_is_reported_and_fresh_source_still_runs(self):
+        db = MagicMock()
+
+        def execute(sql, *args):
+            result = MagicMock()
+            result.fetchone.return_value = None if "summary ? 'auxiliary_finished_at'" in sql else (True,)
+            return result
+
+        db.execute.side_effect = execute
+        source = ("https://example.invalid/fresh-price.xlsx", "daily", None)
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker, "refresh_catalog", return_value=0),
+            patch.object(worker, "refresh_trm", return_value=1),
+            patch.object(worker, "refresh_seasons", side_effect=WorkDeferred("Seasonal complete-year batches deferred")),
+            patch("pipelines.ingestion.queue_plan.daily_candidates", return_value=[source]),
+            patch("pipelines.ingestion.queue_plan.backfill_candidates", return_value=[]),
+            patch.object(worker, "process_asset", return_value=12) as process,
+            patch("pipelines.ingestion.retained_replays.drain", return_value={}),
+            patch("pipelines.ingestion.ocr.drain", return_value={}),
+        ):
+            connect.return_value.__enter__.return_value = db
+            result = worker.run("backfill", limit=4, time_budget=2100)
+        process.assert_called_once_with(db, *source)
+        self.assertEqual(result["assets"], 1)
+        self.assertEqual(result["rows"], 12)
+        self.assertEqual(result["errors"], [])
+        self.assertEqual(result["deferred"], [{"source": "seasonality", "reason": "Seasonal complete-year batches deferred"}])
+        self.assertNotIn("auxiliary_finished_at", result)
+        statuses = [c.args[1][0] for c in db.execute.call_args_list if c.args[0].startswith("UPDATE ingestion_run SET status=%s")]
+        self.assertEqual(statuses, ["partial"])
 
 
 if __name__ == "__main__":
