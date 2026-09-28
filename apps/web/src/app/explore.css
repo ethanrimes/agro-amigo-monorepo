@@ -1664,6 +1664,8 @@
 .workbook-scroll td.numeric {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 .workbook-paging {
   display: flex;

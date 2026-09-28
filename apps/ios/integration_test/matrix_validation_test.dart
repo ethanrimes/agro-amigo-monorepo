@@ -174,6 +174,12 @@ void main() {
         }
         final screenshot =
             'ios-matrix-${name.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '-')}';
+        // WKWebView's DOM can be ready before its native surface is painted.
+        // Capture the checked document, not the preceding loading placeholder.
+        await run(
+          'await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));',
+        );
+        await tester.pump(const Duration(milliseconds: 500));
         await binding.takeScreenshot(screenshot);
         result['screenshot'] = '$screenshot.png';
         debugPrint('MATRIX_SCENARIO ${jsonEncode(result)}');

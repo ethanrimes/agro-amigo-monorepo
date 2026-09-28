@@ -1,0 +1,427 @@
+[
+  {
+    "name": "Source verification rice full literal history molino-arroz-blanco-empacado",
+    "route": "/product/molino-arroz-blanco-empacado?series=mill&market=molino-casanare-aguazul&presentation=Por+unidad+de+medida&units=1+kg&region=&history=all",
+    "ready": "!!document.querySelector('.price-chart')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.chart-data').open=true;",
+        "checks": [
+          {
+            "id": "SRC-D-RICE",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,''))===Math.round(3616.0)",
+            "expected": "Current exact native tonne price normalized to COP/kg"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "document.querySelector('.product-price-header').innerText.includes('1 kg')&&document.querySelector('.applied-filters').innerText.includes('molinos')",
+            "expected": "Visible unit and selected mill filter"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const rows=[...document.querySelectorAll('.chart-data tbody tr')];return [{\"date\": \"2013-01-31\", \"price\": 2464.13}, {\"date\": \"2013-02-28\", \"price\": 2201.6}, {\"date\": \"2013-03-31\", \"price\": 2220.99}, {\"date\": \"2013-04-30\", \"price\": 2186.67}, {\"date\": \"2013-05-31\", \"price\": 2213.33}, {\"date\": \"2013-06-30\", \"price\": 2186.67}, {\"date\": \"2013-07-31\", \"price\": 2165.33}, {\"date\": \"2013-08-31\", \"price\": 2066.67}, {\"date\": \"2013-09-30\", \"price\": 2093.33}, {\"date\": \"2013-10-31\", \"price\": 2098.67}, {\"date\": \"2013-11-30\", \"price\": 2130.67}, {\"date\": \"2013-12-31\", \"price\": 2104.0}, {\"date\": \"2014-01-31\", \"price\": 2104.0}, {\"date\": \"2014-02-28\", \"price\": 2104.0}, {\"date\": \"2014-03-31\", \"price\": 2104.0}, {\"date\": \"2014-04-30\", \"price\": 2098.67}, {\"date\": \"2014-05-31\", \"price\": 2104.0}, {\"date\": \"2014-06-30\", \"price\": 2104.0}, {\"date\": \"2014-07-31\", \"price\": 2104.0}, {\"date\": \"2014-08-31\", \"price\": 2108.0}, {\"date\": \"2014-09-30\", \"price\": 2104.0}, {\"date\": \"2014-10-31\", \"price\": 2104.0}, {\"date\": \"2014-11-30\", \"price\": 2104.0}, {\"date\": \"2014-12-31\", \"price\": 2104.0}, {\"date\": \"2015-01-31\", \"price\": 2266.67}, {\"date\": \"2015-02-28\", \"price\": 3148.0}, {\"date\": \"2015-03-31\", \"price\": 2926.67}, {\"date\": \"2015-04-30\", \"price\": 2853.33}, {\"date\": \"2015-05-31\", \"price\": 2800.0}, {\"date\": \"2015-06-30\", \"price\": 2542.0}, {\"date\": \"2015-07-31\", \"price\": 2664.0}, {\"date\": \"2015-08-31\", \"price\": 2594.67}, {\"date\": \"2015-09-30\", \"price\": 2626.67}, {\"date\": \"2015-10-31\", \"price\": 2626.67}, {\"date\": \"2015-11-30\", \"price\": 2556.27}, {\"date\": \"2015-12-31\", \"price\": 2666.4}, {\"date\": \"2016-01-31\", \"price\": 2864.0}, {\"date\": \"2016-02-29\", \"price\": 3360.0}, {\"date\": \"2016-03-31\", \"price\": 3200.0}, {\"date\": \"2016-04-30\", \"price\": 3133.33}, {\"date\": \"2016-05-31\", \"price\": 2816.0}, {\"date\": \"2016-06-30\", \"price\": 2778.67}, {\"date\": \"2016-07-31\", \"price\": 2752.0}, {\"date\": \"2016-08-31\", \"price\": 2696.0}, {\"date\": \"2016-09-30\", \"price\": 2596.0}, {\"date\": \"2016-10-31\", \"price\": 2569.33}, {\"date\": \"2016-11-30\", \"price\": 2699.73}, {\"date\": \"2016-12-31\", \"price\": 2733.33}, {\"date\": \"2017-01-31\", \"price\": 2762.67}, {\"date\": \"2017-02-28\", \"price\": 2638.67}, {\"date\": \"2017-03-31\", \"price\": 2638.67}, {\"date\": \"2017-04-30\", \"price\": 2696.0}, {\"date\": \"2017-05-31\", \"price\": 2597.33}, {\"date\": \"2017-06-30\", \"price\": 2546.67}, {\"date\": \"2017-07-31\", \"price\": 2549.33}, {\"date\": \"2017-08-31\", \"price\": 2490.67}, {\"date\": \"2017-09-30\", \"price\": 2224.0}, {\"date\": \"2017-10-31\", \"price\": 2165.33}, {\"date\": \"2017-11-30\", \"price\": 2165.33}, {\"date\": \"2017-12-31\", \"price\": 2120.0}, {\"date\": \"2018-01-31\", \"price\": 2120.0}, {\"date\": \"2018-02-28\", \"price\": 2133.33}, {\"date\": \"2018-03-31\", \"price\": 2218.67}, {\"date\": \"2018-04-30\", \"price\": 2269.33}, {\"date\": \"2018-05-31\", \"price\": 2261.33}, {\"date\": \"2018-06-30\", \"price\": 2264.0}, {\"date\": \"2018-07-31\", \"price\": 2237.33}, {\"date\": \"2018-08-31\", \"price\": 2237.33}, {\"date\": \"2018-09-30\", \"price\": 2237.33}, {\"date\": \"2018-10-31\", \"price\": 2237.33}, {\"date\": \"2018-11-30\", \"price\": 2224.0}, {\"date\": \"2018-12-31\", \"price\": 2236.0}, {\"date\": \"2019-01-31\", \"price\": 2316.0}, {\"date\": \"2019-02-28\", \"price\": 2328.0}, {\"date\": \"2019-03-31\", \"price\": 2280.0}, {\"date\": \"2019-04-30\", \"price\": 2300.0}, {\"date\": \"2019-05-31\", \"price\": 2340.0}, {\"date\": \"2019-06-30\", \"price\": 2450.8}, {\"date\": \"2019-07-31\", \"price\": 2572.0}, {\"date\": \"2019-08-31\", \"price\": 2524.0}, {\"date\": \"2019-09-30\", \"price\": 2469.33}, {\"date\": \"2019-10-31\", \"price\": 2549.33}, {\"date\": \"2019-11-30\", \"price\": 2725.33}, {\"date\": \"2019-12-31\", \"price\": 3045.33}, {\"date\": \"2020-01-31\", \"price\": 3216.0}, {\"date\": \"2020-02-29\", \"price\": 3258.67}, {\"date\": \"2020-03-31\", \"price\": 3512.0}, {\"date\": \"2020-04-30\", \"price\": 3525.33}, {\"date\": \"2020-05-31\", \"price\": 3525.33}, {\"date\": \"2020-06-30\", \"price\": 3088.0}, {\"date\": \"2020-07-31\", \"price\": 2960.0}, {\"date\": \"2020-08-31\", \"price\": 2752.0}, {\"date\": \"2020-09-30\", \"price\": 2752.0}, {\"date\": \"2020-10-31\", \"price\": 2752.0}, {\"date\": \"2020-11-30\", \"price\": 2725.33}, {\"date\": \"2020-12-31\", \"price\": 2744.0}, {\"date\": \"2021-01-31\", \"price\": 2672.0}, {\"date\": \"2021-02-28\", \"price\": 2664.0}, {\"date\": \"2021-03-31\", \"price\": 2704.0}, {\"date\": \"2021-04-30\", \"price\": 2624.0}, {\"date\": \"2021-05-31\", \"price\": 2624.0}, {\"date\": \"2021-06-30\", \"price\": 2624.0}, {\"date\": \"2021-07-31\", \"price\": 2538.0}, {\"date\": \"2021-08-31\", \"price\": 2482.0}, {\"date\": \"2021-09-30\", \"price\": 2290.0}, {\"date\": \"2021-10-31\", \"price\": 2270.0}, {\"date\": \"2021-11-30\", \"price\": 2340.0}, {\"date\": \"2021-12-31\", \"price\": 2322.0}, {\"date\": \"2022-01-31\", \"price\": 2484.0}, {\"date\": \"2022-02-28\", \"price\": 2754.0}, {\"date\": \"2022-03-31\", \"price\": 2982.0}, {\"date\": \"2022-04-30\", \"price\": 3327.5}, {\"date\": \"2022-05-31\", \"price\": 3326.0}, {\"date\": \"2022-06-30\", \"price\": 3206.0}, {\"date\": \"2022-07-31\", \"price\": 3383.0}, {\"date\": \"2022-08-31\", \"price\": 3544.0}, {\"date\": \"2022-10-31\", \"price\": 3826.67}, {\"date\": \"2022-11-30\", \"price\": 3906.67}, {\"date\": \"2022-12-31\", \"price\": 3906.67}, {\"date\": \"2023-01-31\", \"price\": 3926.67}, {\"date\": \"2023-02-28\", \"price\": 4010.67}, {\"date\": \"2023-03-31\", \"price\": 4010.67}, {\"date\": \"2023-04-30\", \"price\": 3904.0}, {\"date\": \"2023-05-31\", \"price\": 3904.0}, {\"date\": \"2023-06-30\", \"price\": 3856.0}, {\"date\": \"2023-07-31\", \"price\": 3856.0}, {\"date\": \"2023-08-31\", \"price\": 3856.0}, {\"date\": \"2023-09-30\", \"price\": 3776.0}, {\"date\": \"2023-10-31\", \"price\": 3776.0}, {\"date\": \"2023-11-30\", \"price\": 3776.0}, {\"date\": \"2023-12-31\", \"price\": 3760.0}, {\"date\": \"2024-01-31\", \"price\": 3760.0}, {\"date\": \"2024-02-29\", \"price\": 3848.0}, {\"date\": \"2024-03-31\", \"price\": 3928.0}, {\"date\": \"2024-04-30\", \"price\": 3848.0}, {\"date\": \"2024-05-31\", \"price\": 4000.0}, {\"date\": \"2024-06-30\", \"price\": 3848.0}, {\"date\": \"2024-07-31\", \"price\": 3848.0}, {\"date\": \"2024-08-31\", \"price\": 3600.0}, {\"date\": \"2024-09-30\", \"price\": 3608.0}, {\"date\": \"2024-10-31\", \"price\": 3560.0}, {\"date\": \"2024-11-30\", \"price\": 3728.0}, {\"date\": \"2024-12-31\", \"price\": 3668.0}, {\"date\": \"2025-01-31\", \"price\": 3668.0}, {\"date\": \"2025-02-28\", \"price\": 3668.0}, {\"date\": \"2025-03-31\", \"price\": 3668.0}, {\"date\": \"2025-04-30\", \"price\": 3688.0}, {\"date\": \"2025-05-31\", \"price\": 3668.0}, {\"date\": \"2025-06-30\", \"price\": 3668.0}, {\"date\": \"2025-07-31\", \"price\": 3592.5}, {\"date\": \"2025-08-31\", \"price\": 3592.5}, {\"date\": \"2025-09-30\", \"price\": 3688.0}, {\"date\": \"2025-10-31\", \"price\": 3338.0}, {\"date\": \"2025-11-30\", \"price\": 3348.0}, {\"date\": \"2025-12-31\", \"price\": 3348.0}, {\"date\": \"2026-01-31\", \"price\": 3395.0}, {\"date\": \"2026-02-28\", \"price\": 3294.0}, {\"date\": \"2026-03-31\", \"price\": 3294.0}, {\"date\": \"2026-04-30\", \"price\": 3344.0}, {\"date\": \"2026-05-31\", \"price\": 3345.0}, {\"date\": \"2026-06-30\", \"price\": 3516.0}, {\"date\": \"2026-07-31\", \"price\": 3516.0}, {\"date\": \"2026-08-31\", \"price\": 3616.0}].every(p=>rows.some(r=>r.cells[0].innerText===new Date(p.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'})&&Number(r.cells[1].innerText.replace(/[^0-9]/g,''))===Math.round(p.price)))})()",
+            "expected": "All 163 dates/values match independent original cells across all7source files"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const p=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,'')));return p.every((v,i)=>i===0||p[i-1]>=v)})()",
+            "expected": "Descending numeric history"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "[...document.querySelectorAll('a.evidence-link')].some(a=>new URL(a.href).pathname==='/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e'&&new URL(a.href).searchParams.get('locator').startsWith(\"precios de arroz en molino!row 738\"))",
+            "expected": "Exact current retained original and row"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "No horizontal page overflow"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector('.price-chart').scrollIntoView({block:'start',behavior:'instant'});",
+        "checks": [
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight&&document.querySelector('.chart-data').open})()",
+            "expected": "Price graph and opened numeric history visible in viewport"
+          }
+        ],
+        "ready": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice full literal history molino-arroz-paddy-verde",
+    "route": "/product/molino-arroz-paddy-verde?series=mill&market=molino-atlantico-barranquilla&presentation=Por+unidad+de+medida&units=1+kg&region=&history=all",
+    "ready": "!!document.querySelector('.price-chart')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.chart-data').open=true;",
+        "checks": [
+          {
+            "id": "SRC-D-RICE",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,''))===Math.round(1350.0)",
+            "expected": "Current exact native tonne price normalized to COP/kg"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "document.querySelector('.product-price-header').innerText.includes('1 kg')&&document.querySelector('.applied-filters').innerText.includes('molinos')",
+            "expected": "Visible unit and selected mill filter"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const rows=[...document.querySelectorAll('.chart-data tbody tr')];return [{\"date\": \"2015-03-31\", \"price\": 1325.0}, {\"date\": \"2015-04-30\", \"price\": 1350.0}, {\"date\": \"2015-05-31\", \"price\": 1275.0}, {\"date\": \"2015-06-30\", \"price\": 1075.0}, {\"date\": \"2015-07-31\", \"price\": 1025.0}, {\"date\": \"2015-08-31\", \"price\": 1050.0}, {\"date\": \"2015-09-30\", \"price\": 1144.0}, {\"date\": \"2015-10-31\", \"price\": 1200.0}, {\"date\": \"2016-01-31\", \"price\": 1383.33}, {\"date\": \"2016-02-29\", \"price\": 1355.0}, {\"date\": \"2016-03-31\", \"price\": 1225.0}, {\"date\": \"2016-04-30\", \"price\": 1100.0}, {\"date\": \"2016-06-30\", \"price\": 1150.0}, {\"date\": \"2016-07-31\", \"price\": 1050.0}, {\"date\": \"2016-08-31\", \"price\": 1160.0}, {\"date\": \"2016-09-30\", \"price\": 1108.0}, {\"date\": \"2016-10-31\", \"price\": 1165.0}, {\"date\": \"2016-11-30\", \"price\": 1075.0}, {\"date\": \"2016-12-31\", \"price\": 1075.0}, {\"date\": \"2017-01-31\", \"price\": 1025.0}, {\"date\": \"2017-02-28\", \"price\": 1050.0}, {\"date\": \"2017-03-31\", \"price\": 1045.0}, {\"date\": \"2017-04-30\", \"price\": 1050.0}, {\"date\": \"2017-05-31\", \"price\": 1040.0}, {\"date\": \"2017-06-30\", \"price\": 1030.0}, {\"date\": \"2017-07-31\", \"price\": 950.0}, {\"date\": \"2017-08-31\", \"price\": 900.0}, {\"date\": \"2017-09-30\", \"price\": 870.0}, {\"date\": \"2017-10-31\", \"price\": 860.0}, {\"date\": \"2017-11-30\", \"price\": 860.0}, {\"date\": \"2017-12-31\", \"price\": 860.0}, {\"date\": \"2018-01-31\", \"price\": 850.0}, {\"date\": \"2018-02-28\", \"price\": 850.0}, {\"date\": \"2018-03-31\", \"price\": 856.0}, {\"date\": \"2018-04-30\", \"price\": 975.0}, {\"date\": \"2018-05-31\", \"price\": 989.0}, {\"date\": \"2018-06-30\", \"price\": 992.5}, {\"date\": \"2018-08-31\", \"price\": 940.0}, {\"date\": \"2018-09-30\", \"price\": 950.0}, {\"date\": \"2018-10-31\", \"price\": 975.0}, {\"date\": \"2018-11-30\", \"price\": 950.0}, {\"date\": \"2018-12-31\", \"price\": 955.0}, {\"date\": \"2019-01-31\", \"price\": 970.0}, {\"date\": \"2019-02-28\", \"price\": 1020.0}, {\"date\": \"2019-03-31\", \"price\": 1045.0}, {\"date\": \"2019-04-30\", \"price\": 1090.0}, {\"date\": \"2019-05-31\", \"price\": 1075.0}, {\"date\": \"2019-06-30\", \"price\": 1125.0}, {\"date\": \"2019-07-31\", \"price\": 1125.0}, {\"date\": \"2019-08-31\", \"price\": 1125.0}, {\"date\": \"2019-09-30\", \"price\": 1100.0}, {\"date\": \"2019-10-31\", \"price\": 1150.0}, {\"date\": \"2019-11-30\", \"price\": 1165.0}, {\"date\": \"2019-12-31\", \"price\": 1265.0}, {\"date\": \"2020-01-31\", \"price\": 1400.0}, {\"date\": \"2020-02-29\", \"price\": 1450.0}, {\"date\": \"2020-03-31\", \"price\": 1525.0}, {\"date\": \"2020-04-30\", \"price\": 1590.0}, {\"date\": \"2020-05-31\", \"price\": 1700.0}, {\"date\": \"2020-07-31\", \"price\": 1300.0}, {\"date\": \"2020-08-31\", \"price\": 1050.0}, {\"date\": \"2020-09-30\", \"price\": 1070.0}, {\"date\": \"2020-10-31\", \"price\": 1000.0}, {\"date\": \"2020-11-30\", \"price\": 946.0}, {\"date\": \"2020-12-31\", \"price\": 1000.0}, {\"date\": \"2021-01-31\", \"price\": 1000.0}, {\"date\": \"2021-02-28\", \"price\": 1000.0}, {\"date\": \"2021-03-31\", \"price\": 1000.0}, {\"date\": \"2021-04-30\", \"price\": 1015.0}, {\"date\": \"2021-05-31\", \"price\": 975.0}, {\"date\": \"2021-06-30\", \"price\": 1000.0}, {\"date\": \"2021-07-31\", \"price\": 925.0}, {\"date\": \"2021-08-31\", \"price\": 900.0}, {\"date\": \"2021-09-30\", \"price\": 925.0}, {\"date\": \"2021-10-31\", \"price\": 1010.0}, {\"date\": \"2021-11-30\", \"price\": 1085.0}, {\"date\": \"2021-12-31\", \"price\": 1250.0}, {\"date\": \"2022-01-31\", \"price\": 1400.0}, {\"date\": \"2022-02-28\", \"price\": 1500.0}, {\"date\": \"2022-03-31\", \"price\": 1550.0}, {\"date\": \"2022-04-30\", \"price\": 1650.0}, {\"date\": \"2022-05-31\", \"price\": 1615.0}, {\"date\": \"2022-07-31\", \"price\": 1650.0}, {\"date\": \"2022-08-31\", \"price\": 1755.0}, {\"date\": \"2022-09-30\", \"price\": 1845.0}, {\"date\": \"2022-10-31\", \"price\": 1900.0}, {\"date\": \"2022-11-30\", \"price\": 1900.0}, {\"date\": \"2022-12-31\", \"price\": 1916.67}, {\"date\": \"2023-01-31\", \"price\": 1900.0}, {\"date\": \"2023-02-28\", \"price\": 1925.0}, {\"date\": \"2023-03-31\", \"price\": 1900.0}, {\"date\": \"2023-04-30\", \"price\": 1900.0}, {\"date\": \"2023-05-31\", \"price\": 1725.0}, {\"date\": \"2023-06-30\", \"price\": 1725.0}, {\"date\": \"2023-07-31\", \"price\": 1650.0}, {\"date\": \"2023-08-31\", \"price\": 1575.0}, {\"date\": \"2023-09-30\", \"price\": 1550.0}, {\"date\": \"2023-10-31\", \"price\": 1625.0}, {\"date\": \"2023-11-30\", \"price\": 1675.0}, {\"date\": \"2023-12-31\", \"price\": 1675.0}, {\"date\": \"2024-01-31\", \"price\": 1650.0}, {\"date\": \"2024-02-29\", \"price\": 1765.0}, {\"date\": \"2024-03-31\", \"price\": 1875.0}, {\"date\": \"2024-04-30\", \"price\": 1875.0}, {\"date\": \"2024-05-31\", \"price\": 1875.0}, {\"date\": \"2024-06-30\", \"price\": 1900.0}, {\"date\": \"2024-07-31\", \"price\": 1900.0}, {\"date\": \"2024-08-31\", \"price\": 1625.0}, {\"date\": \"2024-09-30\", \"price\": 1500.0}, {\"date\": \"2024-10-31\", \"price\": 1500.0}, {\"date\": \"2024-11-30\", \"price\": 1450.0}, {\"date\": \"2024-12-31\", \"price\": 1365.0}, {\"date\": \"2025-01-31\", \"price\": 1390.0}, {\"date\": \"2025-02-28\", \"price\": 1325.0}, {\"date\": \"2025-03-31\", \"price\": 1400.0}, {\"date\": \"2025-04-30\", \"price\": 1425.0}, {\"date\": \"2025-05-31\", \"price\": 1465.0}, {\"date\": \"2025-06-30\", \"price\": 1325.0}, {\"date\": \"2025-07-31\", \"price\": 1325.0}, {\"date\": \"2025-08-31\", \"price\": 1290.0}, {\"date\": \"2025-09-30\", \"price\": 1270.0}, {\"date\": \"2025-10-31\", \"price\": 1320.0}, {\"date\": \"2025-11-30\", \"price\": 1300.0}, {\"date\": \"2025-12-31\", \"price\": 1335.0}, {\"date\": \"2026-01-31\", \"price\": 1360.0}, {\"date\": \"2026-04-30\", \"price\": 1480.0}, {\"date\": \"2026-05-31\", \"price\": 1510.0}, {\"date\": \"2026-06-30\", \"price\": 1510.0}, {\"date\": \"2026-07-31\", \"price\": 1510.0}, {\"date\": \"2026-08-31\", \"price\": 1350.0}].every(p=>rows.some(r=>r.cells[0].innerText===new Date(p.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'})&&Number(r.cells[1].innerText.replace(/[^0-9]/g,''))===Math.round(p.price)))})()",
+            "expected": "All 130 dates/values match independent original cells across all7source files"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const p=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,'')));return p.every((v,i)=>i===0||p[i-1]>=v)})()",
+            "expected": "Descending numeric history"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "[...document.querySelectorAll('a.evidence-link')].some(a=>new URL(a.href).pathname==='/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e'&&new URL(a.href).searchParams.get('locator').startsWith(\"precios de arroz en molino!row 803\"))",
+            "expected": "Exact current retained original and row"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "No horizontal page overflow"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector('.price-chart').scrollIntoView({block:'start',behavior:'instant'});",
+        "checks": [
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight&&document.querySelector('.chart-data').open})()",
+            "expected": "Price graph and opened numeric history visible in viewport"
+          }
+        ],
+        "ready": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice full literal history molino-harina-de-arroz",
+    "route": "/product/molino-harina-de-arroz?series=mill&market=molino-atlantico-barranquilla&presentation=Por+unidad+de+medida&units=1+kg&region=&history=all",
+    "ready": "!!document.querySelector('.price-chart')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.chart-data').open=true;",
+        "checks": [
+          {
+            "id": "SRC-D-RICE",
+            "condition": "Number(document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,''))===Math.round(1200.0)",
+            "expected": "Current exact native tonne price normalized to COP/kg"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "document.querySelector('.product-price-header').innerText.includes('1 kg')&&document.querySelector('.applied-filters').innerText.includes('molinos')",
+            "expected": "Visible unit and selected mill filter"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const rows=[...document.querySelectorAll('.chart-data tbody tr')];return [{\"date\": \"2015-03-31\", \"price\": 550.0}, {\"date\": \"2015-04-30\", \"price\": 533.33}, {\"date\": \"2015-05-31\", \"price\": 543.33}, {\"date\": \"2015-06-30\", \"price\": 543.33}, {\"date\": \"2015-07-31\", \"price\": 533.33}, {\"date\": \"2015-08-31\", \"price\": 550.0}, {\"date\": \"2015-09-30\", \"price\": 550.0}, {\"date\": \"2015-10-31\", \"price\": 650.0}, {\"date\": \"2015-11-30\", \"price\": 700.0}, {\"date\": \"2015-12-31\", \"price\": 700.0}, {\"date\": \"2016-01-31\", \"price\": 650.0}, {\"date\": \"2016-02-29\", \"price\": 625.0}, {\"date\": \"2016-03-31\", \"price\": 750.0}, {\"date\": \"2016-04-30\", \"price\": 625.0}, {\"date\": \"2016-05-31\", \"price\": 725.0}, {\"date\": \"2016-06-30\", \"price\": 675.0}, {\"date\": \"2016-07-31\", \"price\": 717.5}, {\"date\": \"2016-08-31\", \"price\": 645.0}, {\"date\": \"2016-09-30\", \"price\": 600.0}, {\"date\": \"2016-10-31\", \"price\": 550.0}, {\"date\": \"2016-11-30\", \"price\": 550.0}, {\"date\": \"2016-12-31\", \"price\": 550.0}, {\"date\": \"2017-01-31\", \"price\": 550.0}, {\"date\": \"2017-02-28\", \"price\": 550.0}, {\"date\": \"2017-03-31\", \"price\": 625.0}, {\"date\": \"2017-04-30\", \"price\": 550.0}, {\"date\": \"2017-05-31\", \"price\": 530.0}, {\"date\": \"2017-06-30\", \"price\": 555.0}, {\"date\": \"2017-07-31\", \"price\": 530.0}, {\"date\": \"2017-08-31\", \"price\": 530.0}, {\"date\": \"2017-09-30\", \"price\": 530.0}, {\"date\": \"2017-10-31\", \"price\": 505.0}, {\"date\": \"2017-11-30\", \"price\": 530.0}, {\"date\": \"2017-12-31\", \"price\": 542.5}, {\"date\": \"2018-01-31\", \"price\": 525.0}, {\"date\": \"2018-02-28\", \"price\": 500.0}, {\"date\": \"2018-03-31\", \"price\": 505.0}, {\"date\": \"2018-04-30\", \"price\": 580.0}, {\"date\": \"2018-05-31\", \"price\": 588.5}, {\"date\": \"2018-06-30\", \"price\": 641.5}, {\"date\": \"2018-07-31\", \"price\": 605.0}, {\"date\": \"2018-08-31\", \"price\": 620.0}, {\"date\": \"2018-09-30\", \"price\": 590.0}, {\"date\": \"2018-10-31\", \"price\": 590.0}, {\"date\": \"2018-11-30\", \"price\": 573.33}, {\"date\": \"2018-12-31\", \"price\": 580.0}, {\"date\": \"2019-01-31\", \"price\": 580.0}, {\"date\": \"2019-02-28\", \"price\": 603.33}, {\"date\": \"2019-03-31\", \"price\": 653.33}, {\"date\": \"2019-04-30\", \"price\": 680.0}, {\"date\": \"2019-05-31\", \"price\": 650.0}, {\"date\": \"2019-06-30\", \"price\": 663.33}, {\"date\": \"2019-07-31\", \"price\": 670.0}, {\"date\": \"2019-08-31\", \"price\": 670.0}, {\"date\": \"2019-09-30\", \"price\": 666.67}, {\"date\": \"2019-10-31\", \"price\": 650.0}, {\"date\": \"2019-11-30\", \"price\": 653.33}, {\"date\": \"2019-12-31\", \"price\": 686.67}, {\"date\": \"2020-01-31\", \"price\": 640.0}, {\"date\": \"2020-02-29\", \"price\": 650.0}, {\"date\": \"2020-03-31\", \"price\": 676.67}, {\"date\": \"2020-04-30\", \"price\": 683.33}, {\"date\": \"2020-05-31\", \"price\": 733.33}, {\"date\": \"2020-06-30\", \"price\": 726.67}, {\"date\": \"2020-07-31\", \"price\": 736.67}, {\"date\": \"2020-08-31\", \"price\": 700.0}, {\"date\": \"2020-09-30\", \"price\": 676.67}, {\"date\": \"2020-10-31\", \"price\": 666.67}, {\"date\": \"2020-11-30\", \"price\": 733.33}, {\"date\": \"2020-12-31\", \"price\": 736.67}, {\"date\": \"2021-01-31\", \"price\": 790.0}, {\"date\": \"2021-02-28\", \"price\": 866.67}, {\"date\": \"2021-03-31\", \"price\": 860.0}, {\"date\": \"2021-04-30\", \"price\": 850.0}, {\"date\": \"2021-05-31\", \"price\": 923.33}, {\"date\": \"2021-06-30\", \"price\": 943.33}, {\"date\": \"2021-07-31\", \"price\": 1016.67}, {\"date\": \"2021-08-31\", \"price\": 1050.0}, {\"date\": \"2021-09-30\", \"price\": 1010.0}, {\"date\": \"2021-10-31\", \"price\": 1060.0}, {\"date\": \"2021-11-30\", \"price\": 1191.67}, {\"date\": \"2021-12-31\", \"price\": 1256.67}, {\"date\": \"2022-01-31\", \"price\": 1433.33}, {\"date\": \"2022-02-28\", \"price\": 1556.0}, {\"date\": \"2022-03-31\", \"price\": 1475.0}, {\"date\": \"2022-04-30\", \"price\": 1500.0}, {\"date\": \"2022-05-31\", \"price\": 1540.0}, {\"date\": \"2022-06-30\", \"price\": 1545.0}, {\"date\": \"2022-07-31\", \"price\": 1600.0}, {\"date\": \"2022-08-31\", \"price\": 1600.0}, {\"date\": \"2022-09-30\", \"price\": 1625.0}, {\"date\": \"2022-10-31\", \"price\": 1650.0}, {\"date\": \"2022-11-30\", \"price\": 1800.0}, {\"date\": \"2022-12-31\", \"price\": 1800.0}, {\"date\": \"2023-01-31\", \"price\": 1800.0}, {\"date\": \"2023-02-28\", \"price\": 1800.0}, {\"date\": \"2023-03-31\", \"price\": 1800.0}, {\"date\": \"2023-04-30\", \"price\": 1700.0}, {\"date\": \"2023-05-31\", \"price\": 1650.0}, {\"date\": \"2023-06-30\", \"price\": 1650.0}, {\"date\": \"2023-07-31\", \"price\": 1300.0}, {\"date\": \"2023-08-31\", \"price\": 1300.0}, {\"date\": \"2023-09-30\", \"price\": 1150.0}, {\"date\": \"2023-10-31\", \"price\": 1175.0}, {\"date\": \"2023-11-30\", \"price\": 1175.0}, {\"date\": \"2023-12-31\", \"price\": 1300.0}, {\"date\": \"2024-01-31\", \"price\": 1300.0}, {\"date\": \"2024-02-29\", \"price\": 1300.0}, {\"date\": \"2024-03-31\", \"price\": 1150.0}, {\"date\": \"2024-04-30\", \"price\": 1150.0}, {\"date\": \"2024-05-31\", \"price\": 1150.0}, {\"date\": \"2024-06-30\", \"price\": 1050.0}, {\"date\": \"2024-08-31\", \"price\": 1050.0}, {\"date\": \"2024-09-30\", \"price\": 1200.0}, {\"date\": \"2024-10-31\", \"price\": 1200.0}, {\"date\": \"2024-11-30\", \"price\": 1200.0}, {\"date\": \"2024-12-31\", \"price\": 1200.0}, {\"date\": \"2025-01-31\", \"price\": 1200.0}, {\"date\": \"2025-02-28\", \"price\": 1200.0}, {\"date\": \"2025-03-31\", \"price\": 1200.0}, {\"date\": \"2025-04-30\", \"price\": 1250.0}, {\"date\": \"2025-05-31\", \"price\": 1250.0}, {\"date\": \"2025-06-30\", \"price\": 1200.0}, {\"date\": \"2025-07-31\", \"price\": 1200.0}, {\"date\": \"2025-08-31\", \"price\": 1200.0}, {\"date\": \"2025-09-30\", \"price\": 1190.0}, {\"date\": \"2025-10-31\", \"price\": 1200.0}, {\"date\": \"2025-11-30\", \"price\": 1195.0}, {\"date\": \"2025-12-31\", \"price\": 1200.0}, {\"date\": \"2026-01-31\", \"price\": 1200.0}, {\"date\": \"2026-02-28\", \"price\": 1200.0}, {\"date\": \"2026-03-31\", \"price\": 1200.0}, {\"date\": \"2026-04-30\", \"price\": 1200.0}, {\"date\": \"2026-05-31\", \"price\": 1200.0}, {\"date\": \"2026-06-30\", \"price\": 1200.0}, {\"date\": \"2026-07-31\", \"price\": 1210.0}, {\"date\": \"2026-08-31\", \"price\": 1200.0}].every(p=>rows.some(r=>r.cells[0].innerText===new Date(p.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'})&&Number(r.cells[1].innerText.replace(/[^0-9]/g,''))===Math.round(p.price)))})()",
+            "expected": "All 137 dates/values match independent original cells across all7source files"
+          },
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const p=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>Number(r.cells[1].innerText.replace(/[^0-9]/g,'')));return p.every((v,i)=>i===0||p[i-1]>=v)})()",
+            "expected": "Descending numeric history"
+          },
+          {
+            "id": "EVI-01",
+            "condition": "[...document.querySelectorAll('a.evidence-link')].some(a=>new URL(a.href).pathname==='/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e'&&new URL(a.href).searchParams.get('locator').startsWith(\"precios de arroz en molino!row 824\"))",
+            "expected": "Exact current retained original and row"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "No horizontal page overflow"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector('.price-chart').scrollIntoView({block:'start',behavior:'instant'});",
+        "checks": [
+          {
+            "id": "SRC-D-RICE",
+            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight&&document.querySelector('.chart-data').open})()",
+            "expected": "Price graph and opened numeric history visible in viewport"
+          }
+        ],
+        "ready": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original series-historicas-precios-mayoristas-arroz-sub-molinos-2013-2020.xlsx",
+    "route": "/evidence/25c9bad53ca56c0b4d6512d185cf9e5bed95afe9124e9a74fbd5c134c1d034ca?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[7].innerText===(2464133.3333333335).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 2464133.3333333335 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[7].innerText===(2146666.6666666665).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 2146666.6666666665 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(8)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original series-historicas-precios-mayoristas-arroz-sub-molinos-2021.xlsx",
+    "route": "/evidence/05b53273c739dc693e0c056c16298b33a63776f6f2c9485d7914da7cd46a2ea0?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[7].innerText===(2400000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 2400000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[7].innerText===(2672000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 2672000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(8)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original series-historicas-precios-mayoristas-arroz-sub-molinos-2022.xlsx",
+    "route": "/evidence/c7b5488c294a69326ab84b08b2f728805ba763daad946d8f795555930ac371bd?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[6].innerText===(2484000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 2484000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[6].innerText===(2328000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 2328000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(7)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original anex-SIPSArroz-SerieHistoricaPrecio-2023.xlsx",
+    "route": "/evidence/4669d0de97966f216ab28cda9056be65031883a410ad9f6f2233bc4a9d390362?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[6].innerText===(3926666.6666666665).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 3926666.6666666665 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[6].innerText===(3800000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 3800000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(7)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original anex-SIPSArroz-SerieHistoricaPrecio-2024.xlsx",
+    "route": "/evidence/ac12bc1e89705347fcab6b4d2db11351aaeb2db4d72ad13ef63e4fe27fd8cafe?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[6].innerText===(3760000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 3760000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[6].innerText===(3760000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 3760000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(7)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original anex-SIPSArroz-SerieHistoricaPrecio-2025.xlsx",
+    "route": "/evidence/55671429ad35195607275009f25ad6cfa91b773be0337ec4ee4af748daa90d52?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[6].innerText===(3668000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 3668000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[6].innerText===(3680000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 3680000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(7)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  },
+  {
+    "name": "Source verification rice original anex-SIPSArroz-SerieHistoricaPrecio-2026.xlsx",
+    "route": "/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e?sheet=precios+de+arroz+en+molino&row=7",
+    "ready": "!!document.querySelector('.workbook-viewer tbody tr')&&!document.querySelector('[role=alert]')",
+    "steps": [
+      {
+        "checks": [
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"8\");return r?.querySelectorAll('td')[6].innerText===(3395000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 8 literal 3395000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "(()=>{const r=[...document.querySelectorAll('.workbook-viewer tbody tr')].find(r=>r.querySelector('th').innerText===\"9\");return r?.querySelectorAll('td')[6].innerText===(3320000).toLocaleString('es-CO',{maximumFractionDigits:12})})()",
+            "expected": "Original row 9 literal 3320000 COP/tonne preserved"
+          },
+          {
+            "id": "EVI-06",
+            "condition": "document.querySelector('[aria-label=\"Hoja del archivo Excel\"]').value===\"precios de arroz en molino\"",
+            "expected": "Exact original sheet selected"
+          },
+          {
+            "id": "EVI-05",
+            "condition": "document.querySelector('.workbook-viewer').innerText.includes('Solo lectura')&&!document.querySelector('.workbook-viewer td input,.workbook-viewer td[contenteditable=true]')",
+            "expected": "Workbook remains read only"
+          },
+          {
+            "id": "NAV-04",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source sheet scroll stays within responsive viewer"
+          }
+        ],
+        "action": "document.querySelector('.workbook-viewer').scrollIntoView({block:'start',behavior:'instant'});const el=document.querySelector('.workbook-viewer tbody tr:nth-child(2) td:nth-of-type(7)');if(el)document.querySelector('.workbook-scroll').scrollLeft=el.offsetLeft-110;",
+        "ready": "(()=>{const r=document.querySelector('.workbook-viewer').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+      }
+    ]
+  }
+]
