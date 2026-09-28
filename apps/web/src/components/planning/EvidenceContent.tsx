@@ -104,6 +104,16 @@ export function EvidenceContent({
               <p>
                 {data.publisher} · Referencia: {evidencePeriod(data)}
               </p>
+              {Array.isArray(data.metadata.query_context) && (
+                <div className="applied-filters" aria-label="Filtros de los datos consultados">
+                  <span>Datos consultados</span>
+                  {data.metadata.query_context.map((filter, index) =>
+                    filter && typeof filter.label === "string" && typeof filter.value === "string" ? (
+                      <span className="filter-chip" key={index}>{filter.label}: {filter.value}</span>
+                    ) : null,
+                  )}
+                </div>
+              )}
               {typeof data.metadata.review_note === "string" && (
                 <p className="inline-note">{data.metadata.review_note}</p>
               )}

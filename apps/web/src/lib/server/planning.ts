@@ -457,6 +457,18 @@ export async function evidence(
     department = filters.get("department"),
     input = filters.get("input");
   if (mid && /^\d{5}$/.test(mid)) {
+    const place = (
+      await db.query<{ name: string; department: string }>(
+        "SELECT name,department FROM municipality WHERE id=$1",
+        [mid],
+      )
+    ).rows[0];
+    r.metadata.query_context = [
+      {
+        label: "Municipio de referencia",
+        value: place ? `${place.name}, ${place.department} (${mid})` : mid,
+      },
+    ];
     const cropRows = (
       await db.query(
         "SELECT crop,variety,reference_year,physical_state,planted_ha,harvested_ha,production_t,yield_kg_ha,source_rows FROM crop_reference WHERE municipality_id=$1 AND document_id=$2",
@@ -476,14 +488,28 @@ export async function evidence(
       )
     ).rows;
     r.records = [...cropRows, ...suit, ...soil];
-  } else if (department && !input)
+  } else if (department && !input) {
+    const place = (
+      await db.query<{ department: string }>(
+        "SELECT department FROM municipality WHERE department_id=$1 LIMIT 1",
+        [department.slice(0, 2)],
+      )
+    ).rows[0];
+    r.metadata.query_context = [
+      {
+        label: "Departamento de referencia",
+        value: place
+          ? `${place.department} (${department.slice(0, 2)})`
+          : department.slice(0, 2),
+      },
+    ];
     r.records = (
       await db.query(
         "SELECT crop,activity,reference_year,percentages,source_row FROM crop_calendar WHERE department_id=$1 AND document_id=$2",
         [department.slice(0, 2), r.id],
       )
     ).rows;
-  else if (input)
+  } else if (input)
     r.records = (
       await db.query(
         `SELECT name,department,municipality,observed_on,presentation,price,source_locator,brand,registration FROM (SELECT *,''::text AS municipality FROM published_input_price UNION ALL SELECT * FROM published_input_municipal_price) i WHERE id=$1 AND document_id=$2 AND ($3='' OR department=$3) ORDER BY observed_on DESC LIMIT 100`,
@@ -532,6 +558,7 @@ export async function evidence(
   if (
     String(r.metadata?.ingestion_kind || "").match(/^(international|colombia|dane)-/)
   ) {
+    delete r.metadata.query_context;
     r.records = (
       await db.query(
         OFFICIAL_EVIDENCE_ROWS_SQL,
@@ -540,6 +567,7 @@ export async function evidence(
     ).rows;
   }
   if (r.metadata?.ingestion_kind === "city-pdf") {
+    delete r.metadata.query_context;
     r.records = (
       await db.query(
         "SELECT product_name,market_name,observed_on,presentation,quantity,source_unit,round_label,min_price,max_price,unit,min_unit_price,max_unit_price,source_page,source_locator FROM regional_price WHERE document_id=$1 ORDER BY source_page,source_locator",
