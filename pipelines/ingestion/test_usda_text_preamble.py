@@ -17,6 +17,42 @@ REPORT = (
 
 
 class TextPreamble(unittest.TestCase):
+    def test_official_no_report_notice_is_review_only(self):
+        original = (
+            Path(__file__).resolve().parent
+            / "testdata/boston-2022-05-24-no-report.TXT"
+        ).read_bytes()
+        self.assertEqual(
+            hashlib.sha256(original).hexdigest(),
+            "5f2f77f406d42faf97399d226f55e4749eb5b45aab5a138fd351181c4796367e",
+        )
+        url = "https://esmis.nal.usda.gov/sites/default/release-files/b2773v71t/f7624j80r/2514pr15p/BH_FV201.TXT"
+        rows = parse_text_flowers(original, url, "Boston")
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual((row["date"], row["price"]), (date(2022, 5, 24), None))
+        self.assertEqual(row["source_locator"], "Text line 12, report notice")
+        self.assertEqual(row["details"]["review_type"], "no-price-report")
+        self.assertEqual(row["details"]["source_url"], url)
+        self.assertEqual(
+            row["details"]["original_quote"],
+            "No report due to technical issues. Next report will be issues Wednesday, June 1, 2022.",
+        )
+
+    def test_unrecognized_empty_bulletin_or_hidden_price_still_fails(self):
+        original = (
+            Path(__file__).resolve().parent
+            / "testdata/boston-2022-05-24-no-report.TXT"
+        ).read_bytes()
+        for changed in (
+            original.replace(b"No report due to technical issues.", b"Report unavailable."),
+            original + b"\nROSES: per stem 1.25\n",
+        ):
+            with self.subTest(changed=changed[-35:]), self.assertRaisesRegex(
+                ValueError, "no commodity blocks"
+            ):
+                parse_text_flowers(changed, "official.txt", "Boston")
+
     def test_blank_lines_recover_native_header_but_keep_original_line_numbers(self):
         for preamble, extra_lines in ((b"\r\n", 1), (b" \r\n\t\n\n", 3)):
             with self.subTest(preamble=preamble):

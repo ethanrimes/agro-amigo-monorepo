@@ -8,3 +8,4 @@
 *.png binary
 *.webp binary
 *.mp4 binary
+pipelines/ingestion/testdata/boston-2022-05-24-no-report.TXT binary
