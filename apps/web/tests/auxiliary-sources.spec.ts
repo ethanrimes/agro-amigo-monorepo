@@ -34,7 +34,7 @@ test("image files match their hashes and the crop selection is specific", () => 
   expect(photoFor("Pimentón rojo").key).toBe("bell-pepper");
   expect(photoFor("Ají picante").key).toBe("produce-neutral");
   for (const name of ["Galería Alameda", "Almacafé", "Molino de arroz"]) {
-    expect(photoFor(name, "", "market").key).toBe("market");
+    expect(photoFor(name, "", "market").key).toBe("market-neutral");
   }
   expect(photoFor("Producto cárnico desconocido", "Carnes").key).toBe("produce-neutral");
   expect(photoFor("Semilla certificada", "Semillas", "input").key).toBe("seeds-general");
