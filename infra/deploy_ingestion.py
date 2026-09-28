@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import secrets
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -98,34 +99,61 @@ def deploy(code_only=False):
     with tempfile.TemporaryDirectory(prefix="ingestion-build-", dir=LOCAL) as stage:
         stage = Path(stage)
         target = stage / ".python_packages/lib/site-packages"
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--quiet",
-                "--no-compile",
-                "--target",
-                str(target),
-                "--platform",
-                "manylinux_2_28_x86_64",
-                "--platform",
-                "manylinux2014_x86_64",
-                "--implementation",
-                "cp",
-                "--python-version",
-                "3.11",
-                "--only-binary=:all:",
-                "-r",
-                str(ROOT / "pipelines/ingestion/requirements.txt"),
-            ],
-            check=True,
-        )
+        cached_bundle = None
+        if code_only and bundle.is_file():
+            # Code-only releases must not depend on PyPI being reachable when
+            # the exact requirements and Linux wheel set were already deployed.
+            with zipfile.ZipFile(bundle) as previous:
+                dependency_names = [
+                    name for name in previous.namelist()
+                    if name.startswith(".python_packages/lib/site-packages/")
+                    and not name.endswith("/")
+                ]
+                if (
+                    dependency_names
+                    and previous.read("requirements.txt")
+                    == (ROOT / "pipelines/ingestion/requirements.txt").read_bytes()
+                ):
+                    cached_bundle = stage / "prior-dependencies.zip"
+                    shutil.copyfile(bundle, cached_bundle)
+        if cached_bundle is None:
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--quiet",
+                    "--no-compile",
+                    "--target",
+                    str(target),
+                    "--platform",
+                    "manylinux_2_28_x86_64",
+                    "--platform",
+                    "manylinux2014_x86_64",
+                    "--implementation",
+                    "cp",
+                    "--python-version",
+                    "3.11",
+                    "--only-binary=:all:",
+                    "-r",
+                    str(ROOT / "pipelines/ingestion/requirements.txt"),
+                ],
+                check=True,
+            )
         with zipfile.ZipFile(bundle, "w", zipfile.ZIP_DEFLATED) as archive:
-            for path in target.rglob("*"):
-                if path.is_file():
-                    archive.write(path, path.relative_to(stage))
+            if cached_bundle is not None:
+                with zipfile.ZipFile(cached_bundle) as previous:
+                    for member in previous.infolist():
+                        if member.filename.startswith(
+                            ".python_packages/lib/site-packages/"
+                        ) and not member.is_dir():
+                            archive.writestr(member, previous.read(member))
+                print("Reused matching Linux dependencies from the prior verified package.", flush=True)
+            else:
+                for path in target.rglob("*"):
+                    if path.is_file():
+                        archive.write(path, path.relative_to(stage))
             write_runtime_archive(archive)
         from pipelines.ingestion.worker import RELEASE_FILES, release_fingerprint
 

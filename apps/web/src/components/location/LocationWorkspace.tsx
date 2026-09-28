@@ -15,6 +15,7 @@ import { EMPTY_PROFILE, hasPin } from "@/lib/farm-types";
 import { inColombia, type LocationPoint } from "@/lib/location-types";
 import { ZoneExplorer } from "./ZoneExplorer";
 import { FarmWeather } from "./FarmWeather";
+import { imageLibrary } from "@/lib/images";
 const STORAGE = "agroamigo-location-v1";
 type SavedLocation = {
   point: LocationPoint | null;
@@ -210,6 +211,11 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
   return (
     <div className="location-workspace">
       <header className="location-header">
+        <img
+          className="location-header-photo"
+          src={imageLibrary["farm-colombia"].src}
+          alt="Fotografía ilustrativa de una finca cafetera en Colombia; no representa tu finca"
+        />
         <div>
           <span className="eyebrow">MI FINCA</span>
           <h1>
@@ -225,6 +231,7 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
         <div className="location-header-icon">
           <IoMapOutline />
         </div>
+        <span className="location-header-caption">Imagen ilustrativa</span>
       </header>
       <section className="location-toolbar panel">
         <div className="location-place">

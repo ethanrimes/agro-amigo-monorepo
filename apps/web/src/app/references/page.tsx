@@ -5,6 +5,7 @@ import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
+import { ReportProductPicture } from "@/components/explore/ReportProductPicture";
 import { dateLabel } from "@/lib/market-types";
 import { officialMoney, type OfficialPrice } from "@/lib/official-types";
 type Catalog = {
@@ -152,6 +153,7 @@ export default function References() {
                   className="panel input-card official-reference"
                   key={r.quote_key}
                 >
+                  <ReportProductPicture name={r.product_name} />
                   <span className="eyebrow">
                     {r.publisher} · {r.category}
                   </span>

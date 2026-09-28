@@ -612,7 +612,9 @@ def _milk_column_native_lines(page, lines):
             word["text"]
             for word in sorted(trend_words, key=lambda word: (word["top"], word["x0"]))
         )
-        if trend and not re.fullmatch(r"[xXᵡ=°ºᵒo.\s]+|n\.\s*d\.?", trend):
+        # The 2012 native PDF maps some trend symbols to an empty-box glyph.
+        # Retain that literal glyph; its direction cannot be inferred here.
+        if trend and not re.fullmatch(r"[xXᵡ=°ºᵒo.☐\s]+|n\.\s*d\.?", trend):
             raise ValueError(
                 "Milk PDF trend cell contains unexpected text: " + repr(trend)
             )
