@@ -635,13 +635,14 @@ def project_pdf_inputs(db, did):
             0  # A rolled-back deployment may retain, but never republish, old parsing.
         )
     conflicts = project_inputs(db, did)
-    # Only reattribute the identical business value from the SAME original.
+    # Only repair provenance/presentation from the SAME original and normalized
+    # identity, with every other business value identical to the validated row.
     # This is safe even when a newer, equal-valued original advanced the
     # per-key freshness watermark while retaining this original's provenance.
     # Actual price changes still pass project_inputs' full revision guards.
     for table, municipal in (("input_price", False), ("input_municipal_price", True)):
         db.execute(
-            f"""UPDATE {table} p SET source_locator=x.source_locator
+            f"""UPDATE {table} p SET source_locator=x.source_locator,presentation=x.presentation
             FROM (SELECT s.*,
               row_number() OVER(PARTITION BY id,department,municipality,observed_on ORDER BY source_locator) rn,
               min(price) OVER(PARTITION BY id,department,municipality,observed_on) low,
@@ -650,10 +651,11 @@ def project_pdf_inputs(db, did):
             WHERE x.rn=1 AND x.low=x.high AND p.document_id=x.document_id
               AND p.id=x.id AND p.department=x.department AND p.observed_on=x.observed_on
               {"AND p.municipality=x.municipality" if municipal else ""}
-              AND (p.price,p.name,p.category,p.presentation,p.brand,p.registration,p.product_line)
-                IS NOT DISTINCT FROM (x.price,x.name,x.category,x.presentation,x.brand,x.registration,x.product_line)
+              AND (p.price,p.name,p.category,p.brand,p.registration,p.product_line)
+                IS NOT DISTINCT FROM (x.price,x.name,x.category,x.brand,x.registration,x.product_line)
               AND substring(x.source_locator from '; (inputs-pdf-v[0-9]+)$')=%s
-              AND coalesce(substring(p.source_locator from '; inputs-pdf-v([0-9]+)$')::numeric,0)<%s""",
+              AND coalesce(substring(p.source_locator from '; inputs-pdf-v([0-9]+)$')::numeric,0)<=%s
+              AND (p.source_locator,p.presentation) IS DISTINCT FROM (x.source_locator,x.presentation)""",
             (INPUT_PDF_VERSION, int(version[1])),
         )
     db.execute(
