@@ -8,7 +8,7 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v9"
+INPUT_PDF_VERSION = "inputs-pdf-v10"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
@@ -632,6 +632,36 @@ def _input_location_prefix(previous, words, price_left):
     return prefix
 
 
+def _input_continuation_review(current, previous):
+    """Check explicit continuation against the adjacent, same-table block.
+
+    A contradictory printed presentation is retained literally, never repaired
+    from the preceding column or another source. Nonadjacent/different tables
+    provide no evidence of contradiction and are not used to infer identity.
+    """
+    from .worker import slug
+
+    if not previous or not current["table"][0] or current["table"] != previous["table"]:
+        return None
+    if not (
+        (
+            current["page"] == previous["page"]
+            and current["column"] >= previous["column"]
+        )
+        or (current["page"] == previous["page"] + 1 and current["column"] == 1)
+    ):
+        return None
+    if tuple(map(slug, current["identity"])) != tuple(map(slug, previous["identity"])):
+        return {
+            "reason": "Printed continuation product/presentation conflicts with the preceding same-table block",
+            "preceding_heading": previous["heading"],
+            "preceding_page": previous["page"],
+            "preceding_column": previous["column"],
+            "continued_heading": current["heading"],
+        }
+    return previous.get("continuation_review")
+
+
 def parse_input_pdf(data, day):
     """Read each dated two-column table, including layouts without variation.
 
@@ -640,6 +670,7 @@ def parse_input_pdf(data, day):
     """
     from .worker import MONTH_NUM, SourceDateMismatch, clean, record
 
+    last_row_heading = None
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for page_no, page in enumerate(pdf.pages, 1):
             text = page.extract_text() or ""
@@ -755,6 +786,12 @@ def parse_input_pdf(data, day):
                         r"(?:Cuadro|Tabla)\s+\d+\.\s+", prefix[: stamp.start()]
                     )[-1]
                     category = input_category(title)
+                    table_numbers = re.findall(r"(?:Cuadro|Tabla)\s+(\d+)\.", prefix)
+                    table_key = (
+                        table_numbers[-1] if table_numbers else None,
+                        category,
+                        day,
+                    )
                     if category != previous_category:
                         heading = ""
                         heading_lines = []
@@ -783,6 +820,10 @@ def parse_input_pdf(data, day):
                     unresolved = False
                     last_line = None
                     table_rows = 0
+                    heading_continues = False
+                    heading_checked = False
+                    continuation_review = None
+                    literal_heading_lines = heading_lines.copy()
                     for line_no, (top, ws) in enumerate(lines, 1):
                         ws.sort(key=lambda w: w["x0"])
                         line = clean(_input_line_text(ws))
@@ -893,6 +934,33 @@ def parse_input_pdf(data, day):
                                     "Sin presentación verificable",
                                 )
                                 quality_issue = "Native product heading has no explicit, separable presentation"
+                            current_heading = {
+                                "table": table_key,
+                                "page": page_no,
+                                "column": col,
+                                "heading": " ".join(literal_heading_lines),
+                                "identity": (name, presentation),
+                            }
+                            if not heading_checked:
+                                continuation_review = (
+                                    _input_continuation_review(
+                                        current_heading, last_row_heading
+                                    )
+                                    if heading_continues and not unresolved
+                                    else None
+                                )
+                                heading_checked = True
+                            if continuation_review:
+                                quality_issue = "; ".join(
+                                    issue
+                                    for issue in [
+                                        quality_issue,
+                                        continuation_review["reason"],
+                                    ]
+                                    if issue
+                                )
+                            current_heading["continuation_review"] = continuation_review
+                            last_row_heading = current_heading
                             if date_issue:
                                 quality_issue = "; ".join(
                                     issue
@@ -942,6 +1010,14 @@ def parse_input_pdf(data, day):
                                         if date_issue
                                         else {}
                                     ),
+                                    **(
+                                        {
+                                            "continuation_review": continuation_review,
+                                            "literal_heading_lines": literal_heading_lines.copy(),
+                                        }
+                                        if continuation_review
+                                        else {}
+                                    ),
                                     "quality_issue": quality_issue,
                                 },
                             )
@@ -984,6 +1060,25 @@ def parse_input_pdf(data, day):
                         ) and not line.startswith(
                             ("Fuente:", "Nota:", "Cuadro", "Precios")
                         ):
+                            is_continuation = bool(
+                                re.search(
+                                    r"\((?:continuaci[oó]n|conclusi[oó]n)\)",
+                                    line,
+                                    re.IGNORECASE,
+                                )
+                            )
+                            literal_heading_lines = (
+                                literal_heading_lines + [line]
+                                if previous_heading
+                                else [line]
+                            )
+                            heading_continues = (
+                                heading_continues or is_continuation
+                                if previous_heading
+                                else is_continuation
+                            )
+                            heading_checked = False
+                            continuation_review = None
                             line = re.sub(
                                 r"\s*\((?:continuaci[oó]n|conclusi[oó]n)\)",
                                 "",

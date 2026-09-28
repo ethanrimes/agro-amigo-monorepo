@@ -45,7 +45,7 @@ class NativeGeometry(unittest.TestCase):
                 inputs._input_heading_word(word("Carrier", 45, 0, font=font))
             )
         self.assertEqual(inputs.INPUT_PDF_VERSION, parser_version("inputs-pdf"))
-        self.assertEqual(inputs.INPUT_PDF_VERSION, "inputs-pdf-v9")
+        self.assertEqual(inputs.INPUT_PDF_VERSION, "inputs-pdf-v10")
 
     def test_centered_header_requires_exact_contiguous_column_rules(self):
         p = MagicMock(
@@ -192,7 +192,22 @@ class ActualNativeTables(unittest.TestCase):
         self.assertTrue(
             all(r[3] and r[4] and r[5] and r[2] == date(2019, 2, 28) for r in self.rows)
         )
-        self.assertFalse(any(r[-1].get("quality_issue") for r in self.rows))
+        reviewed = [r for r in self.rows if r[-1].get("quality_issue")]
+        self.assertEqual(
+            [(r[-1]["page"], r[3], r[4], r[5], r[6]) for r in reviewed],
+            [
+                (151, "Terramicina LA", "Medellín", "50 centímetros", 55775),
+                (151, "Terramicina LA", "Montería", "50 centímetros", 50500),
+                (151, "Terramicina LA", "Santa Rosa de Osos", "50 centímetros", 51333),
+            ],
+        )
+        self.assertTrue(
+            all(
+                "50 centímetros cúbicos"
+                in r[-1]["continuation_review"]["preceding_heading"]
+                for r in reviewed
+            )
+        )
 
     def test_actual_visually_verified_product_places_and_packages(self):
         anchors = [
@@ -217,7 +232,7 @@ class ActualNativeTables(unittest.TestCase):
                 ]
                 self.assertEqual(len(rows), 1)
                 self.assertTrue(rows[0][0].startswith(f"PDF page {page},col "))
-                self.assertEqual(rows[0][-1]["parser_version"], "inputs-pdf-v9")
+                self.assertEqual(rows[0][-1]["parser_version"], "inputs-pdf-v10")
         wrapped = [
             r
             for r in self.rows
