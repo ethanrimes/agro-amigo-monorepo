@@ -298,7 +298,8 @@ def queue(db, url, kind, day=None):
         ON CONFLICT(url) DO UPDATE SET kind=excluded.kind,
           observed_on=coalesce(ingestion_asset.observed_on,excluded.observed_on)
         WHERE (ingestion_asset.kind,ingestion_asset.observed_on) IS DISTINCT FROM
-          (excluded.kind,coalesce(ingestion_asset.observed_on,excluded.observed_on))""",
+          (excluded.kind,coalesce(ingestion_asset.observed_on,excluded.observed_on))
+          AND NOT (excluded.kind='context-pdf' AND ingestion_asset.kind<>'context-pdf')""",
         (url, kind, day, url, kind, day),
     )
 
