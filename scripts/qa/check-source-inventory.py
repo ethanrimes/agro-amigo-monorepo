@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DOCUMENT = ROOT / "docs/qa/APP_SOURCE_INVENTORY_2026-09-27.md"
+DOCUMENT = ROOT / "docs/private/qa/APP_SOURCE_INVENTORY_2026-09-27.md"
 
 
 def registry_keys(path, variable):
@@ -38,10 +38,17 @@ def registry_keys(path, variable):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--document", type=Path, default=DOCUMENT,
+        help="Local source inventory; internal QA documents are intentionally not tracked",
+    )
     parser.add_argument("--snapshot", type=Path)
     args = parser.parse_args()
+    if not args.document.is_file():
+        parser.error(f"Private source inventory not found: {args.document}; supply --document PATH")
+    document = args.document.read_text()
     rows = {}
-    for line in DOCUMENT.read_text().splitlines():
+    for line in document.splitlines():
         match = re.match(r"\| `([^`]+)` /", line)
         if match:
             if match[1] in rows:
@@ -62,7 +69,6 @@ def main():
         }
     missing = sorted(required - rows.keys())
     incomplete = sorted(kind for kind, row in rows.items() if "**OCR:** " not in row)
-    document = DOCUMENT.read_text()
     references = json.loads((ROOT / "pipelines/planning/reference-downloads.json").read_text())
     omitted_references = sorted(name for name, url in references.items() if url not in document)
     layers = json.loads((ROOT / "pipelines/spatial/layers.json").read_text())
