@@ -313,6 +313,8 @@ def _daily_changes(data, parsed):
     may store fractions with an actual % format. Neither magnitude nor column
     title is evidence for multiplying a literal numeric cell by 100.
     """
+    from .daily_recovery import percentage_change
+
     cells = {}
     if data[:2] == b"PK":
         import openpyxl
@@ -356,11 +358,10 @@ def _daily_changes(data, parsed):
             raw, fmt = cells[key]
             if not math.isfinite(raw):
                 raise ValueError("Nonfinite daily ZIP native variation")
-            # Ignore quoted and escaped literal percent signs, as Excel does.
-            scaled = "%" in re.sub(r'"[^"]*"|\\.', "", fmt)
-            row[7] = float(raw) * (100 if scaled else 1)
+            row[7], percentage_details = percentage_change(raw, fmt)
             row[8] = {
                 **row[8],
+                **percentage_details,
                 "container_parser_version": VERSION,
                 "literal_change": raw,
                 "change_number_format": fmt,
