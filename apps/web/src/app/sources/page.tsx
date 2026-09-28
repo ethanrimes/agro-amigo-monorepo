@@ -24,7 +24,7 @@ const sources = [
     subtitle: "Estructuras regionales y primera venta",
     status: "Integrado",
     description:
-      "22 estructuras verificadas de costos de 2023 y 2024 para siete cultivos. Se mantienen los valores nominales del año y sistema publicados. La biblioteca incluye precios en primer mercado de diciembre de 2025 y el índice de insumos de junio de 2026; no son cotizaciones actuales.",
+      "Estudios publicados de costos agrícolas por cultivo y región. Se mantienen los valores nominales del año y sistema publicados. La biblioteca incluye precios en primer mercado de diciembre de 2025 y el índice de insumos de junio de 2026; no son cotizaciones actuales.",
     url: "https://upra.gov.co/es-co/eva/eva-2023",
   },
   {

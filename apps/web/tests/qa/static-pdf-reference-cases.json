@@ -1,0 +1,460 @@
+[
+  {
+    "name": "static-pdf-coffee-cost-benchmark-p6",
+    "route": "/evidence/aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26?page=6",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"6\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage6, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"1,550,805\",\"125\",\"Feb/2026\",\"1.77%\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "February2026 national mean1,550,805COP per125kgCPS; monthly change1.77%, distinct from spot price"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26/content\"",
+            "expected": "Exact SHA-retained original aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://federaciondecafeteros.org/wp-content/uploads/2026/04/Reporte_mensual_FEPCafe.pdf\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-coffee-cost-benchmark-p10",
+    "route": "/evidence/aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26?page=10",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"10\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage10, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"2026\",\"125\",\"1.484\",\"442\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Methodology updates from2026; survey1,484farms and Plan3mil442municipalities, not personal cost forecast"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26/content\"",
+            "expected": "Exact SHA-retained original aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://federaciondecafeteros.org/wp-content/uploads/2026/04/Reporte_mensual_FEPCafe.pdf\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-potato-alhaja-p19",
+    "route": "/evidence/8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae?page=19",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"19\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage19, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"2.550\",\"2.850\",\"10 a 19\",\"5,2 a 5,9\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Alhaja adaptation2550–2850masl,10–19°C,pH5.2–5.9; cultivar-specific context"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae/content\"",
+            "expected": "Exact SHA-retained original 8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://editorial.agrosavia.co/index.php/publicaciones/catalog/download/163/140/1111-1?inline=1\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-potato-alhaja-p21",
+    "route": "/evidence/8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae?page=21",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"21\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage21, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"45\",\"120\",\"21.047\",\"Alhaja\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Alhaja approximately45days sowing-to-flowering,120sowing-to-harvest; printed yield21,047kg/ha, not all potato varieties"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae/content\"",
+            "expected": "Exact SHA-retained original 8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://editorial.agrosavia.co/index.php/publicaciones/catalog/download/163/140/1111-1?inline=1\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-coffee-development-p1",
+    "route": "/evidence/b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"1\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage1, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"194\",\"1993\",\"FRUTO\",\"BROCA\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Avance194 publishedSeptember1993; fruit development and coffee berry borer study"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc/content\"",
+            "expected": "Exact SHA-retained original b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://publicaciones.cenicafe.org/index.php/avances_tecnicos/article/download/1964/5348\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-coffee-development-p2",
+    "route": "/evidence/b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc?page=2",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"2\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage2, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"1.200\",\"1.700\",\"28 - 30\",\"34 - 36\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "From flowering: below1200m28–30weeks; above1700m34–36weeks, not a current farm harvest prediction"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc/content\"",
+            "expected": "Exact SHA-retained original b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://publicaciones.cenicafe.org/index.php/avances_tecnicos/article/download/1964/5348\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-first-market-p1",
+    "route": "/evidence/e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"1\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage1, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"Diciembre\",\"2025\",\"Primera quincena\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Historical December2025 first-fortnight first-market bulletin"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701/content\"",
+            "expected": "Exact SHA-retained original e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2026-01/01_BolPpmS1_20251218.pdf\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-first-market-p10",
+    "route": "/evidence/e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701?page=10",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"10\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage10, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"CHITA\",\"2.688\",\"2.245\",\"AQUITANIA\",\"2.500\",\"808\",\"PRECIOS $/kg\",\"Dic 06 a 13\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Cebolla junca Chita2688→2245 andAquitania2500→808COP/kg, Nov29–Dec05 vsDec06–13; original historical first-market figures"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701/content\"",
+            "expected": "Exact SHA-retained original e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2026-01/01_BolPpmS1_20251218.pdf\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-input-index-p1",
+    "route": "/evidence/24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"1\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage1, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"Junio de 2026\",\"Índice de precios\",\"alimentos balanceados\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "June2026 agricultural inputs/animal-feed index bulletin"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0/content\"",
+            "expected": "Exact SHA-retained original 24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2026-08/01_BolInsjun_20260812.pdf\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-input-index-p2",
+    "route": "/evidence/24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0?page=2",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"2\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage2, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"2,36\",\"3,02\",\"Índice total\",\"Fertilizantes\",\"Junio de 2026\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "June2026 total index+2.36%,fertilizers+3.02%; indices not individual input quotations"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0/content\"",
+            "expected": "Exact SHA-retained original 24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2026-08/01_BolInsjun_20260812.pdf\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-ideam-bulletin-p1",
+    "route": "/evidence/6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"1\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage1, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"136\",\"mayo\",\"julio\",\"2026\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "Edition136 May–July2026, retained historical bulletin not current forecast"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e/content\"",
+            "expected": "Exact SHA-retained original 6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://www.ideam.gov.co/file-download/download/public/20418\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-ideam-bulletin-p2",
+    "route": "/evidence/6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e?page=2",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]') && !!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-PAGE",
+            "condition": "document.querySelector('[aria-label=\"Página del documento\"]')?.value===\"2\" && !!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Actual physicalPDFpage2, with visible rendered original"
+          },
+          {
+            "id": "STATIC-PDF-NATIVE-ANCHORS",
+            "condition": "[\"61%\",\"abril de 2026\",\"mayo\",\"julio\"].every(s=>(s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(document.querySelector('.pdf-text').textContent).includes((s=>String(s).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s/g,'').toLowerCase())(s)))",
+            "expected": "April2026 report estimated61%ElNiño transition May–July; historical statement, not current probability"
+          },
+          {
+            "id": "STATIC-PDF-ORIGINAL",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e/content\"",
+            "expected": "Exact SHA-retained original 6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e"
+          },
+          {
+            "id": "STATIC-PDF-PUBLISHER",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://www.ideam.gov.co/file-download/download/public/20418\"",
+            "expected": "Exact original publisherURL retained, independent of current remote-link availability"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-fep-cenicafe-live-references",
+    "route": "/plan?municipality=05674&crop=2030300",
+    "ready": "!!document.querySelector('.cost-reference strong') && !!document.querySelector('a[href=\"/evidence/coffee-development?page=2\"]')",
+    "steps": [
+      {
+        "action": "window.__fep=await(await fetch('/api/evidence/coffee-cost-benchmark')).json();document.querySelector('.cost-reference').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-FEP-API-COST",
+            "condition": "window.__fep.id===\"aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26\" && window.__fep.metadata.cost_per_125kg===1550805 && window.__fep.reference_period.includes('Febrero 2026')",
+            "expected": "Native printed February2026 cost1,550,805COP/125kg matches exactAPIoriginal"
+          },
+          {
+            "id": "STATIC-FEP-UI-UNIT",
+            "condition": "document.querySelector('.cost-reference').textContent.replace(/\\s/g,'').includes('$1.550.805porcargade125kg') && document.querySelector('.cost-reference').textContent.replace(/\\s/g,'').includes('$12.406/kg')",
+            "expected": "Correct125kgpergamino unit and1,550,805/125=12,406.44COP/kg shown with peso display rounding"
+          },
+          {
+            "id": "STATIC-FEP-HISTORICAL",
+            "condition": "document.querySelector('.cost-reference').textContent.includes('febrero 2026') && document.querySelector('.cost-reference').textContent.includes('No se resta automáticamente de una oferta de hoy')",
+            "expected": "Historical national benchmark not currentfarmcost or automatic offer deduction"
+          },
+          {
+            "id": "STATIC-FEP-PAGES",
+            "condition": "[6,10].every(p=>!!document.querySelector(`.cost-reference a[href=\"/evidence/aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26?page=${p}\"]`))",
+            "expected": "Separate exact costpage6 and methodologypage10 originals"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector('.harvest-panel .inline-note').scrollIntoView({block:'center'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-CENICAFE-DURATION",
+            "condition": "document.querySelector('.harvest-panel .inline-note').textContent.includes('28 a 36 semanas según altitud') && document.querySelector('.harvest-panel .inline-note').textContent.includes('desde la floración')",
+            "expected": "Cenicafé native28–36week range measured from flowering, not planting"
+          },
+          {
+            "id": "STATIC-CENICAFE-LIMIT",
+            "condition": "document.querySelector('.harvest-panel .inline-note').textContent.includes('no una fecha calculada para tu finca') && !!document.querySelector('a[href=\"/evidence/coffee-development?page=2\"]')",
+            "expected": "Sourcepage2 with explicit no-farm-date limitation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-pdf-library-and-scope",
+    "route": "/sources",
+    "ready": "document.querySelectorAll('.library-row').length>5",
+    "steps": [
+      {
+        "action": "window.__library=await(await fetch('/api/planning/library')).json();document.querySelector('.source-library').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-PDF-LIBRARY",
+            "condition": "[\"aacc7369f9ef15541312ac9063edd1f7f7893289050ba36cf95d50d2cc3dee26\",\"e6d8c5a4c8a51c698a37a5e18a331b0d8dd250abe01627fa3eba838b8daa5701\",\"24cecce8968e3933f37f3f5f4f9eae26538181bbde25e42a86587ccc841833b0\",\"6ee6157394f5253790aaff5f009c45592d080ceb478708e0d9258101b13f557e\",\"8b7c33a890d9095dae8fbe72e2900db705a60420b4a1fc78be737e8eeda5b4ae\",\"b0a0d6c8f1c1b0ba0ff343b6caf8b441304b54fce4326f695c9c7ae1704c8ddc\"].every(id=>window.__library.some(d=>d.id===id)&&!!document.querySelector(`.library-row a[href=\"/evidence/${id}\"]`))",
+            "expected": "All6 exact immutablePDForiginals reachable from live document library"
+          },
+          {
+            "id": "STATIC-PDF-HISTORICAL-SCOPE",
+            "condition": "document.body.textContent.includes('no son cotizaciones actuales') && document.body.textContent.includes('boletín oficial más reciente')",
+            "expected": "Historical price/context library not presented as currentquote/forecast"
+          },
+          {
+            "id": "STATIC-PDF-COST-SCOPE",
+            "condition": "document.body.textContent.includes('Estudios publicados de costos agrícolas por cultivo y región.') && !document.body.textContent.includes('22 estructuras verificadas')",
+            "expected": "Source description follows published coverage without stale fixedcounts"
+          }
+        ]
+      }
+    ]
+  }
+]
