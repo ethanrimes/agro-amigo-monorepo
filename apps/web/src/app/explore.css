@@ -1922,6 +1922,14 @@
     max-height: 24dvh;
   }
 }
+
+/* Report and input cards need the full phone width for long COP ranges and
+   presentation labels. This later rule wins over the tablet two-column grid. */
+@media (max-width: 600px) {
+  .input-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .official-reference .input-price {
   font-size: 25px;
   overflow-wrap: anywhere;

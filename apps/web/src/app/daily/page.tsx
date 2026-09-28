@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
+import { ReportProductPicture } from "@/components/explore/ReportProductPicture";
 import { money, dateLabel, unitLabel } from "@/lib/market-types";
 import { fold } from "@/lib/planning-math";
 type Daily = {
@@ -100,6 +101,7 @@ export default function DailyPage() {
                 className="panel input-card"
                 key={r.product_name + r.market_name}
               >
+                <ReportProductPicture name={r.product_name} />
                 <span className="eyebrow">{r.market_name}</span>
                 <h2>{r.product_name}</h2>
                 <strong className="input-price">

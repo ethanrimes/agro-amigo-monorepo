@@ -6,6 +6,7 @@ import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { ReportProductPicture } from "./ReportProductPicture";
 import { fold } from "@/lib/planning-math";
 import { money, dateLabel, unitLabel } from "@/lib/market-types";
 type CityPrice = {
@@ -117,6 +118,7 @@ export function CityPrices() {
                 className="panel input-card"
                 key={r.document_id + r.source_locator}
               >
+                <ReportProductPicture name={r.product_name} />
                 <span className="eyebrow">{r.market_name}</span>
                 <h2>
                   <Link

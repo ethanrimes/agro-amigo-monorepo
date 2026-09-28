@@ -11,23 +11,53 @@ const root = path.resolve(__dirname, "..");
 const original = JSON.parse(fs.readFileSync(path.join(root, "public/maps/colombia-departments.json"), "utf8")) as FeatureCollection<Geometry>;
 const evidence = process.env.AUX_EVIDENCE_DIR;
 
-test("all attributed files match their SHA and legacy crops select honest illustrations", () => {
-  for (const file of ["src/lib/images.ts", "src/app/page.tsx", "src/app/field-theme.css", "src/components/explore/CoffeeDetail.tsx"]) {
-    expect(fs.readFileSync(path.join(root, file), "utf8")).not.toMatch(/\/images\/(coffee|avocado|tomato|potato|banana|plantain|produce|farm)\.jpg/);
-  }
+test("image files match their hashes and the crop selection is specific", () => {
   for (const entry of Object.values(manifest)) {
     expect(createHash("sha256").update(fs.readFileSync(path.join(root, "public", entry.src))).digest("hex")).toBe(entry.sha256);
-    expect(entry.author && entry.source && entry.license && entry.illustrative).toBeTruthy();
+    expect(entry.author && entry.license && entry.illustrative).toBeTruthy();
+    if (!entry.source) expect(entry.license).toContain("no documentada");
   }
-  for (const name of ["Café pergamino seco", "Aguacate Hass", "Tomate chonto", "Papa superior", "Banano", "Plátano hartón", "Producto no identificado"]) {
+  for (const [name, key] of [["Café pergamino seco", "coffee-parchment"], ["Aguacate Hass", "avocado"], ["Tomate chonto", "tomato"], ["Papa superior", "potato"], ["Banano", "banana"], ["Plátano hartón", "plantain"], ["Cacao", "cacao-pods"], ["Caña de azúcar", "sugarcane-colombia"], ["Palma de aceite", "oil-palm-fruit"], ["Rosas", "rose-colombia"], ["Ganado bovino", "cattle-colombia"]]) {
     const photo = photoFor(name);
-    expect(photo.key).toBe("produce-neutral");
-    expect(photo.alt).toBe(`Ilustración general de productos agrícolas; no representa ${name}.`);
-    expect(imageLibrary[photo.key].author).toBe("AgroAmigo");
+    expect(photo.key).toBe(key);
+    expect(photo.src).toBe(imageLibrary[key].src);
   }
+  for (const name of ["coffee", "avocado", "tomato", "potato", "banana", "plantain", "produce", "farm"]) {
+    const original = fs.readFileSync(path.join(root, `public/images/${name}.jpg`));
+    expect(original.subarray(0, 3).toString("hex")).toBe("ffd8ff");
+  }
+  expect(photoFor("Producto no identificado").key).toBe("produce-neutral");
+  expect(photoFor("Café pergamino seco").alt).toContain("café pergamino");
+  expect(photoFor("Sal").key).toBe("salt");
+  expect(photoFor("Sal").alt).toContain("sal marina gruesa");
+  expect(photoFor("Huevos frescos").key).toBe("eggs");
+  expect(photoFor("Pimentón rojo").key).toBe("bell-pepper");
+  expect(photoFor("Ají picante").key).toBe("produce-neutral");
+  for (const name of ["Galería Alameda", "Almacafé", "Molino de arroz"]) {
+    expect(photoFor(name, "", "market").key).toBe("market");
+  }
+  expect(photoFor("Producto cárnico desconocido", "Carnes").key).toBe("produce-neutral");
+  expect(photoFor("Semilla certificada", "Semillas", "input").key).toBe("seeds-general");
+  expect(photoFor("Plántula de cacao", "Material vegetal", "input").key).toBe("seedlings-general");
   expect(photoFor("Café tostado").key).toBe("coffee-roasted");
   expect(photoFor("Tomate de árbol").key).toBe("tamarillo");
   expect(photoFor("Manzana roja").key).toBe("apple");
+  expect(photoFor("Cacao en polvo").key).toBe("produce-neutral");
+  expect(photoFor("Chocolate de cacao").key).toBe("chocolate");
+  expect(photoFor("Palma").key).toBe("oil-palm-fruit");
+  expect(photoFor("Palmiste").key).toBe("oil-palm-fruit");
+  expect(photoFor("Café · almendra sana").key).toBe("coffee-green-beans");
+  expect(photoFor("Café colombiano excelso · ex-dock").key).toBe("coffee-green-beans");
+  expect(photoFor("Rosa híbrida de té · RED VARIETIES 50 cm").key).toBe("rose-red-cut");
+  expect(photoFor("Ganado flaco en pie · hembras").key).toBe("cattle-colombia");
+  expect(photoFor("Ganado gordo en pie").key).toBe("cattle-colombia");
+  expect(photoFor("Azúcar blanca").key).toBe("sugar");
+  expect(photoFor("Aceite de palma").key).toBe("palm-oil-unbranded");
+  expect(photoFor("Aceite vegetal").key).toBe("produce-neutral");
+  expect(photoFor("Pimentón verde").key).toBe("bell-pepper-green");
+  expect(photoFor("Pimentón rojo").key).toBe("bell-pepper");
+  expect(photoFor("Café · incentivo a la calidad").key).toBe("produce-neutral");
+  expect(photoFor("Fríjol rosado").key).toBe("beans");
 });
 
 test("actual outlines lose only the degenerate island; original and two valid islands remain exact", () => {
@@ -73,22 +103,24 @@ async function shot(page: Page, name: string) {
   }
 }
 
-test("browser: two independently checked photos and new illustrations load with truthful credits", async ({ page }) => {
+test("browser: credited crop and Colombian context photos load with source details", async ({ page }) => {
   await mockApi(page);
   await page.goto("/credits");
-  for (const key of ["apple", "blueberry", "produce-neutral", "farm-neutral"]) {
+  for (const key of ["apple", "blueberry", "farm-colombia", "produce-colombia", "coffee-parchment", "potato", "seeds-general", "seedlings-general", "cacao-pods", "sugarcane-colombia", "oil-palm-fruit", "palm-oil-unbranded", "rose-colombia", "rose-red-cut", "cattle-colombia", "coffee-green-beans", "bell-pepper-green"]) {
     const entry = imageLibrary[key];
     const article = page.locator(".credits-grid article").filter({ has: page.getByRole("heading", { name: entry.title, exact: true }) });
     await article.scrollIntoViewIfNeeded();
     await expect(article).toContainText(entry.author);
     await expect(article.getByRole("link", { name: "Ver origen de la imagen" })).toHaveAttribute("href", entry.source);
+    if (entry.modifications) await expect(article).toContainText(entry.modifications);
     await expect.poll(() => article.locator("img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   }
   await shot(page, "credits");
   await page.goto("/");
-  await expect(page.locator(".home-hero img")).toHaveAttribute("src", imageLibrary["farm-neutral"].src);
-  await expect(page.locator('.home-section[href="/products"] img')).toHaveAttribute("src", imageLibrary["produce-neutral"].src);
-  expect(await page.locator('img[src="/images/produce.jpg"],img[src="/images/farm.jpg"]').count()).toBe(0);
+  await expect(page.locator(".home-hero img")).toHaveAttribute("src", imageLibrary["farm-colombia"].src);
+  await expect(page.locator('.home-section[href="/products"] img')).toHaveAttribute("src", imageLibrary["produce-colombia"].src);
+  await expect(page.locator('.home-section[href="/insumos"] img')).toHaveAttribute("src", imageLibrary["seeds-general"].src);
+  await expect.poll(() => page.locator(".home-hero img").evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   await shot(page, "home");
 });
 
