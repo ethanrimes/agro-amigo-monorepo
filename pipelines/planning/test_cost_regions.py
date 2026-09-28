@@ -8,7 +8,10 @@ import os
 from pathlib import Path
 import unittest
 
-from cost_regions import ARVEJA_FOOTERS, ARVEJA_SOURCE, arveja_municipalities, cost_region
+try:
+    from .cost_regions import ARVEJA_FOOTERS, ARVEJA_SOURCE, arveja_municipalities, cost_region
+except ImportError:  # unittest discovery with pipelines/planning as its root
+    from cost_regions import ARVEJA_FOOTERS, ARVEJA_SOURCE, arveja_municipalities, cost_region
 
 
 # Independently transcribed from rendered original pages, not parser output.
