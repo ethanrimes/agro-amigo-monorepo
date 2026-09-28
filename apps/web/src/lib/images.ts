@@ -100,16 +100,6 @@ const families: [RegExp, string][] = [
   [/camaron/, "shrimp"],
   [/cafe/, "coffee"],
 ];
-const existing = new Set([
-  "coffee",
-  "avocado",
-  "tomato",
-  "potato",
-  "banana",
-  "plantain",
-  "produce",
-  "farm",
-]);
 export function photoFor(
   name: string,
   category = "",
@@ -162,17 +152,10 @@ export function photoFor(
                 : /molino|arrocera/.test(n)
                   ? "market-rice"
                   : "market";
-  const src =
-    imageLibrary[key]?.src ||
-    (existing.has(key)
-      ? `/images/${key}.jpg`
-      : imageLibrary[
-          kind === "input"
-            ? "input-neutral"
-            : kind === "market"
-              ? "market"
-              : "produce"
-        ]?.src || "/images/produce.jpg");
+  // Unattributed legacy photos are retained on disk, but never selected.
+  // A general illustration must not claim to depict a specific crop or variety.
+  if (!imageLibrary[key]) key = kind === "input" ? "input-neutral" : kind === "market" ? "market" : "produce-neutral";
+  const src = imageLibrary[key].src;
   const visual = src.endsWith(".svg") ? "Ilustración" : "Foto ilustrativa";
   const alt =
     kind === "input"
@@ -183,6 +166,8 @@ export function photoFor(
         ? key === "market" || key.startsWith("market-")
           ? "Imagen ilustrativa de una plaza o centro de acopio."
           : `Fotografía de referencia: ${name}`
-        : `${visual} de ${name}; la variedad puede diferir.`;
+        : key === "produce-neutral"
+          ? `Ilustración general de productos agrícolas; no representa ${name}.`
+          : `${visual} de ${name}; la variedad puede diferir.`;
   return { src, alt, key };
 }
