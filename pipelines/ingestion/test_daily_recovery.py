@@ -1,6 +1,7 @@
 """Exact daily source recoveries, independent price-cell coverage and review bounds."""
 
 import hashlib
+import re
 import unittest
 from collections import Counter
 from datetime import date
@@ -8,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import xlrd
+import pdfplumber
 
 from . import daily_recovery as recovery
 from . import worker
@@ -229,3 +231,54 @@ class MaterializedDailyRecovery(unittest.TestCase):
             ]
 
         self.assertEqual(native(books[0]), native(books[1]))
+
+    def test_october15_heading_typo_does_not_turn_it_into_september_data(self):
+        october = Path(__file__).parent / "testdata/mayoristas_octubre_15_2014.xls"
+        bulletin = Path(__file__).parent / "testdata/mayoristas_octubre_15_2014.pdf"
+        september = FIXTURES / "mayoristas_septiembre_15_2014.xls"
+        body = october.read_bytes()
+        self.assertEqual(
+            hashlib.sha256(body).hexdigest(),
+            "7ff030995d78b89d20e1efd533bc4390985ddae7f5a70e236d39a74da253397f",
+        )
+        parsed = recovery.parse_daily(body, date(2014, 10, 15))
+        self.assertEqual(len(parsed["rows"]), 302)
+        self.assertEqual(
+            {r[0]: r[6] for r in parsed["rows"]}, original_price_cells(october)
+        )
+        prices = {(r[3], r[4]): r[6] for r in parsed["rows"]}
+        self.assertEqual(prices["Cebolla junca", "Barranquilla"], 1700)
+        self.assertEqual(prices["Cebolla junca", "Bogotá, Corabastos"], 1111)
+        self.assertEqual(prices["Cebolla junca", "Cartagena, Bazurto"], 1228)
+        self.assertEqual(prices["Habichuela", "Pereira, Mercasa"], 1140)
+        self.assertEqual(prices["Tomate*", "Bogotá, Corabastos"], 1201)
+        self.assertEqual(
+            hashlib.sha256(bulletin.read_bytes()).hexdigest(),
+            "194476e635512fb80819621a604c20ddc4d9645ecdbc51f8b1e08a8c453fed03",
+        )
+        with pdfplumber.open(bulletin) as pdf:
+            text = " ".join(pdf.pages[0].extract_text().split())
+        self.assertTrue(text.startswith("Octubre 15 de 2014"))
+        for product, market, price, passage in (
+            ("Cebolla junca", "Barranquilla", 1700, "En Barranquilla"),
+            ("Cebolla junca", "Bogotá, Corabastos", 1111, "en Bogotá, la cotización"),
+            ("Habichuela", "Pereira, Mercasa", 1140, "En la capital de Risaralda"),
+            ("Tomate*", "Bogotá, Corabastos", 1201, "En Bogotá, el kilo de tomate"),
+        ):
+            self.assertEqual(prices[product, market], price)
+            self.assertRegex(
+                text,
+                re.escape(passage) + r".{0,230}\$" + f"{price:,}".replace(",", "."),
+            )
+        self.assertEqual({r[2] for r in parsed["rows"]}, {date(2014, 10, 15)})
+        self.assertEqual(parsed["reviews"], [])
+        self.assertEqual(
+            parsed["date_resolutions"],
+            [recovery.VERIFIED_DATE_RECOVERIES[hashlib.sha256(body).hexdigest()]],
+        )
+        if september.exists():
+            self.assertNotEqual(body, september.read_bytes())
+        with self.assertRaises(worker.SourceDateMismatch):
+            recovery.parse_daily(body, date(2014, 9, 15))
+        with self.assertRaises(worker.SourceDateMismatch):
+            recovery.parse_daily(body + b"\0" * 512, date(2014, 10, 15))

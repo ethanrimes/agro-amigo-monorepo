@@ -41,6 +41,22 @@ def column(rows, extras=()):
 
 
 class MilkNameGeometry(unittest.TestCase):
+    def test_october_2012_unmapped_trend_glyph_keeps_literal_prices(self):
+        path = Path(__file__).resolve().parent / "testdata/mensual_leche_oct_2012.pdf"
+        data = path.read_bytes()
+        self.assertEqual(
+            sha256(data).hexdigest(),
+            "da0a7b07ad470e2ecf5f0839ce8fb873fecc1e2ecd4d2f8b77db4db36c0dbb9e",
+        )
+        from datetime import date
+
+        rows = list(parse_milk_pdf(data, date(2012, 10, 31)))
+        self.assertEqual(len(rows), 180)
+        places = {(row[-1]["department"], row[4]): row for row in rows}
+        self.assertEqual(places["Cauca", "Popayán"][6], 936)
+        self.assertEqual(places["Cauca", "Popayán"][-1]["trend"], "☐")
+        self.assertEqual(places["Cesar", "Chimichagua"][-1]["trend"], "☐☐")
+
     def test_wrapped_suffix_belongs_to_previous_price_not_next_municipality(self):
         p = column(
             [

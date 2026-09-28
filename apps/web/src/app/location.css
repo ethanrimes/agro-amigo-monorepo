@@ -18,6 +18,35 @@
   overflow: hidden;
   margin-bottom: 18px;
 }
+.location-header-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.location-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f4ead8f7 0%, #f4ead8e8 49%, #f4ead844 100%);
+  pointer-events: none;
+}
+.location-header > div,
+.location-header-caption {
+  position: relative;
+  z-index: 1;
+}
+.location-header-caption {
+  position: absolute;
+  right: 18px;
+  bottom: 12px;
+  color: #1c3525;
+  background: #fffdf0e8;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+}
 .location-header h1 {
   font-family: Arial, sans-serif;
   font-size: clamp(28px, 4vw, 42px);

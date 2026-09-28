@@ -8,7 +8,7 @@ from collections import Counter
 from datetime import date
 from urllib.parse import unquote, urldefrag, urljoin, urlsplit
 
-VERSION = "dane-weekly-v4"
+VERSION = "dane-weekly-v6"
 WEEKLY = "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-semanal-1"
 ROOTS = ((WEEKLY, "dane-weekly-index"),)
 INDEX_KINDS = {"dane-weekly-index"}
@@ -33,7 +33,15 @@ MONTHS = [
 MONTH_NUM = {v: i for i, m in enumerate(MONTHS, 1) for v in (m, m[:3])}
 MONTH_NUM["setiembre"] = 9
 MONTH = "(?:" + "|".join(sorted(MONTH_NUM, key=len, reverse=True)) + ")"
-NUMBER = re.compile(r"\d+(?:\.\d{3})*(?:,\d+)?")
+NUMBER = re.compile(r"(?:\d{1,3}(?:\.\d{3})+|\d{1,3}(?:,\d{3})+|\d+(?:,\d{1,2})?)")
+
+
+def _pdf_number(token):
+    # SIPSA weekly PDFs print whole-peso prices with either grouping mark.
+    # A comma followed by one or two digits remains a decimal comma.
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", token):
+        return float(token.replace(".", "").replace(",", ""))
+    return float(token.replace(".", "").replace(",", "."))
 
 
 def folded(value):
@@ -59,6 +67,18 @@ class NormalExtractionFailed(ValueError):
 def _period(text):
     """Only explicit weekly ranges; neither publication days nor graph dates."""
     text = folded(text).replace("_", " ")
+    parenthesized_years = re.search(
+        rf"\b(20\d{{2}})\s*\(\s*(\d{{1,2}})\s+de\s+({MONTH})\s*\)\s*[-–]\s*"
+        rf"(20\d{{2}})\s*\(\s*(\d{{1,2}})\s+de\s+({MONTH})\s*\)",
+        text,
+    )
+    if parenthesized_years:
+        y1, d1, m1, y2, d2, m2 = parenthesized_years.groups()
+        first = date(int(y1), MONTH_NUM[m1], int(d1))
+        last = date(int(y2), MONTH_NUM[m2], int(d2))
+        if not 1 <= (last - first).days <= 7:
+            raise ValueError("Weekly printed range is not a supported weekly period")
+        return first, last
     prefix = re.search(
         rf"(20\d{{2}})[-–](20\d{{2}})\s*\(\s*(\d{{1,2}})\s+de\s+({MONTH})\s+al\s+(\d{{1,2}})\s+de\s+({MONTH})\s*\)",
         text,
@@ -263,15 +283,19 @@ def _row(
     page=None,
     exceptions=None,
     allow_missing_identity=False,
+    allow_missing_min=False,
 ):
     from .worker import slug, today
 
     start, end = period
     if end > today():
         raise ValueError("Weekly monetary table period is in the future")
-    numbers = [float(v) for v in (low, high, mean)]
-    if not all(math.isfinite(v) for v in numbers) or not (
-        0 < numbers[0] <= numbers[2] <= numbers[1]
+    numbers = [float(v) if v is not None else None for v in (low, high, mean)]
+    if (numbers[0] is None and not allow_missing_min) or not all(
+        v is None or math.isfinite(v) for v in numbers
+    ) or not (
+        0 < numbers[2] <= numbers[1]
+        and (numbers[0] is None or 0 < numbers[0] <= numbers[2])
     ):
         raise ValueError(f"Weekly mean is outside the printed min/max at {locator}")
     name, market = clean(name), clean(market)
@@ -328,6 +352,17 @@ def _row(
                 "literal_min": numbers[0],
                 "literal_max": numbers[1],
                 "literal_mean": numbers[2],
+            }
+        )
+    if allow_missing_min:
+        row["price"] = None
+        row["details"].update(
+            {
+                "quality_issue": "La fuente deja vacía la celda de precio mínimo; se conservan máximo y medio literales para revisión sin inferir el mínimo.",
+                "literal_min": None,
+                "literal_max": numbers[1],
+                "literal_mean": numbers[2],
+                "literal_missing_columns": ["Mínimo"],
             }
         )
     return row
@@ -387,14 +422,18 @@ def parse_workbook(body, url):
     exceptions = _exceptions(notes)
     declared_kg = "pesos por kilogramo" in folded(notes)
     result = []
-    global_period = _period(
-        "\n".join(
-            clean(value)
+    # Read one publication heading at a time. Ancillary supply sheets can
+    # print their own longer reporting range after the weekly price caption.
+    global_period = next(
+        (
+            period
             for _, rows in sheets
             for row in rows[:10]
             for value in row
             if isinstance(value, str)
-        )
+            and (period := _period(clean(value))) is not None
+        ),
+        None,
     )
     for name, rows in sheets:
         grouped = any(
@@ -567,7 +606,12 @@ def _native_column(
                 w for w in line if w["x0"] >= boundary and NUMBER.fullmatch(w["text"])
             ]
             if values:
-                if len(values) != 3 or not product:
+                missing_min = (
+                    len(values) == 2
+                    and headers[1]["x0"] <= values[0]["x0"] <= headers[1]["x1"]
+                    and headers[2]["x0"] <= values[1]["x0"] <= headers[2]["x1"]
+                )
+                if len(values) != 3 and not missing_min:
                     raise ValueError(
                         f"Weekly PDF unbound/incomplete monetary row at page {page_no}, column {side}, line {number}: {product!r} / {label!r} / {[v['text'] for v in values]}"
                     )
@@ -576,6 +620,7 @@ def _native_column(
                         "number": number,
                         "top": values[0]["top"],
                         "values": values,
+                        "missing_min": missing_min,
                         "labels": [],
                         "trend": clean(
                             " ".join(
@@ -619,14 +664,14 @@ def _native_column(
                 )
             anchor["labels"].append(label)
         for anchor in anchors:
-            values = [
-                float(w["text"].replace(".", "").replace(",", "."))
-                for w in anchor["values"]
-            ]
+            values = [_pdf_number(w["text"]) for w in anchor["values"]]
+            missing_min = anchor["missing_min"]
             record = _row(
                 product,
                 " ".join(anchor["labels"]),
-                *values,
+                None if missing_min else values[0],
+                values[0] if missing_min else values[1],
+                values[1] if missing_min else values[2],
                 anchor["trend"],
                 category,
                 period,
@@ -637,7 +682,10 @@ def _native_column(
                 # 7–13 March 2020, printed page 37). Only a named product with
                 # three literal prices reaches this review-only path; _row
                 # withholds its price rather than borrowing a nearby market.
-                allow_missing_identity=bool(product and not anchor["labels"]),
+                # Page-start continuations may have complete printed prices
+                # before their product heading; retain them without guessing it.
+                allow_missing_identity=not product or not anchor["labels"],
+                allow_missing_min=missing_min,
             )
             if recovered_heading:
                 record["details"].update(
@@ -1050,9 +1098,7 @@ def _ocr_page(reading, url, page_no, document_exceptions):
                 continue
             if not all(NUMBER.fullmatch(token) for token in tokens):
                 raise ValueError("Weekly OCR has incomplete literal monetary cells")
-            values = [
-                float(token.replace(".", "").replace(",", ".")) for token in tokens
-            ]
+            values = [_pdf_number(token) for token in tokens]
             if explicit_product_column:
                 product = cells[0]
             result.append(

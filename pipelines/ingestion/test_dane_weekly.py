@@ -3,6 +3,7 @@
 import io
 import unittest
 from datetime import date
+from hashlib import sha256
 from pathlib import Path
 
 import openpyxl
@@ -76,6 +77,85 @@ def native_pdf(
 
 
 class WeeklySemantics(unittest.TestCase):
+    def test_original_cross_year_weekly_pdf(self):
+        path = Path(__file__).parent / "testdata/Sem_28dic_2019__03ene_2020.pdf"
+        data = path.read_bytes()
+        self.assertEqual(
+            sha256(data).hexdigest(),
+            "02e4508650bcc997f29e77814d493326f0960f40365746ebee2ee228d9a06973",
+        )
+        rows = weekly.parse_pdf(
+            data,
+            "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_28dic_2019__03ene_2020.pdf",
+        )
+        self.assertEqual((len(rows), sum(r["price"] is not None for r in rows)), (4429, 4285))
+        self.assertEqual({(r["period_start"], r["date"]) for r in rows}, {("2019-12-28", "2020-01-03")})
+
+    def test_original_january_2026_weekly_annex(self):
+        path = Path(__file__).parent / "testdata/anex-SIPSASemanal-03ene09ene-2026.xlsx"
+        data = path.read_bytes()
+        self.assertEqual(
+            sha256(data).hexdigest(),
+            "b256cce53d5e833ec1271fbabe68b38ed4c452f3aa481f37011561887c179a87",
+        )
+        rows = weekly.parse_workbook(
+            data,
+            "https://www.dane.gov.co/files/operaciones/SIPSA/anex-SIPSASemanal-03ene09ene-2026.xlsx",
+        )
+        self.assertEqual((len(rows), sum(r["price"] is not None for r in rows)), (4348, 4348))
+        self.assertEqual({(r["period_start"], r["date"]) for r in rows}, {("2026-01-03", "2026-01-09")})
+
+    def test_original_march_2020_comma_grouped_pdf_prices(self):
+        # DANE original, printed page 9: https://www.dane.gov.co/files/
+        # investigaciones/agropecuario/sipsa/Sem_21mar_2020__27mar_2020.pdf
+        source = Path(__file__).parent / "testdata/dane_weekly_2020_03_21_page9.pdf"
+        rows = weekly.parse_pdf(
+            source.read_bytes(),
+            "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_21mar_2020__27mar_2020.pdf",
+        )
+        target = next(
+            row
+            for row in rows
+            if row["source_locator"] == "PDF page 9,table 1,column 1,line 4"
+        )
+        self.assertEqual(
+            (target["product_name"], target["market"]),
+            ("Acelga", "Bogotá, D.C., Corabastos"),
+        )
+        self.assertEqual((target["min"], target["max"], target["price"]), (400, 2000, 1085))
+        self.assertEqual(weekly._pdf_number("1.085"), 1085)
+        self.assertEqual(weekly._pdf_number("1,5"), 1.5)
+
+    def test_cross_year_parenthesized_pdf_table_period(self):
+        caption = "2019 (28 de diciembre) - 2020 (3 de enero)"
+        self.assertEqual(
+            weekly._period(caption),
+            (date(2019, 12, 28), date(2020, 1, 3)),
+        )
+        with self.assertRaisesRegex(ValueError, "supported weekly period"):
+            weekly._period("2019 (20 de diciembre) - 2020 (3 de enero)")
+
+    def test_supply_reporting_range_does_not_replace_workbook_price_week(self):
+        book = openpyxl.Workbook()
+        index = book.active
+        index.title = "Índice"
+        index.append(["Boletín semanal precios mayoristas - 3 al 9 de enero de 2026"])
+        prices = book.create_sheet("1.1")
+        prices.append(["Boletín semanal precios mayoristas - 3 al 9 de enero de 2026"])
+        prices.append(["1.1. Verduras y hortalizas"])
+        prices.append(["Producto", "Mercado mayorista", "Pesos por kilogramo"])
+        prices.append([None, None, "Precio mínimo", "Precio máximo", "Precio medio"])
+        prices.append(["Acelga", "Bogotá", 333, 533, 418])
+        supply = book.create_sheet("1.10")
+        supply.append(["Abastecimiento semanal del 25 de diciembre de 2025 al 7 de enero de 2026"])
+        out = io.BytesIO()
+        book.save(out)
+        rows = weekly.parse_workbook(
+            out.getvalue(), "anex-SIPSASemanal-03ene09ene-2026.xlsx"
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual((rows[0]["date"], rows[0]["price"]), ("2026-01-09", 418))
+
     def test_original_march_2020_blank_market_is_reviewed_without_neighbor_identity(self):
         # Printed page 37 extracted unchanged from DANE's 7–13 March 2020
         # weekly PDF. Blank placeholder pages preserve its original page index.
@@ -528,12 +608,14 @@ class WeeklySemantics(unittest.TestCase):
             {r["details"]["literal_mean"] for r in conflicts}, {9500, 11500}
         )
 
-    def test_unbound_native_monetary_rows_request_page_ocr_and_unknown_ocr_columns_review(
+    def test_unbound_native_monetary_rows_remain_reviews_and_unknown_ocr_columns_fail(
         self,
     ):
-        with self.assertRaises(weekly.NormalExtractionFailed) as caught:
-            weekly.parse_pdf(native_pdf(product_font="Helvetica"), "report.pdf")
-        self.assertEqual(caught.exception.required_pages, (1,))
+        rows = weekly.parse_pdf(native_pdf(product_font="Helvetica"), "report.pdf")
+        self.assertEqual(len(rows), 2)
+        self.assertTrue(all(r["price"] is None for r in rows))
+        self.assertEqual({r["product_name"] for r in rows}, {""})
+        self.assertEqual({r["details"]["literal_mean"] for r in rows}, {418})
         reading = {
             "text": "Cuadro 1. Mercados mayoristas. Precios de venta de verduras 19 al 25 de septiembre de 2026 Pesos por kilogramo",
             "tables": [[["Producto", "% cambio"], ["Acelga", "20"]]],

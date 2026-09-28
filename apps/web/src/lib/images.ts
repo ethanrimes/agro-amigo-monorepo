@@ -181,7 +181,7 @@ export function photoFor(
         : `${visual} del tipo de insumo; no corresponde al empaque comercial de ${name}.`
       : kind === "market"
         ? key === "market" || key.startsWith("market-")
-          ? "Imagen ilustrativa de una plaza o centro de acopio."
+          ? `Fotografía ilustrativa de Paloquemao en Bogotá; no representa ${name}.`
           : `Fotografía de referencia: ${name}`
         : key === "produce-neutral"
           ? `Ilustración general de productos agrícolas; no representa ${name}.`

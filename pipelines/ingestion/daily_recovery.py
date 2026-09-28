@@ -14,6 +14,17 @@ VERSION = "daily-units-v4"
 
 # Populated only for exact authoritative originals with independent date evidence.
 VERIFIED_DATE_RECOVERIES = {
+    "7ff030995d78b89d20e1efd533bc4390985ddae7f5a70e236d39a74da253397f": {
+        "archive_date": "2014-10-15",
+        "observation_date": "2014-10-15",
+        "printed_heading": "Miércoles 15 de septiembre de 2014",
+        "basis": "native_month_typo",
+        "archive_url": "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/componente-precios-mayoristas-octubre-de-2014-1",
+        "archive_label": "Anexo - 15 de octubre",
+        "corroborating_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_octubre_15_2014.pdf",
+        "corroborating_sha256": "194476e635512fb80819621a604c20ddc4d9645ecdbc51f8b1e08a8c453fed03",
+        "corroborating_locator": "PDF page 1: October 15 date and matching cebolla junca, habichuela and tomate market prices",
+    },
     "09bcafd697b554afe4bac3953bd5459140dcf356b95f70c42bf569beebac3043": {
         "archive_date": "2014-02-11",
         "observation_date": "2014-02-11",
@@ -138,10 +149,12 @@ def _publication_day(data, rows, expected_day):
     if len(typed) > 1:
         raise SourceDateMismatch("Conflicting typed daily publication dates")
     day = next(iter(typed), None) or date_from_text(" ".join(headings))
+    evidence = VERIFIED_DATE_RECOVERIES.get(hashlib.sha256(data).hexdigest())
+    if evidence and evidence["archive_date"] != expected_day.isoformat():
+        raise SourceDateMismatch("Reviewed daily original is linked to a different archive date")
     if day == expected_day:
         return day, None, headings
-    evidence = VERIFIED_DATE_RECOVERIES.get(hashlib.sha256(data).hexdigest())
-    if evidence and evidence["archive_date"] == expected_day.isoformat():
+    if evidence:
         if evidence["printed_heading"] not in headings:
             raise SourceDateMismatch("Reviewed daily date heading no longer agrees")
         return date.fromisoformat(evidence["observation_date"]), evidence, headings
