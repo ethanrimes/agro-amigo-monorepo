@@ -168,6 +168,22 @@ def native_price_page_failure(page, text, native_prices, previous_price_grid=Fal
     """The shared native-first decision for parsing and old queued PDF pages."""
     from .ocr import needs_ocr
 
+    # Some presentation dividers have fewer than 20 readable characters and
+    # only footer logos / thin decorative bands. That is successful extraction
+    # of a short title, not an unreadable price table. Keep the exception narrow:
+    # a body image, substantial raster table or corrupt title still needs OCR.
+    if " ".join(text.split()).casefold() in {"frutas frescas", "abastecimiento"}:
+        decorative = all(
+            image["top"] >= page.height * 0.8
+            or image["bottom"] <= page.height * 0.05
+            or (
+                image["bottom"] - image["top"] <= page.height * 0.02
+                and image["x1"] - image["x0"] >= page.width * 0.75
+            )
+            for image in page.images
+        )
+        if decorative and not has_table_sized_image(page):
+            return False
     if needs_ocr(page, text):
         return True
     if native_prices or not has_table_sized_image(page):
@@ -412,7 +428,9 @@ def _input_location_prefix(previous, words, price_left):
     connectors = {"de", "del", "la", "las", "los"}
     if (
         len(prefix) > 80
-        or not re.fullmatch(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*", prefix)
+        or not re.fullmatch(
+            r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+(?: [A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)*", prefix
+        )
         or max(w["x1"] for w in prior) >= price_left
         or abs(min(w["x0"] for w in prior) - min(w["x0"] for w in words)) > 2
         or not -1 <= min(w["top"] for w in words) - max(w["bottom"] for w in prior) <= 5
