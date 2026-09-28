@@ -140,6 +140,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/daily_recovery.py",
     "pipelines/ingestion/daily_publication.py",
     "pipelines/ingestion/source_link_recovery.py",
+    "pipelines/ingestion/pdf_link_recovery.py",
     "pipelines/ingestion/workbook_preview.py",
     "pipelines/ingestion/queue_plan.py",
     "pipelines/ingestion/resumable_inputs.py",
@@ -1392,6 +1393,18 @@ def _process_asset(db, url, kind, day):
                 status,
                 day,
                 lambda candidate_url: fetch_candidate(candidate_url, rule.archive_day),
+            )
+        elif kind in ("daily-pdf", "dane-weekly-pdf"):
+            from .pdf_link_recovery import ALIASES as PDF_ALIASES
+            from .pdf_link_recovery import recover_link as recover_pdf_link
+
+            rule = PDF_ALIASES.get(url)
+            recovered = recover_pdf_link(
+                url,
+                status,
+                day,
+                lambda candidate_url: fetch_candidate(candidate_url, rule.observed_on),
+                kind=kind,
             )
         else:
             recovered = (

@@ -8,7 +8,7 @@ from collections import Counter
 from datetime import date
 from urllib.parse import unquote, urldefrag, urljoin, urlsplit
 
-VERSION = "dane-weekly-v3"
+VERSION = "dane-weekly-v4"
 WEEKLY = "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-semanal-1"
 ROOTS = ((WEEKLY, "dane-weekly-index"),)
 INDEX_KINDS = {"dane-weekly-index"}
@@ -554,6 +554,7 @@ def _native_column(
     product = ""
     block = []
     continuation = False
+    recovered_heading = None
 
     def flush():
         if not block:
@@ -633,6 +634,13 @@ def _native_column(
                 page=page_no,
                 exceptions=exceptions,
             )
+            if recovered_heading:
+                record["details"].update(
+                    {
+                        "literal_product_heading": recovered_heading,
+                        "native_heading_recovery": "explicit_comntinuacion_annotation",
+                    }
+                )
             if anchor.get("unbound_tail_labels"):
                 record["details"].update(
                     {
@@ -701,12 +709,19 @@ def _native_column(
             block = []
             product = ""
             continuation = False
+            recovered_heading = None
             continue
         if bold or plain_heading:
             flush()
             block = []
+            if re.search(r"\(comntinuaci[oó]n\)$", label, re.IGNORECASE):
+                recovered_heading = clean(
+                    (product + " " if continuation else "") + label
+                )
+            elif not continuation:
+                recovered_heading = None
             label = re.sub(
-                r"\s*\(?(?:continuaci[oó]n|conclusi[oó]n)\)$",
+                r"\s*\(?(?:continuaci[oó]n|comntinuaci[oó]n|conclusi[oó]n)\)$",
                 "",
                 label,
                 flags=re.IGNORECASE,

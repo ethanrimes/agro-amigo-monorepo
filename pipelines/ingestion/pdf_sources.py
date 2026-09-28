@@ -2,6 +2,7 @@
 
 import io
 import re
+from hashlib import sha256
 
 import pdfplumber
 from psycopg.types.json import Jsonb
@@ -202,10 +203,49 @@ class PDFOCRPending(ValueError):
     """Originals and failed pages are retained while independent OCR is pending."""
 
 
+def _blank_repeated_stationery(page, text):
+    """A blank leaf with only repeated margin artwork has no failed price grid.
+
+    Require identical embedded image bytes and placement on a nearby readable
+    page. A small body image, unfamiliar marginal image, or corrupt native text
+    still takes the ordinary OCR path. No visual content is guessed from size.
+    """
+    if text.strip() or not 1 <= len(page.images) <= 4:
+        return False
+
+    def marginal(image):
+        return image["bottom"] - image["top"] <= page.height * 0.10 and (
+            image["bottom"] <= page.height * 0.10 or image["top"] >= page.height * 0.90
+        )
+
+    if not all(marginal(image) for image in page.images):
+        return False
+    number = getattr(page, "page_number", 0)
+    pdf = getattr(page, "pdf", None)
+    if pdf is None or number < 2:
+        return False
+
+    def signature(image):
+        return (
+            *(round(image[key], 1) for key in ("x0", "x1", "top", "bottom")),
+            sha256(image["stream"].get_data()).digest(),
+        )
+
+    earlier = set()
+    for previous in pdf.pages[max(0, number - 3) : number - 1]:
+        if len((previous.extract_text() or "").strip()) >= 100:
+            earlier.update(
+                signature(image) for image in previous.images if marginal(image)
+            )
+    return bool(earlier) and all(signature(image) in earlier for image in page.images)
+
+
 def native_price_page_failure(page, text, native_prices, previous_price_grid=False):
     """The shared native-first decision for parsing and old queued PDF pages."""
     from .ocr import needs_ocr
 
+    if _blank_repeated_stationery(page, text):
+        return False
     # Some presentation dividers have fewer than 20 readable characters and
     # only footer logos / thin decorative bands. That is successful extraction
     # of a short title, not an unreadable price table. Keep the exception narrow:
