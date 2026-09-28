@@ -22,7 +22,7 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v8"
+VERSION = "official-international-v9"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -1115,7 +1115,20 @@ def _text_blocks(body, market):
         raise ValueError("USDA native text report is in the future")
     starts = [i for i, line in enumerate(lines) if line.startswith("---")]
     if not starts:
-        raise ValueError("USDA native text report contains no commodity blocks")
+        # USDA also archives an occasional dated bulletin explaining that no
+        # report was issued. Recognize its explicit notice, not arbitrary empty
+        # or changed-layout price reports.
+        notices = [
+            line.strip()
+            for line in lines
+            if line.strip().startswith("No report due to technical issues.")
+        ]
+        if len(notices) != 1 or PRICE.search(text) or not re.fullmatch(
+            r"No report due to technical issues\. Next report will be "
+            r"(?:issues|issued) [A-Za-z]+, [A-Za-z]+ \d{1,2}, \d{4}\.",
+            notices[0],
+        ):
+            raise ValueError("USDA native text report contains no commodity blocks")
     return (
         day,
         text,
@@ -1140,6 +1153,32 @@ def parse_text_flowers(body, url, market):
     if market not in {"Miami", "Boston"}:
         raise ValueError("Unsupported USDA text market")
     day, report, blocks = _text_blocks(body, market)
+    if not blocks:
+        lines = report.splitlines()
+        line_no, notice = next(
+            (i, line.strip())
+            for i, line in enumerate(lines, 1)
+            if line.strip().startswith("No report due to technical issues.")
+        )
+        return [
+            {
+                "price": None,
+                "min": None,
+                "max": None,
+                "date": day,
+                "publisher": "USDA AMS",
+                "series": f"international-usda-{market.lower()}-flowers",
+                "source_page": None,
+                "source_locator": f"Text line {line_no}, report notice",
+                "details": {
+                    "quality_issue": f"Official {market} bulletin says no report was issued",
+                    "native_format": "TXT",
+                    "original_quote": notice,
+                    "source_url": url,
+                    "review_type": "no-price-report",
+                },
+            }
+        ]
     found = []
     for block, start, stop in blocks:
         if ":" not in block:
