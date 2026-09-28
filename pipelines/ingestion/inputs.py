@@ -586,17 +586,17 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
                     {"AND current.municipality=x.municipality" if municipal else ""}
                     AND NOT EXISTS(SELECT 1 FROM input_precision p WHERE
                       (p.id,p.department,p.municipality,p.observed_on)=(x.id,x.department,x.municipality,x.observed_on) AND p.promote_incoming)
-                    AND ((current.price,current.name,current.category,current.brand,current.registration,current.product_line)
-                      IS NOT DISTINCT FROM (x.price,x.name,x.category,x.brand,x.registration,x.product_line)
+                    AND ((current.price,current.name,current.category,current.presentation,current.brand,current.registration,current.product_line)
+                      IS NOT DISTINCT FROM (x.price,x.name,x.category,x.presentation,x.brand,x.registration,x.product_line)
                       OR (SELECT retrieved_at FROM source_document WHERE id=x.document_id)
                         < (SELECT retrieved_at FROM source_document WHERE id=current.document_id)
                       OR (SELECT retrieved_at FROM source_document WHERE id=x.document_id)
                         < (SELECT retrieved_at FROM input_revision r WHERE r.id=x.id
                           AND r.department=x.department AND r.municipality=x.municipality AND r.observed_on=x.observed_on)))
-                ON CONFLICT({keys}) DO UPDATE SET name=excluded.name,category=excluded.category,price=excluded.price,document_id=excluded.document_id,
+                ON CONFLICT({keys}) DO UPDATE SET name=excluded.name,category=excluded.category,presentation=excluded.presentation,price=excluded.price,document_id=excluded.document_id,
                 source_locator=excluded.source_locator,brand=excluded.brand,registration=excluded.registration,product_line=excluded.product_line
-                WHERE (({table}.price,{table}.name,{table}.category,{table}.brand,{table}.registration,{table}.product_line)
-                IS DISTINCT FROM (excluded.price,excluded.name,excluded.category,excluded.brand,excluded.registration,excluded.product_line)
+                WHERE (({table}.price,{table}.name,{table}.category,{table}.presentation,{table}.brand,{table}.registration,{table}.product_line)
+                IS DISTINCT FROM (excluded.price,excluded.name,excluded.category,excluded.presentation,excluded.brand,excluded.registration,excluded.product_line)
                   OR EXISTS(SELECT 1 FROM input_precision p WHERE
                     (p.id,p.department,p.municipality,p.observed_on)=(excluded.id,excluded.department,{"excluded.municipality" if municipal else "''"},excluded.observed_on) AND p.promote_incoming))
                 AND (EXISTS(SELECT 1 FROM input_precision p WHERE
