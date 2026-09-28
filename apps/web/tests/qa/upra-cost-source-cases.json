@@ -1,0 +1,2204 @@
+[
+  {
+    "name": "upra-cost-papa-2023-2",
+    "route": "/plan?municipality=25183&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Almeidas (Cundinamarca)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Almeidas (Cundinamarca)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Almeidas (Cundinamarca)\")",
+            "expected": "Región Almeidas (Cundinamarca) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 4356677.0], [\"Semilla e insumos\", 18699506.0], [\"Mano de obra de cosecha\", 3411514.0], [\"Otros rubros del total publicado\", 1271511.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(27739208.0)",
+            "expected": "Printed total 27739208.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(34100.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 34100.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=2\"",
+            "expected": "Exact retained original b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03 physical page2"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 25183: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      },
+      {
+        "action": "window.__qaCostAPI=await (await fetch('/api/planning/farm?id=25183')).json();",
+        "checks": [
+          {
+            "id": "COST-ALL-API-LITERALS",
+            "condition": "([{\"id\": \"papa-2023-2\", \"document_id\": \"b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03\", \"source_page\": 2, \"reference_year\": 2023, \"yield_kg_ha\": 34100.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 4356677.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 18699506.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 3411514.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1271511.0, \"timing\": \"before\"}], \"municipalities\": [\"25183\", \"25426\", \"25436\", \"25736\", \"25772\", \"25807\", \"25873\"]}, {\"id\": \"platano-2024-25\", \"document_id\": \"a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c\", \"source_page\": 25, \"reference_year\": 2024, \"yield_kg_ha\": 28000.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 7094550.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 10149309.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 2256000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 805700.0, \"timing\": \"before\"}], \"municipalities\": [\"50251\", \"50270\", \"50287\", \"50313\", \"50325\", \"50330\", \"50370\", \"50400\", \"50450\", \"50577\", \"50590\", \"50683\", \"50711\"]}, {\"id\": \"cebolla-de-bulbo-2023-10\", \"document_id\": \"ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49\", \"source_page\": 10, \"reference_year\": 2023, \"yield_kg_ha\": 49500.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 11503750.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 22538873.5, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 7750000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1443500.0, \"timing\": \"before\"}], \"municipalities\": [\"15001\", \"15187\", \"15224\", \"15232\", \"15476\", \"15646\", \"15740\", \"15762\", \"15764\", \"15814\", \"15837\", \"15861\"]}, {\"id\": \"cebolla-de-bulbo-2023-8\", \"document_id\": \"ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49\", \"source_page\": 8, \"reference_year\": 2023, \"yield_kg_ha\": 48800.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 11309500.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 17692357.5, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 7568000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1871200.0, \"timing\": \"before\"}], \"municipalities\": [\"25326\", \"25377\"]}, {\"id\": \"frijol-2023-15\", \"document_id\": \"bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1\", \"source_page\": 15, \"reference_year\": 2023, \"yield_kg_ha\": 1200.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 2365575.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 2633637.5, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 1021250.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 104600.0, \"timing\": \"before\"}], \"municipalities\": [\"73001\", \"73043\", \"73124\", \"73200\", \"73275\", \"73624\", \"73678\", \"73854\"]}, {\"id\": \"frijol-2023-13\", \"document_id\": \"bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1\", \"source_page\": 13, \"reference_year\": 2023, \"yield_kg_ha\": 1500.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 3400000.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 3069030.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 1575000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 187625.0, \"timing\": \"before\"}], \"municipalities\": [\"41378\", \"41396\", \"41483\", \"41518\", \"41797\"]}, {\"id\": \"frijol-2023-9\", \"document_id\": \"bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1\", \"source_page\": 9, \"reference_year\": 2023, \"yield_kg_ha\": 2130.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 4695193.8, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 5471427.1, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 854966.8, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1122602.7, \"timing\": \"before\"}], \"municipalities\": [\"54003\", \"54128\", \"54206\", \"54245\", \"54344\", \"54385\", \"54398\", \"54498\", \"54670\", \"54800\"]}, {\"id\": \"frijol-2023-17\", \"document_id\": \"bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1\", \"source_page\": 17, \"reference_year\": 2023, \"yield_kg_ha\": 2200.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 5331768.6, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 6778200.1, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 2498218.7, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1746130.4, \"timing\": \"before\"}], \"municipalities\": [\"05002\", \"05021\", \"05055\", \"05148\", \"05197\", \"05206\", \"05313\", \"05318\", \"05321\", \"05376\", \"05400\", \"05440\", \"05483\", \"05541\", \"05607\", \"05615\", \"05649\", \"05652\", \"05660\", \"05674\", \"05697\", \"05756\"]}, {\"id\": \"frijol-2023-11\", \"document_id\": \"bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1\", \"source_page\": 11, \"reference_year\": 2023, \"yield_kg_ha\": 1550.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 2801200.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 5940665.2, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 1403000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1790140.0, \"timing\": \"before\"}], \"municipalities\": [\"25181\", \"25281\", \"25335\", \"25339\", \"25594\", \"25841\", \"25845\"]}, {\"id\": \"papa-2023-5\", \"document_id\": \"b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03\", \"source_page\": 5, \"reference_year\": 2023, \"yield_kg_ha\": 23000.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 3950417.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 13438768.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 2428500.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 2679575.0, \"timing\": \"before\"}], \"municipalities\": [\"15001\", \"15187\", \"15204\", \"15224\", \"15232\", \"15476\", \"15500\", \"15646\", \"15740\", \"15762\", \"15763\", \"15764\", \"15814\", \"15837\", \"15861\"]}, {\"id\": \"papa-2023-4\", \"document_id\": \"b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03\", \"source_page\": 4, \"reference_year\": 2023, \"yield_kg_ha\": 45900.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 3835184.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 19842250.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 3339733.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 2286348.0, \"timing\": \"before\"}], \"municipalities\": [\"15109\", \"15131\", \"15176\", \"15442\", \"15531\", \"15632\", \"15676\"]}, {\"id\": \"papa-2023-7\", \"document_id\": \"b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03\", \"source_page\": 7, \"reference_year\": 2023, \"yield_kg_ha\": 20700.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 7032220.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 18198905.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 4481101.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1539334.0, \"timing\": \"before\"}], \"municipalities\": [\"05002\", \"05148\", \"05206\", \"05313\", \"05318\", \"05376\", \"05440\", \"05615\", \"05674\", \"05697\", \"05756\"]}, {\"id\": \"papa-2023-6\", \"document_id\": \"b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03\", \"source_page\": 6, \"reference_year\": 2023, \"yield_kg_ha\": 41300.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 6926667.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 26096582.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 2383333.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1374940.0, \"timing\": \"before\"}], \"municipalities\": [\"52036\", \"52320\", \"52354\", \"52385\", \"52418\", \"52435\", \"52506\", \"52565\", \"52678\", \"52699\", \"52720\", \"52838\"]}, {\"id\": \"papa-2023-3\", \"document_id\": \"b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03\", \"source_page\": 3, \"reference_year\": 2023, \"yield_kg_ha\": 19200.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 4027938.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 18934402.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 1923076.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1411267.0, \"timing\": \"before\"}], \"municipalities\": [\"25154\", \"25224\", \"25288\", \"25317\", \"25407\", \"25745\", \"25779\", \"25781\", \"25793\", \"25843\"]}, {\"id\": \"tomate-2023-13\", \"document_id\": \"1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2\", \"source_page\": 13, \"reference_year\": 2023, \"yield_kg_ha\": 154200.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 19677525.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 30332139.5, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 9502500.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 3475245.0, \"timing\": \"before\"}], \"municipalities\": [\"73001\", \"73043\", \"73124\", \"73624\"]}, {\"id\": \"tomate-2023-10\", \"document_id\": \"1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2\", \"source_page\": 10, \"reference_year\": 2023, \"yield_kg_ha\": 139200.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 23796762.5, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 26475614.3, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 3093750.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1344757.2, \"timing\": \"before\"}], \"municipalities\": [\"41001\", \"41016\", \"41020\", \"41078\", \"41132\", \"41206\", \"41349\", \"41357\", \"41615\", \"41676\", \"41799\", \"41801\", \"41872\"]}, {\"id\": \"tomate-2023-16\", \"document_id\": \"1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2\", \"source_page\": 16, \"reference_year\": 2023, \"yield_kg_ha\": 127110.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 22233954.8, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 28248662.4, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 2019789.4, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 13322715.3, \"timing\": \"before\"}], \"municipalities\": [\"54003\", \"54128\", \"54206\", \"54245\", \"54344\", \"54398\", \"54498\", \"54670\", \"54800\"]}, {\"id\": \"tomate-2023-19\", \"document_id\": \"1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2\", \"source_page\": 19, \"reference_year\": 2023, \"yield_kg_ha\": 137750.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 46924081.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 89657259.6, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 20436255.7, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 20146658.0, \"timing\": \"before\"}], \"municipalities\": [\"05021\", \"05055\", \"05148\", \"05197\", \"05206\", \"05313\", \"05318\", \"05321\", \"05376\", \"05440\", \"05541\", \"05607\", \"05615\", \"05667\", \"05674\", \"05697\", \"05756\"]}, {\"id\": \"tomate-2023-8\", \"document_id\": \"1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2\", \"source_page\": 8, \"reference_year\": 2023, \"yield_kg_ha\": 144320.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 28900000.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 62315730.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 24082000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 7573800.0, \"timing\": \"before\"}], \"municipalities\": [\"25151\", \"25181\", \"25279\", \"25281\", \"25335\", \"25594\", \"25841\", \"25845\"]}, {\"id\": \"yuca-2023-8\", \"document_id\": \"076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2\", \"source_page\": 8, \"reference_year\": 2023, \"yield_kg_ha\": 9800.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 2811737.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 2073516.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 500000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 318069.0, \"timing\": \"before\"}], \"municipalities\": [\"50251\", \"50287\", \"50313\", \"50400\", \"50577\", \"50683\", \"50689\"]}, {\"id\": \"yuca-2023-7\", \"document_id\": \"076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2\", \"source_page\": 7, \"reference_year\": 2023, \"yield_kg_ha\": 12300.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 2705181.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 686863.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 506032.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 0.0, \"timing\": \"before\"}], \"municipalities\": [\"47058\", \"47170\", \"47460\", \"47555\", \"47660\", \"47798\"]}, {\"id\": \"yuca-2023-10\", \"document_id\": \"076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2\", \"source_page\": 10, \"reference_year\": 2023, \"yield_kg_ha\": 15600.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 2090022.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 1161386.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 600109.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1.0, \"timing\": \"before\"}], \"municipalities\": [\"70001\", \"70110\", \"70215\", \"70233\", \"70235\", \"70523\", \"70670\", \"70702\", \"70717\", \"70742\"]}, {\"id\": \"arveja-2024-9\", \"document_id\": \"c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c\", \"source_page\": 9, \"reference_year\": 2024, \"yield_kg_ha\": 3750.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 5118260.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 3807982.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 1053000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1332200.0, \"timing\": \"before\"}], \"municipalities\": [\"25099\", \"25260\", \"25269\", \"25286\", \"25430\", \"25769\", \"25898\"]}, {\"id\": \"arveja-2024-12\", \"document_id\": \"c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c\", \"source_page\": 12, \"reference_year\": 2024, \"yield_kg_ha\": 9360.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 8780000.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 6425836.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 2000000.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 1733333.0, \"timing\": \"before\"}], \"municipalities\": [\"52022\", \"52210\", \"52215\", \"52224\", \"52287\", \"52323\", \"52352\", \"52356\", \"52560\", \"52573\", \"52585\"]}, {\"id\": \"arveja-2024-14\", \"document_id\": \"c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c\", \"source_page\": 14, \"reference_year\": 2024, \"yield_kg_ha\": 7600.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 11022528.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 12443680.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 4848929.0, \"timing\": \"harvest\"}, {\"label\": \"Otros rubros del total publicado\", \"amount\": 3025681.0, \"timing\": \"before\"}], \"municipalities\": [\"15047\", \"15226\", \"15272\", \"15296\", \"15362\", \"15464\", \"15466\", \"15491\", \"15542\", \"15759\", \"15806\", \"15820\", \"15822\"]}, {\"id\": \"cebolla-de-rama-2023-9\", \"document_id\": \"80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3\", \"source_page\": 9, \"reference_year\": 2023, \"yield_kg_ha\": 23900.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 7030119.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 20984019.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 3043474.0, \"timing\": \"harvest\"}, {\"label\": \"Costos indirectos publicados\", \"amount\": 211199.0, \"timing\": \"before\"}], \"municipalities\": [\"52001\"]}, {\"id\": \"cebolla-de-rama-2023-15\", \"document_id\": \"80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3\", \"source_page\": 15, \"reference_year\": 2023, \"yield_kg_ha\": 5000.0, \"costs\": [{\"label\": \"Labores antes de cosecha\", \"amount\": 1793292.0, \"timing\": \"before\"}, {\"label\": \"Semilla e insumos\", \"amount\": 1840611.0, \"timing\": \"before\"}, {\"label\": \"Mano de obra de cosecha\", \"amount\": 1030840.0, \"timing\": \"harvest\"}], \"municipalities\": [\"19355\", \"19364\", \"19517\", \"19743\", \"19821\"]}]).every(e=>{let a=window.__qaCostAPI.templates.find(t=>t.id===e.id);return a&&['document_id','source_page','reference_year','yield_kg_ha'].every(k=>a[k]===e[k])&&JSON.stringify([...a.municipalities].sort())===JSON.stringify([...e.municipalities].sort())&&a.costs.length===e.costs.length&&e.costs.every((c,i)=>['label','amount','timing'].every(k=>a.costs[i][k]===c[k]))})",
+            "expected": "All27 templates exact source-year/unit/decimal rubrics match original-backed oracle"
+          },
+          {
+            "id": "COST-AMBIGUITY-REVIEW",
+            "condition": "!window.__qaCostAPI.templates.some(t=>t.document_id==='80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3'&&t.source_page===12)",
+            "expected": "Risaralda inconsistent subtotal retained as source review, never canonical cost template"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-platano-2024-25",
+    "route": "/plan?municipality=50251&crop=2045802",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Plátano · región Ariari en el Meta\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Plátano · región Ariari en el Meta\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2024\") && window.__qaCost.innerText.includes(\"región Ariari en el Meta\")",
+            "expected": "región Ariari en el Meta explicit study year2024, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 7094550.0], [\"Semilla e insumos\", 10149309.0], [\"Mano de obra de cosecha\", 2256000.0], [\"Otros rubros del total publicado\", 805700.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(20305559.0)",
+            "expected": "Printed total 20305559.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(28000.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 28000.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c?page=25\"",
+            "expected": "Exact retained original a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c physical page25"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 50251: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-cebolla-de-bulbo-2023-10",
+    "route": "/plan?municipality=15001&crop=1051100",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla de bulbo · Región centro (Boyacá)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla de bulbo · Región centro (Boyacá)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región centro (Boyacá)\")",
+            "expected": "Región centro (Boyacá) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 11503750.0], [\"Semilla e insumos\", 22538873.5], [\"Mano de obra de cosecha\", 7750000.0], [\"Otros rubros del total publicado\", 1443500.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(43236123.5)",
+            "expected": "Printed total 43236123.5 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(49500.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 49500.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49?page=10\"",
+            "expected": "Exact retained original ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49 physical page10"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 15001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-cebolla-de-bulbo-2023-8",
+    "route": "/plan?municipality=25326&crop=1051100",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla de bulbo · Región Guavio (Cundinamarca)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla de bulbo · Región Guavio (Cundinamarca)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Guavio (Cundinamarca)\")",
+            "expected": "Región Guavio (Cundinamarca) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 11309500.0], [\"Semilla e insumos\", 17692357.5], [\"Mano de obra de cosecha\", 7568000.0], [\"Otros rubros del total publicado\", 1871200.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(38441057.5)",
+            "expected": "Printed total 38441057.5 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(48800.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 48800.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49?page=8\"",
+            "expected": "Exact retained original ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49 physical page8"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 25326: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-frijol-2023-15",
+    "route": "/plan?municipality=73001&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región Ibagué (Tolima)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región Ibagué (Tolima)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región Ibagué (Tolima)\")",
+            "expected": "región Ibagué (Tolima) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 2365575.0], [\"Semilla e insumos\", 2633637.5], [\"Mano de obra de cosecha\", 1021250.0], [\"Otros rubros del total publicado\", 104600.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(6125062.5)",
+            "expected": "Printed total 6125062.5 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(1200.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 1200.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=15\"",
+            "expected": "Exact retained original bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1 physical page15"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 73001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-frijol-2023-13",
+    "route": "/plan?municipality=41378&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región occidente (Huila)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región occidente (Huila)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región occidente (Huila)\")",
+            "expected": "región occidente (Huila) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 3400000.0], [\"Semilla e insumos\", 3069030.0], [\"Mano de obra de cosecha\", 1575000.0], [\"Otros rubros del total publicado\", 187625.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(8231655.0)",
+            "expected": "Printed total 8231655.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(1500.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 1500.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=13\"",
+            "expected": "Exact retained original bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1 physical page13"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 41378: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-frijol-2023-9",
+    "route": "/plan?municipality=54003&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · Región occidente (Norte de Santander)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · Región occidente (Norte de Santander)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región occidente (Norte de Santander)\")",
+            "expected": "Región occidente (Norte de Santander) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 4695193.8], [\"Semilla e insumos\", 5471427.1], [\"Mano de obra de cosecha\", 854966.8], [\"Otros rubros del total publicado\", 1122602.7]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(12144190.4)",
+            "expected": "Printed total 12144190.4 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(2130.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 2130.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=9\"",
+            "expected": "Exact retained original bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1 physical page9"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 54003: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-frijol-2023-17",
+    "route": "/plan?municipality=05002&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región oriente (Antioquia)\")",
+            "expected": "región oriente (Antioquia) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 5331768.6], [\"Semilla e insumos\", 6778200.1], [\"Mano de obra de cosecha\", 2498218.7], [\"Otros rubros del total publicado\", 1746130.4]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(16354317.8)",
+            "expected": "Printed total 16354317.8 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(2200.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 2200.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=17\"",
+            "expected": "Exact retained original bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1 physical page17"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 05002: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-frijol-2023-11",
+    "route": "/plan?municipality=25181&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Cundinamarca)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Cundinamarca)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región oriente (Cundinamarca)\")",
+            "expected": "región oriente (Cundinamarca) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 2801200.0], [\"Semilla e insumos\", 5940665.2], [\"Mano de obra de cosecha\", 1403000.0], [\"Otros rubros del total publicado\", 1790140.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(11935005.2)",
+            "expected": "Printed total 11935005.2 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(1550.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 1550.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=11\"",
+            "expected": "Exact retained original bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1 physical page11"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 25181: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-papa-2023-5",
+    "route": "/plan?municipality=15001&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Centro Boyacá (Boyacá)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Centro Boyacá (Boyacá)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Centro Boyacá (Boyacá)\")",
+            "expected": "Región Centro Boyacá (Boyacá) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 3950417.0], [\"Semilla e insumos\", 13438768.0], [\"Mano de obra de cosecha\", 2428500.0], [\"Otros rubros del total publicado\", 2679575.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(22497260.0)",
+            "expected": "Printed total 22497260.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(23000.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 23000.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=5\"",
+            "expected": "Exact retained original b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03 physical page5"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 15001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-papa-2023-4",
+    "route": "/plan?municipality=15109&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Occidente (Boyacá)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Occidente (Boyacá)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Occidente (Boyacá)\")",
+            "expected": "Región Occidente (Boyacá) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 3835184.0], [\"Semilla e insumos\", 19842250.0], [\"Mano de obra de cosecha\", 3339733.0], [\"Otros rubros del total publicado\", 2286348.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(29303515.0)",
+            "expected": "Printed total 29303515.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(45900.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 45900.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=4\"",
+            "expected": "Exact retained original b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03 physical page4"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 15109: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-papa-2023-7",
+    "route": "/plan?municipality=05002&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Oriente (Antioquia)\")",
+            "expected": "Región Oriente (Antioquia) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 7032220.0], [\"Semilla e insumos\", 18198905.0], [\"Mano de obra de cosecha\", 4481101.0], [\"Otros rubros del total publicado\", 1539334.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(31251560.0)",
+            "expected": "Printed total 31251560.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(20700.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 20700.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=7\"",
+            "expected": "Exact retained original b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03 physical page7"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 05002: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-papa-2023-6",
+    "route": "/plan?municipality=52036&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Túquerres/Centro-Occidente (Nariño)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Túquerres/Centro-Occidente (Nariño)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Túquerres/Centro-Occidente (Nariño)\")",
+            "expected": "Región Túquerres/Centro-Occidente (Nariño) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 6926667.0], [\"Semilla e insumos\", 26096582.0], [\"Mano de obra de cosecha\", 2383333.0], [\"Otros rubros del total publicado\", 1374940.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(36781522.0)",
+            "expected": "Printed total 36781522.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(41300.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 41300.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=6\"",
+            "expected": "Exact retained original b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03 physical page6"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 52036: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-papa-2023-3",
+    "route": "/plan?municipality=25154&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Ubaté (Cundinamarca)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Ubaté (Cundinamarca)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Ubaté (Cundinamarca)\")",
+            "expected": "Región Ubaté (Cundinamarca) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 4027938.0], [\"Semilla e insumos\", 18934402.0], [\"Mano de obra de cosecha\", 1923076.0], [\"Otros rubros del total publicado\", 1411267.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(26296683.0)",
+            "expected": "Printed total 26296683.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(19200.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 19200.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=3\"",
+            "expected": "Exact retained original b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03 physical page3"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 25154: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-tomate-2023-13",
+    "route": "/plan?municipality=73001&crop=1052901",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Ibagué (Tolima)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Ibagué (Tolima)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Ibagué (Tolima)\")",
+            "expected": "Región Ibagué (Tolima) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 19677525.0], [\"Semilla e insumos\", 30332139.5], [\"Mano de obra de cosecha\", 9502500.0], [\"Otros rubros del total publicado\", 3475245.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(62987409.5)",
+            "expected": "Printed total 62987409.5 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(154200.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 154200.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=13\"",
+            "expected": "Exact retained original 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2 physical page13"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 73001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-tomate-2023-10",
+    "route": "/plan?municipality=41001&crop=1052901",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Norte (Huila)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Norte (Huila)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Norte (Huila)\")",
+            "expected": "Región Norte (Huila) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 23796762.5], [\"Semilla e insumos\", 26475614.3], [\"Mano de obra de cosecha\", 3093750.0], [\"Otros rubros del total publicado\", 1344757.2]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(54710884.0)",
+            "expected": "Printed total 54710884.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(139200.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 139200.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=10\"",
+            "expected": "Exact retained original 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2 physical page10"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 41001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-tomate-2023-16",
+    "route": "/plan?municipality=54003&crop=1052901",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · región occidente (Norte de Santander)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · región occidente (Norte de Santander)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región occidente (Norte de Santander)\")",
+            "expected": "región occidente (Norte de Santander) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 22233954.8], [\"Semilla e insumos\", 28248662.4], [\"Mano de obra de cosecha\", 2019789.4], [\"Otros rubros del total publicado\", 13322715.3]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(65825121.9)",
+            "expected": "Printed total 65825121.9 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(127110.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 127110.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=16\"",
+            "expected": "Exact retained original 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2 physical page16"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 54003: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-tomate-2023-19",
+    "route": "/plan?municipality=05021&crop=1052901",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región oriente (Antioquia)\")",
+            "expected": "región oriente (Antioquia) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 46924081.0], [\"Semilla e insumos\", 89657259.6], [\"Mano de obra de cosecha\", 20436255.7], [\"Otros rubros del total publicado\", 20146658.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(177164254.3)",
+            "expected": "Printed total 177164254.3 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(137750.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 137750.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=19\"",
+            "expected": "Exact retained original 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2 physical page19"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 05021: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-tomate-2023-8",
+    "route": "/plan?municipality=25151&crop=1052901",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Oriente (Cundinamarca)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Oriente (Cundinamarca)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Oriente (Cundinamarca)\")",
+            "expected": "Región Oriente (Cundinamarca) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 28900000.0], [\"Semilla e insumos\", 62315730.0], [\"Mano de obra de cosecha\", 24082000.0], [\"Otros rubros del total publicado\", 7573800.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(122871530.0)",
+            "expected": "Printed total 122871530.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(144320.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 144320.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=8\"",
+            "expected": "Exact retained original 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2 physical page8"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 25151: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-yuca-2023-8",
+    "route": "/plan?municipality=50251&crop=1081001",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · región Ariari (Meta)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · región Ariari (Meta)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región Ariari (Meta)\")",
+            "expected": "región Ariari (Meta) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 2811737.0], [\"Semilla e insumos\", 2073516.0], [\"Mano de obra de cosecha\", 500000.0], [\"Otros rubros del total publicado\", 318069.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(5703322.0)",
+            "expected": "Printed total 5703322.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9800.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 9800.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2?page=8\"",
+            "expected": "Exact retained original 076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2 physical page8"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 50251: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-yuca-2023-7",
+    "route": "/plan?municipality=47058&crop=1081001",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · región Centro (Magdalena)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · región Centro (Magdalena)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"región Centro (Magdalena)\")",
+            "expected": "región Centro (Magdalena) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 2705181.0], [\"Semilla e insumos\", 686863.0], [\"Mano de obra de cosecha\", 506032.0], [\"Otros rubros del total publicado\", 0.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(3898076.0)",
+            "expected": "Printed total 3898076.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(12300.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 12300.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2?page=7\"",
+            "expected": "Exact retained original 076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2 physical page7"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 47058: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-yuca-2023-10",
+    "route": "/plan?municipality=70001&crop=1081001",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · Región Sabanas (Sucre)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · Región Sabanas (Sucre)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región Sabanas (Sucre)\")",
+            "expected": "Región Sabanas (Sucre) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 2090022.0], [\"Semilla e insumos\", 1161386.0], [\"Mano de obra de cosecha\", 600109.0], [\"Otros rubros del total publicado\", 1.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(3851518.0)",
+            "expected": "Printed total 3851518.0 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(15600.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 15600.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2?page=10\"",
+            "expected": "Exact retained original 076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2 physical page10"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 70001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-arveja-2024-9",
+    "route": "/plan?municipality=25099&crop=1060100",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Arveja · Sabana Occidente\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Arveja · Sabana Occidente\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2024\") && window.__qaCost.innerText.includes(\"Sabana Occidente\")",
+            "expected": "Sabana Occidente explicit study year2024, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 5118260.0], [\"Semilla e insumos\", 3807982.0], [\"Mano de obra de cosecha\", 1053000.0], [\"Otros rubros del total publicado\", 1332200.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(11311442)",
+            "expected": "Printed total 11311442 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(3750.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 3750.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c?page=9\"",
+            "expected": "Exact retained original c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c physical page9"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 25099: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-arveja-2024-12",
+    "route": "/plan?municipality=52022&crop=1060100",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Arveja · Sur de Nariño\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Arveja · Sur de Nariño\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2024\") && window.__qaCost.innerText.includes(\"Sur de Nariño\")",
+            "expected": "Sur de Nariño explicit study year2024, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 8780000.0], [\"Semilla e insumos\", 6425836.0], [\"Mano de obra de cosecha\", 2000000.0], [\"Otros rubros del total publicado\", 1733333.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(18939169)",
+            "expected": "Printed total 18939169 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(9360.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 9360.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c?page=12\"",
+            "expected": "Exact retained original c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c physical page12"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 52022: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-arveja-2024-14",
+    "route": "/plan?municipality=15047&crop=1060100",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Arveja · Sugamuxi\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Arveja · Sugamuxi\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2024\") && window.__qaCost.innerText.includes(\"Sugamuxi\")",
+            "expected": "Sugamuxi explicit study year2024, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 11022528.0], [\"Semilla e insumos\", 12443680.0], [\"Mano de obra de cosecha\", 4848929.0], [\"Otros rubros del total publicado\", 3025681.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(31340818)",
+            "expected": "Printed total 31340818 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(7600.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 7600.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c?page=14\"",
+            "expected": "Exact retained original c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c physical page14"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 15047: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-cebolla-de-rama-2023-9",
+    "route": "/plan?municipality=52001&crop=1051200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla junca · Región centro (Nariño)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla junca · Región centro (Nariño)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región centro (Nariño)\")",
+            "expected": "Región centro (Nariño) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 7030119.0], [\"Semilla e insumos\", 20984019.0], [\"Mano de obra de cosecha\", 3043474.0], [\"Costos indirectos publicados\", 211199.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All4 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(31268811)",
+            "expected": "Printed total 31268811 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(23900.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 23900.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3?page=9\"",
+            "expected": "Exact retained original 80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3 physical page9"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 52001: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-cost-cebolla-de-rama-2023-15",
+    "route": "/plan?municipality=19355&crop=1051200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla junca · Región oriente (Cauca)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Cebolla junca · Región oriente (Cauca)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-YEAR-REGION",
+            "condition": "window.__qaCost.querySelector('summary').innerText.includes(\"2023\") && window.__qaCost.innerText.includes(\"Región oriente (Cauca)\")",
+            "expected": "Región oriente (Cauca) explicit study year2023, not current farm cost"
+          },
+          {
+            "id": "COST-LITERAL-RUBRICS",
+            "condition": "JSON.stringify([...window.__qaCost.querySelectorAll('tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]))===JSON.stringify([[\"Labores antes de cosecha\", 1793292.0], [\"Semilla e insumos\", 1840611.0], [\"Mano de obra de cosecha\", 1030840.0]].map(([n,v])=>[n,(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(v)]))",
+            "expected": "All3 cost rubrics match independently read original values, COP/ha"
+          },
+          {
+            "id": "COST-LITERAL-TOTAL",
+            "condition": "window.__qaCost.querySelector('tfoot td').innerText.replace(/\\s/g,'')===(v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v).replace(/\\s/g,''))(4664743)",
+            "expected": "Printed total 4664743 COP/ha, only display rounds fractions"
+          },
+          {
+            "id": "COST-LITERAL-YIELD",
+            "condition": "window.__qaCost.innerText.includes(new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(5000.0)+' kg/ha')",
+            "expected": "Printed tonnes/ha convert exactly to 5000.0 kg/ha"
+          },
+          {
+            "id": "COST-SOURCE-PAGE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3?page=15\"",
+            "expected": "Exact retained original 80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3 physical page15"
+          },
+          {
+            "id": "COST-PRINTED-MUNICIPALITY",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Exact printed municipality scope for 19355: El estudio incluye este municipio."
+          },
+          {
+            "id": "COST-READONLY",
+            "condition": "!window.__qaCost.querySelector('input,select,textarea') && window.__qaCost.innerText.includes('COP por hectárea')",
+            "expected": "Historical published reference is read only with explicit per-hectare unit"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-papa-2023-4-15104",
+    "route": "/plan?municipality=15104&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Occidente (Boyacá)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Occidente (Boyacá)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: papa-2023-4 municipality15104 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"15104\"",
+            "expected": "Visible municipality filter exactly 15104"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=4\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-papa-2023-5-15104",
+    "route": "/plan?municipality=15104&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Centro Boyacá (Boyacá)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Centro Boyacá (Boyacá)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: papa-2023-5 municipality15104 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"15104\"",
+            "expected": "Visible municipality filter exactly 15104"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=5\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-papa-2023-6-52480",
+    "route": "/plan?municipality=52480&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Túquerres/Centro-Occidente (Nariño)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Túquerres/Centro-Occidente (Nariño)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: papa-2023-6 municipality52480 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"52480\"",
+            "expected": "Visible municipality filter exactly 52480"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=6\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-yuca-2023-10-70771",
+    "route": "/plan?municipality=70771&crop=1081001",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · Región Sabanas (Sucre)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Yuca · Región Sabanas (Sucre)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: yuca-2023-10 municipality70771 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"70771\"",
+            "expected": "Visible municipality filter exactly 70771"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2?page=10\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-frijol-2023-17-52254",
+    "route": "/plan?municipality=52254&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: frijol-2023-17 municipality52254 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"52254\"",
+            "expected": "Visible municipality filter exactly 52254"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=17\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-frijol-2023-17-52399",
+    "route": "/plan?municipality=52399&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: frijol-2023-17 municipality52399 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"52399\"",
+            "expected": "Visible municipality filter exactly 52399"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=17\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-frijol-2023-17-52480",
+    "route": "/plan?municipality=52480&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio no identifica este municipio; consulta su alcance regional.\")",
+            "expected": "Printed source scope: frijol-2023-17 municipality52480 included=False"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"52480\"",
+            "expected": "Visible municipality filter exactly 52480"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=17\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-papa-2023-7-05674",
+    "route": "/plan?municipality=05674&crop=1080701",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Papa · Región Oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Printed source scope: papa-2023-7 municipality05674 included=True"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"05674\"",
+            "expected": "Visible municipality filter exactly 05674"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=7\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-frijol-2023-17-05674",
+    "route": "/plan?municipality=05674&crop=1060200",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Frijol · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Printed source scope: frijol-2023-17 municipality05674 included=True"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"05674\"",
+            "expected": "Visible municipality filter exactly 05674"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=17\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-tomate-2023-19-05674",
+    "route": "/plan?municipality=05674&crop=1052902",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · región oriente (Antioquia)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · región oriente (Antioquia)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Printed source scope: tomate-2023-19 municipality05674 included=True"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"05674\"",
+            "expected": "Visible municipality filter exactly 05674"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=19\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-tomate-2023-10-41872",
+    "route": "/plan?municipality=41872&crop=1052901",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Norte (Huila)\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Tomate · Región Norte (Huila)\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Printed source scope: tomate-2023-10 municipality41872 included=True"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"41872\"",
+            "expected": "Visible municipality filter exactly 41872"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=10\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-exact-scope-platano-2024-25-50287",
+    "route": "/plan?municipality=50287&crop=2045802",
+    "ready": "!!([...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Plátano · región Ariari en el Meta\")))",
+    "steps": [
+      {
+        "action": "window.__qaCost=[...document.querySelectorAll('.published-cost-references details')].find(d=>d.querySelector('summary').innerText.includes(\"Plátano · región Ariari en el Meta\"));window.__qaCost.open=true;window.__qaCost.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-CORRECTED-SCOPE",
+            "condition": "window.__qaCost.innerText.includes(\"El estudio incluye este municipio.\")",
+            "expected": "Printed source scope: platano-2024-25 municipality50287 included=True"
+          },
+          {
+            "id": "COST-SCOPE-MUNICIPALITY",
+            "condition": "document.querySelector('select').value===\"50287\"",
+            "expected": "Visible municipality filter exactly 50287"
+          },
+          {
+            "id": "COST-SCOPE-PROVENANCE",
+            "condition": "window.__qaCost.querySelector('.evidence-link')?.getAttribute('href')===\"/evidence/a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c?page=25\"",
+            "expected": "Corrected geographic scope retains exact original and page"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-glossary.pdf-p1",
+    "route": "/evidence/e4a8771e734b93b52f47b4ffb6d321554545910389d870b84dddeb6e670efca8?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/e4a8771e734b93b52f47b4ffb6d321554545910389d870b84dddeb6e670efca8/content\"",
+            "expected": "Immutable original PDF SHA e4a8771e734b93b52f47b4ffb6d321554545910389d870b84dddeb6e670efca8"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2026-05/01_GlosarioMEA_20260519.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page1 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-glossary.pdf-p2",
+    "route": "/evidence/e4a8771e734b93b52f47b4ffb6d321554545910389d870b84dddeb6e670efca8?page=2",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/e4a8771e734b93b52f47b4ffb6d321554545910389d870b84dddeb6e670efca8/content\"",
+            "expected": "Immutable original PDF SHA e4a8771e734b93b52f47b4ffb6d321554545910389d870b84dddeb6e670efca8"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2026-05/01_GlosarioMEA_20260519.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page2 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231009_BolCostos_Frijol.pdf-p9",
+    "route": "/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=9",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1/content\"",
+            "expected": "Immutable original PDF SHA bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231009_BolCostos_Frijol.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page9 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231009_BolCostos_Frijol.pdf-p15",
+    "route": "/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1?page=15",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1/content\"",
+            "expected": "Immutable original PDF SHA bef5bddabb1d63487adf4c5caae87c12c6c1830469f51c7d35378b2fd97ef2d1"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231009_BolCostos_Frijol.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page15 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231009_BolCostos_Cebolla.pdf-p8",
+    "route": "/evidence/ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49?page=8",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49/content\"",
+            "expected": "Immutable original PDF SHA ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231009_BolCostos_Cebolla.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page8 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231009_BolCostos_Cebolla.pdf-p10",
+    "route": "/evidence/ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49?page=10",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49/content\"",
+            "expected": "Immutable original PDF SHA ae59506c6adfa87035e4cb97f0fda73a24f6ab6f291132b0739b650f94c20f49"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231009_BolCostos_Cebolla.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page10 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231018_Ficha_papa_2023.pdf-p2",
+    "route": "/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=2",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03/content\"",
+            "expected": "Immutable original PDF SHA b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231018_Ficha_papa_2023.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page2 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231018_Ficha_papa_2023.pdf-p7",
+    "route": "/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=7",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03/content\"",
+            "expected": "Immutable original PDF SHA b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231018_Ficha_papa_2023.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page7 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231019_BolCostos_Tomate.pdf-p8",
+    "route": "/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=8",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2/content\"",
+            "expected": "Immutable original PDF SHA 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231019_BolCostos_Tomate.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page8 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231019_BolCostos_Tomate.pdf-p13",
+    "route": "/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2?page=13",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2/content\"",
+            "expected": "Immutable original PDF SHA 1639625e3d94dec8d01069a4507d22eace5658dadf707dd5b834a1c0eb55b6e2"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231019_BolCostos_Tomate.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page13 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231222_Boletin_YUCA_Dic-2023_DG.pdf-p7",
+    "route": "/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2?page=7",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2/content\"",
+            "expected": "Immutable original PDF SHA 076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231222_Boletin_YUCA_Dic-2023_DG.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page7 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231222_Boletin_YUCA_Dic-2023_DG.pdf-p8",
+    "route": "/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2?page=8",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2/content\"",
+            "expected": "Immutable original PDF SHA 076a8bf5d01f38ee027c1ebec91d97965db3c47f5a26c9f45688181c47d60ac2"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231222_Boletin_YUCA_Dic-2023_DG.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page8 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231221_Bolet%C3%ADn_Cebolla%20junca_final.pdf-p10",
+    "route": "/evidence/80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3?page=10",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3/content\"",
+            "expected": "Immutable original PDF SHA 80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231221_Bolet%C3%ADn_Cebolla%20junca_final.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page10 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-20231221_Bolet%C3%ADn_Cebolla%20junca_final.pdf-p12",
+    "route": "/evidence/80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3?page=12",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3/content\"",
+            "expected": "Immutable original PDF SHA 80e026167fe42f9dcb2c4b2f0131b66db7a5159dba9818b066dee353b7887ce3"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-04/20231221_Bolet%C3%ADn_Cebolla%20junca_final.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page12 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-11_BolCosGrana_20241015.pdf-p13",
+    "route": "/evidence/6d7f0f181521b8df528b748d2bc10ecac2a605a8987de4a9b152eb8ff71bb637?page=13",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/6d7f0f181521b8df528b748d2bc10ecac2a605a8987de4a9b152eb8ff71bb637/content\"",
+            "expected": "Immutable original PDF SHA 6d7f0f181521b8df528b748d2bc10ecac2a605a8987de4a9b152eb8ff71bb637"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/11_BolCosGrana_20241015.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page13 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-11_BolCosGrana_20241015.pdf-p16",
+    "route": "/evidence/6d7f0f181521b8df528b748d2bc10ecac2a605a8987de4a9b152eb8ff71bb637?page=16",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/6d7f0f181521b8df528b748d2bc10ecac2a605a8987de4a9b152eb8ff71bb637/content\"",
+            "expected": "Immutable original PDF SHA 6d7f0f181521b8df528b748d2bc10ecac2a605a8987de4a9b152eb8ff71bb637"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/11_BolCosGrana_20241015.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page16 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-01_BolCostArv_20240925.pdf-p9",
+    "route": "/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c?page=9",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c/content\"",
+            "expected": "Immutable original PDF SHA c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/01_BolCostArv_20240925.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page9 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-01_BolCostArv_20240925.pdf-p14",
+    "route": "/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c?page=14",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c/content\"",
+            "expected": "Immutable original PDF SHA c813f9c666b462b95cb6a4f90f958aff11ea443cc46c168834dff74e1935c29c"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/01_BolCostArv_20240925.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page14 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-01_BolCosCacao_20241107.pdf-p17",
+    "route": "/evidence/33762d0b9f0539db139de5144a332c162b4e857da92f237c54f2198d7e5cb38f?page=17",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/33762d0b9f0539db139de5144a332c162b4e857da92f237c54f2198d7e5cb38f/content\"",
+            "expected": "Immutable original PDF SHA 33762d0b9f0539db139de5144a332c162b4e857da92f237c54f2198d7e5cb38f"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/01_BolCosCacao_20241107.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page17 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-01_BolCosCacao_20241107.pdf-p18",
+    "route": "/evidence/33762d0b9f0539db139de5144a332c162b4e857da92f237c54f2198d7e5cb38f?page=18",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/33762d0b9f0539db139de5144a332c162b4e857da92f237c54f2198d7e5cb38f/content\"",
+            "expected": "Immutable original PDF SHA 33762d0b9f0539db139de5144a332c162b4e857da92f237c54f2198d7e5cb38f"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/01_BolCosCacao_20241107.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page18 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-01_FicCostPlat_20250310.pdf-p1",
+    "route": "/evidence/a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c?page=1",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c/content\"",
+            "expected": "Immutable original PDF SHA a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/01_FicCostPlat_20250310.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page1 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "upra-original-cost-01_FicCostPlat_20250310.pdf-p25",
+    "route": "/evidence/a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c?page=25",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-viewer')?.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "COST-ORIGINAL-ID",
+            "condition": "document.querySelector('.evidence-actions a[download]')?.getAttribute('href')===\"/api/evidence/a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c/content\"",
+            "expected": "Immutable original PDF SHA a4eb383156b9565a981b0f176253416fbb193350cffcb8a334d365b2a46c272c"
+          },
+          {
+            "id": "COST-ORIGINAL-URL",
+            "condition": "document.querySelector('.evidence-actions a[target=_blank]')?.getAttribute('href')===\"https://upra.gov.co/sites/default/files/2025-03/01_FicCostPlat_20250310.pdf\"",
+            "expected": "Exact official UPRA URL retained"
+          },
+          {
+            "id": "COST-ORIGINAL-RENDER",
+            "condition": "!!document.querySelector('canvas[data-rendered=true]')",
+            "expected": "Original physical page25 rendered; source-only/multi-year context not flattened into a one-year cost"
+          }
+        ]
+      }
+    ]
+  }
+]
