@@ -29,6 +29,7 @@ FIXTURES = Path(
 )
 TABLES = (
     "source_document",
+    "input_reference_row",
     "source_archive_member",
     "ingestion_checkpoint",
     "official_price_quote",
@@ -484,7 +485,7 @@ class ArchivePublicationPostgres(unittest.TestCase):
             ),
         ):
             count = worker.process_asset(self.db, self.url, "daily-zip", self.day)
-        self.assertEqual(count, 1543)
+        self.assertEqual(count, 3103)
         row = self.db.execute(
             "SELECT document_id,status,records,processor_version FROM ingestion_asset"
         ).fetchone()
@@ -493,7 +494,7 @@ class ArchivePublicationPostgres(unittest.TestCase):
             (
                 hashlib.sha256(data).hexdigest(),
                 "complete",
-                1543,
+                3103,
                 worker.parser_version("daily-zip"),
             ),
         )
@@ -505,6 +506,7 @@ class ArchivePublicationPostgres(unittest.TestCase):
         for table in (
             "regional_price",
             "source_document",
+            "input_reference_row",
             "source_archive_member",
             "ingestion_checkpoint",
         ):
@@ -544,7 +546,7 @@ class ArchivePublicationPostgres(unittest.TestCase):
     def test_daily_projection_keeps_parent_archive_pointer_and_literal_percent(self):
         data = (FIXTURES / "originals/mayoristas_diciembre_31_2021.zip").read_bytes()
         did, result = self.retain_publish(data)
-        self.assertEqual(result, (1543, []))
+        self.assertEqual(result, (3103, []))
         row = self.db.execute(
             "SELECT observed_on,unit,price,document_id,source_locator,change_percent FROM daily_price WHERE product_name='Ahuyama' AND market_name='Bogotá, Corabastos'"
         ).fetchone()
@@ -568,7 +570,7 @@ class ArchivePublicationPostgres(unittest.TestCase):
         data = (FIXTURES / "originals/anexos-diarios-semanal.zip").read_bytes()
         self.day = None
         did, result = self.retain_publish(data)
-        self.assertEqual((result[0], len(result[1])), (3899, 1))
+        self.assertEqual((result[0], len(result[1])), (4919, 1))
         self.assertEqual(
             self.db.execute("SELECT count(*) FROM official_source_review").fetchone(),
             (102,),

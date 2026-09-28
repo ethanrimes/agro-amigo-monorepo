@@ -2,7 +2,7 @@
 
 City package sheets use the same range/quantity validator as city PDFs. Dated
 consolidated tables retain their literal daily published mean, even when their
-container filename mentions a week. Supply sheets remain clearly named context.
+container filename mentions a week. Daily supply totals remain separate non-additive source references.
 """
 
 import hashlib
@@ -20,7 +20,7 @@ from urllib.parse import urlparse
 
 from psycopg.types.json import Jsonb
 
-VERSION = "daily-zip-v2"
+VERSION = "daily-zip-v3"
 LOCATOR_VERSION = (
     "daily-zip-v1"  # Native cell semantics/physical locators are unchanged.
 )
@@ -511,6 +511,14 @@ def publish(db, data, zip_id, url, day):
                         "Unsupported daily ZIP member type; original retained"
                     )
                 parsed = parse_member(body, day)
+                from . import supply_summaries
+
+                summaries, summary_error = [], None
+                if "Abastecimiento" in parsed.context_sheets:
+                    try:
+                        summaries = supply_summaries.parse(body, day)
+                    except ValueError as exc:
+                        summary_error = str(exc)
                 count = 0
                 row_reviews = [r for r in parsed.official if r.get("price") is None]
                 daily_issues = parsed.daily and (
@@ -541,6 +549,19 @@ def publish(db, data, zip_id, url, day):
                         count += official_sources.publish_rows(
                             db, parsed.official, did, kind="daily-zip"
                         )
+                    count += supply_summaries.publish_rows(db, summaries, did)
+                    if summary_error:
+                        daily_publication.retain_resolution(
+                            db,
+                            "supply_summary_review",
+                            {
+                                "document_id": did,
+                                "archive_id": zip_id,
+                                "source_sheet": "Abastecimiento",
+                                "reason": summary_error,
+                                "parser_version": supply_summaries.VERSION,
+                            },
+                        )
                     if parsed.context_sheets:
                         daily_publication.retain_resolution(
                             db,
@@ -549,27 +570,31 @@ def publish(db, data, zip_id, url, day):
                                 "document_id": did,
                                 "archive_id": zip_id,
                                 "sheets": parsed.context_sheets,
-                                "note": "Original supply/context sheets retained; not treated as price observations.",
+                                "note": "Original supply/context sheets retained; daily tonnes are separate non-additive references, never food microdata or prices.",
+                                "typed_supply_cells": len(summaries),
                             },
                         )
                     _budget()
                     # Only clean members get a resumable completion marker.
                     # A reviewed member is replayed idempotently if a different
                     # sibling hits the run deadline, preserving parent review.
-                    if not row_reviews and not daily_issues:
+                    if not row_reviews and not daily_issues and not summary_error:
                         db.execute(
                             "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
                             (zip_id, version, step, count),
                         )
                 total += count
-                if row_reviews or daily_issues:
+                if row_reviews or daily_issues or summary_error:
                     failures.append(
                         {
                             "archive_id": zip_id,
                             "entry_name": member.filename,
                             "document_id": did,
                             "source_url": url,
-                            "reason": f"{len(row_reviews)} native quote rows retained for review; valid siblings published"
+                            "reason": "Supply summary retained for review: "
+                            + summary_error
+                            if summary_error
+                            else f"{len(row_reviews)} native quote rows retained for review; valid siblings published"
                             if row_reviews
                             else "Daily source has unresolved native cells or date resolution; original and valid rows retained",
                             "review_locators": [

@@ -1,5 +1,6 @@
 import "server-only";
 import { OFFICIAL_EVIDENCE_ROWS_SQL } from "./official-evidence-sql";
+import { showsSupplySummaryRecords } from "./supply-summary-evidence";
 import { createHash } from "node:crypto";
 import { reconcileInputCatalog } from "./input-identities";
 import { database, WINDOW } from "./db";
@@ -574,6 +575,33 @@ export async function evidence(
         [r.id],
       )
     ).rows;
+  }
+  if (["daily-zip-member", "supply-reference"].includes(String(r.metadata.ingestion_kind))) {
+    const summary = (await db.query<{
+      cells: number; reported: number; first_day: string; last_day: string; sheet: string;
+    }>(
+      `SELECT count(*)::int cells,
+       count(*) FILTER(WHERE details->>'availability'='reported')::int reported,
+       min(observed_on)::text first_day,max(observed_on)::text last_day,
+       min(details->>'sheet') sheet
+       FROM input_reference_row WHERE document_id=$1 AND kind='supply-daily-summary'`,
+      [r.id],
+    )).rows[0];
+    if (summary?.cells) {
+      r.metadata.supply_summary_count = summary.cells;
+      r.metadata.supply_summary_reported_count = summary.reported;
+      r.metadata.supply_summary_sheet = summary.sheet;
+      r.metadata.supply_summary_note = `Abastecimiento diario provisional: ${summary.reported.toLocaleString("es-CO")} valores en toneladas, del ${summary.first_day} al ${summary.last_day}. Los blancos indican datos no reportados. Los totales por mercado y el total de los mercados informados se conservan por separado; no se suman a los registros por alimento ni son precios.`;
+      if (showsSupplySummaryRecords(filters)) r.records = (await db.query(
+        `SELECT kind,observed_on,name,category,source_locator,
+         details->>'unit' unit,details->'quantity_tonnes' quantity_tonnes,
+         details->>'aggregation_level' aggregation_level,details
+         FROM input_reference_row WHERE document_id=$1 AND kind='supply-daily-summary'
+         AND ($2='' OR source_locator=$2)
+         ORDER BY observed_on DESC,source_locator LIMIT 100`,
+        [r.id, (filters.get("locator") || "").slice(0, 500)],
+      )).rows;
+    }
   }
   return r;
 }

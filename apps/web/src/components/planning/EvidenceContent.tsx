@@ -115,6 +115,16 @@ export function EvidenceContent({
                   )}
                 </div>
               )}
+              {typeof data.metadata.supply_summary_note === "string" && (
+                <p className="inline-note" data-testid="supply-summary-note">
+                  {data.metadata.supply_summary_note}{" "}
+                  {typeof data.metadata.supply_summary_sheet === "string" && (
+                    <a href={"/evidence/" + encodeURIComponent(data.id) + "?sheet=" + encodeURIComponent(data.metadata.supply_summary_sheet) + "&row=11"}>
+                      Ver celdas originales de abastecimiento ↗
+                    </a>
+                  )}
+                </p>
+              )}
               {typeof data.metadata.review_note === "string" && (
                 <p className="inline-note">{data.metadata.review_note}</p>
               )}
