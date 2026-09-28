@@ -19,14 +19,21 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [saved, setSaved] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   useEffect(() => {
+    // A shared product link must keep its explicit geographic scope even when
+    // this browser previously saved another department. Hydration runs after
+    // child effects, so restoring localStorage unconditionally loses that URL.
+    const query = new URLSearchParams(window.location.search);
+    const explicitRegion = query.has("region");
     try {
       const value = JSON.parse(
         localStorage.getItem("agroamigo-preferences-v2") || "{}",
       );
-      if (typeof value.region === "string") setRegion(value.region);
+      if (!explicitRegion && typeof value.region === "string")
+        setRegion(value.region);
       if (Array.isArray(value.saved))
         setSaved(value.saved.filter((x: unknown) => typeof x === "string"));
     } catch {}
+    if (explicitRegion) setRegion((query.get("region") || "").slice(0, 100));
     setReady(true);
   }, []);
   useEffect(() => {
