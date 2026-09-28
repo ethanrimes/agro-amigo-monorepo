@@ -24,6 +24,14 @@ test("normal quotes, dates and unformatted historical files retain raw values", 
   expect(workbookCellText({ value: "2012-07-31T00:00:00", type: "date" })).toBe("2012-07-31T00:00:00");
 });
 
+test("DANE identifier formats stay ungrouped without rounding raw tariffs", () => {
+  // Annual input source: 2.1!A82294, I82294, K82294; municipal 3.5!E2716.
+  expect(workbookCellText({ value: 2026, type: "number", number_format: "0" })).toBe("2026");
+  expect(workbookCellText({ value: 7487, type: "number", number_format: "@" })).toBe("7487");
+  expect(workbookCellText({ value: 130500, type: "number", number_format: "#,##0" })).toBe("130.500");
+  expect(workbookCellText({ value: 503.96, type: "number", number_format: "0" })).toBe("503,96");
+});
+
 test("source viewer renders percentages while retaining read-only sheet navigation", async ({ page }) => {
   const id = "5fc9d3a1d781".padEnd(64, "0");
   await page.route(new RegExp(`/api/evidence/${id}(?:\\?.*)?$`), route => route.fulfill({ json: {
