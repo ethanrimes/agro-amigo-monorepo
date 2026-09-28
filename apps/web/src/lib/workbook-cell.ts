@@ -20,7 +20,12 @@ export function workbookCellText(cell: WorkbookCell): string {
   const percentCount = (tokens.match(/%/g) || []).length;
   const literalPercent = /"[^"]*%[^"]*"|\\%/.test(section);
   if (!percentCount && !literalPercent)
-    return value.toLocaleString("es-CO", { maximumFractionDigits: 12 });
+    return value.toLocaleString("es-CO", {
+      maximumFractionDigits: 12,
+      // DANE uses 0 for years and @ for numeric registration identifiers.
+      // Respect their ungrouped display without rounding raw price decimals.
+      useGrouping: tokens !== "0" && tokens !== "@",
+    });
   const decimals = tokens.match(/[0#?]+\.([0#?]+)/)?.[1] || "";
   const places = Math.min(decimals.length, 12);
   const parentheses = value < 0 && tokens.includes("(") && tokens.includes(")");
