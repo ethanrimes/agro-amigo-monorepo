@@ -5,10 +5,12 @@ hash and independent official publication evidence, never neighboring columns.
 """
 
 import hashlib
+import io
 import math
+import re
 from datetime import date, datetime
 
-VERSION = "daily-units-v3"
+VERSION = "daily-units-v4"
 
 # Populated only for exact authoritative originals with independent date evidence.
 VERIFIED_DATE_RECOVERIES = {
@@ -150,6 +152,74 @@ def _publication_day(data, rows, expected_day):
     )
 
 
+def _number_formats(data):
+    """Native variation formats keyed by one-based sheet/row/column."""
+    if data[:2] == b"PK":
+        import openpyxl
+
+        book = openpyxl.load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+        try:
+            return {
+                (sheet.title, cell.row, cell.column): cell.number_format
+                for sheet in book
+                for row in sheet
+                for cell in row
+                if cell.value is not None
+            }
+        finally:
+            book.close()
+    import xlrd
+
+    book = xlrd.open_workbook(file_contents=data, formatting_info=True)
+    try:
+        return {
+            (sheet.name, row + 1, col + 1): book.format_map[
+                book.xf_list[sheet.cell_xf_index(row, col)].format_key
+            ].format_str
+            for sheet in book.sheets()
+            for row in range(sheet.nrows)
+            for col in range(sheet.ncols)
+            if sheet.cell_value(row, col) != ""
+        }
+    finally:
+        book.release_resources()
+
+
+def percentage_change(raw, number_format):
+    """Convert native numeric fractions only when Excel actually displays %."""
+    finite = (
+        isinstance(raw, (int, float))
+        and not isinstance(raw, bool)
+        and math.isfinite(raw)
+    )
+    literal = raw if not isinstance(raw, float) or math.isfinite(raw) else str(raw)
+    details = {"raw_change": literal, "change_number_format": number_format}
+    if not finite:
+        return None, {**details, "change_percent_encoding": "not_numeric"}
+    # Select the actual positive/negative/zero section. Quoted, escaped, fill,
+    # spacing and bracket tokens cannot turn a literal percent into scaling.
+    sections = re.findall(r'(?:"[^"]*"|\\.|[^;])+', number_format or "General")
+    section = sections[
+        1
+        if raw < 0 and len(sections) > 1
+        else 2
+        if raw == 0 and len(sections) > 2
+        else 0
+    ]
+    if re.search(r"\[[<>=]", section):
+        raise ValueError("Conditional daily variation format requires review")
+    tokens = re.sub(r'"[^"]*"|\\.|\[[^\]]*\]|_.|\*.', "", section)
+    count = tokens.count("%")
+    if count > 1:
+        raise ValueError("Multiple daily percentage scaling tokens require review")
+    scale = 100 if count else 1
+    return float(raw) * scale, {
+        **details,
+        "change_percent_encoding": "fraction" if count else "percentage_points",
+        "change_scale": scale,
+    }
+
+
 def parse_daily(data, expected_day):
     """Validate the whole original, returning rows, reviews and date evidence.
 
@@ -160,6 +230,7 @@ def parse_daily(data, expected_day):
     from .worker import clean, positive, record, unit_for, workbooks
 
     output, reviews, resolutions = [], [], []
+    formats = _number_formats(data)
     for sheet, source in workbooks(data):
         rows = list(source)
         if not rows or not any(clean(value) for row in rows for value in row):
@@ -208,11 +279,11 @@ def parse_daily(data, expected_day):
                 if not positive(raw_price):
                     continue
                 raw_variation = row[col + 1] if col + 1 < len(row) else None
-                variation = (
-                    float(raw_variation) * 100
-                    if isinstance(raw_variation, (int, float))
-                    and math.isfinite(raw_variation)
-                    else None
+                variation, change_details = percentage_change(
+                    raw_variation, formats.get((sheet, rownum, col + 2), "General")
+                )
+                change_details["change_source_locator"] = (
+                    f"{sheet}!row {rownum},col {col + 2}"
                 )
                 locator = f"{sheet}!row {rownum},col {col + 1}"
                 if not name or not markets[col]:
@@ -229,7 +300,7 @@ def parse_daily(data, expected_day):
                                 "product_name": name,
                                 "market_name": markets[col] or None,
                                 "price": float(raw_price),
-                                "raw_change": raw_variation,
+                                **change_details,
                                 "market_header_cells": market_cells[col],
                                 "printed_heading_cells": headings,
                                 "archive_date": expected_day.isoformat(),
@@ -241,6 +312,7 @@ def parse_daily(data, expected_day):
                     continue
                 details = {
                     "predominant_variety": "*" in name,
+                    **change_details,
                     "parser_version": VERSION,
                 }
                 if evidence:

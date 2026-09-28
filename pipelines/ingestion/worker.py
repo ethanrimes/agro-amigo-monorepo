@@ -69,7 +69,7 @@ PARSER_VERSIONS = {
     "city-zip": "city-v5",
     "monthly": "monthly-units-v2",
     "monthly-annex": "monthly-annex-v3",
-    "daily": "daily-units-v3",
+    "daily": "daily-units-v4",
     "dane-daily-query": "dane-daily-query-v1",
     "daily-pdf": "daily-pdf-v5",
     "monthly-pdf": "monthly-pdf-v4",
@@ -1111,7 +1111,7 @@ def save_rows(db, did, rows):
     return count
 
 
-def project(db, did, url, kind):
+def project(db, did, url, kind, *, source_rows=None):
     """Publish values and their matching immutable evidence in the same transaction."""
     if kind == "inputs-pdf":
         from pipelines.ingestion.inputs import project_pdf_inputs
@@ -1125,11 +1125,15 @@ def project(db, did, url, kind):
         from pipelines.ingestion.special_prices import project_special
 
         return project_special(db, did, url)
-    rows = db.execute(
+    rows = source_rows if source_rows is not None else db.execute(
         """SELECT source_locator,series,observed_on,product_name,market_name,unit,price,change_percent,details
         FROM historical_price WHERE document_id=%s""",
         (did,),
     ).fetchall()
+    if kind == "daily" and source_rows is None:
+        from .daily_publication import current_daily_rows
+
+        rows = current_daily_rows(rows)
     products = {}
     markets = {}
     prices = {}

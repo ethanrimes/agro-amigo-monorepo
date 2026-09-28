@@ -49,6 +49,20 @@ def original_price_cells(path):
 
 
 class MaterializedDailyRecovery(unittest.TestCase):
+    def setUp(self):
+        native_formats = recovery._number_formats
+        self.enterContext(
+            patch.object(
+                recovery,
+                "_number_formats",
+                side_effect=lambda data: (
+                    {}
+                    if data in (b"synthetic", b"unreviewed")
+                    else native_formats(data)
+                ),
+            )
+        )
+
     def matrix(self, heading="29 de noviembre de 2012"):
         return [
             [heading],
