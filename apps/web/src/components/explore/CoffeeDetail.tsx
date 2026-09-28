@@ -1,5 +1,5 @@
 "use client";
-import { photoFor } from "@/lib/images";
+import { imageLibrary } from "@/lib/images";
 import { CoffeeCostReference } from "@/components/planning/CoffeeCostReference";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { useState } from "react";
@@ -117,8 +117,8 @@ export function CoffeeDetail() {
                   </div>
                   <img
                     className="coffee-hero-image"
-                    src={photoFor("Café pergamino seco").src}
-                    alt={photoFor("Café pergamino seco").alt}
+                    src={imageLibrary["coffee-parchment"].src}
+                    alt="Fotografía ilustrativa de café pergamino; la presentación de la referencia puede diferir"
                   />
                 </section>
                 <div className="detail-grid">

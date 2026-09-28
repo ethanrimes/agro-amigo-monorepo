@@ -395,7 +395,7 @@ h3 {
   gap: 20px;
   background:
     linear-gradient(90deg, #173f2af7, #173f2ae3 55%, #173f2a65),
-    url("/images/illustrations/farm-neutral.svg") center / cover;
+    url("/images/library/farm-colombia.jpg") center / cover;
   align-items: center;
 }
 .app-content:is(
@@ -406,7 +406,7 @@ h3 {
   > .page-heading {
   background-image:
     linear-gradient(90deg, #403b22f5, #403b22dd 55%, #403b2270),
-    url("/images/illustrations/produce-neutral.svg");
+    url("/images/library/produce-colombia.jpg");
 }
 .app-content:is(
     [data-section="farm"],

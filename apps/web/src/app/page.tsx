@@ -55,7 +55,7 @@ export default function Home() {
       href: "/products",
       label: "Productos",
       detail: "Precios y abastecimiento",
-      photo: imageLibrary["produce-neutral"].src,
+      photo: imageLibrary["produce-colombia"].src,
       icon: IoBasketOutline,
     },
     {
@@ -69,7 +69,7 @@ export default function Home() {
       href: "/insumos",
       label: "Insumos",
       detail: "Lo que necesita tu cultivo",
-      photo: photoFor("Fertilizante", "", "input").src,
+      photo: imageLibrary["seeds-general"].src,
       icon: IoFlaskOutline,
     },
   ];
@@ -80,8 +80,8 @@ export default function Home() {
       </div>
       <section className="home-hero">
         <img
-          src={imageLibrary["farm-neutral"].src}
-          alt="Ilustración de un paisaje agrícola imaginario; no representa una finca real"
+          src={imageLibrary["farm-colombia"].src}
+          alt="Fotografía ilustrativa de una finca cafetera en Colombia; no representa la finca del usuario"
           fetchPriority="high"
         />
         <div className="home-hero-copy">

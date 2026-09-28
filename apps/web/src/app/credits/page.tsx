@@ -21,12 +21,21 @@ export default function Credits() {
             <img src={p.src} alt={p.title} loading="lazy" />
             <h2>{p.title}</h2>
             <p>{p.author}</p>
-            <a href={p.source} target="_blank" rel="noreferrer">
-              Ver origen de la imagen
-            </a>
-            <a href={p.licenseUrl || p.source} target="_blank" rel="noreferrer">
-              {p.license}
-            </a>
+            {p.source ? (
+              <a href={p.source} target="_blank" rel="noreferrer">
+                Ver origen de la imagen
+              </a>
+            ) : (
+              <p>Origen de la imagen no documentado.</p>
+            )}
+            {p.licenseUrl || p.source ? (
+              <a href={p.licenseUrl || p.source} target="_blank" rel="noreferrer">
+                {p.license}
+              </a>
+            ) : (
+              <p>{p.license}</p>
+            )}
+            {p.modifications && <p>{p.modifications}</p>}
           </article>
         ))}
       </div>

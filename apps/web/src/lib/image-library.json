@@ -8,7 +8,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "Red Apple. Used white paper behind apple and above apple and bounced SB-600 at 1/4th power.",
     "sha256": "60baaee8cff7502bc7cde3cefaf940247a8a9ee5bff7522efc515710b54f36ce",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "blueberry": {
     "src": "/images/library/blueberry.jpg",
@@ -19,7 +20,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Blueberries from Argentina.",
     "sha256": "fbf7654a971c9ddab732eda0f0355852b9f1fb129fad8cbabf904970922e6650",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "badea": {
     "src": "/images/library/badea.jpg",
@@ -30,7 +32,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en",
     "description": "Passiflora quadrangularis (Giant granadilla) fruit forming at Enchanting Floral Gardens of Kula, Maui, Hawaii. August 11, 2015 #150811-0583 Image Use Policy",
     "sha256": "ab13b51c47879e31e77d0dc9f4662372caf844eabdf8befe535c84ca9811ce2f",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "borojo": {
     "src": "/images/library/borojo.jpg",
@@ -41,7 +44,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Fruto aún no maduro. Cuando lo está, toma una coloración negra y cae al suelo. Si se cosecha sin haber tomado en su totalidad dicha coloración, el fruto no servirá, nunca madurará.",
     "sha256": "47795f294961caebef39c357e4d662a919192e3e3eb00d85eeb3f45678cb3124",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "plum": {
     "src": "/images/library/plum.jpg",
@@ -52,7 +56,8 @@
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "description": "wet plums on tree",
     "sha256": "a1d5e7699221d7074ae5c2cc85eb8894c9212dbaf630bd0e23488e05655d799d",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "coconut": {
     "src": "/images/library/coconut.jpg",
@@ -63,18 +68,20 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Coconuts – single and cracked open. Grown in Dominican Republic",
     "sha256": "01302caf982d130c83dc72a5945b07090e9155d0189f9475eefe8fa10e24f55c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "curuba": {
     "src": "/images/library/curuba.jpg",
     "title": "Curuba.jpg",
     "source": "https://commons.wikimedia.org/wiki/File:Curuba.jpg",
-    "author": "No machine-readable author provided. Fibonacci assumed (based on copyright claims).",
+    "author": "Fibonacci (atribución inferida por Commons, sin autor legible por máquina)",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "description": "Two curubas ( banana passionfruit ), one of them longitudinally cut to show the edible pulp in which the seeds are embedded. Picture taken by Fibonacci .",
     "sha256": "23dd7118740987e1f8da1afadc5419cfbba79ce43c98b3f6e8c7240c1a08f964",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "peach": {
     "src": "/images/library/peach.jpg",
@@ -85,7 +92,8 @@
     "licenseUrl": "",
     "description": "Autumn red peach.",
     "sha256": "3679b9da78d0dd67607d686f3f59477f0c672324d10d5167102263e2beb21680",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "feijoa": {
     "src": "/images/library/feijoa.jpg",
@@ -96,7 +104,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "pineapple guava ( Acca sellowiana syn : feijoa sellowiana , Myrtaceae) fruits. Locality : Fronton, Haute-Garonne France.",
     "sha256": "a0d6944e81e2dadd91b4843dae91f80bd78a460c4073fa333f5f56c0c87e4938",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "fig": {
     "src": "/images/library/fig.jpg",
@@ -107,7 +116,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "sliced fig, hi-res image of the cut surface",
     "sha256": "0d0126243306677079b90dfbbfb5c35fe24abcb867a31c390fafcf69d3f2f770",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "strawberry": {
     "src": "/images/library/strawberry.jpg",
@@ -118,7 +128,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Still life with freshly picked local strawberries in a crystal bowl on a striped tablecloth in Tuntorp, Brastad, Lysekil Municipality, Sweden. Photographed in natural evening light from a window. The idea was to borrow the light and composition style from old still-life paintings, preferably 17th-century Dutch paintings . Many of those paintings of food depicted it as if the meal was in progress. This was a technique they had to show that is was a painting of a fleeting moment, and that everything in life is transient.",
     "sha256": "35abd68bfce27b1ba486adf8a3e74c3a18e29864fa89d34d17c7a748ea3dd8c3",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "granadilla": {
     "src": "/images/library/granadilla.jpg",
@@ -129,7 +140,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Sweet granadillas ( Passiflora ligularis ) – single and cross section",
     "sha256": "2351f69731c8535cfab7e59902ef50dc66f8c5a2ec3678fcfb857bdcb1f2104e",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "soursop": {
     "src": "/images/library/soursop.jpg",
@@ -140,7 +152,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Soursop pice",
     "sha256": "781efcd838ffdc1c2f331d2284030040a943f2f49705644b2ac32dde49ffcc0f",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "guava": {
     "src": "/images/library/guava.jpg",
@@ -151,7 +164,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Red guava ( Psidium guajava ) on a black background.",
     "sha256": "01f17f53fe594c261cfe238c0890616c3e6ed34ab2c9623caa352e62f5dde85c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "passionfruit": {
     "src": "/images/library/passionfruit.jpg",
@@ -162,7 +176,8 @@
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "description": "Passion fruits spread on a silver tray",
     "sha256": "8e2c92e5d6aa8d53ae2a27a120b4ebfa8e58d1cd8b309ec147c974639ed4b2ff",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "kiwi": {
     "src": "/images/library/kiwi.jpg",
@@ -173,7 +188,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "A half cut kiwifruit in West Bengal, India. Photo taken by Yogabrata Chakraborty, on December 31, 2022.",
     "sha256": "2c37b455714ee5b0837627ca2f905109a51d2fa1aba5e4d8d30015671479e8c1",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "lime": {
     "src": "/images/library/lime.jpg",
@@ -184,7 +200,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Limes – whole and halved. Grown in Brazil",
     "sha256": "e6fb3492a5a72e72e4901e6b2d603803cdbf4f8827ec426bbffd8eb6b03cdfe7",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "lulo": {
     "src": "/images/library/lulo.jpg",
@@ -195,7 +212,8 @@
     "licenseUrl": "",
     "description": "This photo was taken in Costa Rica, about 20 miles in the rain forest.",
     "sha256": "765c61a18706c22c7dbba4493905dc84fe9eccfd685564f9b50b86b2b52f6639",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "mandarin": {
     "src": "/images/library/mandarin.jpg",
@@ -206,7 +224,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "Mandarin oranges (Citrus Reticulata).",
     "sha256": "58191bdf8d1f3104fc5d9da7ac6cd1834dbbf46640e3772b232010fac6cd50a6",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "mango": {
     "src": "/images/library/mango.jpg",
@@ -217,7 +236,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Mango fruits – single and halved. Grown in Brazil",
     "sha256": "f164d471ea9f91c4e71a65b2771c0250c061c93f43012a4b98cc367366e4c8bb",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "orange": {
     "src": "/images/library/orange.jpg",
@@ -228,7 +248,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Oranges – whole, halved, and peeled segment",
     "sha256": "2d498d9baafc67ef41af6de4039b0e333f69473f36e8ed4d53beee6e6a88731a",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "papaya": {
     "src": "/images/library/papaya.jpg",
@@ -239,7 +260,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
     "description": "Preparing and breaking down the papaya fruit. Papaya peeled and cut in half, waiting for seeds to be removed.",
     "sha256": "b8c3feb81711d44af16594404ac0da2c8ffe5067a9c9252add9b52295cb1a0b2",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "watermelon": {
     "src": "/images/library/watermelon.jpg",
@@ -250,7 +272,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "This is an image with the theme \" Farm to Plate \" from:",
     "sha256": "ec449f3ca3a8da4375cec92e9c9d0eefde7a643d159b735e6bded789503b64ba",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "pear": {
     "src": "/images/library/pear.jpg",
@@ -261,7 +284,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Four pears: green Bartlett (Williams), D'Anjou, Forelle, and red Bartlett (Williams)",
     "sha256": "1380fcd065d74f2151604b693075d0a34ceabf51404a2aa1f47cc0b1a334c224",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "pineapple": {
     "src": "/images/library/pineapple.jpg",
@@ -272,7 +296,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
     "description": "Unripe pineapple",
     "sha256": "a549ea9e9b17ab3990293420672d34d0a79b2907c2846c082f4f4a9896f847c3",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "pitaya": {
     "src": "/images/library/pitaya.jpg",
@@ -283,7 +308,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Yellow dragon fruit/pitahaya ( Hylocereus megalanthus ), cut in half. A typical way of eating these fruits is to simply cut in half and eat the flesh with a spoon. Focus stacked.",
     "sha256": "1ba045892cbb5e2e7e5e92cdf5a212ba0d536c296225a59b9cf7120a6a2f392e",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "blackberry": {
     "src": "/images/library/blackberry.jpg",
@@ -294,7 +320,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Blackberries ( Rubus fruticosus )",
     "sha256": "0e9e97bcb197b44b83765ab6d7c55e973dc337e33071114f5cb33434d0710975",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "tamarillo": {
     "src": "/images/library/tamarillo.jpg",
@@ -305,7 +332,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Fruit of Tamarillo ( Solanum betaceum ) at Vattavada , Kerala , India",
     "sha256": "1a78c86b8624f3afb7531eb3fb25d174dfb2fcd4e22cf5180cfe84379d45a628",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "grape": {
     "src": "/images/library/grape.jpg",
@@ -316,7 +344,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Veraison (the onset of ripening) of Zinfandel grapes in Dry Creek Valley, Sonoma County, California",
     "sha256": "2b227bde13c968631b86ff5d6fd1a1bbdd328315736d161106865c5dfff7aaa3",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "coffee-roasted": {
     "src": "/images/library/coffee-roasted.jpg",
@@ -327,7 +356,8 @@
     "licenseUrl": "",
     "description": "Roasted coffee beans",
     "sha256": "516b32599516d126e04c65205ecfb773b95a1584d6902b4e0328e00b21f86fb1",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "cheese": {
     "src": "/images/library/cheese.jpg",
@@ -338,7 +368,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
     "description": "homemade fresh #cheese - 1. Cook and curdle milk - 2. Strain - 3. Season and Serve #cooking",
     "sha256": "2b99bdc28c214ca17d2e6912333ebef6b2e0fca985c652273614f7d07945307e",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "milk": {
     "src": "/images/library/milk.jpg",
@@ -349,18 +380,20 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Returnable glass milk bottles.  US Pint (373 ml) and Gallon (1.89 L)",
     "sha256": "ec8d63c169710caf05e5425693e03ebb80af0482a90fa1dbc33401f5cef04630",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "eggs": {
     "src": "/images/library/eggs.jpg",
-    "title": "Chicken Egg without Eggshell 5859.jpg",
-    "source": "https://commons.wikimedia.org/wiki/File:Chicken_Egg_without_Eggshell_5859.jpg",
-    "author": "Biswarup Ganguly",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
-    "description": "The white eggshell has been removed by dipping a normal chicken egg into vinegar for 48 hrs. Very little retouched.",
-    "sha256": "b0882c6d2560bea350a10c358574c5bdec5b72965e824b33f0a3332f4774cc47",
-    "illustrative": true
+    "title": "Egg cartons with chicken eggs 03.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Egg_cartons_with_chicken_eggs_03.jpg",
+    "author": "Krzysztof Golik",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Huevos de gallina con cáscara en una cubeta; uno está abierto para mostrar la yema. Foto ilustrativa, sin procedencia colombiana acreditada.",
+    "sha256": "35a2fbbe0defb5fc6d59b3f5bd8cb98378ad90495169714cb5737ec14d7d9a81",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px por Wikimedia Commons; recorte visual en la interfaz."
   },
   "butter": {
     "src": "/images/library/butter.jpg",
@@ -371,7 +404,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
     "description": "A mound of butter",
     "sha256": "910e9569689f39babf103e3a7ed7bb6c638b850dfa849b209bd7353eb386e42c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "chicken": {
     "src": "/images/library/chicken.jpg",
@@ -382,7 +416,8 @@
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "description": "chicken breast",
     "sha256": "0aca47aac3df0466d5108ba195d4e421cef1f8d00d406cbde1bfd065e4a6661d",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "pork": {
     "src": "/images/library/pork.jpg",
@@ -393,7 +428,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "HK food ingredient red meat frozen pork chop raw butt steak white in October 2021",
     "sha256": "ea21c3cf98426ae12caeb283b3195c5254efaeb83db74897f956ed08ba9f5386",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "beef": {
     "src": "/images/library/beef.jpg",
@@ -404,7 +440,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "This is an image of food from",
     "sha256": "d43bb3c5c29c2184811a10ff6ed962ec9450fb37483b3668fbe0c0a18d0af82c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "fish": {
     "src": "/images/library/fish.jpg",
@@ -415,7 +452,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "Satok weekend market, Kuching, Sarawak, Borneo, Malaysia, 2015",
     "sha256": "a384ec2cc1c789007aadf0211835e6c868da845e07cf50c67f747e86c0aa660c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "shrimp": {
     "src": "/images/library/shrimp.jpg",
@@ -426,7 +464,8 @@
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "description": "Raw shrimp",
     "sha256": "ff783870557747a6bedd75b4e4df08c125d618f68be8fe23dd812e38e82772e2",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "uchuva": {
     "src": "/images/library/uchuva.jpg",
@@ -437,7 +476,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Fruits of cape gooseberry , ⌀ 22–25 mm",
     "sha256": "460dc2e534709e59531ecf914bcb56fd28beb4387290c1a7b2c3258a153b3846",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "melon": {
     "src": "/images/library/melon.jpg",
@@ -448,7 +488,8 @@
     "licenseUrl": "",
     "description": "Title Cantaloupe Description A whole melon with a slice of cantaloupe. Topics/Categories Food and Drink Type Color, Photo Source National Cancer Institute",
     "sha256": "c04dc553eb1d0591c7cf47049b52629ba4f8f911c5987057cef612f1b2af509e",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "zapote": {
     "src": "/images/library/zapote.jpg",
@@ -459,7 +500,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "Mamey (Pouteria sapota)",
     "sha256": "7e09837bd6dbf637048f8ff6fd4da5a8516064eeda4452af4ff3b7457b79ba8d",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "garlic": {
     "src": "/images/library/garlic.jpg",
@@ -470,7 +512,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Garlic bulbs and cloves",
     "sha256": "c0691547c7a5d39ade437f8e46d0ddcb92546cf14a6983c4061c74ddade80203",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "artichoke": {
     "src": "/images/library/artichoke.jpg",
@@ -481,18 +524,20 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "Stacked artichokes in a fruit and vegetable store.",
     "sha256": "51bddab8677640d19b74ab0ac2a67eb0ffec704ee10e10411b82dcddb779377d",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "celery": {
     "src": "/images/library/celery.jpg",
     "title": "Celery.jpg",
     "source": "https://commons.wikimedia.org/wiki/File:Celery.jpg",
-    "author": "26 May 2006 (original upload date)",
+    "author": "Autor no identificado en los metadatos de Commons",
     "license": "Public domain",
     "licenseUrl": "",
-    "description": "​芹菜。",
+    "description": "Apio ilustrativo; variedad y origen comercial no acreditados.",
     "sha256": "7ba839ebc0d4ccc9d8a42848649691f5712a82a00142aaf875cd0fb755ca9ebf",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "peas": {
     "src": "/images/library/peas.jpg",
@@ -503,7 +548,8 @@
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "description": "Green pea pods",
     "sha256": "7c42a0b4521f5f1a89d5d49e54777892a2d5e2dea0356aa2a93db14e16e180ca",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "aubergine": {
     "src": "/images/library/aubergine.jpg",
@@ -514,7 +560,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Green eggplant, potato, carrot etc. in A typical Bangladeshi vegetable shop.",
     "sha256": "695d05960aeef29d4ee6545876d23b79847d1187833d76d98c29aab68f542431",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "broccoli": {
     "src": "/images/library/broccoli.jpg",
@@ -525,7 +572,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "Brassica oleracea var. italica - broccoli",
     "sha256": "9ba54d07d4dac2ac0337264bad802da3304c87887e8c6114b4cd9b3bc508a184",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "pumpkin": {
     "src": "/images/library/pumpkin.jpg",
@@ -536,7 +584,8 @@
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "description": "A pumpkin",
     "sha256": "a862fff8da2bbb42a12c4ab289d7c426793feff119cece5e1f3718bb40666b46",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "zucchini": {
     "src": "/images/library/zucchini.jpg",
@@ -547,7 +596,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "Zucchini, Munich, Germany",
     "sha256": "267fc7862f928b10e7211a31ee4969370705741395d2a4db4776acff97bfc710",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "onion": {
     "src": "/images/library/onion.jpg",
@@ -558,7 +608,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "A red onion on a white background.",
     "sha256": "9c91cf7f5422830899ac3cb061efd59535d558c9b2c2883fb63fefbdc20650bc",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "spring-onion": {
     "src": "/images/library/spring-onion.jpg",
@@ -569,7 +620,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "Scallions in Taipei",
     "sha256": "95a3526b0fb30a2bbb64e516fff3100354a278e167a025326e0a9bb03527d9fa",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "cilantro": {
     "src": "/images/library/cilantro.jpg",
@@ -580,7 +632,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Coriander Leaves",
     "sha256": "a26cccd9c868d398932a2a82b0c909137926ce063ebde8d56739364f0f246787",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "cauliflower": {
     "src": "/images/library/cauliflower.jpg",
@@ -591,7 +644,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Brassica oleracea var. botrytis (Cauliflower).",
     "sha256": "c857c12d429746ab06026f15310f26745bb9b6a88f4ce993863d9152c1fb295a",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "spinach": {
     "src": "/images/library/spinach.jpg",
@@ -602,7 +656,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
     "description": "1 kg of Spinach leaves separated from the stems. See Image:spinach_leaves_stems.jpg",
     "sha256": "e60bb9d2ab1a3adef6699137eb63f085c6f56c0037b43af838f68e180a9ef611",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "beans-green": {
     "src": "/images/library/beans-green.jpg",
@@ -613,7 +668,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "שעועית מצויה (ירוקה וצהובה) טרייה מיד לאחר הקטיפה מוצעת למחירה התמונה נלקחה בשוק נצרת בינואר 2017 .",
     "sha256": "a9630facef3c4034cac054a219175718532a49d5193353eae93bde4d64a4c145",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "lettuce": {
     "src": "/images/library/lettuce.jpg",
@@ -624,7 +680,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Lactuca sativa 'Ashbrook' growing in an English garden",
     "sha256": "461283ef65274ad0d5e4ac8e8e6a44eb0e8273325215103438a6ad7e477e404c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "corn": {
     "src": "/images/library/corn.jpg",
@@ -635,7 +692,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
     "description": "Harvested maize on cobs being sundryed",
     "sha256": "3d650ceeb6ab07492e88041c229216ddfe0a96e2ba92b1fd1ecf27c9f23c31d1",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "cucumber": {
     "src": "/images/library/cucumber.jpg",
@@ -646,18 +704,20 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "Cucumbers sold at the Ryerson Farmers' Market of Ryerson University (now called Toronto Metropolitan University), on Gould Street in downtown Toronto.",
     "sha256": "953d0082f81be4ece7bbab77ecffab6aed06e85f34b147ade14ede66c237120c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "bell-pepper": {
     "src": "/images/library/bell-pepper.jpg",
-    "title": "Baby Bell pepper Capsicum annuum 3.jpg",
-    "source": "https://commons.wikimedia.org/wiki/File:Baby_Bell_pepper_Capsicum_annuum_3.jpg",
-    "author": "W.Rebel",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "description": "Baby Bell pepper, Capsicum annuum which was found inside an adult pepper.",
-    "sha256": "9ae4bfc8e73577a3b942def6583e46902b0089fb8e383b4d9757a505e4975a20",
-    "illustrative": true
+    "title": "Red bell pepper.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Red_bell_pepper.jpg",
+    "author": "AntanO",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Pimentón rojo entero y cortado, fotografiado en Sri Lanka; variedad y procedencia comercial pueden diferir.",
+    "sha256": "fd0068ac691330ddc52f7af8f22e2cf4961a275b429f40c7f9c3f47afb1d462c",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px por Wikimedia Commons; recorte visual en la interfaz."
   },
   "beet": {
     "src": "/images/library/beet.jpg",
@@ -668,7 +728,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Newly harvested beetroots ( Beta vulgaris ) in a basket in Tuntorp, Brastad, Lysekil Municipality, Sweden. Photographed outdoors in natural light on a wooden floor. Focus stacked from 19 photos.",
     "sha256": "a8bcc286892181a7527fce01e09b4a7f4341001c7801b826d28c0556c41fdd54",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "cabbage": {
     "src": "/images/library/cabbage.jpg",
@@ -679,7 +740,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "This is an image with the theme \" Farm to Plate \" from:",
     "sha256": "d48e8b612b9e9de95924493125959a67a4ac410ac3336803b270afba81b57d29",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "carrot": {
     "src": "/images/library/carrot.jpg",
@@ -690,7 +752,8 @@
     "licenseUrl": "",
     "description": "ARS researchers have selectively bred carrots with pigments that reflect almost all colors of the rainbow. More importantly, though, they're very good for your health.",
     "sha256": "2f78ac248a39ed13defafe543bdb9e7ceec37735ec453531a37818ca78ae38b5",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "chayote": {
     "src": "/images/library/chayote.jpg",
@@ -699,9 +762,10 @@
     "author": "David Monniaux",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
-    "description": "",
+    "description": "Chayote (Sechium edule) ilustrativo; variedad, madurez y origen comercial no acreditados.",
     "sha256": "e689ce6edc6652b43680e06ac520a08eae0866a9f3b91b0b2d98ea3e29251530",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "arracacha": {
     "src": "/images/library/arracacha.jpg",
@@ -712,7 +776,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "Arracachas en un supermercado de Colombia",
     "sha256": "6fea0b021983e0fd2ba25803bf17cc91249a52e937e72c9d1b36b01c4f1ae86e",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "cassava": {
     "src": "/images/library/cassava.jpg",
@@ -723,7 +788,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "It shows the roots for cassava that also act as food for humans in Uganda",
     "sha256": "6e07166abc3742bd170a45996b012d7fa6a63e39c997d78d54c6b3550b72c5f0",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "yam": {
     "src": "/images/library/yam.jpg",
@@ -734,7 +800,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "This is an image with the theme \" Farm to Plate \" from:",
     "sha256": "cfcf4d8bae6e259b688325b6d7e57290326770215ece0cfdad0fcc594f25dd71",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "ullucus": {
     "src": "/images/library/ullucus.jpg",
@@ -745,7 +812,8 @@
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "description": "Ulluco tubers ( Ullucus tuberosus ) for sale in southern Peru",
     "sha256": "29a3e22859805c91b267595a0b6d2b56bbb16e7c04d905429a49066b24f911ca",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "rice": {
     "src": "/images/library/rice.jpg",
@@ -756,7 +824,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "Rice Diversity. Part of the image collection of the International Rice Research Institute (IRRI) .",
     "sha256": "117df3d34c85a1aeeebd72d8882aa265999a120bb781a899caef6e340e0724f8",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "lentils": {
     "src": "/images/library/lentils.jpg",
@@ -767,7 +836,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
     "description": "red, green and puy lentils",
     "sha256": "79a7f57dda4bc34bcf16747b68ac9a9f262d8fe30c0622384ca41ba507518378",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "beans": {
     "src": "/images/library/beans.jpg",
@@ -778,7 +848,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Picture of Speckled Kidney Beans. This is also known as Chitra Rajma (Picturesque Kidney Beans) and is grown on the foothills of the Himalayas.",
     "sha256": "c3238b60d8ecd49c13dab8533ff10673b6ce705b7e4d508efcad96c857429bf7",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "chickpeas": {
     "src": "/images/illustrations/chickpeas.svg",
@@ -800,7 +871,8 @@
     "licenseUrl": "",
     "description": "Rolled oats",
     "sha256": "bb3656166b580efb624a71c15a50af22aea5a40032a49b213ce8d775fc3f559c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "wheat": {
     "src": "/images/library/wheat.jpg",
@@ -811,7 +883,8 @@
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "description": "Wheat .",
     "sha256": "289f688c53b38102de56c743bde33971e04b4632e2ecf119caa8c246a09710f3",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "peanut": {
     "src": "/images/library/peanut.jpg",
@@ -822,7 +895,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Peanut Kernels",
     "sha256": "29ca3c45bc27dba995692c15f0b673f6a0a79c3a4cb7a6358916a88a8c755f98",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "panela": {
     "src": "/images/library/panela.jpg",
@@ -833,7 +907,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
     "description": "Panela",
     "sha256": "5b9f8159ba8629e6f88cc6c6a8b86a3a4f723248e2c548de2591e2069e2edee6",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "sugar": {
     "src": "/images/library/sugar.jpg",
@@ -844,7 +919,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "This photo shows granulated white sugar made from sugar beets with unusual large crystals. The manufacturer rejected the product because the crystals were larger than usual. Some of the shown granules are around two millimetres.\nI made this photo with bright light direct through a thick layer of sugar crystals. Under these conditions, the crystals appear yellowish.",
     "sha256": "b726fce40e64ad2fed630aac933940adc7cb3028475eb38055ee0003889be4f6",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "flour": {
     "src": "/images/library/flour.jpg",
@@ -855,7 +931,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
     "description": "All-Purpose Flour",
     "sha256": "538ce80dda89b2e44b44d808350fa84cfe2ea9cadb296eb9f14e0469d9ade86f",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "oil": {
     "src": "/images/library/oil.jpg",
@@ -866,18 +943,20 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "A bottle of Wesson vegetable oil in the Mountainville section of Ewing Township, Mercer County, New Jersey",
     "sha256": "e943da3cf77e741cddcbdbd1e78543f19d7b65368916b60c668b234875356bf2",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "salt": {
     "src": "/images/library/salt.jpg",
-    "title": "Salinas del Carmen 01.jpg",
-    "source": "https://commons.wikimedia.org/wiki/File:Salinas_del_Carmen_01.jpg",
-    "author": "H. Zell",
-    "license": "CC BY-SA 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "description": "Evaporation ponds, Salinas del Carmen, Fuerteventura, Canary Islands",
-    "sha256": "348b294d9dd86823158a2f47db0499fa8aec99eccdb0e7a41b9a25069e5b7259",
-    "illustrative": true
+    "title": "Seasalt.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Seasalt.jpg",
+    "author": "Relativity",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Sal marina gruesa en un recipiente de madera con cuchara; no representa sal de mesa fina ni una marca comercial.",
+    "sha256": "674bc2399a36bb1ea4cddb94bb484d4b21674ff6fd0be6fb5969d0dd8f369394",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px por Wikimedia Commons; recorte visual en la interfaz."
   },
   "pasta": {
     "src": "/images/library/pasta.jpg",
@@ -888,7 +967,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "A variety of pastas, including fresh and dry pasta.\nPhotography by David Adam Kess",
     "sha256": "6a3ce1ae4505d719d86c7b703e67473562e340be3b2e28a087d5f175ef505dd8",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "chocolate": {
     "src": "/images/library/chocolate.jpg",
@@ -899,7 +979,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
     "description": "A stack of dark chocolate",
     "sha256": "3ea67ebd6a211d92a3428633fa511e1785db891bf88fc46e11443dcda987b497",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "market": {
     "src": "/images/library/market.jpg",
@@ -910,7 +991,8 @@
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "description": "The Paloquemao Fruit Market in Bogotá, Colombia",
     "sha256": "de1171e05e65e6939a97380c1ba47608ff23fdeef5de95602db582d1c0e0f8ce",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "corabastos": {
     "src": "/images/library/corabastos.jpg",
@@ -921,7 +1003,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Vista aérea de Corabastos",
     "sha256": "c2274a8e913f38046faba8da89359e4d6f053418ba923bddd2afb05c38e5dd5c",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "paloquemao": {
     "src": "/images/library/paloquemao.jpg",
@@ -932,7 +1015,8 @@
     "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
     "description": "The Paloquemao Fruit Market in Bogotá, Colombia",
     "sha256": "de1171e05e65e6939a97380c1ba47608ff23fdeef5de95602db582d1c0e0f8ce",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "minorista": {
     "src": "/images/library/minorista.jpg",
@@ -943,7 +1027,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Free Walking Tour Medellin in Minorista Plaza.",
     "sha256": "18121b41c5c18c2ed007c6b96151ed88a39cc3d1f67f622792c2e462cb8409b3",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "bazurto": {
     "src": "/images/library/bazurto.jpg",
@@ -954,7 +1039,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "Cartagena de Indias",
     "sha256": "7325a149760b20b6871e73faefba38c8f5ac6279920d18ea4209b6fb524b0586",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "alameda": {
     "src": "/images/library/alameda.jpg",
@@ -965,7 +1051,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
     "description": "Restaurante Basilia Valle Pacifico, Galería Alameda, Cali, Colombia.",
     "sha256": "95258446b50699279ea1b7b542d6098402889e582c878b5190fb315b66ce017e",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "market-coffee": {
     "src": "/images/library/market-coffee.jpg",
@@ -976,7 +1063,8 @@
     "licenseUrl": "",
     "description": "Three empty coffee sacks made of jute (burlap). The sack from Tanzania appears to be made of sisal.",
     "sha256": "d496490e43d4d7d431af74a86a3a4f5cbe553889f5601a5fa24e4c24a1173478",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "market-rice": {
     "src": "/images/library/market-rice.jpg",
@@ -987,7 +1075,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "description": "at a supermarket",
     "sha256": "a43c2c931c4cb9c7f6b3fec925ae230454107d547425e095f5db2da5386cf70a",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "fertilizer": {
     "src": "/images/library/fertilizer.jpg",
@@ -998,7 +1087,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
     "description": "DAP (Diammonium Phosphate) Granules",
     "sha256": "dd4c83df1c87bcf93fddbf7ed50870a16bbb24b5c1905f3bc402e78202cd376d",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "compost": {
     "src": "/images/library/compost.jpg",
@@ -1009,7 +1099,8 @@
     "licenseUrl": "",
     "description": "Compost1",
     "sha256": "aab5e1e1095b6cad93f73efeea0144432c2ff7d7474465647c4ee26301a2250a",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "limestone": {
     "src": "/images/library/limestone.jpg",
@@ -1020,7 +1111,8 @@
     "licenseUrl": "",
     "description": "A sample of calcium carbonate (CaCO 3 ).",
     "sha256": "57b1679602d4d19225ea55d1768b4c8b4ac658e89868499fe7157b9a0ead46da",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "liquid-input": {
     "src": "/images/illustrations/liquid-input.svg",
@@ -1053,7 +1145,8 @@
     "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
     "description": "Sulfur powder",
     "sha256": "45c299e0e1e06c92d66cf17f57e21e0545d146d36af3db8276229cc5f9a0eee0",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "potassium": {
     "src": "/images/library/potassium.jpg",
@@ -1062,9 +1155,10 @@
     "author": "Walkerma",
     "license": "Public domain",
     "licenseUrl": "",
-    "description": "",
+    "description": "Cloruro de potasio en forma de cristales; no representa un fertilizante comercial concreto.",
     "sha256": "70958c0c3a8266260d137a2e02d824e7090666b70145ea935b6cc838cf194d7f",
-    "illustrative": true
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
   "input-neutral": {
     "src": "/images/illustrations/input-neutral.svg",
@@ -1098,5 +1192,233 @@
     "description": "Ilustración de un paisaje agrícola imaginario; no es una fotografía ni representa una finca, ubicación o lindero real.",
     "sha256": "34f9776b22c72fdaa0380f9abf416ce0e1237c19248aa0dea7617bb0cbb23f72",
     "illustrative": true
+  },
+  "coffee-parchment": {
+    "src": "/images/library/coffee-parchment.jpg",
+    "title": "Colombian Parchment Coffee.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Colombian_Parchment_Coffee.jpg",
+    "author": "Felipe Quijano",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Café pergamino fotografiado en Colombia.",
+    "sha256": "82087c4e239b5f94e9a3962c7f1381022ccfa47b3b78a4ec00e1d0a68d42f3b0",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "farm-colombia": {
+    "src": "/images/library/farm-colombia.jpg",
+    "title": "Coffee farm in Colombia.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Coffee_farm_in_Colombia.jpg",
+    "author": "Brian Smith / American Bird Conservancy; archivo USFWS Northeast Region",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "description": "Finca cafetera bajo sombra en Colombia; no representa la finca del usuario.",
+    "sha256": "ff590fde9c42620f6bcc5820d735d512cba521312c11e0a5417a502af2f7b941",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "seeds-general": {
+    "src": "/images/library/seeds-general.jpg",
+    "title": "Biblioteca de semillas Museo Campesino Gachancipá Cundinamarca.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Biblioteca_de_semillas_Museo_Campesino_Gachancip%C3%A1_Cundinamarca.jpg",
+    "author": "Anaidaacilegna",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "description": "Biblioteca de semillas en Gachancipá; no representa un insumo comercial concreto.",
+    "sha256": "be583a1c9c606423883522ba90911d6ae85ab07cae3eda5a6c49df48bb015cd5",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "avocado": {
+    "src": "/images/library/avocado-hass-colombia.jpg",
+    "title": "Avocado Hass - single and halved.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Avocado_Hass_-_single_and_halved.jpg",
+    "author": "Ivar Leidus",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Aguacate Hass cultivado en Colombia; otras variedades pueden diferir.",
+    "sha256": "93b5e3e1758e8aa16960e59d7a04ff99c209e03f8b26bce5468c99e0d1db0214",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "tomato": {
+    "src": "/images/library/tomato-credited.jpg",
+    "title": "Tomato fruit.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Tomato_fruit.jpg",
+    "author": "Sivaanbrook",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Tomates rojos ilustrativos; otras variedades pueden diferir.",
+    "sha256": "5f78190bc067130c320bf1d9d724dd202856209d89e050a38dbe059969ed1c4c",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "potato": {
+    "src": "/images/library/potato-bin.jpg",
+    "title": "Potatoes in a bin.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Potatoes_in_a_bin.jpg",
+    "author": "Jeffery Martin",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "description": "Papas en una caja de supermercado; variedad y lugar no identificados.",
+    "sha256": "bca4fc599ce964141dc996633280f83733c988d80b12e4eeddca49fecb1c3edc",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "banana": {
+    "src": "/images/library/banana-credited.jpg",
+    "title": "Banana Fruit.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Banana_Fruit.JPG",
+    "author": "ZooFari",
+    "license": "Dominio público, cesión del autor",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Banana_Fruit.JPG#Licensing",
+    "description": "Bananos amarillos ilustrativos; variedades comerciales pueden diferir.",
+    "sha256": "9d75a888fa90baa8c4248275b59a11c5d58f90ccda00b9405c3d4782023bfec7",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "plantain": {
+    "src": "/images/library/plantain-credited.jpg",
+    "title": "Rácimo sin cortar de plátanos verdes en Aguas Zarcas, Costa Rica.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:R%C3%A1cimo_sin_cortar_de_pl%C3%A1tanos_verdes_en_Aguas_Zarcas,_Costa_Rica.jpg",
+    "author": "Rubýñ",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "description": "Plátanos verdes en una planta en Costa Rica; no representa una finca colombiana.",
+    "sha256": "3e1cb6d4a4fd2db996b2fe460d6ac558b98a3719a1a31dadc1af59af2ccaab9b",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "produce-colombia": {
+    "src": "/images/library/produce-colombia.jpg",
+    "title": "Mercado de Frutas Colombiano.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Mercado_de_Frutas_Colombiano.JPG",
+    "author": "Juanfernandovilla",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Surtido de frutas en un mercado de Medellín; no representa un producto concreto.",
+    "sha256": "7734c7ec3c927f28932e401f3b4731c0d6ab5042549eb9490662a8a2d646d4ab",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "cacao-pods": {
+    "src": "/images/library/cacao-pods.jpg",
+    "title": "Ripe Cacao Pods.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Ripe_Cacao_Pods.jpg",
+    "author": "Rigues",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Mazorcas de cacao maduras; muestra el cultivo, no el grano seco ni un producto procesado.",
+    "sha256": "b0296a010d0b0f2d63b3493690a5a0e7ca60c904e664e2286819545eadade777",
+    "illustrative": true,
+    "modifications": "Archivo original de 1152 × 864 px; recorte visual en la interfaz."
+  },
+  "sugarcane-colombia": {
+    "src": "/images/library/sugarcane-colombia.jpg",
+    "title": "Caña de Azúcar en Buga. Valle del Cauca. Colombia.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Ca%C3%B1a_de_Az%C3%BAcar_en_Buga._Valle_del_Cauca._Colombia.JPG",
+    "author": "Hoako",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Cultivo de caña de azúcar en Guadalajara de Buga, Valle del Cauca; no representa azúcar procesada.",
+    "sha256": "6639ad804c093d2d0e02d11bc58188cd898a1245b813fc57c318390de40a8bb6",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "oil-palm-fruit": {
+    "src": "/images/library/oil-palm-fruit.jpg",
+    "title": "An Oil palm fruit.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:An_Oil_palm_fruit.jpg",
+    "author": "Victorpeter001",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "description": "Fruto maduro de palma de aceite en Nigeria; muestra la especie, no un cultivo colombiano ni aceite procesado.",
+    "sha256": "cb2f246c8e62b8b7964a0ae27e1c3810e0d1d76d473bb1cd983c50436a301cec",
+    "illustrative": true,
+    "modifications": "Archivo original de 960 × 1280 px; recorte visual en la interfaz."
+  },
+  "rose-colombia": {
+    "src": "/images/library/rose-colombia.jpg",
+    "title": "Pink rose in Colombia.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Pink_rose_in_Colombia.JPG",
+    "author": "Miguel2706",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Rosa rosada fotografiada en un jardín de Colombia; no representa un cultivo comercial ni otras flores.",
+    "sha256": "a1fe3c30b30a654b448e79e1d4b12a22f37f128236207656ee7dc903fc1c7f22",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "cattle-colombia": {
+    "src": "/images/library/cattle-colombia.jpg",
+    "title": "Cattle in Los Llanos, Colombia by Luis Perez.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Cattle_in_Los_Llanos,_Colombia_by_Luis_Perez.jpg",
+    "author": "Luis Pérez",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "description": "Ganado bovino en los Llanos Orientales de Colombia; no representa una raza o lote comercial concreto.",
+    "sha256": "eff9a147049177ea760ceae33e274385ed4d03dc26f99745ba55c13f5412e0e3",
+    "illustrative": true,
+    "modifications": "Archivo original de 1024 × 768 px; recorte visual en la interfaz."
+  },
+  "palm-oil-unbranded": {
+    "src": "/images/library/palm-oil-unbranded.jpg",
+    "title": "Palm oil.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Palm_oil.jpg",
+    "author": "Achim Raschka",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Aceite de palma genérico en un plato; la consistencia y presentación comercial pueden diferir.",
+    "sha256": "77569b149d3ed77973d9aca306e2939cd75116ef3ccdbb52264b351b0360c6dd",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "rose-red-cut": {
+    "src": "/images/library/rose-red-cut.jpg",
+    "title": "Red roses from bouquet.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Red_roses_from_bouquet.jpg",
+    "author": "Montanabw",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Rosas rojas cortadas en un ramo; no acredita variedad, longitud del tallo ni origen colombiano.",
+    "sha256": "d180190ba60a7ec78e20102c8da2fc21e39c93a57b054b83c88192351396dd6d",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "coffee-green-beans": {
+    "src": "/images/library/coffee-green-beans.jpg",
+    "title": "Coffee beans unroasted.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Coffee_beans_unroasted.jpg",
+    "author": "Isai Symens",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Granos de café sin tostar; no acredita origen, calidad excelso ni grado comercial.",
+    "sha256": "f3cf3704e4654c8aed00a7fc3af47d109d3c928c0ef8bb9734f2ca26061d6d2a",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "seedlings-general": {
+    "src": "/images/library/seedlings-general.jpg",
+    "title": "Seedlings for planting in prepared beds (6881889491).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Seedlings_for_planting_in_prepared_beds_(6881889491).jpg",
+    "author": "SuSanA Secretariat",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "description": "Plántulas genéricas en bolsas de cultivo; no representa una especie ni material comercial específico.",
+    "sha256": "7d15003b8587b904a7d44e1ab48aecd5df257052b9b4698326ceee703a149e0e",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "bell-pepper-green": {
+    "src": "/images/library/bell-pepper-green.jpg",
+    "title": "Starr-070730-7876-Capsicum annuum-green bell pepper-Foodland Pukalani-Maui (24797127391).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Starr-070730-7876-Capsicum_annuum-green_bell_pepper-Foodland_Pukalani-Maui_(24797127391).jpg",
+    "author": "Forest and Kim Starr",
+    "license": "CC BY 3.0 US",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/deed.en",
+    "description": "Pimentones verdes en un mercado de Maui, Hawái; no representan una variedad o procedencia colombiana concreta.",
+    "sha256": "47463d9b5a0ea8ccccba7c314c095ad68ad776f5ff2c91c94bfb0dd07e378423",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
   }
 }

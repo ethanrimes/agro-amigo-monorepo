@@ -17,7 +17,9 @@ Demo: [web application](https://agroamigo-demo-9a04.azurewebsites.net) · [Andro
 
 A 70-second walkthrough of the live app: find a product, filter its market and presentation, explore historical prices, compare markets, and consult the original DANE PDF and Excel files. The tour also shows input prices and crop references in **Mi finca**.
 
-https://github.com/user-attachments/assets/14bdb322-6cd6-4502-8d97-66bb3d41b302
+[![Recorded AgroAmigo walkthrough showing product search and prices](docs/media/agroamigo-preview.jpg)](docs/media/agroamigo-walkthrough.mp4)
+
+[Watch the 70-second walkthrough (MP4)](docs/media/agroamigo-walkthrough.mp4).
 
 | Time | What you can do |
 |---|---|
