@@ -59,7 +59,7 @@ MONTH_NUM.update({"sept": 9, "agos": 8})
 LOCK = 914070912
 RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
-    "daily-index": "source-v2",
+    "daily-index": "source-v3",
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
@@ -135,6 +135,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/milk_macroregions.py",
     "pipelines/ingestion/milk_publication.py",
     "pipelines/ingestion/city_link_recovery.py",
+    "pipelines/ingestion/city_discovery.py",
     "pipelines/ingestion/dane_daily_query.py",
     "pipelines/ingestion/query_publication.py",
     "pipelines/ingestion/daily_recovery.py",
@@ -305,15 +306,13 @@ def queue(db, url, kind, day=None):
 
 
 def discover_daily(db, url):
+    from .city_discovery import archive_day
+
     count = 0
     for label, u in links(url):
         path = urlparse(u).path.lower()
-        if (
-            "/files/" in path
-            and path.endswith(".zip")
-            and any(x in path for x in ("regional", "ciudad"))
-        ):
-            day = date_from_text(path) or date_from_text(label)
+        if "/files/" in path and path.endswith(".zip"):
+            day = archive_day(u, label)
             if day and day <= today():
                 queue(db, u, "city-zip", day)
                 count += 1
@@ -1312,7 +1311,7 @@ def _process_asset(db, url, kind, day):
     if kind == "daily-index":
         n = discover_daily(db, url)
         db.execute(
-            "UPDATE ingestion_asset SET status='complete',processor_version='source-v2',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
+            "UPDATE ingestion_asset SET status='complete',processor_version='source-v3',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
             (n, url),
         )
         return n
