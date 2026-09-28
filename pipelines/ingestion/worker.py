@@ -59,7 +59,8 @@ MONTH_NUM.update({"sept": 9, "agos": 8})
 LOCK = 914070912
 RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
-    "daily-index": "source-v3",
+    "daily-index": "source-v4",
+    "daily-zip": "daily-zip-v1",
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
@@ -96,6 +97,11 @@ def parser_version(kind):
             if kind == "milk-pdf"
             else MACRO_VERSION
         )
+    if kind == "daily-zip":
+        from .city_reports import VERSION as CITY_VERSION
+        from .daily_archives import VERSION as ARCHIVE_VERSION
+
+        return ARCHIVE_VERSION + ":" + PARSER_VERSIONS["daily"] + ":" + CITY_VERSION
     if kind in ("daily", "dane-daily-query"):
         from .dane_daily_query import VERSION as QUERY_VERSION
 
@@ -136,6 +142,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/milk_publication.py",
     "pipelines/ingestion/city_link_recovery.py",
     "pipelines/ingestion/city_discovery.py",
+    "pipelines/ingestion/daily_archives.py",
     "pipelines/ingestion/dane_daily_query.py",
     "pipelines/ingestion/query_publication.py",
     "pipelines/ingestion/daily_recovery.py",
@@ -307,6 +314,7 @@ def queue(db, url, kind, day=None):
 
 def discover_daily(db, url):
     from .city_discovery import archive_day
+    from .daily_archives import is_daily_archive
 
     count = 0
     for label, u in links(url):
@@ -316,6 +324,11 @@ def discover_daily(db, url):
             if day and day <= today():
                 queue(db, u, "city-zip", day)
                 count += 1
+            elif is_daily_archive(u, label):
+                day = date_from_text(path)
+                if day is None or day <= today():
+                    queue(db, u, "daily-zip", day)
+                    count += 1
             continue
         if "/files/" not in path or not path.endswith((".xlsx", ".xls", ".pdf")):
             continue
@@ -1311,7 +1324,7 @@ def _process_asset(db, url, kind, day):
     if kind == "daily-index":
         n = discover_daily(db, url)
         db.execute(
-            "UPDATE ingestion_asset SET status='complete',processor_version='source-v3',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
+            "UPDATE ingestion_asset SET status='complete',processor_version='source-v4',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
             (n, url),
         )
         return n
@@ -1479,6 +1492,21 @@ def _process_asset(db, url, kind, day):
             (did, "awaiting-ocr" if count is None else "complete", count or 0, url),
         )
         return count or 0
+    if kind == "daily-zip":
+        from .daily_archives import publish as publish_archive
+
+        count, failures = publish_archive(db, data, did, url, day)
+        db.execute(
+            "UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
+            (
+                did,
+                "review" if failures else "complete",
+                count,
+                json.dumps(failures, ensure_ascii=False)[:4000] if failures else None,
+                url,
+            ),
+        )
+        return count
     if not kind.endswith("pdf") and kind != "city-zip":
         from .ocr import scan_document
 

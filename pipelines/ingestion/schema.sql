@@ -57,11 +57,13 @@ CREATE TABLE IF NOT EXISTS regional_price (
  product_id text NOT NULL,product_name text NOT NULL,market_name text NOT NULL,category text NOT NULL,
  presentation text NOT NULL,quantity numeric NOT NULL CHECK(quantity>0),source_unit text NOT NULL,
  round integer NOT NULL,round_label text NOT NULL,min_price numeric NOT NULL CHECK(min_price>0),max_price numeric NOT NULL CHECK(max_price>=min_price),
- unit text NOT NULL,min_unit_price numeric,max_unit_price numeric,source_page integer NOT NULL,
+ unit text NOT NULL,min_unit_price numeric,max_unit_price numeric,source_page integer,
  PRIMARY KEY(document_id,source_locator)
 );
 CREATE INDEX IF NOT EXISTS regional_price_lookup ON regional_price(product_id,market_name,observed_on DESC);
 CREATE INDEX IF NOT EXISTS regional_price_date ON regional_price(observed_on DESC);
+-- Native Excel city rows use worksheet/row locators without a PDF page.
+ALTER TABLE regional_price ALTER COLUMN source_page DROP NOT NULL;
 DROP TRIGGER IF EXISTS demo_window ON regional_price;
 CREATE TRIGGER demo_window BEFORE INSERT OR UPDATE ON regional_price FOR EACH ROW EXECUTE FUNCTION enforce_demo_window();
 CREATE TABLE IF NOT EXISTS input_reference_row (

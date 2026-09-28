@@ -51,7 +51,7 @@ def daily_candidates(db, today):
              (url ~ %s OR observed_on>=%s OR kind='supply-reference')) OR
             (kind='milk' AND url ~* %s) OR
             (kind IN ('milk','monthly-annex','inputs-annex','inputs-reference','inputs-pdf','milk-pdf','monthly-pdf','supply-reference-pdf') AND (observed_on IS NULL OR observed_on>=%s)) OR
-            (kind IN ('daily','daily-pdf','city-zip') AND observed_on>=%s)
+            (kind IN ('daily','daily-pdf','city-zip','daily-zip') AND observed_on>=%s)
           )) OR ((kind LIKE 'international-%%' OR kind LIKE 'colombia-%%') AND observed_on>=%s)
           OR a.url IN (SELECT url FROM fresh WHERE turn<=3))
           AND (outdated OR (status<>'awaiting-ocr' AND (status<>'review' OR checked_at<now()-interval '1 day')))
@@ -59,7 +59,7 @@ def daily_candidates(db, today):
         ) SELECT url,kind,observed_on FROM candidates
           ORDER BY CASE WHEN url=ANY(%s::text[]) THEN 0 ELSE 1 END,turn,
             CASE WHEN kind='coffee-pdf' THEN 0 WHEN kind='coffee' THEN 1
-                 WHEN kind IN ('daily','city-zip') THEN 2
+                 WHEN kind IN ('daily','city-zip','daily-zip') THEN 2
                  WHEN kind IN ('inputs','inputs-municipal','supply') THEN 4 ELSE 3 END,
             observed_on DESC NULLS LAST,checked_at ASC NULLS FIRST,url""",
         (
