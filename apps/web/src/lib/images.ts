@@ -20,7 +20,7 @@ const families: [RegExp, string][] = [
   [/aguacate/, "avocado"],
   [/tomate de arbol/, "tamarillo"],
   [/tomate/, "tomato"],
-  [/\bpapa\b/, "potato"],
+  [/\bpapas?\b/, "potato"],
   [/platano/, "plantain"],
   [/banano/, "banana"],
   [/chocolate/, "chocolate"],
@@ -30,8 +30,22 @@ const families: [RegExp, string][] = [
   [/^palma$|palma (de aceite|africana)|fruto de palma|palmiste/, "oil-palm-fruit"],
   [/rosa.*(red varieties|rojas?)/, "rose-red-cut"],
   [/\brosas?\b/, "rose-colombia"],
-  [/ganado (bovino|vacuno|gordo|flaco)|\bbovinos?\b|res en pie/, "cattle-colombia"],
+  [/ganado (bovino|vacuno|gordo|flaco)|\bbovinos?\b/, "cattle-colombia"],
   [/arandano/, "blueberry"],
+  [/jengibre/, "ginger"],
+  [/camaron/, "shrimp"],
+  [/pescado seco/, "dried-fish"],
+  [/\bbagre\b/, "bagre"],
+  [/\bbasa\b/, "basa"],
+  [/bocachico/, "bocachico"],
+  [/cachama/, "cachama"],
+  [/tilapia/, "tilapia"],
+  [/trucha/, "trout"],
+  [/mariscos? otros/, "produce-neutral"],
+  [/frijol verde/, "beans-green"],
+  [/res en pie|ganado en pie/, "cattle-colombia"],
+  // Live animals should not inherit photographs of butchered meat.
+  [/cerdo en pie|pollo en pie|gallina en pie/, "produce-neutral"],
   [/badea/, "badea"],
   [/borojo/, "borojo"],
   [/breva|higo/, "fig"],
@@ -65,6 +79,7 @@ const families: [RegExp, string][] = [
   [/ajo/, "garlic"],
   [/alcachofa/, "artichoke"],
   [/apio/, "celery"],
+  [/arveja seca/, "produce-neutral"],
   [/arveja/, "peas"],
   [/berenjena/, "aubergine"],
   [/brocoli/, "broccoli"],
@@ -74,7 +89,8 @@ const families: [RegExp, string][] = [
   [/cebolla/, "onion"],
   [/cilantro/, "cilantro"],
   [/coliflor/, "cauliflower"],
-  [/espinaca|acelga/, "spinach"],
+  [/acelga/, "chard"],
+  [/espinaca/, "spinach"],
   [/habichuela/, "beans-green"],
   [/lechuga/, "lettuce"],
   [/chocolo|mazorca|maiz/, "corn"],
@@ -95,11 +111,12 @@ const families: [RegExp, string][] = [
   [/frijol/, "beans"],
   [/garbanzo/, "chickpeas"],
   [/avena/, "oats"],
+  [/^harinas$/, "produce-neutral"],
+  [/harina/, "flour"],
   [/trigo/, "wheat"],
   [/mani/, "peanut"],
   [/panela/, "panela"],
   [/azucar/, "sugar"],
-  [/harina/, "flour"],
   [/aceite de palma/, "palm-oil-unbranded"],
   [/aceite/, "produce-neutral"],
   [/\bsal\b/, "salt"],
@@ -160,14 +177,14 @@ export function photoFor(
       ? "corabastos"
       : n.includes("paloquemao")
         ? "paloquemao"
-        : n.includes("minorista")
+      : /(medellin.*minorista|plaza minorista jose maria villa)/.test(n)
           ? "minorista"
           : n.includes("bazurto")
             ? "bazurto"
-            : "market";
+            : "market-neutral";
   // Prefer subject-specific credited photos. Keep an illustration for products
   // that cannot be matched without implying a particular crop or commercial SKU.
-  if (!imageLibrary[key]) key = kind === "input" ? "input-neutral" : kind === "market" ? "market" : "produce-neutral";
+  if (!imageLibrary[key]) key = kind === "input" ? "input-neutral" : kind === "market" ? "market-neutral" : "produce-neutral";
   const src = imageLibrary[key].src;
   const visual = src.endsWith(".svg") ? "Ilustración" : "Foto ilustrativa";
   const alt =
@@ -180,8 +197,8 @@ export function photoFor(
           ? `Fotografía ilustrativa de plántulas; no representa la especie ni el producto comercial ${name}.`
         : `${visual} del tipo de insumo; no corresponde al empaque comercial de ${name}.`
       : kind === "market"
-        ? key === "market" || key.startsWith("market-")
-          ? `Fotografía ilustrativa de Paloquemao en Bogotá; no representa ${name}.`
+        ? key === "market-neutral"
+          ? `Ilustración general de una plaza de mercado; no representa ${name}.`
           : `Fotografía de referencia: ${name}`
         : key === "produce-neutral"
           ? `Ilustración general de productos agrícolas; no representa ${name}.`
@@ -189,6 +206,8 @@ export function photoFor(
             ? `Fotografía ilustrativa de café pergamino; la presentación de ${name} puede diferir.`
           : key === "coffee-green-beans"
             ? `Fotografía ilustrativa de granos de café sin tostar; no acredita el origen ni grado comercial de ${name}.`
+          : ["bagre", "basa", "bocachico", "cachama", "tilapia", "trout", "dried-fish"].includes(key)
+            ? `Fotografía ilustrativa para ${name}. ${imageLibrary[key].description}`
           : key === "palm-oil-unbranded"
             ? `Fotografía ilustrativa de aceite de palma sin marca; la textura y presentación de ${name} pueden diferir.`
           : key === "oil-palm-fruit"

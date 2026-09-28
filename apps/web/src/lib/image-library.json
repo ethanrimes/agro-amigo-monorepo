@@ -982,6 +982,17 @@
     "illustrative": true,
     "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   },
+  "market-neutral": {
+    "src": "/images/illustrations/market-neutral.svg",
+    "title": "Plaza de mercado: ilustración general",
+    "source": "https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations",
+    "author": "AgroAmigo",
+    "license": "Ilustración propia",
+    "licenseUrl": "",
+    "description": "Plaza de mercado imaginaria; no representa un mercado, edificio o puesto real.",
+    "sha256": "1d5844b7f188efe5d967c8bb1b74deb2271310c6432f519258c087259465d6b2",
+    "illustrative": true
+  },
   "market": {
     "src": "/images/library/market.jpg",
     "title": "Market in Bogotá.jpg",
@@ -1408,6 +1419,114 @@
     "sha256": "7d15003b8587b904a7d44e1ab48aecd5df257052b9b4698326ceee703a149e0e",
     "illustrative": true,
     "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "ginger": {
+    "src": "/images/library/ginger.jpg",
+    "title": "Fresh ginger (20240131).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Fresh_ginger_(20240131).jpg",
+    "author": "Fumikas Sagisavas",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "description": "Rizomas frescos de jengibre; no acredita origen colombiano ni presentación comercial.",
+    "sha256": "7eba79e738ec42fab41a0b4cf69d34be93ec10d4e80aee662570acfdd3ea0835",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "chard": {
+    "src": "/images/library/chard.jpg",
+    "title": "Chard with yellow stalks.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Chard_with_yellow_stalks.jpg",
+    "author": "Schnobby",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Planta de acelga de tallo amarillo; otras variedades y presentaciones pueden diferir.",
+    "sha256": "55f821ed11afd5bcd0a05f5b10b005f162830c780ab2e6444b2cff595d1bdcfd",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "tilapia": {
+    "src": "/images/library/tilapia.jpg",
+    "title": "Nile Tilapia.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Nile_Tilapia.jpg",
+    "author": "Alabama Extension",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "description": "Tilapias vivas en una instalación de acuicultura de Estados Unidos; no representa el lote comercial ni su procedencia.",
+    "sha256": "c5f1c430de6820ccc7a4591acfca4dcc768398001174bb95169fa9e22a03efe2",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "bocachico": {
+    "src": "/images/library/bocachico.jpg",
+    "title": "Prochilodus magdalenae (16197296986).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Prochilodus_magdalenae_(16197296986).jpg",
+    "author": "Ictiologia Universidad Católica de Oriente; fotografía atribuida a Zuluaga-Gómez A.",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "description": "Ejemplar de bocachico (Prochilodus magdalenae); no representa el producto comercial.",
+    "sha256": "a48b2273e9e131273701220f6dd954bba1f60d035fd8fa3546dc5dd1126f461d",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "cachama": {
+    "src": "/images/library/cachama.jpg",
+    "title": "Colossoma macropomum 118573606.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Colossoma_macropomum_118573606.jpg",
+    "author": "Vincent A. Vos",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "description": "Ejemplar de cachama negra o tambaquí (Colossoma macropomum) fotografiado en Bolivia; la especie y presentación comercial pueden diferir.",
+    "sha256": "1e71a5536fd3dc79aff687a32c50cad142304e15cd8fb9fd13fa03c032486688",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "bagre": {
+    "src": "/images/library/bagre.jpg",
+    "title": "Catfish at the Cali Zoo Aquarium.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Catfish_at_the_Cali_Zoo_Aquarium.jpg",
+    "author": "Petruss",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "description": "Bagrecito común (Pimelodus ornatus) en el Zoológico de Cali; otros bagres y presentaciones comerciales pueden diferir.",
+    "sha256": "16a7e981c8f38de682d13b4df6b5d155529633ce9ab629c0a1d72bcafe86280b",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "basa": {
+    "src": "/images/library/basa.jpg",
+    "title": "Frozen basa fish fillet.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Frozen_basa_fish_fillet.jpg",
+    "author": "Fumikas Sagisavas",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "description": "Filetes congelados de basa (Pangasius bocourti); la presentación comercial puede diferir.",
+    "sha256": "ba86a660adf25c6bde3699b7e68972fa1fd80b161ce7bc37766ee134e0be10d8",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "trout": {
+    "src": "/images/library/trout.jpg",
+    "title": "Rainbow-trout-in-market.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Rainbow-trout-in-market.jpg",
+    "author": "d3j4vu (English Wikipedia)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Truchas arcoíris en un mercado de Australia Occidental; no acredita procedencia ni presentación colombiana.",
+    "sha256": "ac1cbb8ab1838bc68ea95fb12263e4e512d27194e25f49370db6b1cc8268a155",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "dried-fish": {
+    "src": "/images/library/dried-fish.jpg",
+    "title": "Dried fish.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Dried_fish.jpg",
+    "author": "Bernard Gagnon",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Pescado seco fotografiado en Chennai, India; la especie y presentación comercial pueden diferir.",
+    "sha256": "de10bcca649a0555543e3e24a9d2a09a92242b6bbfd96e259267bfea107ba620",
+    "illustrative": true,
+    "modifications": "Miniatura redimensionada a 960 px por Wikimedia Commons; recorte visual en la interfaz."
   },
   "bell-pepper-green": {
     "src": "/images/library/bell-pepper-green.jpg",
