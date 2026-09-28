@@ -100,7 +100,7 @@ class CityArchiveDates(unittest.TestCase):
         self.assertEqual(
             queued.call_args.args[1:], (links[0][1], "city-zip", date(2020, 3, 25))
         )
-        self.assertEqual(worker.parser_version("daily-index"), "source-v3")
+        self.assertEqual(worker.parser_version("daily-index"), "source-v4")
         self.assertIn("pipelines/ingestion/city_discovery.py", worker.RELEASE_FILES)
 
     @unittest.skipUnless(
@@ -134,6 +134,10 @@ class CityArchiveDates(unittest.TestCase):
             for url, value in found.items()
             if url not in {x["url"] for x in prior}
         }
+        self.assertEqual(len(new), 995)
+        annexes = {u: v for u, v in new.items() if v[0] == "daily-zip"}
+        self.assertEqual(len(annexes), 20)
+        new = {u: v for u, v in new.items() if v[0] == "city-zip"}
         self.assertEqual(len(new), 975)
         self.assertTrue(all(kind == "city-zip" for kind, _ in new.values()))
         self.assertEqual(min(day for _, day in new.values()), "2020-03-25")

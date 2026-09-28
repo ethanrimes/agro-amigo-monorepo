@@ -17,10 +17,14 @@ def retain_resolution(db, kind, evidence):
     )
 
 
-def publish(db, data, did, url, expected_day):
+def publish(db, data, did, url, expected_day, *, update_asset=True, parsed_result=None):
     from . import daily_recovery, worker
 
-    result = daily_recovery.parse_daily(data, expected_day)
+    result = (
+        parsed_result
+        if parsed_result is not None
+        else daily_recovery.parse_daily(data, expected_day)
+    )
     rows, reviews = result["rows"], result["reviews"]
     identities = {
         row[0]: (
@@ -94,9 +98,10 @@ def publish(db, data, did, url, expected_day):
                 "Native date header corrected using exact original hash and independent official evidence"
             )
         status = "review" if misplaced or (reviews and not count) else "complete"
-        db.execute(
-            """UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,
-            checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s""",
-            (did, status, count, "; ".join(notes) or None, url),
-        )
+        if update_asset:
+            db.execute(
+                """UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,
+                checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s""",
+                (did, status, count, "; ".join(notes) or None, url),
+            )
     return count
