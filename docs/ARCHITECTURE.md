@@ -2,6 +2,8 @@
 
 AgroAmigo has a Next.js application and two mobile clients that load the same interface. Android uses WebView; the Flutter iOS client uses WKWebView. Product behavior and data queries live in the shared web application. Native shells provide navigation, location permissions, downloads, sharing and connection recovery.
 
+The [app site map](SITE_MAP.md) shows navigation between screens, source viewers and secondary routes.
+
 ## Application flow
 
 | Section | Routes | Behavior |
@@ -40,7 +42,7 @@ Source bytes are identified by SHA-256 and retained in PostgreSQL and private Az
 
 Native parsing precedes OCR. Only supported failed layouts can publish through a typed OCR adapter, with independent readings and source-specific validation. Retaining an image or extracted text does not imply that its prices have been published. Missing dates, conflicting identities and unsupported units remain reviewable.
 
-Historical observations are retained. Published views apply source review, parser revision and date eligibility rules. Canonical prices, package quotations, weekly means, milk farmgate prices and international benchmarks keep their distinct units and bases. The frontend uses bounded queries, caches and current read models rather than rebuilding every history on each request.
+Historical observations are retained. Published views apply source review, parser revision and date eligibility rules. Canonical prices, package quotations, weekly means, milk farmgate prices and international benchmarks keep their distinct units and bases. Published supply summaries retain their own reporting periods and precision; they are not added to food-level arrivals. The frontend uses bounded queries, caches and current read models rather than rebuilding every history on each request.
 
 ## Server and storage boundaries
 

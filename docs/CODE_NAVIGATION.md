@@ -1,6 +1,6 @@
 # Code navigation
 
-Use this map to find the implementation of a feature. [Architecture](ARCHITECTURE.md) explains how the components fit together.
+Use this map to find the implementation of a feature. The [app site map](SITE_MAP.md) explains navigation, and [architecture](ARCHITECTURE.md) explains how the components fit together.
 
 ## Applications and infrastructure
 
