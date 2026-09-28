@@ -64,7 +64,7 @@ PARSER_VERSIONS = {
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
-    "inputs-pdf": "inputs-pdf-v8",
+    "inputs-pdf": "inputs-pdf-v9",
     "inputs-reference": "inputs-reference-v5",
     "city-zip": "city-v5",
     "monthly": "monthly-units-v2",
@@ -370,11 +370,14 @@ def publication_month(label, url):
 
 
 def discover_input_sources(db):
+    from .input_references import input_pdf_month, input_url_identity
+
     found = links(INPUTS)
     archive_url = next(
         u for _, u in found if u.endswith("/componente-insumos-historicos")
     )
     found += links(archive_url)
+    typed_pdfs = {}
     for label, u in found:
         path = urlparse(u).path.lower()
         if "/files/" not in path:
@@ -382,8 +385,9 @@ def discover_input_sources(db):
         day = publication_month(label, u)
         if "serieshistoricasmun" in path or "anex-series-historicas-insumos-" in path:
             queue(db, u, "inputs-municipal")
-        elif path.endswith(".pdf") and ("insumos" in path) and day:
-            queue(db, u, "inputs-pdf", day)
+        elif pdf_day := input_pdf_month(label, u):
+            queue(db, u, "inputs-pdf", pdf_day)
+            typed_pdfs[input_url_identity(u)] = pdf_day
         elif path.endswith((".xlsx", ".xls")) and not "serieshistoricasdep" in path:
             kind = (
                 "inputs-annex"
@@ -391,6 +395,14 @@ def discover_input_sources(db):
                 else "inputs-reference"
             )
             queue(db, u, kind, day)
+    # Older context workbooks use encoded spaces/accents while archive pages
+    # link the literal spelling. Repair only aliases of actually observed typed
+    # publications; keep each archived URL/document/status and all raw rows.
+    for (u,) in db.execute(
+        "SELECT url FROM ingestion_asset WHERE kind='context-pdf' AND url ILIKE '%insumos%'"
+    ).fetchall():
+        if day := typed_pdfs.get(input_url_identity(u)):
+            queue(db, u, "inputs-pdf", day)
 
 
 def discover_special(db):

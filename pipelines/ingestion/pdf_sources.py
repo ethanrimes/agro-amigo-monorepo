@@ -8,7 +8,7 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v8"
+INPUT_PDF_VERSION = "inputs-pdf-v9"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
@@ -502,7 +502,7 @@ def _input_ruled_left(page, header_bottom, left, right, price_left):
         [
             e
             for e in page.horizontal_edges
-            if left <= e["x0"] < e["x1"] <= right and abs(e["top"] - header_bottom) <= 4
+            if left <= e["x0"] < e["x1"] <= right and abs(e["top"] - header_bottom) <= 5
         ],
         key=lambda e: (round(e["top"], 1), e["x0"]),
     )
@@ -643,7 +643,7 @@ def parse_input_pdf(data, day):
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for page_no, page in enumerate(pdf.pages, 1):
             text = page.extract_text() or ""
-            if "mercados" not in text or "Precio medio" not in text:
+            if "mercados" not in text or "Precio" not in text or "medio" not in text:
                 page.close()
                 continue
             all_words = [
@@ -662,6 +662,22 @@ def parse_input_pdf(data, day):
                     price_headers = [w for w in nearby if w["text"] == "Precio"]
                     if not price_headers:
                         continue
+                    # January 2019 prints Precio above medio enero. Reading
+                    # order interleaves the neighbouring prose/variation column,
+                    # so the words need not be adjacent in page-level text.
+                    mean_headers = [
+                        w
+                        for w in nearby
+                        if w["text"] == "medio"
+                        and any(
+                            w["x0"] <= p["x1"] + 12
+                            and w["x1"] >= p["x0"] - 12
+                            and abs(w["top"] - p["top"]) < 20
+                            for p in price_headers
+                        )
+                    ]
+                    if "Precio medio" not in text and not mean_headers:
+                        continue
                     price_left = min(w["x0"] for w in price_headers)
                     location_headers = [
                         w
@@ -679,7 +695,12 @@ def parse_input_pdf(data, day):
                     ]
                     header_bottom = max(
                         w["bottom"]
-                        for w in [header, *percentage_headers, *month_headers]
+                        for w in [
+                            header,
+                            *percentage_headers,
+                            *month_headers,
+                            *mean_headers,
+                        ]
                     )
                     if "FuturaStd-" in header["fontname"]:
                         table_left = _input_ruled_left(
@@ -698,7 +719,9 @@ def parse_input_pdf(data, day):
                     )
                     stamps = list(
                         re.finditer(
-                            r"(20\d{2})\s*\(([a-záéíóú]+)\)", prefix, re.IGNORECASE
+                            r"(20\d{2})\s*\(([a-záéíóú]+)\)|\(([a-záéíóú]+)\s+de\s+(20\d{2})\)",
+                            prefix,
+                            re.IGNORECASE,
                         )
                     )
                     if not stamps:
@@ -706,7 +729,10 @@ def parse_input_pdf(data, day):
                             f"Input PDF table has no month: page {page_no}"
                         )
                     stamp = stamps[-1]
-                    if (int(stamp[1]), MONTH_NUM.get(stamp[2].lower())) != (
+                    if (
+                        int(stamp[1] or stamp[4]),
+                        MONTH_NUM.get((stamp[2] or stamp[3]).lower()),
+                    ) != (
                         day.year,
                         day.month,
                     ):
@@ -756,6 +782,7 @@ def parse_input_pdf(data, day):
                     heading_bottom = None
                     unresolved = False
                     last_line = None
+                    table_rows = 0
                     for line_no, (top, ws) in enumerate(lines, 1):
                         ws.sort(key=lambda w: w["x0"])
                         line = clean(_input_line_text(ws))
@@ -880,6 +907,7 @@ def parse_input_pdf(data, day):
                                 if variation.lower() == "n.d."
                                 else float(variation.replace(".", "").replace(",", "."))
                             )
+                            table_rows += 1
                             yield record(
                                 "dane-inputs-pdf-unresolved"
                                 if quality_issue
@@ -974,4 +1002,8 @@ def parse_input_pdf(data, day):
                             previous_heading = True
                         else:
                             previous_heading = False
+                    if not table_rows:
+                        raise ValueError(
+                            f"Recognized input monetary table has no verified rows: page {page_no}, col {col}"
+                        )
             page.close()

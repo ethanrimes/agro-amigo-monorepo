@@ -45,7 +45,7 @@ class NativeGeometry(unittest.TestCase):
                 inputs._input_heading_word(word("Carrier", 45, 0, font=font))
             )
         self.assertEqual(inputs.INPUT_PDF_VERSION, parser_version("inputs-pdf"))
-        self.assertEqual(inputs.INPUT_PDF_VERSION, "inputs-pdf-v8")
+        self.assertEqual(inputs.INPUT_PDF_VERSION, "inputs-pdf-v9")
 
     def test_centered_header_requires_exact_contiguous_column_rules(self):
         p = MagicMock(
@@ -217,7 +217,7 @@ class ActualNativeTables(unittest.TestCase):
                 ]
                 self.assertEqual(len(rows), 1)
                 self.assertTrue(rows[0][0].startswith(f"PDF page {page},col "))
-                self.assertEqual(rows[0][-1]["parser_version"], "inputs-pdf-v8")
+                self.assertEqual(rows[0][-1]["parser_version"], "inputs-pdf-v9")
         wrapped = [
             r
             for r in self.rows
