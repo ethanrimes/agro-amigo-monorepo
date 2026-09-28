@@ -1,0 +1,176 @@
+[
+  {
+    "name": "DANE source family supply-tonnes",
+    "route": "/evidence/a0a6c3f7cb64286ce03182d49adfdc3eb1053d8a86d147ee2d8cd41ac1f419c6?page=3",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"3\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "expected": "Exact independently rendered and audited source page",
+            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"toneladas\")&&t.includes(\"Julio y agosto de 2026\")&&t.includes(\"Armenia\")&&t.includes(\"10.053\")&&t.includes(\"9.640\")&&t.includes(\"-4,11%\")})()",
+            "expected": "Arrivals table tonnes: Armenia July10053/August9640; not monetary prices",
+            "observed": "document.querySelector('.pdf-text').textContent"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector(\".evidence-actions a[download]\")?.getAttribute(\"href\")===\"/api/evidence/a0a6c3f7cb64286ce03182d49adfdc3eb1053d8a86d147ee2d8cd41ac1f419c6/content\"",
+            "expected": "Original download keeps independently SHA-verified source identity"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source text and controls fit this actual viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE source family monthly-percent",
+    "route": "/evidence/573edc7dc7f3858bc3fb6e24e0e8a3230f40232b0bc86507115d62183c6f7c49?page=13",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"13\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "expected": "Exact independently rendered and audited source page",
+            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"Variación porcentual\")&&t.includes(\"Arveja verde\")&&t.includes(\"0,09\")&&t.includes(\"63,99\")})()",
+            "expected": "July2026 percentage-only grid retains its literal unit; independently confirmed zero published monetary rows",
+            "observed": "document.querySelector('.pdf-text').textContent"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector(\".evidence-actions a[download]\")?.getAttribute(\"href\")===\"/api/evidence/573edc7dc7f3858bc3fb6e24e0e8a3230f40232b0bc86507115d62183c6f7c49/content\"",
+            "expected": "Original download keeps independently SHA-verified source identity"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source text and controls fit this actual viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE source family earliest-input-prices",
+    "route": "/evidence/f6d511041bd29947ea6ea624739a9f7f6d2708870995ab41f9c398106fe74615?page=7",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"7\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "expected": "Exact independently rendered and audited source page",
+            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"10-20-20\")&&t.includes(\"50 kilogramos\")&&t.includes(\"90.333\")&&t.includes(\"82.833\")})()",
+            "expected": "July2012 original 10-20-20/50kg prices: Corinto90333 and El Carmen82833",
+            "observed": "document.querySelector('.pdf-text').textContent"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector(\".evidence-actions a[download]\")?.getAttribute(\"href\")===\"/api/evidence/f6d511041bd29947ea6ea624739a9f7f6d2708870995ab41f9c398106fe74615/content\"",
+            "expected": "Original download keeps independently SHA-verified source identity"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source text and controls fit this actual viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE source family wrapped-input-municipality",
+    "route": "/evidence/1a7e6c1e96c4c53b731a5da10bbbc02823915dae2229e8c3695091a7a78a059b?page=8",
+    "ready": "!!document.querySelector('canvas[data-rendered=true]')&&!!document.querySelector('.pdf-text')",
+    "steps": [
+      {
+        "action": "document.querySelector('.pdf-text').closest('details').open=true;",
+        "checks": [
+          {
+            "id": "EVI-03",
+            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"8\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "expected": "Exact independently rendered and audited source page",
+            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+          },
+          {
+            "id": "EVI-03",
+            "condition": "(()=>{const t=document.querySelector('.pdf-text').textContent;return t.includes(\"10-20-20\")&&t.includes(\"50 kilogramos\")&&t.includes(\"El Carmen\")&&t.includes(\"de Viboral\")&&t.includes(\"92.417\")&&t.includes(\"7,3\")})()",
+            "expected": "December2015 original native location lines and rounded92,417COP/50kg remain unchanged",
+            "observed": "document.querySelector('.pdf-text').textContent"
+          },
+          {
+            "id": "EVI-16",
+            "condition": "document.querySelector(\".evidence-actions a[download]\")?.getAttribute(\"href\")===\"/api/evidence/1a7e6c1e96c4c53b731a5da10bbbc02823915dae2229e8c3695091a7a78a059b/content\"",
+            "expected": "Original download keeps independently SHA-verified source identity"
+          },
+          {
+            "id": "EVI-10",
+            "condition": "document.documentElement.scrollWidth<=innerWidth+1",
+            "expected": "Source text and controls fit this actual viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "DANE corrected wrapped input history with XLS precision",
+    "route": "/insumo/10-20-20-50-kilogramos?department=Antioquia&scope=municipality&municipality=El+Carmen+de+Viboral&history=all",
+    "ready": "document.querySelectorAll('.chart-data tbody tr').length>100",
+    "steps": [
+      {
+        "action": "document.querySelector('.chart-data').open=true;window.__qaInputSource=await fetch(\"/api/explore/input?id=10-20-20-50-kilogramos&department=Antioquia&scope=municipality&municipality=El+Carmen+de+Viboral&history=all\").then(r=>{if(!r.ok)throw Error('Input oracle HTTP '+r.status);return r.json()});",
+        "checks": [
+          {
+            "id": "INP-09",
+            "condition": "[...document.querySelectorAll('.chart-data tbody tr')].some(r=>r.cells[0].textContent===new Date('2012-07-31T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'})&&Number(r.cells[1].textContent.replace(/[^0-9]/g,''))===82833)",
+            "expected": "Historical July2012 El Carmen price82833 matches independent native original"
+          },
+          {
+            "id": "INP-09",
+            "condition": "[...document.querySelectorAll('.chart-data tbody tr')].some(r=>r.cells[0].textContent===new Date('2015-12-31T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'})&&Number(r.cells[1].textContent.replace(/[^0-9]/g,''))===92417)",
+            "expected": "UI December2015 correctly formats more precise XLS92,416.6667 as92,417"
+          },
+          {
+            "id": "INP-04",
+            "condition": "document.querySelector('.applied-filters').textContent.includes('El Carmen de Viboral')&&document.querySelector('.applied-filters').textContent.includes('50 kilogramos')&&document.querySelector('.applied-filters').textContent.includes('Todo el historial')",
+            "expected": "Full municipality, original package and all-history scope visible"
+          },
+          {
+            "id": "INP-04",
+            "condition": "!window.__qaInputSource.regions.some(r=>r.municipality==='de Viboral')&&![...document.querySelectorAll('option')].some(r=>r.textContent.trim()==='de Viboral, Antioquia')",
+            "expected": "Obsolete truncated PDF municipality is absent from published choices"
+          },
+          {
+            "id": "INP-09",
+            "condition": "window.__qaInputSource.history.find(r=>r.date==='2015-12-31')?.price===92416.66666666667",
+            "expected": "Newer XLS raw precision remains intact beneath UI rounded price",
+            "observed": "window.__qaInputSource.history.find(r=>r.date==='2015-12-31')"
+          }
+        ]
+      }
+    ]
+  }
+]

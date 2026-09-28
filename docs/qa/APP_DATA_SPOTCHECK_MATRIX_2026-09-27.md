@@ -86,6 +86,19 @@ El Carmen de Viboral histories retain the correct 2014 and 2015 sources.
 Evidence: `three-source-followup/de-viboral/dec2014-cloud-replay.json` and
 `precision-recovery.json`.
 
+The five source/history scenarios passed all 21 assertions on web release
+`ab24743721fb49aa8eeeea43107ab641` at 1440, 390 and 412 px, and independently in
+the installed Android app and iOS WKWebView. They cover July 2012 input prices,
+the December 2015 original and corrected history, a monthly percentage table
+that must not publish as prices, and supply tonnes reconciled to microdata kg.
+The complete municipality, 50 kg presentation, full-history filter, original
+page controls and descending numeric history were visually checked. Native
+settings were restored; the normal iOS app was rebuilt after its integration
+run. Evidence: `three-source-followup/web-final-{1440,390,412}/report.json`,
+`native/android-three-sources-ab247437/report.json` and
+`native/ios-source-followup-ab247437/summary.json`. These scoped assertions do not
+complete the wider family rows or the pending milk cohort.
+
 Two actual cloud-created milk-chart images passed paired OCR after native
 extraction failed: all 20 independently read labels, named regions, observation
 months, COP/litre units, published-mean basis and source locators matched.
