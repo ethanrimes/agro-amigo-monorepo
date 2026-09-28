@@ -123,6 +123,11 @@ export function EvidenceContent({
                       Ver celdas originales de abastecimiento ↗
                     </a>
                   )}
+                  {typeof data.metadata.supply_summary_page === "number" && (
+                    <a href={"/evidence/" + encodeURIComponent(data.id) + "?page=" + data.metadata.supply_summary_page}>
+                      Ver tabla original de abastecimiento ↗
+                    </a>
+                  )}
                 </p>
               )}
               {typeof data.metadata.review_note === "string" && (
