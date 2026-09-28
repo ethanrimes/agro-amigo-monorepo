@@ -60,7 +60,7 @@ LOCK = 914070912
 RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
     "daily-index": "source-v5",
-    "daily-zip": "daily-zip-v2",
+    "daily-zip": "daily-zip-v3",
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
@@ -79,6 +79,7 @@ PARSER_VERSIONS = {
     "supply": "supply-v5",
     "supply-index": "supply-index-v1",
     "supply-reference-pdf": "source-v1",
+    "supply-reference": "supply-daily-summary-v1",
 }
 
 
@@ -170,6 +171,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/inputs.py",
     "pipelines/ingestion/pdf_sources.py",
     "pipelines/ingestion/supply.py",
+    "pipelines/ingestion/supply_summaries.py",
     "pipelines/demo/import_data.py",
 ]
 RELEASE_FILES += [
@@ -1512,6 +1514,25 @@ def _process_asset(db, url, kind, day):
                 url,
             ),
         )
+        return count
+    if kind == "supply-reference":
+        from . import supply_summaries
+
+        summaries = supply_summaries.parse(data, day)
+        with db.transaction():
+            count = supply_summaries.publish_rows(db, summaries, did)
+            db.execute(
+                "UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
+                (
+                    did,
+                    "complete" if count else "archived",
+                    count,
+                    None
+                    if count
+                    else "Original summary retained; no supported typed daily market-total layout.",
+                    url,
+                ),
+            )
         return count
     if not kind.endswith("pdf") and kind != "city-zip":
         from .ocr import scan_document
