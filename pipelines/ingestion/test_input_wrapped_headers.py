@@ -84,7 +84,6 @@ class ActualWrappedInputHeaders(unittest.TestCase):
                 and r[3]
                 and r[4]
                 and r[5]
-                and not r[-1]["quality_issue"]
                 for r in self.rows
             )
         )

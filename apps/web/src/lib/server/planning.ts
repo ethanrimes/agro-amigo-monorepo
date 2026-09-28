@@ -1,4 +1,5 @@
 import "server-only";
+import { EVIDENCE_REVIEW_COUNT_SQL } from "./evidence-review-sql";
 import { OFFICIAL_EVIDENCE_ROWS_SQL } from "./official-evidence-sql";
 import { showsSupplySummaryRecords } from "./supply-summary-evidence";
 import { createHash } from "node:crypto";
@@ -395,12 +396,7 @@ export async function evidence(
     r.metadata.review_note = `La fuente tiene referencias pendientes de verificación${dates.length ? ": " + dates.join(", ") : ""}. Conservamos el archivo original; la fecha del enlace no sustituye la fecha validada de cada precio.`;
   }
   const reviewedRows = (await db.query<{ count: number }>(
-    `SELECT count(DISTINCT r.source_locator)::int AS count
-     FROM official_source_review r WHERE r.document_id=$1
-     AND NOT EXISTS(SELECT 1 FROM official_price_quote q
-       WHERE q.document_id=r.document_id AND q.source_locator=r.source_locator AND q.parsed_at>r.created_at)
-     AND NOT EXISTS(SELECT 1 FROM historical_price h
-       WHERE h.document_id=r.document_id AND h.source_locator=r.source_locator)`,
+    EVIDENCE_REVIEW_COUNT_SQL,
     [r.id],
   )).rows[0]?.count || 0;
   if (reviewedRows) {
