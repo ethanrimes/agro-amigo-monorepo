@@ -40,7 +40,7 @@ Recorded on September 27, 2026, using public source data. Prices and coverage ma
 | [pipelines](pipelines/README.md) | Source discovery, importers and recurring ingestion |
 | [infra](infra/README.md) | Azure provisioning and deployment implementation |
 
-See [architecture](docs/ARCHITECTURE.md), [code navigation](docs/CODE_NAVIGATION.md), [data sources](docs/DATA_SOURCES.md) and [Mi finca](docs/MI_FINCA_DATA.md).
+See the [app site map](docs/SITE_MAP.md), [architecture](docs/ARCHITECTURE.md), [code navigation](docs/CODE_NAVIGATION.md), [data sources](docs/DATA_SOURCES.md) and [Mi finca](docs/MI_FINCA_DATA.md).
 
 ## Local web setup
 
