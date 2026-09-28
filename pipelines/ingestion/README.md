@@ -26,6 +26,12 @@ For the path from a source adapter to its API and screen, see
   more than six hours old, independently of the nightly trigger. Discovery and
   historical loading are ongoing: a URL in the queue is not evidence that all its
   observations are already available in the app.
+- `OcrRecovery`: every hour at minute 05 UTC. Resumes at most two image tasks
+  under the same import lock and daily provider-request allowance. A separate
+  timer prevents large native workbooks from consuming every recovery window.
+- `PipelineWatchdog`: every hour at minute 45 UTC. Checks completed-run and
+  discovery freshness, stalled runs and overdue recent sources; database
+  connectivity alone does not establish that ingestion is healthy.
 - A PostgreSQL advisory lock prevents concurrent imports; overlap attempts and
   progress heartbeats are recorded. Source-specific failures do not restart the
   whole daily run. Fatal invocation failures retain Azure's two five-minute
@@ -52,6 +58,7 @@ For the path from a source adapter to its API and screen, see
 | `city_reports.py` | All discovered informes por ciudades ZIPs, individual PDF members, source package/quantity/unit, rounds and category paths. |
 | `dane_weekly.py` | Weekly SIPSA PDF/XLS/XLSX quotations, printed weekly min/max/mean and explicit units; separate official quote identities and review records. |
 | `special_prices.py` | DANE raw milk at farm and rice/mill byproducts, with distinct physical products and price bases. |
+| [`milk_macroregions.py`](milk_macroregions.py), [`milk_publication.py`](milk_publication.py) | Native milk-chart labels or narrowly targeted paired OCR; five named macroregions, printed observation months, independent municipal/chart completion and review handling. |
 | `supply.py` | Full-source validation and resumable 250-identity batches of reported arrivals, newest month first. |
 | `colombia_sources.py` | AgroNET cacao, Fedepalma statutory palm references, Fedegán cattle/milk, Porkcolombia and Corabastos. |
 | `international_sources.py` | World Bank commodity benchmarks and USDA published flower market reports. |
@@ -140,6 +147,18 @@ before checking that mutable URL again. An unchanged business price keeps its
 existing valid evidence; a newer corrected value retains both original versions.
 Successful native publication closes only pending/deferred OCR tasks for that
 document and source kind. Existing OCR readings and review decisions remain.
+
+Input publication preserves structured-annex decimals when the same exact
+observation is printed as a rounded whole-peso PDF value. This exception requires
+matching identity, location, month and product metadata plus verified native
+source rows; a filename is insufficient. A rounded duplicate cannot advance the
+structured value's freshness watermark. Materially different prices retain the
+normal revision rules and are not treated as rounding. `inputs.PUBLICATION_VERSION`
+is part of the structured input processor identity, so completed workbooks resume
+with new publication checkpoints after a repair. Raw rows and original files stay
+immutable. See [`test_input_rounding_priority.py`](test_input_rounding_priority.py)
+for rounding, conflicting-value, watermark and resumable-publication cases.
+
 Supply validates the entire native workbook before publishing any values. It then
 commits at most 250 complete market/food/month identities with each checkpoint,
 newest month first. Reporting days, quantities and exact source rows stay together.
@@ -168,6 +187,19 @@ work; two independent literal readings must agree. The daily request allowance i
 shared by worker runs and recorded in `source_ocr_attempt`. An unsupported or
 uncertain transcription does not become a price. Original documents, rendered
 images and both readings remain available as evidence.
+
+Milk cover charts are separate from municipal tables. The parser binds native
+numeric labels to named regions using the actual legend and label geometry; it
+never estimates prices from bar heights. When those labels are raster-only, just
+the recognized chart is rendered and two complete readings must agree on all
+five regions and both printed months. A municipal success does not imply chart
+success, or vice versa. Each quote preserves its observation month and validated
+bulletin month. Repeated observations prefer the later bulletin, then the newer
+retained revision of that bulletin, regardless of backfill download order.
+[`test_milk_publication.py`](test_milk_publication.py) covers independent completion
+and withdrawal; [`test_milk_bulletin_precedence.py`](test_milk_bulletin_precedence.py)
+covers matching current-cache and historical-view selection.
+
 Workbook OCR inspection streams worksheet XML and stops immediately when native
 cells are readable. It never materializes a 400 MB worksheet merely to look for
 images. Supply parsing also releases row formatting/XML nodes as it streams,
