@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { database } from "./db";
+import { sourceJson } from "./source-json";
 import { bogotaToday } from "../planning-math";
 import type { Evidence } from "../planning-types";
 import type {
@@ -99,16 +100,6 @@ export function monthFilter(layer: SpatialLayer, month: number) {
       : `${y}-${String(month + 1).padStart(2, "0")}-01`;
   return `${layer.monthField} >= date '${start}' AND ${layer.monthField} < date '${end}'`;
 }
-async function remote(url: string) {
-  const res = await fetch(url, {
-    signal: AbortSignal.timeout(25000),
-    cache: "no-store",
-  });
-  if (!res.ok) throw Error("La entidad no respondió a la consulta.");
-  const body = await res.json();
-  if (body.error) throw Error("El geoservicio no pudo resolver esta consulta.");
-  return body;
-}
 export async function spatialPoint(
   layer: SpatialLayer,
   latitude: number,
@@ -134,9 +125,22 @@ export async function spatialPoint(
         returnGeometry: "false",
         resultRecordCount: "30",
       }).toString();
-      const payload = await remote(url.toString());
+      const payload = await sourceJson(url.toString());
       if (payload.exceededTransferLimit)
         throw Error("Hay demasiadas unidades superpuestas en este punto.");
+      if (
+        !Array.isArray(payload.features) ||
+        payload.features.some(
+          (feature: { attributes?: unknown } | null) =>
+            !feature ||
+            !feature.attributes ||
+            typeof feature.attributes !== "object" ||
+            Array.isArray(feature.attributes),
+        )
+      )
+        throw Error(
+          "La entidad devolvió una consulta sin atributos verificables.",
+        );
       const schema = (
         await database().query(
           "SELECT metadata FROM spatial_snapshot WHERE id=$1",
@@ -245,7 +249,7 @@ export async function forecastGrid(
       const publicUrl = u.toString();
       if (process.env.OPEN_METEO_API_KEY)
         u.searchParams.set("apikey", process.env.OPEN_METEO_API_KEY);
-      const payload = await remote(u.toString());
+      const payload = await sourceJson(u.toString());
       const results = Array.isArray(payload) ? payload : [payload];
       if (results.length !== points.length)
         throw Error("El pronóstico regional llegó incompleto.");
