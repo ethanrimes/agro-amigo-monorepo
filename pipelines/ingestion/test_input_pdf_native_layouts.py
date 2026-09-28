@@ -2,6 +2,8 @@
 
 import hashlib
 import re
+import shutil
+import subprocess
 import unittest
 from collections import Counter
 from datetime import date
@@ -16,6 +18,7 @@ from .worker import SourceDateMismatch, parser_version
 
 FIXTURES = Path("artifacts/source-verification-2026-09-28/inputs-milk")
 DID = "8c5e95de023a6fafd71484dc476c40083aa886d05ca00f90ada498cac05043f7"
+FEB2018_PDF = Path(__file__).resolve().parent / "testdata/Bol_Insumos_feb_2018.pdf"
 
 
 def word(text, x, y, right=None, font="FuturaStd-Book"):
@@ -45,7 +48,7 @@ class NativeGeometry(unittest.TestCase):
                 inputs._input_heading_word(word("Carrier", 45, 0, font=font))
             )
         self.assertEqual(inputs.INPUT_PDF_VERSION, parser_version("inputs-pdf"))
-        self.assertEqual(inputs.INPUT_PDF_VERSION, "inputs-pdf-v10")
+        self.assertEqual(inputs.INPUT_PDF_VERSION, "inputs-pdf-v11")
 
     def test_centered_header_requires_exact_contiguous_column_rules(self):
         p = MagicMock(
@@ -104,6 +107,91 @@ class NativeGeometry(unittest.TestCase):
                 )
                 result = inputs._input_wrapped_department(lines, 0, 180, numeric, True)
                 self.assertEqual(result, (full, "32.667", "n.d.", [first, last]))
+
+    def test_centered_price_binds_only_adjacent_printed_department(self):
+        lines = [
+            (100, [word("Villa de San Diego de Ubaté", 40, 100, right=165)]),
+            (105.7, [word("68.238", 205, 105.7), word("0,0", 265, 105.7)]),
+            (111.4, [word("(Cundinamarca)", 40, 111.4, right=150)]),
+        ]
+        self.assertEqual(
+            inputs._input_wrapped_department(lines, 1, 180, None, True),
+            (
+                "Villa de San Diego de Ubaté (Cundinamarca)",
+                "68.238",
+                "0,0",
+                ["Villa de San Diego de Ubaté", "(Cundinamarca)"],
+            ),
+        )
+        for suffix in [
+            word("(Lugar desconocido)", 40, 111.4, right=150),
+            word("(Cundinamarca)", 40, 120, right=150),
+            word("(Cundinamarca)", 205, 111.4),
+        ]:
+            with self.subTest(suffix=suffix):
+                changed = [lines[0], lines[1], (suffix["top"], [suffix])]
+                self.assertIsNone(
+                    inputs._input_wrapped_department(changed, 1, 180, None, True)
+                )
+
+    def test_partial_publication_commits_page_reviews_with_review_status(self):
+        from . import worker
+
+        did = inputs.MIXED_FEB2018_INPUT_SHA
+        url = inputs.MIXED_FEB2018_INPUT_URL
+        reviews = [
+            {
+                "page": n,
+                "source_locator": f"PDF page {n}; printed period",
+                "printed_caption": "2017 (febrero)",
+                "archive_period": "2018-02",
+                "reason": "Printed 2017 (febrero) table conflicts with February 2018 archive link",
+            }
+            for n in range(141, 151)
+        ]
+        db = MagicMock()
+        with (
+            patch.object(inputs, "parse_mixed_feb2018_input", return_value=([None] * 10758, reviews)),
+            patch.object(worker, "save_rows", return_value=10758) as save,
+            patch.object(worker, "project") as project,
+        ):
+            self.assertEqual(
+                inputs.publish_mixed_feb2018_input(db, b"original", did, url, date(2018, 2, 28)),
+                10758,
+            )
+        save.assert_called_once()
+        project.assert_called_once_with(db, did, url, "inputs-pdf")
+        calls = db.cursor.return_value.__enter__.return_value.executemany.call_args_list
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(len(calls[0].args[1]), 10)
+        self.assertEqual(len(calls[1].args[1]), 10)
+        self.assertEqual(
+            [r[2] for r in calls[1].args[1]],
+            [f"inputs-pdf:date-review:page-{n}" for n in range(141, 151)],
+        )
+        status_sql, status_args = db.execute.call_args.args
+        self.assertIn("status='review'", status_sql)
+        self.assertEqual(status_args[:3], (did, 10758, inputs.INPUT_PDF_VERSION))
+        self.assertIn("pages 141-150", status_args[3])
+
+    def test_partial_publication_rejects_wrong_source_or_row_count(self):
+        from . import worker
+
+        did = inputs.MIXED_FEB2018_INPUT_SHA
+        url = inputs.MIXED_FEB2018_INPUT_URL
+        db = MagicMock()
+        with self.assertRaises(SourceDateMismatch):
+            inputs.publish_mixed_feb2018_input(db, b"", did, url + "?copy", date(2018, 2, 28))
+        db.transaction.assert_not_called()
+        with (
+            patch.object(inputs, "parse_mixed_feb2018_input", return_value=([None] * 10758, [])),
+            patch.object(worker, "save_rows", return_value=10757),
+            patch.object(worker, "project") as project,
+            self.assertRaises(SourceDateMismatch),
+        ):
+            inputs.publish_mixed_feb2018_input(db, b"original", did, url, date(2018, 2, 28))
+        project.assert_not_called()
+        db.execute.assert_not_called()
 
     def test_department_never_guessed_across_distance_price_or_heading(self):
         first = "Villa de San Diego de Ubaté"
@@ -232,7 +320,7 @@ class ActualNativeTables(unittest.TestCase):
                 ]
                 self.assertEqual(len(rows), 1)
                 self.assertTrue(rows[0][0].startswith(f"PDF page {page},col "))
-                self.assertEqual(rows[0][-1]["parser_version"], "inputs-pdf-v10")
+                self.assertEqual(rows[0][-1]["parser_version"], "inputs-pdf-v11")
         wrapped = [
             r
             for r in self.rows
@@ -288,12 +376,10 @@ class ActualNativeTables(unittest.TestCase):
         self.assertEqual(len(found), 1)
         self.assertEqual(found[0][-1]["printed_table_caption"], "2016 (febrero)")
 
+
+class MixedFeb2018NativeTables(unittest.TestCase):
     def test_actual_feb2018_wrong_year_caption_remains_review(self):
-        p = (
-            FIXTURES
-            / "originals/54cb32e0d9f7a5f02468fa5efb56acac8618897e4c8210d5d39d019dba897de5.pdf"
-        )
-        with pdfplumber.open(p) as pdf:
+        with pdfplumber.open(FEB2018_PDF) as pdf:
             wrapper = MagicMock()
             wrapper.__enter__.return_value.pages = [pdf.pages[140]]
             with (
@@ -301,6 +387,61 @@ class ActualNativeTables(unittest.TestCase):
                 self.assertRaisesRegex(SourceDateMismatch, "2017"),
             ):
                 list(inputs.parse_input_pdf(b"", date(2018, 2, 28)))
+
+    def test_actual_feb2018_partial_boundary_is_explicit_and_original_pinned(self):
+        data = FEB2018_PDF.read_bytes()
+        rows, reviews = inputs.parse_mixed_feb2018_input(data, date(2018, 2, 28))
+        self.assertEqual(len(rows), 10758)
+        self.assertEqual(
+            [(r["page"], r["table"], r["printed_caption"]) for r in reviews],
+            [(n, 14 if n <= 144 else 15, "2017 (febrero)") for n in range(141, 151)],
+        )
+        self.assertTrue(all(r[-1]["page"] <= 140 for r in rows))
+        with self.assertRaises(SourceDateMismatch):
+            inputs.parse_mixed_feb2018_input(data + b"changed", date(2018, 2, 28))
+        with self.assertRaises(SourceDateMismatch):
+            inputs.parse_mixed_feb2018_input(data, date(2017, 2, 28))
+
+    @unittest.skipUnless(shutil.which("pdftotext"), "Poppler is required for independent count")
+    def test_actual_feb2018_dated_pages_reconcile_all_monetary_cells(self):
+        p = FEB2018_PDF
+        self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), inputs.MIXED_FEB2018_INPUT_SHA)
+        with pdfplumber.open(p) as pdf:
+            self.assertEqual(len(pdf.pages), 151)
+            wrapper = MagicMock()
+            wrapper.__enter__.return_value.pages = pdf.pages[:140]
+            with patch.object(pdfplumber, "open", return_value=wrapper):
+                rows = list(inputs.parse_input_pdf(b"", date(2018, 2, 28)))
+        original_text = subprocess.run(
+            ["pdftotext", "-f", "1", "-l", "140", "-layout", str(p), "-"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.split("\f")
+        pattern = re.compile(
+            r"(?<!\S)(\d[\d.,]*)(?: {2,})(n\.?\s*d\.|[-+]?\d[\d.,]*)(?=\s{2,}|$)",
+            re.IGNORECASE,
+        )
+        printed = Counter()
+        for page, text in enumerate(original_text, 1):
+            if "mercados" not in text or "Precio medio" not in text:
+                continue
+            for line in text.splitlines():
+                if page == 8 and "gramos mostró una tendencia al alza" in line:
+                    continue  # Narrative numbers 44 and 80.000, not a table row.
+                for match in pattern.finditer(line):
+                    price = float(match[1].replace(".", "").replace(",", "."))
+                    change = (
+                        None
+                        if match[2].lower().startswith("n")
+                        else float(match[2].replace(".", "").replace(",", "."))
+                    )
+                    if price > 0:
+                        printed[(page, price, change)] += 1
+        actual = Counter((r[-1]["page"], r[6], r[7]) for r in rows)
+        self.assertEqual(sum(printed.values()), 10758)
+        self.assertEqual(actual, printed)
+        self.assertTrue(all(r[2] == date(2018, 2, 28) for r in rows))
 
 
 if __name__ == "__main__":

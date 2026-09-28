@@ -502,7 +502,20 @@ def parse_pdf(data, expected_day=None):
             if "toneladas" not in text.lower() and not active:
                 return [], [f"PDF page {page_number}: no native tonne-unit evidence"]
             active = True
-            split = 94 if old else 110 if city["x0"] < 90 else 155
+            # The April 2024 bulletin places its market text at x=149.7–152.2
+            # and city text through x=142.5. Its header is also left of the
+            # later 32-market layout (Ciudad x=100.7, Central x=206.1).
+            # Keep the column boundary tied to that observed native layout;
+            # a wider split would silently merge some markets into cities.
+            split = (
+                94
+                if old
+                else 110
+                if city["x0"] < 90
+                else 145
+                if city["x0"] < 103 and central["x0"] < 212
+                else 155
+            )
             if not old and not (60 <= city["x0"] <= 130):
                 reviews.append(
                     f"PDF page {page_number}: unsupported native market column geometry"

@@ -125,7 +125,9 @@ class Parsers(unittest.TestCase):
         )
         rows = list(parse_daily(data, date(2012, 6, 12)))
         self.assertEqual(len(rows), 2)
-        self.assertEqual(rows[0][7], 10)
+        # A general-format numeric cell is already in percentage points.
+        # Only an actual Excel percent number format scales 0.1 to 10.
+        self.assertEqual(rows[0][7], 0.1)
         self.assertTrue(rows[0][8]["predominant_variety"])
         with self.assertRaisesRegex(ValueError, "differs"):
             list(parse_daily(data, date(2012, 6, 13)))
@@ -138,11 +140,15 @@ class Parsers(unittest.TestCase):
             [None, "Precio", "Var %", "Precio", "Var %", "Precio", "Var %", None, None],
             ["Tomate", 800, 0.1, 900, -0.2, 1000, 0, 9999, None],
         ]
-        with patch(
-            "pipelines.ingestion.worker.workbooks",
-            return_value=[("Boletín", iter(rows)), ("Hoja1", iter([]))],
-        ):
-            parsed = list(parse_daily(b"", date(2012, 10, 10)))
+        book = openpyxl.Workbook()
+        sheet = book.active
+        sheet.title = "Boletín"
+        for row in rows:
+            sheet.append(row)
+        book.create_sheet("Hoja1")
+        buffer = BytesIO()
+        book.save(buffer)
+        parsed = list(parse_daily(buffer.getvalue(), date(2012, 10, 10)))
         self.assertEqual(len(parsed), 3)
         self.assertEqual(parsed[-1][6], 1000)
 

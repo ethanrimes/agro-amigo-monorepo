@@ -111,6 +111,56 @@ def parse_archived_city_pdf(db, data, did, archive_day):
         yield from parse_city_pages(pages, archive_day)
 
 
+def _verified_empty_native_grid(page, tables):
+    """Recognize a printed, header-only SIPSA grid without excusing unread prices.
+
+    This deliberately accepts only the observed one-page native layout. A
+    missing/malformed table, a continuation page, or an image-sized price grid
+    still needs review (or OCR), even when no prices were parsed.
+    """
+    from .pdf_sources import has_table_sized_image
+    from .worker import clean
+
+    if not isinstance(page, pdfplumber.page.Page) or has_table_sized_image(page):
+        return False
+    if len(tables) != 1 or len(tables[0]) != 4:
+        return False
+    title, heading, columns, ranges = tables[0]
+    if any(len(row) != 7 for row in (title, heading, columns, ranges)):
+        return False
+    if any(clean(cell) for cell in title):
+        return False
+    if any(clean(cell) for cell in heading[1:]):
+        return False
+    if not (heading[0] or "").startswith("PRECIOS DE VENTA MAYORISTA\n"):
+        return False
+    if [clean(cell) for cell in columns[:3]] != [
+        "Producto", "Presentación", "Unidades"
+    ]:
+        return False
+    if any(clean(cell) for cell in (columns[4], columns[6])):
+        return False
+    if not clean(columns[3]).startswith("Ronda 1") or clean(columns[5]) != "Ronda 2":
+        return False
+    if [clean(cell) for cell in ranges] != [
+        "", "", "", "Mínimo", "Máximo", "Mínimo", "Máximo"
+    ]:
+        return False
+    # A row omitted by table detection can still leave native text on the
+    # page. Require the complete printed header and page-count text only.
+    lines = [line.strip() for line in (page.extract_text() or "").splitlines() if line.strip()]
+    return (
+        len(lines) == 9
+        and lines[0] == "PRECIOS DE VENTA MAYORISTA"
+        and lines[2].startswith("PRODUCTOS PRIMERA CALIDAD")
+        and re.fullmatch(r"\d{1,2} de [A-Za-zÀ-ÿ]+ de \d{4}", lines[3], re.IGNORECASE)
+        and lines[4:] == [
+            "Ronda 1", "Ronda 2", "Producto Presentación Unidades -",
+            "Mínimo Máximo Mínimo Máximo", "Pagina 1 de 1",
+        ]
+    )
+
+
 def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False):
     from .worker import SourceDateMismatch, clean, date_from_text, slug, today
 
@@ -125,6 +175,7 @@ def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False
         raise ValueError("City PDF market heading not found")
     market = clean(market_match[1])
     found = 0
+    verified_empty = False
     category = "Productos agropecuarios"
     group = ""
     main_groups = {
@@ -138,7 +189,10 @@ def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False
         "carnes",
     }
     for page_no, page in enumerate(pages, 1):
-        for table_no, table in enumerate(page.extract_tables(), 1):
+        tables = page.extract_tables()
+        if len(pages) == 1 and _verified_empty_native_grid(page, tables):
+            verified_empty = True
+        for table_no, table in enumerate(tables, 1):
             headers = next(
                 (
                     i
@@ -225,7 +279,7 @@ def parse_city_pages(pages, archive_day=None, *, heading=None, allow_empty=False
                         page_no,
                     )
         page.close()
-    if not found and not allow_empty:
+    if not found and not allow_empty and not verified_empty:
         raise ValueError("No city price ranges parsed")
 
 

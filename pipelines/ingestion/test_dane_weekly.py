@@ -76,6 +76,24 @@ def native_pdf(
 
 
 class WeeklySemantics(unittest.TestCase):
+    def test_original_march_2020_blank_market_is_reviewed_without_neighbor_identity(self):
+        # Printed page 37 extracted unchanged from DANE's 7–13 March 2020
+        # weekly PDF. Blank placeholder pages preserve its original page index.
+        source = Path(__file__).parent / "testdata/dane_weekly_2020_03_07_page37.pdf"
+        url = "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_07mar_2020__13mar_2020.pdf"
+        rows = weekly.parse_pdf(source.read_bytes(), url)
+        self.assertEqual(len(rows), 80)
+        unresolved = [r for r in rows if r["price"] is None]
+        self.assertEqual(len(unresolved), 1)
+        blank = unresolved[0]
+        self.assertEqual(blank["source_locator"], "PDF page 37,table 1,column 2,line 8")
+        self.assertEqual((blank["product_name"], blank["market"]), ("Papa suprema", ""))
+        self.assertEqual((blank["min"], blank["max"], blank["details"]["literal_mean"]), (680, 700, 695))
+        self.assertIsNone(blank["details"]["literal_market_name"])
+        self.assertTrue(any(r["product_name"] == "Papa suprema" and r["market"] == "San Gil (Santander)" and r["price"] == 767 for r in rows))
+        with self.assertRaisesRegex(ValueError, "lacks a literal product or market"):
+            weekly._row("", "", 680, 700, 695, "-", "Tubérculos", (date(2020, 3, 7), date(2020, 3, 13)), "unbound")
+
     def test_discovery_archives_old_sem_filenames_and_leaves_without_binary_decode(
         self,
     ):
@@ -168,6 +186,16 @@ class WeeklySemantics(unittest.TestCase):
         rows = weekly.parse_pdf(native_pdf(), "report.pdf")
         self.assertEqual(len(rows), 2)
         self.assertEqual([r["price"] for r in rows], [418, 418])
+        # DANE's 7–13 March 2020 bulletin prints a complete 680/700/695
+        # Papa suprema quote on page 37 with the market cell genuinely blank.
+        # Retain its numbers for review without borrowing an adjacent market.
+        blank_market = weekly.parse_pdf(native_pdf(second_market=""), "report.pdf")
+        self.assertEqual(len(blank_market), 2)
+        self.assertEqual(blank_market[0]["price"], 418)
+        self.assertIsNone(blank_market[1]["price"])
+        self.assertEqual(blank_market[1]["market"], "")
+        self.assertIsNone(blank_market[1]["details"]["literal_market_name"])
+        self.assertEqual(blank_market[1]["details"]["literal_mean"], 418)
         reading = {
             "text": "Cuadro 2. Mercados mayoristas. Precios de venta de verduras y hortalizas. 19 al 25 de septiembre de 2026. Pesos por kilogramo",
             "tables": [

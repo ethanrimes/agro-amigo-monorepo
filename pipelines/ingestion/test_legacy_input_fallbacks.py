@@ -114,6 +114,66 @@ class LegacyNativeFallbackTests(unittest.TestCase):
                 self.assertEqual(rows[0][-1]["category"], inputs.CATEGORIES[category])
                 self.assertEqual(rows[0][5:7], ("1 litro", 12345))
 
+    def test_later_native_xls_headings_preserve_current_column_and_category(self):
+        # Literal headings and sample cells from official 2016-17 XLS annexes.
+        # A prior comparison price must never become the current observation.
+        for sheet, heading, title, product, prior, current, category, month in (
+            ("ARRIENDOS AGO17", "Tipo de arriendo y mercados",
+             "Cabeza de ganado mensual para pastoreo, terreno inclinado/ondulado con agua",
+             "Málaga (Santander)", 53333.333333333336, 60000, "Arrendamiento de tierras", "agosto"),
+            ("ESPECIES PRODUCTIVAS DIC16", "Especies y mercados",
+             "Alevino Cachama Blanca macho 3-4 centímetros, paquete por 50 unidades",
+             "Cereté (Córdoba)", 5000, 4833.333333333333, "Especies productivas", "diciembre"),
+            ("ESPECIE PRODUCTIVA SEP17", "Especie y  mercados",
+             "Alevino Cachama Blanca macho 3-4 centímetros, paquete por 50 unidades",
+             "Cereté (Córdoba)", 4750, 4833.333333333333, "Especies productivas", "septiembre"),
+            ("SERVICIOS AGRÍCOLAS FEB17", "Servicios y mercados",
+             "Arada, hora/máquina", "Ábrego (Norte de Santander)",
+             85000, 84333.33333333333, "Servicios agrícolas", "febrero"),
+            ("ELEMENTOS AGROPECUARIOS JUL17", "Productos y mercados",
+             "Alambre de púas nro. 12,5, rollo por 200 metros",
+             "Chiquinquirá (Boyacá)", 86100, 85966.66666666667,
+             "Elementos agropecuarios", "julio"),
+            ("HERBICIDAS NOV 17 ", "Productos y mercados",
+             "2,4-D Amina 720 SL, 1 litro", "Corinto (Cauca)",
+             13125, 13250, "Herbicidas", "noviembre"),
+        ):
+            with self.subTest(sheet=sheet):
+                rows = self.parse(sheet, [
+                    [heading, "Precio de mayo", f"Precio medio {month}", "Variación porcentual"],
+                    [title, "", "", ""],
+                    [product, prior, current, 0],
+                ])
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0][6], current)
+                self.assertEqual(rows[0][-1]["category"], category)
+                self.assertIn("col 3", rows[0][0])
+
+    def test_current_price_of_june_spelling_from_hormonal_xls(self):
+        rows = self.parse(
+            "HORMONALES JUN17",
+            [
+                ["Productos y mercados", "Precio de Mayo", "Precio de junio", "Variación porcentual"],
+                ["Estro-Zoo, 20 centímetros cúbicos", "", "", ""],
+                ["Aguachica (Cesar)", 23466.666666666668, 27066.666666666668, 15.34],
+            ],
+        )
+        self.assertEqual(rows[0][2:7],
+                         (date(2017, 6, 30), "Estro-Zoo", "Aguachica",
+                          "20 centímetros cúbicos", 27066.666666666668))
+        self.assertIn("col 3", rows[0][0])
+
+    def test_specialized_legacy_heading_cannot_change_category(self):
+        with self.assertRaisesRegex(ValueError, "Conflicting legacy input heading/category"):
+            self.parse(
+                "FERTILIZANTES FEB17",
+                [
+                    ["Especies y mercados", "Precio de noviembre", "Precio medio febrero"],
+                    ["Alevino, paquete por 50 unidades", "", ""],
+                    ["Cereté (Córdoba)", 5000, 4833.333333333333],
+                ],
+            )
+
     def test_two_explicit_month_columns_selects_only_unique_current_month(self):
         rows = self.parse(
             "empaques nov15",

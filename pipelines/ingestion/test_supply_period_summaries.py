@@ -20,6 +20,10 @@ FIXTURES = (
 )
 XLS = "anex-SIPSAabastecimiento-ago2026.xlsx"
 PDF = "bol-SIPSAabastecimiento-ago2026.pdf"
+APRIL_2024_PDF = (
+    Path(__file__).resolve().parent
+    / "testdata/bol-SIPSAabastecimiento-1raquincenaAbril2024.pdf"
+)
 
 
 def body(name):
@@ -36,6 +40,67 @@ def mutate(action):
 
 
 class NativePeriodSummaries(unittest.TestCase):
+    def test_april_2024_fortnight_original_printed_market_table(self):
+        rows, reviews = adapter.parse_pdf(
+            APRIL_2024_PDF.read_bytes(), date(2024, 4, 15)
+        )
+        self.assertEqual((len(rows), reviews), (99, []))
+        self.assertEqual(len({r["name"] for r in rows}), 33)
+        expected = {
+            "Armenia, Mercar": [4821, 5088, 5.54],
+            "Bucaramanga, Centroabastos": [22334, 22376, 0.19],
+            "Florencia, Florencia (Caquetá)": [668, 668, 0.03],
+            "Santa Marta, Santa Marta (Magdalena)": [2133, 2086, -2.18],
+            "Tibasosa, Coomproriente": [3028, 3191, 5.39],
+            "TOTAL": [309952, 307712, -0.72],
+        }
+        for name, values in expected.items():
+            self.assertEqual(
+                [r["details"]["value"] for r in rows if r["name"] == name], values
+            )
+        for row in rows:
+            details = row["details"]
+            self.assertEqual(details["source_page"], 4)
+            self.assertEqual(details["frequency"], "first_fortnight")
+            self.assertEqual(details["precision"], "printed_pdf_value")
+            self.assertEqual(
+                (details["period_start"], details["period_end"]),
+                ("2024-03-01", "2024-03-15")
+                if "column 1;" in row["source_locator"]
+                else ("2024-04-01", "2024-04-15"),
+            )
+
+    def test_april_2024_market_column_crossing_boundary_is_reviewed(self):
+        from contextlib import nullcontext
+
+        with pdfplumber.open(io.BytesIO(APRIL_2024_PDF.read_bytes())) as pdf:
+            pages = []
+            for i, page in enumerate(pdf.pages):
+                words = page.extract_words()
+                if i == 3:
+                    words = [
+                        {**w, "x0": 140, "x1": 143}
+                        if w["text"] == "Mercar" and abs(w["top"] - 185.75) < 2
+                        else w
+                        for w in words
+                    ]
+                text = page.extract_text()
+                pages.append(
+                    SimpleNamespace(
+                        width=page.width,
+                        extract_text=lambda text=text: text,
+                        extract_words=lambda words=words: words,
+                    )
+                )
+        with patch.object(
+            adapter.pdfplumber,
+            "open",
+            return_value=nullcontext(SimpleNamespace(pages=pages)),
+        ):
+            rows, reviews = adapter.parse_pdf(APRIL_2024_PDF.read_bytes())
+        self.assertEqual(rows, [])
+        self.assertTrue(any("missing literal city/market binding" in x for x in reviews))
+
     def test_four_workbooks_independent_literals_and_full_cell_parity(self):
         fixtures = [
             (

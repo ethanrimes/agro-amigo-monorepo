@@ -1,1 +1,10 @@
 *.bat text eol=crlf
+*.pdf binary
+*.zip binary
+*.xls binary
+*.xlsx binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.mp4 binary
