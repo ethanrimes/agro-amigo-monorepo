@@ -84,6 +84,10 @@ PARSER_VERSIONS = {
 def parser_version(kind):
     from .official_sources import VERSION, adapter, is_reference_kind
 
+    if kind in ("inputs", "inputs-municipal", "inputs-annex", "inputs-reference"):
+        from .inputs import PUBLICATION_VERSION
+
+        return PARSER_VERSIONS[kind] + ":" + PUBLICATION_VERSION
     if kind in ("milk-pdf", "milk-macroregion-pdf"):
         from .milk_macroregions import VERSION as MACRO_VERSION
 

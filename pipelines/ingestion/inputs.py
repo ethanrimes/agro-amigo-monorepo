@@ -4,6 +4,8 @@ import calendar
 import re
 from datetime import date
 
+PUBLICATION_VERSION = "input-rounding-v1"
+
 CATEGORIES = {
     "1.1": "Bioinsumos",
     "1.2": "Coadyuvantes, molusquicidas, reguladores fisiológicos y otros",
@@ -493,6 +495,51 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
         conflicts = cur.execute(
             f"SELECT count(*) FROM (SELECT 1 FROM {stage} GROUP BY id,department,municipality,observed_on HAVING min(price)<>max(price)) c"
         ).fetchone()[0]
+        # PDF tables print whole pesos while the official structured annex can
+        # retain decimals for the SAME observation. Retrieval order is not a
+        # reason to discard those decimals when the two values demonstrably
+        # round to the same printed price. Both sources must be verified raw
+        # input series; a filename or a source-locator convention is not proof.
+        cur.execute("""CREATE TEMP TABLE IF NOT EXISTS input_precision (
+            id text,department text,municipality text,observed_on date,
+            preserve_current boolean,promote_incoming boolean,
+            current_retrieved_at timestamptz,
+            PRIMARY KEY(id,department,municipality,observed_on)
+            ) ON COMMIT DROP""")
+        cur.execute("TRUNCATE pg_temp.input_precision")
+        for table, municipal in (
+            ("input_price", False),
+            ("input_municipal_price", True),
+        ):
+            cur.execute(f"""INSERT INTO input_precision
+              WITH candidate AS MATERIALIZED (
+                SELECT * FROM (SELECT s.*,
+                  row_number() OVER(PARTITION BY id,department,municipality,observed_on ORDER BY source_locator) rn,
+                  min(price) OVER(PARTITION BY id,department,municipality,observed_on) low,
+                  max(price) OVER(PARTITION BY id,department,municipality,observed_on) high
+                  FROM {stage} s WHERE municipality {"<>" if municipal else "="} '') x
+                WHERE rn=1 AND low=high
+              )
+              SELECT s.id,s.department,s.municipality,s.observed_on,
+                incoming.series='dane-inputs-pdf',
+                incoming.series IN ('dane-inputs','dane-inputs-municipal')
+                  AND (revision.retrieved_at IS NULL OR revision.retrieved_at<=original.retrieved_at
+                    OR revision.retrieved_at<=(SELECT retrieved_at FROM source_document WHERE id=s.document_id)),
+                original.retrieved_at
+              FROM candidate s JOIN {table} current
+                ON current.id=s.id AND current.department=s.department AND current.observed_on=s.observed_on
+                {"AND current.municipality=s.municipality" if municipal else ""}
+              JOIN historical_price incoming ON incoming.document_id=s.document_id AND incoming.source_locator=s.source_locator
+              JOIN historical_price prior ON prior.document_id=current.document_id AND prior.source_locator=current.source_locator
+              JOIN source_document original ON original.id=current.document_id
+              LEFT JOIN input_revision revision ON revision.id=s.id AND revision.department=s.department
+                AND revision.municipality=s.municipality AND revision.observed_on=s.observed_on
+              WHERE (current.name,current.category,current.presentation,current.brand,current.registration,current.product_line)
+                IS NOT DISTINCT FROM (s.name,s.category,s.presentation,s.brand,s.registration,s.product_line)
+                AND ((incoming.series='dane-inputs-pdf' AND prior.series IN ('dane-inputs','dane-inputs-municipal')
+                    AND s.price=trunc(s.price) AND s.price=round(current.price))
+                  OR (prior.series='dane-inputs-pdf' AND incoming.series IN ('dane-inputs','dane-inputs-municipal')
+                    AND current.price=trunc(current.price) AND current.price=round(s.price)))""")
         # Advance a narrow per-key watermark even if the value is unchanged.
         # Keeping original attribution for an equal value must not let an
         # intermediate older revision overwrite the latest validated value.
@@ -501,11 +548,17 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
             f"""INSERT INTO input_revision(id,department,municipality,observed_on,retrieved_at)
             SELECT id,department,municipality,observed_on,
                 (SELECT retrieved_at FROM source_document WHERE id=%s)
-            FROM {stage} GROUP BY id,department,municipality,observed_on
+            FROM {stage} s WHERE NOT EXISTS(SELECT 1 FROM input_precision p
+              WHERE (p.id,p.department,p.municipality,p.observed_on)=(s.id,s.department,s.municipality,s.observed_on)
+                AND p.preserve_current)
+            GROUP BY id,department,municipality,observed_on
             HAVING min(price)=max(price)
             ON CONFLICT(id,department,municipality,observed_on) DO UPDATE
             SET retrieved_at=excluded.retrieved_at
-            WHERE input_revision.retrieved_at<excluded.retrieved_at""",
+            WHERE input_revision.retrieved_at<excluded.retrieved_at
+              OR EXISTS(SELECT 1 FROM input_precision p WHERE
+                (p.id,p.department,p.municipality,p.observed_on)=(excluded.id,excluded.department,excluded.municipality,excluded.observed_on)
+                AND p.promote_incoming AND input_revision.retrieved_at<=p.current_retrieved_at)""",
             (did,),
         )
         for table, municipal in [
@@ -526,9 +579,13 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
                 SELECT {cols} FROM (SELECT s.*,row_number() OVER(PARTITION BY id,department,municipality,observed_on ORDER BY source_locator) rn,
                 min(price) OVER(PARTITION BY id,department,municipality,observed_on) low,max(price) OVER(PARTITION BY id,department,municipality,observed_on) high
                 FROM {stage} s WHERE municipality {"<>" if municipal else "="} '') x WHERE rn=1 AND low=high
+                AND NOT EXISTS(SELECT 1 FROM input_precision p WHERE
+                  (p.id,p.department,p.municipality,p.observed_on)=(x.id,x.department,x.municipality,x.observed_on) AND p.preserve_current)
                 AND NOT EXISTS(SELECT 1 FROM {table} current
                   WHERE current.id=x.id AND current.department=x.department AND current.observed_on=x.observed_on
                     {"AND current.municipality=x.municipality" if municipal else ""}
+                    AND NOT EXISTS(SELECT 1 FROM input_precision p WHERE
+                      (p.id,p.department,p.municipality,p.observed_on)=(x.id,x.department,x.municipality,x.observed_on) AND p.promote_incoming)
                     AND ((current.price,current.name,current.category,current.brand,current.registration,current.product_line)
                       IS NOT DISTINCT FROM (x.price,x.name,x.category,x.brand,x.registration,x.product_line)
                       OR (SELECT retrieved_at FROM source_document WHERE id=x.document_id)
@@ -538,14 +595,19 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
                           AND r.department=x.department AND r.municipality=x.municipality AND r.observed_on=x.observed_on)))
                 ON CONFLICT({keys}) DO UPDATE SET name=excluded.name,category=excluded.category,price=excluded.price,document_id=excluded.document_id,
                 source_locator=excluded.source_locator,brand=excluded.brand,registration=excluded.registration,product_line=excluded.product_line
-                WHERE ({table}.price,{table}.name,{table}.category,{table}.brand,{table}.registration,{table}.product_line)
+                WHERE (({table}.price,{table}.name,{table}.category,{table}.brand,{table}.registration,{table}.product_line)
                 IS DISTINCT FROM (excluded.price,excluded.name,excluded.category,excluded.brand,excluded.registration,excluded.product_line)
-                AND (SELECT retrieved_at FROM source_document WHERE id=%s)
+                  OR EXISTS(SELECT 1 FROM input_precision p WHERE
+                    (p.id,p.department,p.municipality,p.observed_on)=(excluded.id,excluded.department,{"excluded.municipality" if municipal else "''"},excluded.observed_on) AND p.promote_incoming))
+                AND (EXISTS(SELECT 1 FROM input_precision p WHERE
+                    (p.id,p.department,p.municipality,p.observed_on)=(excluded.id,excluded.department,{"excluded.municipality" if municipal else "''"},excluded.observed_on) AND p.promote_incoming)
+                  OR (
+                (SELECT retrieved_at FROM source_document WHERE id=%s)
                     >= (SELECT retrieved_at FROM source_document WHERE id={table}.document_id)
                 AND (SELECT retrieved_at FROM source_document WHERE id=%s)
                     >= (SELECT retrieved_at FROM input_revision r WHERE r.id=excluded.id
                         AND r.department=excluded.department AND r.observed_on=excluded.observed_on
-                        AND r.municipality={"excluded.municipality" if municipal else "''"})""",
+                        AND r.municipality={"excluded.municipality" if municipal else "''"})))""",
                 (did, did),
             )
     return conflicts
@@ -569,7 +631,9 @@ def project_pdf_inputs(db, did):
         AND substring(processor_version from '([0-9]+)$')::numeric>%s LIMIT 1""",
         (did, int(version[1])),
     ).fetchone():
-        return 0  # A rolled-back deployment may retain, but never republish, old parsing.
+        return (
+            0  # A rolled-back deployment may retain, but never republish, old parsing.
+        )
     conflicts = project_inputs(db, did)
     # Only reattribute the identical business value from the SAME original.
     # This is safe even when a newer, equal-valued original advanced the
