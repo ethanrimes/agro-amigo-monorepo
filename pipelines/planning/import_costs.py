@@ -2,6 +2,7 @@
 Pesticide quantities in historical publications are never turned into application advice.
 """
 from import_references import *
+from cost_regions import ARVEJA_SOURCE, arveja_municipalities, cost_region
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import subprocess
@@ -23,14 +24,13 @@ def costs(cur):
    yield_match=re.search(r'producci[oó]n\s+total\s*(?:\(?t/ha\)?)?\s+([\d.,]+)',text,re.I)
    if None in (total,labor,inputs,harvest) or not yield_match:continue
    # Source titles may follow the table. Select the region adjacent to its cost heading.
-   heading=re.search(r'(?:Ficha|Tabla)\s+\d+\.\s*Costos de producci[oó]n.*?((?:Región|región).*?)(?:20\d{2}|Actividad|para el año)',text,re.S)
-   if not heading:continue
-   region=' '.join(heading[1].replace('*','').strip(' ,').split())
-   if len(region)>130:continue
+   region=cost_region(text,name,i+1,crop,year)
+   if not region:continue
    out_yield=number_co(yield_match[1])*1000
    if total<=0 or out_yield<=0 or labor<harvest or total-labor-inputs< -2:raise ValueError(f'Invalid cost table {name}/{i+1}')
    foot=re.search(r'\*\s*Incluye(.*?)(?:\*\*|Fuente:|$)',text,re.S|re.I);foot=slug(foot[1]) if foot else ''
    codes=[mid for mid,mun,dep in municipalities if slug(dep) in foot and ('-'+slug(mun)+'-') in ('-'+foot+'-')]
+   if name==ARVEJA_SOURCE:codes=arveja_municipalities(text,i+1,municipalities)
    lines=[{'label':'Labores antes de cosecha','amount':round(labor-harvest,2),'timing':'before'},{'label':'Semilla e insumos','amount':inputs,'timing':'before'},{'label':'Mano de obra de cosecha','amount':harvest,'timing':'harvest'},{'label':'Otros rubros del total publicado','amount':round(max(0,total-labor-inputs),2),'timing':'before'}]
    ident=slug(crop)+'-'+str(year)+'-'+str(i+1)
    notes='Pesos nominales del período del estudio, sin actualización automática. Otros rubros pueden incluir transporte y empaques: evita contarlos dos veces. La asignación del momento de pago es editable; no proviene de un calendario financiero de UPRA.'
