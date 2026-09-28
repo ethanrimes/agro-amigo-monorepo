@@ -3,8 +3,36 @@
 import calendar
 import re
 from datetime import date
+from urllib.parse import unquote, urlsplit
 
 from psycopg.types.json import Jsonb
+
+
+def input_pdf_month(label, url):
+    """Use the same dated official PDF family in archive and context discovery."""
+    from .worker import publication_month
+
+    parsed = urlsplit(url)
+    path = unquote(parsed.path).lower()
+    if (
+        parsed.scheme == "https"
+        and parsed.netloc in ("www.dane.gov.co", "dane.gov.co")
+        and path.startswith("/files/")
+        and path.endswith(".pdf")
+        and "insumos" in path
+    ):
+        return publication_month(label, path)
+    return None
+
+
+def input_url_identity(url):
+    """Compare literal/encoded path spellings without replacing archived URLs."""
+    parsed = urlsplit(url)
+    # Encoded reserved path/query delimiters can change resource semantics.
+    # Only safe spelling aliases (spaces and UTF-8 names) are reconciled.
+    if re.search(r"%(?:2f|3f|23|25|3b)", parsed.path, re.IGNORECASE):
+        return url
+    return parsed.scheme, parsed.netloc, unquote(parsed.path), parsed.query
 
 
 def extract_reference_rows(db, data, did, day=None):
@@ -210,6 +238,7 @@ def extract_context(db, data, did):
         )
         for u in links:
             if u.startswith("https://www.dane.gov.co/") and u.lower().endswith(".pdf"):
-                queue(db, u, "context-pdf")
+                day = input_pdf_month("", u)
+                queue(db, u, "inputs-pdf" if day else "context-pdf", day)
         count += 1
     return count
