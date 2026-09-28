@@ -13,6 +13,7 @@ fs.mkdirSync(out,{recursive:true});
 const report={platform:'WEB',transport:'Playwright desktop Chromium (not native)',base,started_at:new Date().toISOString(),viewport:{width:Number(process.env.QA_WIDTH||1440),height:1000},cases:[],files,manifest_sha256:Object.fromEntries(files.map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')]))};
 const persist=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(report,null,2));
 (async()=>{
+ if(!selected.length)throw Error('No QA scenarios selected');
  const browser=await chromium.launch({headless:true}); report.browser_version=browser.version();
  const context=await browser.newContext({viewport:report.viewport,locale:'es-CO',timezoneId:'America/Bogota',acceptDownloads:true});
  const page=await context.newPage();
@@ -39,11 +40,12 @@ const persist=()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(r
    }
    active.final_url=page.url();active.visible_text=(await page.locator('body').innerText()).slice(0,45000);
    active.storage=await page.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>k.startsWith('agroamigo-'))));
-   active.outcome=active.checks.every(x=>x.passed)?'assertions_passed':'assertion_failed';
+   active.outcome=active.checks.length>0&&active.checks.every(x=>x.passed)&&!active.page_errors.length?'assertions_passed':'assertion_failed';
   }catch(e){active.outcome='blocked_or_failed';active.error=String(e);active.final_url=page.url();active.visible_text=(await page.locator('body').innerText().catch(()=>'' )).slice(0,45000);await page.screenshot({path:path.join(out,slug+'-error.png'),fullPage:false}).catch(()=>{});}
   active.requests=captured.slice(start);active.finished_at=new Date().toISOString();persist();
   console.log(`${active.outcome}: ${c.name} (${active.checks.filter(x=>x.passed).length}/${active.checks.length} assertions)`);
  }
  // Disposable browser profile is discarded; no user browser state was touched.
- await context.close();await browser.close();report.finished_at=new Date().toISOString();report.summary={scenarios:report.cases.length,assertions:report.cases.reduce((a,c)=>a+c.checks.length,0),failed:report.cases.flatMap(c=>c.checks).filter(c=>!c.passed).length,blocked:report.cases.filter(c=>c.outcome==='blocked_or_failed').length};persist();console.log(JSON.stringify({out,summary:report.summary}));
+ await context.close();await browser.close();report.finished_at=new Date().toISOString();report.summary={scenarios:report.cases.length,assertions:report.cases.reduce((a,c)=>a+c.checks.length,0),failed:report.cases.flatMap(c=>c.checks).filter(c=>!c.passed).length,blocked:report.cases.filter(c=>c.outcome==='blocked_or_failed').length,failed_scenarios:report.cases.filter(c=>c.outcome==='assertion_failed').length,page_errors:report.cases.reduce((n,c)=>n+c.page_errors.length,0)};persist();console.log(JSON.stringify({out,summary:report.summary}));
+ if(report.cases.some(c=>c.outcome!=='assertions_passed'))process.exitCode=1;
 })().catch(e=>{report.fatal=String(e);persist();console.error(e);process.exitCode=1});
