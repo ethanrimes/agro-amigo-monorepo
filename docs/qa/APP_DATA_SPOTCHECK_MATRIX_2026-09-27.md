@@ -49,6 +49,56 @@ Separate real browser navigation passed at all three widths: Home â†’ Mi finca â
 
 The actual iOS catalog regression also passed on de491dcc (`native/ios-catalog-de491dcc/report.json`):24-card geometry through both scroll directions, saved identities/filter return, World Bank retained history, flowers and all24 supply months2019/2020. The normal installed Flutter app was then restored; a separate committed Maestro flow passed all10 commands including a native left-edge return from coffee detail to the product catalog (`native/ios-normal-edge-de491dcc.json`). Its initial generic readiness selector was corrected to the observed FNC heading without changing app code. This proves that specific normal-app gesture/navigation path; it does not certify every back-stack combination. Android independently passed the five targeted native groups on de491dcc, including map layers, read-only source/native Back and crop navigation/storage preservation (`native/android-final-release-de491dcc.json`).
 
+## DANE source follow-up begun September 28 UTC
+
+The source recovery is tracked independently from the platform results above.
+The 27-target compact-unit city ZIP cohort now has 26 complete archives and one
+source-date review. It appended 9,531 immutable price rows; all 44,658 prior-row
+fingerprint checks across the replay batches were unchanged. These repeated
+per-archive checks are not a distinct-row census. The reviewed Villeta member
+literally prints October 21, 2023 while its archive and filename say October 20;
+five rows remain unpublished rather than being assigned a guessed date. Evidence:
+`planning/city-compact-units/FINAL_RECOVERY.md` and `date-review/review.json`.
+
+The actual scheduled daily run at September 27 23:00 UTC completed at 23:15:20
+with 29 assets, 22,060 processed records and zero errors. Its `partial` status
+records a durably checkpointed large input workbook, not lost progress. These are
+processed records, not a claim of net new inserts. The separate automatic 00:05
+OCR run also completed; two decorative presentation pages were retained in review.
+Their actual rendered pages exposed an eligibility defect being corrected:
+short native section titles with only logos should not consume OCR requests.
+
+The December 2015 input PDF replay validates all 8,285 native rows and corrects
+53 wrapped municipality names. The original 8,285 raw rows remain alongside the
+new parser revision. Subsequent structured-annex recovery preserves the literal
+Excel price 92,416.66666666667 rather than its rounded PDF duplicate 92,417 COP
+per 50 kg; all 8,375 existing raw-row fingerprints for the recovered month and
+8,694 whole-original checkpoints remained unchanged. This is a narrow proven
+rounding equivalence, not a blanket preference based on file extension.
+The source remains eligible for automatic replay under its new publication
+version. Evidence: `three-source-followup/de-viboral/`.
+
+The December 2014 replay separately validates 6,575 native PDF rows and corrects
+40 wrapped municipality names while preserving the old raw rows. Its more
+precise Excel observation remains 69,666.66666666667 COP per 50 kg. The public
+input API no longer offers the truncated `de Viboral` municipality; the complete
+El Carmen de Viboral histories retain the correct 2014 and 2015 sources.
+Evidence: `three-source-followup/de-viboral/dec2014-cloud-replay.json` and
+`precision-recovery.json`.
+
+Two actual cloud-created milk-chart images passed paired OCR after native
+extraction failed: all 20 independently read labels, named regions, observation
+months, COP/litre units, published-mean basis and source locators matched.
+Four provider calls were used under the unchanged 40-request daily cap. The
+original PDFs and actual crop PNGs passed full Azure Blob SHA checks. The May
+2026 native chart separately supplied ten labels without OCR. Later-bulletin
+precedence is now explicit for overlapping milk observations, and all 30 existing
+quote fingerprints survived the view/cache migration. The remaining 16 modern
+chart originals and final cross-platform checks are still in progress; this
+paragraph does not sign off that larger cohort. Evidence:
+`planning/milk-macroregions/cloud-task-smoke.json` and
+`artifacts/milk-macroregion-publication/precedence-cloud-migration.json`.
+
 ## Execution and evidence rules
 
 - `RETIRED` = removed manual-tool interaction; retained evidence is historical and no current-platform PASS is implied. `NR` = not run; `PARTIAL` = listed field assertions passed but other clauses remain open; `PASS` = observed assertion passed on the named platform/release; `FAIL:<issue>` = reproducible discrepancy; `BLOCKED:<reason>` = could not execute; `N/A:<reason>` = demonstrably inapplicable, approved in the evidence record. Keep stable IDs unchanged after fixes.
