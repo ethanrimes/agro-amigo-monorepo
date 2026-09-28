@@ -38,6 +38,8 @@ Planning reference imports are dated datasets. They are not all refreshed by the
 
 The source viewer displays original PDFs, paginated spreadsheet cells or structured records and preserves downloadable bytes. Original publisher files and generated extracts are labelled separately. Row reviews, corrected date notes and partial coverage remain visible where relevant.
 
+Corrections to a source's displayed reporting period are saved as separate annotations with a reason and references to the original cells. The archived file and its original metadata remain unchanged; the evidence response includes both the corrected period and the annotation history.
+
 Native extraction is preferred. Supported OCR adapters validate literal values and identities; unsupported image-only layouts remain reviewable. A source link or successful download does not establish complete numeric extraction.
 
 The app does not provide a public buyer network, verified offers/payments, pesticide prescriptions, parcel-level agronomic diagnosis or live supplier inventory. Private offers are user-entered data. Archived research and explanatory publications are not automatically promoted into quotation series.
