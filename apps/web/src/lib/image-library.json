@@ -1599,5 +1599,89 @@
     "sha256": "e97f3514eaeea3edff90492fa1d18aebdc459b2053a431c661a01caea29f9b8e",
     "illustrative": true,
     "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "radish-red": {
+    "src": "/images/library/radish-red.jpg",
+    "title": "Little red radishes.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Little_red_radishes.jpg",
+    "author": "Fumikas Sagisavas",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "description": "Little red radishes",
+    "sha256": "c4c456b7a2e33f975adb8b7f936d317ced5d92547df707dce5764f4eb34ea59e",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "fava-green": {
+    "src": "/images/library/fava-green.jpg",
+    "title": "Freshly Picked Green Fava Beans from a Libyan Farm.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Freshly_Picked_Green_Fava_Beans_from_a_Libyan_Farm.jpg",
+    "author": "Mhmd.abdrzg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "This is an image with the theme \" Farm to Plate \" from:",
+    "sha256": "4aab65980371a7cd70159e74109b3e55e39bfa4a8172466be0b9a49795a61254",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "parsley": {
+    "src": "/images/library/parsley.jpg",
+    "title": "Parsley2.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Parsley2.jpg",
+    "author": "Pbrundel",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "description": "Parsley",
+    "sha256": "42a02a82937b1428819dfb24e71f709e82eb185e4f1a7beaa2f8a967f6d62a6b",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "tangelo": {
+    "src": "/images/library/tangelo.jpg",
+    "title": "Minneola fruit 3.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Minneola_fruit_3.jpg",
+    "author": "Amada44",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "description": "Minneola is a cross breed between mandarins and grapefruits.",
+    "sha256": "853cd265ff7a3fa447acc82e9e756701ca9db5d75c5a710304ed64ba7ff0fe08",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "sardines-canned": {
+    "src": "/images/library/sardines-canned.jpg",
+    "title": "2006 sardines can open top.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:2006_sardines_can_open_top.jpg",
+    "author": "Rl",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "description": "Canned sardines in salt water",
+    "sha256": "0585b1ed2401f8eb7b084a8964910f60651af21bbc72035ae5c6ff1fdb133e55",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "crackers-saltine": {
+    "src": "/images/library/crackers-saltine.jpg",
+    "title": "Saltine-Crackers.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Saltine-Crackers.JPG",
+    "author": "Evan-Amos",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "description": "Saltine Crackers by Nabisco.",
+    "sha256": "b7ed72df21f85f687d2e820507e10f4376791fa393aacd4e8d3930bdcbff8326",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "cookies-sandwich": {
+    "src": "/images/library/cookies-sandwich.jpg",
+    "title": "Sandwich Cookies (52323510978).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sandwich_Cookies_(52323510978).jpg",
+    "author": "Choo Yut Shing  from Singapore, Singapore",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "description": "With vanilla cream.",
+    "sha256": "02c00333c6667c45bfa05a98a1afbaf1ea97a793aef2eb9532a04060df16f04c",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   }
 }

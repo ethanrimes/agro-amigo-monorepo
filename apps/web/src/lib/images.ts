@@ -37,6 +37,7 @@ const families: [RegExp, string][] = [
   [/jengibre/, "ginger"],
   [/camaron/, "shrimp"],
   [/atun (en lata|enlatado)/, "tuna-canned"],
+  [/sardinas? en lata/, "sardines-canned"],
   [/pescado seco/, "dried-fish"],
   [/\bbagre\b/, "bagre"],
   [/\bbasa\b/, "basa"],
@@ -78,6 +79,7 @@ const families: [RegExp, string][] = [
   [/uchuva/, "uchuva"],
   [/uva/, "grape"],
   [/melon/, "melon"],
+  [/tangelo/, "tangelo"],
   [/zapote/, "zapote"],
   [/ajo/, "garlic"],
   [/alcachofa/, "artichoke"],
@@ -91,10 +93,12 @@ const families: [RegExp, string][] = [
   [/cebolla.*(junca|larga)/, "spring-onion"],
   [/cebolla/, "onion"],
   [/cilantro/, "cilantro"],
+  [/perejil/, "parsley"],
   [/coliflor/, "cauliflower"],
   [/acelga/, "chard"],
   [/espinaca/, "spinach"],
   [/habichuela/, "beans-green"],
+  [/haba verde/, "fava-green"],
   [/lechuga/, "lettuce"],
   [/chocolo|mazorca|maiz/, "corn"],
   [/pepino.*guiso|cidra/, "chayote"],
@@ -103,6 +107,7 @@ const families: [RegExp, string][] = [
   [/pimenton/, "bell-pepper"],
   [/\baji\b/, "produce-neutral"],
   [/remolacha/, "beet"],
+  [/rabano rojo/, "radish-red"],
   [/repollo/, "cabbage"],
   [/zanahoria/, "carrot"],
   [/arracacha/, "arracacha"],
@@ -124,6 +129,8 @@ const families: [RegExp, string][] = [
   [/aceite/, "produce-neutral"],
   [/\bsal\b/, "salt"],
   [/pasta/, "pasta"],
+  [/galletas dulces redondas con crema/, "cookies-sandwich"],
+  [/galletas saladas/, "crackers-saltine"],
   [/chocolate/, "chocolate"],
   [/queso|cuajada/, "cheese"],
   [/leche/, "milk"],
@@ -219,6 +226,18 @@ export function photoFor(
             ? `Fotografía ilustrativa de arvejas secas enteras; el color y origen de ${name} pueden diferir.`
           : key === "tuna-canned"
             ? `Fotografía ilustrativa de atún en una lata abierta; no representa la marca ni la presentación comercial de ${name}.`
+          : key === "sardines-canned"
+            ? `Fotografía ilustrativa de sardinas en una lata abierta; el líquido y la presentación de ${name} pueden diferir.`
+          : key === "crackers-saltine"
+            ? `Fotografía ilustrativa de galletas saladas tipo cracker; no representa la marca ni la presentación comercial de ${name}.`
+          : key === "cookies-sandwich"
+            ? `Fotografía ilustrativa de galletas redondas con crema; el sabor, la marca y la presentación de ${name} pueden diferir.`
+          : key === "tangelo"
+            ? `Fotografía ilustrativa de un tangelo Minneola; la variedad y procedencia de ${name} pueden diferir.`
+          : key === "fava-green"
+            ? `Fotografía ilustrativa de habas verdes en vaina; la presentación de ${name} puede diferir.`
+          : key === "parsley"
+            ? `Fotografía ilustrativa de una planta de perejil; la presentación comercial de ${name} puede diferir.`
           : ["bagre", "basa", "bocachico", "cachama", "tilapia", "trout", "dried-fish"].includes(key)
             ? `Fotografía ilustrativa para ${name}. ${imageLibrary[key].description}`
           : key === "palm-oil-unbranded"

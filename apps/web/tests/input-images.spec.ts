@@ -51,6 +51,25 @@ test("checked-in DANE food names use matching forms and species", () => {
   expect(photoFor("Harina de trigo").key).toBe("flour");
 });
 
+test("additional catalog foods use credited family photos with form caveats", () => {
+  for (const [name, key] of [
+    ["Perejil", "parsley"],
+    ["Haba verde", "fava-green"],
+    ["Rábano rojo", "radish-red"],
+    ["Tangelo", "tangelo"],
+    ["Sardinas en lata", "sardines-canned"],
+    ["Galletas saladas", "crackers-saltine"],
+    ["Galletas dulces redondas con crema", "cookies-sandwich"],
+  ]) {
+    const photo = photoFor(name);
+    expect(photo.key).toBe(key);
+    expect(photo.alt).toContain("ilustrativa");
+  }
+  for (const name of ["Aceite girasol", "Aceite soya", "Aceite vegetal mezcla", "Mariscos otros", "Coles"]) {
+    expect(photoFor(name).key).toBe("produce-neutral");
+  }
+});
+
 test("named fish use credited subject photos with presentation caveats", () => {
   for (const [name, key] of [
     ["Bagre", "bagre"],
