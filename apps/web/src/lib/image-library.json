@@ -696,7 +696,7 @@
     "src": "/images/library/chayote.jpg",
     "title": "Sechium edule dsc07767.jpg",
     "source": "https://commons.wikimedia.org/wiki/File:Sechium_edule_dsc07767.jpg",
-    "author": "",
+    "author": "David Monniaux",
     "license": "CC BY-SA 3.0",
     "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
     "description": "",
@@ -1059,7 +1059,7 @@
     "src": "/images/library/potassium.jpg",
     "title": "Potassium chloride.jpg",
     "source": "https://commons.wikimedia.org/wiki/File:Potassium_chloride.jpg",
-    "author": "",
+    "author": "Walkerma",
     "license": "Public domain",
     "licenseUrl": "",
     "description": "",
@@ -1075,6 +1075,28 @@
     "licenseUrl": "",
     "description": "Ilustración general de agricultura; no representa un producto, equipo, animal ni servicio específico.",
     "sha256": "538402e631f5a2e489e38b497ba50fa760304379f51ca9b9d83ede75e7ed3472",
+    "illustrative": true
+  },
+  "produce-neutral": {
+    "src": "/images/illustrations/produce-neutral.svg",
+    "title": "Productos agrícolas · ilustración general",
+    "source": "https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations",
+    "author": "AgroAmigo",
+    "license": "Ilustración propia",
+    "licenseUrl": "",
+    "description": "Ilustración general de productos agrícolas; no representa una especie, variedad ni estado físico específico.",
+    "sha256": "210dc2a22856124251ee98a655c08319801170612363944de677213ece104f13",
+    "illustrative": true
+  },
+  "farm-neutral": {
+    "src": "/images/illustrations/farm-neutral.svg",
+    "title": "Paisaje agrícola · ilustración general",
+    "source": "https://github.com/ethanrimes/agro-amigo-monorepo/tree/main/apps/web/public/images/illustrations",
+    "author": "AgroAmigo",
+    "license": "Ilustración propia",
+    "licenseUrl": "",
+    "description": "Ilustración de un paisaje agrícola imaginario; no es una fotografía ni representa una finca, ubicación o lindero real.",
+    "sha256": "34f9776b22c72fdaa0380f9abf416ce0e1237c19248aa0dea7617bb0cbb23f72",
     "illustrative": true
   }
 }

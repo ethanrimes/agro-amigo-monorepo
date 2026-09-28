@@ -20,7 +20,7 @@ import {
 import { useCatalogPage } from "@/components/marketplace/useCatalogPage";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { useFarm } from "@/components/planning/FarmContext";
-import { photoFor } from "@/lib/images";
+import { photoFor, imageLibrary } from "@/lib/images";
 import { catalogHref, catalogIdentity } from "@/lib/catalog-display";
 import sourceStyles from "./source-links.module.css";
 
@@ -55,7 +55,7 @@ export default function Home() {
       href: "/products",
       label: "Productos",
       detail: "Precios y abastecimiento",
-      photo: "/images/produce.jpg",
+      photo: imageLibrary["produce-neutral"].src,
       icon: IoBasketOutline,
     },
     {
@@ -80,8 +80,8 @@ export default function Home() {
       </div>
       <section className="home-hero">
         <img
-          src="/images/farm.jpg"
-          alt="Paisaje agrícola, imagen ilustrativa"
+          src={imageLibrary["farm-neutral"].src}
+          alt="Ilustración de un paisaje agrícola imaginario; no representa una finca real"
           fetchPriority="high"
         />
         <div className="home-hero-copy">

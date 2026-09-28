@@ -9,6 +9,7 @@ import type {
   Popup,
 } from "maplibre-gl";
 import type { FeatureCollection, Geometry } from "geojson";
+import { departmentOutlines } from "@/lib/map-boundaries";
 import { mapLibrary, mapSpanish } from "@/lib/maplibre";
 import { Overlay } from "@/components/ui/Overlay";
 import { SearchBox } from "@/components/ui/SearchBox";
@@ -174,8 +175,10 @@ function MapView({
         fetch("/maps/colombia-departments.json"),
       ]);
       if (!response.ok) throw new Error("boundaries");
-      const geo = await response.json();
+      const { data: geo, rejectedPolygons } = departmentOutlines(await response.json());
       if (!live || !host.current) return;
+      host.current.dataset.outlineFeatures = String(geo.features.length);
+      host.current.dataset.outlineRejected = String(rejectedPolygons);
       boundaries.current = geo;
       const m = new lib.Map({
         container: host.current,
@@ -648,6 +651,11 @@ function MapView({
           )}
         </div>
       </div>
+      <p className="privacy-note map-outline-note">
+        Contornos departamentales orientativos; la procedencia del archivo no
+        está verificada. Algunas islas pueden no estar representadas. El mapa
+        no define linderos.
+      </p>
       {popup &&
         createPortal(
           <>

@@ -121,8 +121,9 @@ export function FarmLocation({
         </p>
       )}
       <p className="privacy-note">
-        La ubicación se guarda en este dispositivo. El pronóstico usa
-        coordenadas redondeadas; el mapa no define linderos.
+        El pin se guarda en este dispositivo. Para consultar el tiempo,
+        enviamos sus coordenadas al servidor de AgroAmigo y a Open-Meteo,
+        y guardamos la respuesta del pronóstico. El mapa no define linderos.
       </p>
     </section>
   );

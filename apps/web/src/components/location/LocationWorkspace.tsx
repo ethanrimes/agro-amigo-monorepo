@@ -410,8 +410,10 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
         )}
       </section>
       <p className="privacy-note">
-        El pin se guarda en este dispositivo. Consultar capas envía sus
-        coordenadas al servidor y a la fuente pública; conservamos la respuesta
+        El pin se guarda en este dispositivo. Para consultar el tiempo,
+        enviamos sus coordenadas al servidor de AgroAmigo y a Open-Meteo.
+        Consultar capas también envía sus coordenadas al servidor y a la
+        fuente pública; conservamos la respuesta
         de datos en Azure para que puedas verificarla. Los registros y
         presupuestos anteriores siguen conservados en este dispositivo.
       </p>
