@@ -1654,6 +1654,8 @@
   position: sticky;
   left: 0;
   min-width: 48px;
+  white-space: nowrap;
+  overflow-wrap: normal;
   background: #eaf0e8;
   text-align: right;
   z-index: 1;
