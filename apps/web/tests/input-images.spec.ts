@@ -65,9 +65,30 @@ test("additional catalog foods use credited family photos with form caveats", ()
     expect(photo.key).toBe(key);
     expect(photo.alt).toContain("ilustrativa");
   }
-  for (const name of ["Aceite girasol", "Aceite soya", "Aceite vegetal mezcla", "Mariscos otros", "Coles"]) {
+  for (const name of ["Aceite vegetal mezcla", "Mariscos otros"]) {
     expect(photoFor(name).key).toBe("produce-neutral");
   }
+});
+
+test("generic photos disclose different cultivars, species, and commercial packs", () => {
+  for (const [name, key, caveat] of [
+    ["Aceite girasol", "sunflower-oil-unbranded", "refinado"],
+    ["Aceite soya", "soybean-oil-unbranded", "laboratorio"],
+    ["Ají topito dulce", "aji-dulce", "no acredita la variedad topito"],
+    ["Ahuyamín (Sakata)", "squash-moschata", "no acredita el cultivar"],
+    ["Calabaza", "squash-moschata", "no acredita el cultivar"],
+    ["Cebollín chino", "chinese-chives", "especie"],
+    ["Coles", "cabbage", "repollo como ejemplo"],
+    ["Mayonesa doy pack", "mayonnaise-unbranded", "no representa la marca ni el empaque"],
+    ["Mostaza doy pack", "mustard-unbranded", "no representa la marca ni el empaque"],
+    ["Capaz Magdalena fresco", "capaz-fish", "no verifica la especie"],
+    ["Cuchuco de cebada", "barley-groats", "molido"],
+  ]) {
+    const photo = photoFor(name);
+    expect(photo.key).toBe(key);
+    expect(photo.alt).toContain(caveat);
+  }
+  expect(photoFor("Aceite vegetal mezcla").key).toBe("produce-neutral");
 });
 
 test("named fish use credited subject photos with presentation caveats", () => {

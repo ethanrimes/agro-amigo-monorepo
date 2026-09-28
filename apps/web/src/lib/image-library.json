@@ -1683,5 +1683,113 @@
     "sha256": "02c00333c6667c45bfa05a98a1afbaf1ea97a793aef2eb9532a04060df16f04c",
     "illustrative": true,
     "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "sunflower-oil-unbranded": {
+    "src": "/images/library/sunflower-oil-unbranded.jpg",
+    "title": "Sunflower oil and sunflower.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunflower_oil_and_sunflower.jpg",
+    "author": "torange.biz",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "description": "Crude sunflower oil unrefined",
+    "sha256": "01290a055f951186b6161bdfd1d242d943a7d077c9035269514aacc0fd36be5e",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "soybean-oil-unbranded": {
+    "src": "/images/library/soybean-oil-unbranded.jpg",
+    "title": "Soybean Oil, Meal and Beans (10059732523).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Soybean_Oil,_Meal_and_Beans_(10059732523).jpg",
+    "author": "United Soybean Board",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "description": "Huile de soja, farine et haricots.",
+    "sha256": "a62327369975b64e6094ae2722e1fb4e73c37dc55dfba05305bdf4925bedd7c4",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "aji-dulce": {
+    "src": "/images/library/aji-dulce.jpg",
+    "title": "A Red Aji Dulce Pepper.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:A_Red_Aji_Dulce_Pepper.jpg",
+    "author": "Ashoka Jegroo",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "A reddish-orange aji dulce pepper on a plant in a garden.",
+    "sha256": "7756ebd367a4542b691c848a104614c24387c1ed2e16585f5e7566e95a4f8206",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "squash-moschata": {
+    "src": "/images/library/squash-moschata.jpg",
+    "title": "Cucurbita moschata (giraumon 4).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Cucurbita_moschata_(giraumon_4).jpg",
+    "author": "Fpalli",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "description": "Cucurbitaceae fruit   ( Cucurbita moschata ) — in Guadeloupe.",
+    "sha256": "0b79b854b98a16cfecd1294138668e5b8a86dedbd9615c37324d228e01fcd8e7",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "chinese-chives": {
+    "src": "/images/library/chinese-chives.jpg",
+    "title": "Chinese chives (2).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Chinese_chives_(2).jpg",
+    "author": "Fumikas Sagisavas",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "description": "Chinese chives",
+    "sha256": "1421b57a4c2c3f0ba1622658653bdd57755856e0817de2783b7b8df014b7ba51",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "mayonnaise-unbranded": {
+    "src": "/images/library/mayonnaise-unbranded.jpg",
+    "title": "Fresh mayonnaise.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Fresh_mayonnaise.jpg",
+    "author": "Jason Terk  from Somerville, MA, US",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "description": "Fresh homemade mayonnaise",
+    "sha256": "b0d7832fddb0647b897e049cb6d0055bff205065db33284093bf2c176b2179ec",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "mustard-unbranded": {
+    "src": "/images/library/mustard-unbranded.jpg",
+    "title": "Mustard.JPG",
+    "source": "https://commons.wikimedia.org/wiki/File:Mustard.JPG",
+    "author": "fuji01",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "description": "Mustard",
+    "sha256": "5b22e7dc5b41b74bc6a823610be3d330676f4142712342d455798cd8025632ce",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "capaz-fish": {
+    "src": "/images/library/capaz-fish.jpg",
+    "title": "Pimelodus grosskopfii (16589745577).jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Pimelodus_grosskopfii_(16589745577).jpg",
+    "author": "Ictiologia Universidad Católica de Oriente",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "description": "Pimelodus grosskopfii",
+    "sha256": "2940dcb36c85939ba72e9c8a44bf3c02b2d8c4326571770f1fabeca04c043fa4",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "barley-groats": {
+    "src": "/images/library/barley-groats.jpg",
+    "title": "Kasza jęczmienna 03.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Kasza_j%C4%99czmienna_03.jpg",
+    "author": "Agnieszka Kwiecień ( Nova )",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+    "description": "Barley groats.",
+    "sha256": "7c55d058e33acdc543b6facd4612fbec16d9c600963aa5aa00f9cacc3115230b",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   }
 }
