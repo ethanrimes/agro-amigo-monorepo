@@ -60,6 +60,7 @@ class JuncaCosts(unittest.TestCase):
 
     def test_wrong_period_region_units_and_continuation_rejected(self):
         for page, old, new in ((8, "2023", "2024"), (11, "Risaralda", "Cauca"),
+                               (11, "Actividad $ %", "Actividad %"),
                                (14, "Rendimientos t/ha", "Rendimientos kg/ha"),
                                (9, "Actividad $ %", "Tabla 3. Otra tabla")):
             changed = pages(); changed[page] = changed[page].replace(old, new)
