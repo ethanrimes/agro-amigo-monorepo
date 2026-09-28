@@ -15,7 +15,7 @@ from itertools import pairwise
 
 import pdfplumber
 
-VERSION = "milk-macroregions-v1"
+VERSION = "milk-macroregions-v2"
 KIND = "milk-macroregion-pdf"
 SERIES = "dane-milk-macroregion"
 MONTHS = dict(
@@ -369,6 +369,14 @@ def parse_reading(chart, reading, *, method="paired-image-ocr"):
         raise ValueError(
             "Milk chart legend columns do not match the printed caption months"
         )
+    # October 2025 prints comma thousands throughout the chart. Accept that
+    # alternate format only when every one of the ten labels uses complete
+    # three-digit groups. A lone comma cell or mixed conventions remain review.
+    comma_thousands = all(
+        re.fullmatch(r"[1-9]\d{0,2}(?:,\d{3})+", str(v).strip())
+        for row in values
+        for v in row[1:]
+    )
     aliases = {_norm(region): region for region in REGIONS}
     seen = set()
     rows = []
@@ -380,11 +388,15 @@ def parse_reading(chart, reading, *, method="paired-image-ocr"):
         canonical = aliases[key]
         for day, literal in zip(chart.months, prices):
             literal = str(literal).strip()
-            if not re.fullmatch(
+            if not comma_thousands and not re.fullmatch(
                 r"(?:[1-9]\d*|[1-9]\d{0,2}(?:\.\d{3})+)(?:,\d{1,2})?", literal
             ):
                 raise ValueError("Milk chart price is not a literal Colombian number")
-            price = Decimal(literal.replace(".", "").replace(",", "."))
+            price = Decimal(
+                literal.replace(",", "")
+                if comma_thousands
+                else literal.replace(".", "").replace(",", ".")
+            )
             if not 0 < price < 100000:
                 raise ValueError(
                     "Milk chart price is outside the supported literal range"
@@ -435,13 +447,64 @@ def parse_reading(chart, reading, *, method="paired-image-ocr"):
             )
     if seen != set(aliases):
         raise ValueError("Milk chart does not cover all five explicitly named regions")
+    if comma_thousands:
+        for row in rows:
+            row["details"]["literal_number_format"] = "whole-chart-comma-thousands"
     return rows
+
+
+def _cosmetic_note_categories(chart, reading):
+    """Finite observed annotations, not a sentiment/uncertainty classifier.
+
+    Exact whole-note matching prevents an accepted prefix from masking another
+    concern. Context must corroborate the quoted spelling/legend/footer too.
+    The caller still validates both complete readings and their agreement.
+    """
+    notes = reading.get("review_notes", [])
+    if not isinstance(notes, list) or any(not isinstance(n, str) for n in notes):
+        raise ValueError("Milk chart review notes have an unsupported shape")
+    text = _norm(reading.get("text", ""))
+    categories = []
+    footers = {
+        "The source line 'Fuente: DANE, SIPSA' is partially cropped at the bottom of the image.",
+        "The source line at the bottom is partially cropped but legible as 'Fuente: DANE, SIPSA.'",
+        "The source line at the bottom is partially cropped but clearly reads 'Fuente: DANE, SIPSA'.",
+        "The footnote 'Fuente: DANE, SIPSA.' is slightly cropped at the bottom of the image but remains legible.",
+        "The bottom source text 'Fuente: DANE, SIPSA' is partially cropped but legible.",
+        "The source line at the bottom is partially cropped but readable as 'Fuente: DANE, SIPSA'.",
+    }
+    spacing = {
+        "The legend label for February is printed as 'Febrero2025' without a space.",
+        "The legend label 'Febrero2025' is printed without a space between the month and the year.",
+    }
+    for note in notes:
+        if (
+            note
+            == "The subtitle in the image contains the spelling 'macroregiones' with a single 'r'."
+            and re.search(r"\b5 macroregiones lecheras\b", text)
+        ):
+            categories.append("subtitle-spelling")
+        elif (
+            note in spacing
+            and date(2025, 2, 28) in chart.months
+            and re.search(r"\bfebrero2025\b", text)
+        ):
+            categories.append("legend-spacing")
+        elif note in footers and "fuente: dane, sipsa" in text:
+            categories.append("publisher-footer-crop")
+        else:
+            raise ValueError("Milk chart reading contains an unrecognized review note")
+    return categories
 
 
 def paired_rows(chart, readings):
     if len(readings) != 2:
         raise ValueError("Milk chart requires two independent readings")
-    pairs = [parse_reading(chart, reading) for reading in readings]
+    categories = [_cosmetic_note_categories(chart, r) for r in readings]
+    # New top-level dictionaries only: retain the cached originals unchanged.
+    # Standalone parse_reading remains strict; no annotated single reading can
+    # become a publication by bypassing the paired contract.
+    pairs = [parse_reading(chart, {**r, "review_notes": []}) for r in readings]
     signature = lambda rows: sorted(
         (r["market"], r["date"], r["price"], r["unit"], r["basis"]) for r in rows
     )
@@ -449,6 +512,14 @@ def paired_rows(chart, readings):
         raise ValueError(
             "Independent milk chart readings disagree; no prices published"
         )
+    if any(categories):
+        for row in pairs[0]:
+            row["details"].update(
+                original_review_notes=[
+                    list(r.get("review_notes", [])) for r in readings
+                ],
+                accepted_cosmetic_note_categories=[list(c) for c in categories],
+            )
     return pairs[0]
 
 

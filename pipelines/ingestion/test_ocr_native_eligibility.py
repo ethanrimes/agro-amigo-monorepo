@@ -19,6 +19,11 @@ FIXTURES = (
 )
 COVER = FIXTURES / "4b6186b79e3e.pdf"
 COVER_SHA = "4b6186b79e3e8778e1944195b137b7bff154239d13e0631ec2bc0501dca9fc8d"
+DIVIDERS = (
+    Path(__file__).resolve().parents[2]
+    / "artifacts/app-data-audit-2026-09-27/planning/ocr-timer-0005/aug2015-original.pdf"
+)
+DIVIDERS_SHA = "ae095b5adef81b5847e72812f7b44585c5b11e3ed57ed2a8ce005b73c6e32e3a"
 READINGS = [
     {"text": "independent first reading", "tables": [], "review_notes": []},
     {"text": "different second reading", "tables": [], "review_notes": []},
@@ -91,6 +96,53 @@ class NativeEligibilityTests(unittest.TestCase):
         ):
             result = ocr.drain(db, limit=1, scan_limit=0)
         return result, provider.call_count
+
+    @unittest.skipUnless(DIVIDERS.exists(), "Real August2015 DANE PDF is required")
+    def test_actual_short_dividers_do_not_read_cache_or_consume_provider_quota(self):
+        body = DIVIDERS.read_bytes()
+        self.assertEqual(hashlib.sha256(body).hexdigest(), DIVIDERS_SHA)
+        for number in (11, 43):
+            with self.subTest(page=number):
+                db = Database(body, page=number, day=date(2015, 8, 31))
+                result, calls = self.drain(db)
+                self.assertEqual(
+                    (calls, result["processed"], result["review"]), (0, 0, 1)
+                )
+                self.assertIn("no OCR needed", db.updates[0][1][0])
+                self.assertFalse(
+                    any("SELECT result FROM source_ocr_result" in sql for sql in db.sql)
+                )
+                self.assertFalse(
+                    any("INSERT INTO source_ocr_attempt" in sql for sql in db.sql)
+                )
+
+    def test_short_heading_with_substantial_price_image_still_needs_ocr(self):
+        for title in ("Frutas frescas", "Abastecimiento"):
+            page = Page(title)
+            self.assertTrue(pdf_sources.native_price_page_failure(page, title, []))
+
+    def test_small_body_image_is_not_mistaken_for_decorative_footer(self):
+        page = Page("Frutas frescas")
+        page.images = [{"x0": 100, "x1": 350, "top": 200, "bottom": 275}]
+        self.assertFalse(pdf_sources.has_table_sized_image(page))
+        self.assertTrue(pdf_sources.native_price_page_failure(page, page.text, []))
+
+    def test_full_page_scan_and_corrupt_font_without_images_still_need_ocr(self):
+        scan = Page("")
+        scan.images = [{"x0": 0, "x1": 600, "top": 0, "bottom": 800}]
+        self.assertTrue(pdf_sources.native_price_page_failure(scan, "", []))
+        corrupt = Page("(cid:34)" * 100)
+        corrupt.images = []
+        self.assertTrue(
+            pdf_sources.native_price_page_failure(corrupt, corrupt.text, [])
+        )
+
+    def test_corrupt_font_still_needs_ocr_when_some_prices_were_parsed(self):
+        # Extracting numbers does not prove corrupt product/location text works.
+        text = "(cid:34)" * 100
+        self.assertTrue(
+            pdf_sources.native_price_page_failure(Page(text), text, [("native",)])
+        )
 
     @unittest.skipUnless(
         COVER.exists(), "Real April2015 DANE cover fixture is required"
