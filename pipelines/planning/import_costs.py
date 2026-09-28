@@ -5,6 +5,7 @@ from import_references import *
 from cost_regions import ARVEJA_SOURCE, arveja_municipalities, cost_region
 from cost_junca import SOURCE as JUNCA_SOURCE, parse_junca_tables
 from cost_municipalities import corrected_cost_municipalities
+from guidance import ICA_URL, publish_ica
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import subprocess
@@ -88,11 +89,9 @@ def publications(cur):
  pdfview=next(urljoin(coffeePage,a['href']) for a in soup.select('a[href]') if '/1964/' in a['href'] and 'PDF' in a.get_text().upper())
  pdfurl=pdfview.replace('/article/view/','/article/download/')
  doc(cur,download(pdfurl,'coffee-development.pdf'),'Cenicafé - crecimiento del fruto y relación con la broca, Avance 194','Cenicafé',pdfurl,'1993; referencia fisiológica por altitud','coffee-development',metadata={'license':'CC BY-NC-ND 4.0 indicada por la publicación; documento original íntegro, demo sin comercialización.'})
- ica='https://www.ica.gov.co/noticias/el-ica-fortalece-la-vigilancia-fitosanitaria-del-c'
- p=download(ica,'ica-coffee-santander.html');body=BeautifulSoup(p.read_text(errors='replace'),'html.parser');main=body.find('main') or body
- textpath=CACHE/'ica-coffee-santander.txt';textpath.write_text(main.get_text('\n',strip=True))
- did=doc(cur,textpath,'ICA - vigilancia fitosanitaria del café en Santander','ICA',ica,'3 de septiembre de 2026; actividades con corte a julio de 2026','ica-coffee-santander',kind='extract',metadata={'note':'Texto de la publicación oficial conservado. No implica que haya un brote en tu finca.'})
- advisories=[('ica-coffee-santander','Revisa señales de broca en el café','El ICA reportó acciones de vigilancia y seis brotes de broca en lugares visitados de Santander, con corte a julio de 2026.','Observa los frutos y consulta con el servicio de extensión o el ICA si encuentras señales. El reporte no ubica un brote en tu predio.',['Café'],['Santander'],'2026-09-03','2026-12-03','monitoring',did,None,ica)]
+ # Separate cache filename prevents reuse of the previously misidentified potato article.
+ publish_ica(cur,download(ICA_URL,'ica-coffee-santander-20260903-v2.html').read_bytes())
+ advisories=[]
  if 'input-index' in ids:advisories.append(('inputs-jun2026','Vuelve a cotizar tus insumos antes de comprar','El índice nacional de insumos agrícolas subió 2,36 % en junio de 2026, según UPRA. Es un índice agregado, no una cotización de tu proveedor.','Compara la misma presentación y actualiza el presupuesto con una cotización local.',[],[],'2026-08-12',None,'reference',ids['input-index'],2,URLS['inputs-jun2026.pdf']))
  cur.executemany('INSERT INTO advisory VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET document_id=excluded.document_id,summary=excluded.summary,action=excluded.action',[(a,b,c,d,Jsonb(e),Jsonb(f),g,h,i,j,k,l) for a,b,c,d,e,f,g,h,i,j,k,l in advisories])
  (CACHE/'download-urls.json').write_text(json.dumps(URLS,indent=2))

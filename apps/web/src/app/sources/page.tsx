@@ -113,7 +113,7 @@ const sources = [
     status: "Consultar en la fuente",
     description:
       "Información para entender las bonificaciones y la garantía de compra. Los precios de compradores particulares requieren cotizaciones directas con fecha, calidad, volumen y condiciones de entrega.",
-    url: "https://risaralda.federaciondecafeteros.org/servicios-al-caficultor/aprenda-a-vender-su-cafe/",
+    url: "https://nortedesantander.federaciondecafeteros.org/aprenda-a-vender-su-cafe/",
   },
 ];
 export default function Sources() {
