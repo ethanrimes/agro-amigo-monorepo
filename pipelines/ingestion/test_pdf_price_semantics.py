@@ -39,8 +39,8 @@ class PriceSemantics(unittest.TestCase):
         rows = self.parse([matrix()])
         self.assertEqual([r[6] for r in rows], [1000, 2000, 3000])
         self.assertEqual({r[1] for r in rows}, {"dane-monthly-summary"})
-        self.assertTrue(all(r[0].endswith("; monthly-pdf-v3") for r in rows))
-        self.assertTrue(all(r[-1]["parser_version"] == "monthly-pdf-v3" for r in rows))
+        self.assertTrue(all(r[0].endswith("; monthly-pdf-v4") for r in rows))
+        self.assertTrue(all(r[-1]["parser_version"] == "monthly-pdf-v4" for r in rows))
 
     def test_price_words_elsewhere_never_authorize_percentage_grid(self):
         table = [
@@ -76,7 +76,7 @@ class PriceSemantics(unittest.TestCase):
         self.assertFalse(legacy_pdf_price_needs_review("dane-monthly-summary", {}))
         self.assertFalse(
             legacy_pdf_price_needs_review(
-                "dane-monthly-bulletin", {"parser_version": "monthly-pdf-v3"}
+                "dane-monthly-bulletin", {"parser_version": "monthly-pdf-v4"}
             )
         )
 

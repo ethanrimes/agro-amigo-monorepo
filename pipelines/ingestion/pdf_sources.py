@@ -11,7 +11,7 @@ INPUT_PDF_VERSION = "inputs-pdf-v7"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
-PRICE_GRID_VERSIONS = {False: "daily-pdf-v4", True: "monthly-pdf-v3"}
+PRICE_GRID_VERSIONS = {False: "daily-pdf-v5", True: "monthly-pdf-v4"}
 _MONEY_KG = re.compile(
     r"precio(?:s)?\s*(?:\(\s*)?(?:\$|cop|pesos)\s*(?:/|por)\s*(?:kg|kilogramo(?:s)?)",
     re.IGNORECASE,
@@ -72,15 +72,52 @@ def price_grid_evidence(page, table, table_no, market_row, day, monthly):
         r"(?:cuadro|tabla)[^\n]*variaci[oó]n\s+porcentual", caption, re.IGNORECASE
     ):
         return None
+    comparison = {}
     if monthly:
+        # Older mixed price/change matrices explicitly label the reference and
+        # comparison months as "Agosto/julio 2015".  The price is for the first
+        # month; the second belongs to the adjacent Var % columns.  Only this
+        # declared monthly-comparison layout permits a two-month caption.
+        month_names = "|".join(sorted(MONTH_NUM, key=len, reverse=True))
+        pair_pattern = (
+            rf"\b({month_names})\s*(?:(20\d{{2}})\s*)?/\s*"
+            rf"({month_names})\s+(?:de\s+)?(20\d{{2}})\b"
+        )
+        pairs = list(re.finditer(pair_pattern, context, re.IGNORECASE))
+        period_context = context
+        pair_periods = set()
+        if pairs and not re.search(r"variaci[oó]n\s+mensual", context, re.IGNORECASE):
+            return None
+        if pairs:
+            for pair in pairs:
+                current_name, current_year, previous_name, final_year = pair.groups()
+                current = MONTH_NUM[current_name.lower()]
+                previous = MONTH_NUM[previous_name.lower()]
+                year = int(current_year or final_year)
+                previous_year = int(final_year)
+                if (
+                    previous != (current - 2) % 12 + 1
+                    or previous_year != year - int(current == 1)
+                    or (current == 1 and current_year is None)
+                ):
+                    raise SourceDateMismatch(
+                        "PDF monthly comparison needs consecutive, explicitly dated months"
+                    )
+                pair_periods.add((year, current))
+                comparison = {
+                    "comparison_period": f"{previous_year:04d}-{previous:02d}",
+                    "period_evidence": pair.group(0),
+                }
+            # Still validate any other printed dates outside the comparison.
+            period_context = re.sub(pair_pattern, "", context, flags=re.IGNORECASE)
         periods = {
             (int(year), MONTH_NUM[month.lower()])
             for month, year in re.findall(
                 r"\b(" + "|".join(MONTH_NUM) + r")\s+(?:de\s+)?(20\d{2})\b",
-                context,
+                period_context,
                 re.IGNORECASE,
             )
-        }
+        } | pair_periods
         if not periods:
             return None
         if periods != {(day.year, day.month)}:
@@ -106,6 +143,7 @@ def price_grid_evidence(page, table, table_no, market_row, day, monthly):
             else "Precio diario publicado por ciudad"
         ),
         "unit_basis": "Printed Precio $/Kg; SIPSA product unit exceptions preserved",
+        **comparison,
     }
 
 
