@@ -227,7 +227,9 @@ class NativeSupplySummaries(unittest.TestCase):
             adapter.parse(out.getvalue())
 
     def test_versions_trigger_automatic_replay(self):
-        self.assertEqual(worker.parser_version("supply-reference"), adapter.VERSION)
+        self.assertTrue(
+            worker.parser_version("supply-reference").startswith(adapter.VERSION + ":")
+        )
         self.assertTrue(worker.parser_version("daily-zip").startswith("daily-zip-v3:"))
         self.assertIn("pipelines/ingestion/supply_summaries.py", worker.RELEASE_FILES)
 
@@ -376,7 +378,7 @@ class SupplySummaryArchivePostgres(unittest.TestCase):
             self.db.execute(
                 "SELECT status,records,processor_version FROM ingestion_asset"
             ).fetchone(),
-            ("complete", 1560, adapter.VERSION),
+            ("complete", 1560, worker.parser_version("supply-reference")),
         )
         self.assertEqual(
             self.db.execute("SELECT count(*) FROM regional_price").fetchone(), (0,)

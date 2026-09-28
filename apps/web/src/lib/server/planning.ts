@@ -599,5 +599,35 @@ export async function evidence(
       )).rows;
     }
   }
+  if (["supply-reference", "supply-reference-pdf"].includes(String(r.metadata.ingestion_kind))) {
+    const summary = (await db.query<{
+      tonnes: number; percentages: number; cells: number; first_day: string; last_day: string;
+      sheet: string | null; page: number | null; frequency: string;
+    }>(
+      `SELECT count(*) FILTER(WHERE details->>'unit'='t')::int tonnes,
+       count(*) FILTER(WHERE details->>'unit'='percentage_points')::int percentages,
+       count(*)::int cells,min(details->>'period_start') first_day,
+       max(details->>'period_end') last_day,min(details->>'sheet') sheet,
+       min((details->>'source_page')::int) page,min(details->>'frequency') frequency
+       FROM input_reference_row WHERE document_id=$1 AND kind='supply-period-summary'`, [r.id],
+    )).rows[0];
+    if (summary?.cells) {
+      r.metadata.supply_summary_count = summary.cells;
+      r.metadata.supply_summary_sheet = summary.sheet;
+      r.metadata.supply_summary_page = summary.page;
+      if (r.metadata.review_note) r.metadata.review_note = "Hay tablas de abastecimiento pendientes de verificación; sus celdas no se publican como referencias. Se conserva el archivo original completo.";
+      const period = summary.frequency === "first_fortnight" ? "primera quincena de cada mes" : "mes completo";
+      r.metadata.supply_summary_note = `Abastecimiento por período (${period}): ${summary.tonnes.toLocaleString("es-CO")} celdas de toneladas y ${summary.percentages.toLocaleString("es-CO")} de porcentajes, del ${summary.first_day} al ${summary.last_day}. Se conserva la precisión de cada original; los PDF pueden estar redondeados. Los blancos indican datos no reportados. Son resúmenes no aditivos: no se suman entre mercados, grupos y totales, ni se incorporan a los registros por alimento o a los precios. Cobertura tipificada: tablas de totales de mercados${r.metadata.ingestion_kind === "supply-reference" ? ", grupos y participaciones con fechas verificadas" : "; otras tablas y gráficos permanecen en el original"}.`;
+      if (showsSupplySummaryRecords(filters)) r.records = (await db.query(
+        `SELECT kind,observed_on,name,category,source_locator,
+         details->>'unit' unit,details->'value' value,
+         details->>'aggregation_level' aggregation_level,details
+         FROM input_reference_row WHERE document_id=$1 AND kind='supply-period-summary'
+         AND ($2='' OR source_locator=$2)
+         ORDER BY observed_on DESC,source_locator LIMIT 100`,
+        [r.id, (filters.get("locator") || "").slice(0, 500)],
+      )).rows;
+    }
+  }
   return r;
 }

@@ -78,8 +78,8 @@ PARSER_VERSIONS = {
     "rice": "rice-v2",
     "supply": "supply-v5",
     "supply-index": "supply-index-v1",
-    "supply-reference-pdf": "source-v1",
-    "supply-reference": "supply-daily-summary-v1",
+    "supply-reference-pdf": "supply-period-summary-v1",
+    "supply-reference": "supply-daily-summary-v1:supply-period-summary-v1",
 }
 
 
@@ -172,6 +172,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/pdf_sources.py",
     "pipelines/ingestion/supply.py",
     "pipelines/ingestion/supply_summaries.py",
+    "pipelines/ingestion/supply_period_summaries.py",
     "pipelines/demo/import_data.py",
 ]
 RELEASE_FILES += [
@@ -1528,20 +1529,28 @@ def _process_asset(db, url, kind, day):
         )
         return count
     if kind == "supply-reference":
-        from . import supply_summaries
+        from . import supply_period_summaries, supply_summaries
 
         summaries = supply_summaries.parse(data, day)
         with db.transaction():
-            count = supply_summaries.publish_rows(db, summaries, did)
+            if summaries:
+                count = supply_summaries.publish_rows(db, summaries, did)
+                reviews = []
+            else:
+                count, reviews = supply_period_summaries.publish(
+                    db, data, did, kind, day
+                )
             db.execute(
                 "UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
                 (
                     did,
-                    "complete" if count else "archived",
+                    "review" if reviews else "complete" if count else "archived",
                     count,
-                    None
+                    "; ".join(reviews)[:4000]
+                    if reviews
+                    else None
                     if count
-                    else "Original summary retained; no supported typed daily market-total layout.",
+                    else "Original retained; no supported typed daily/monthly/fortnight supply summary layout.",
                     url,
                 ),
             )
@@ -1657,6 +1666,22 @@ def _process_asset(db, url, kind, day):
 
         with db.transaction():
             extract_pages(db, data, did)
+    if kind == "supply-reference-pdf":
+        from . import supply_period_summaries
+
+        with db.transaction():
+            count, reviews = supply_period_summaries.publish(db, data, did, kind, day)
+            db.execute(
+                "UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
+                (
+                    did,
+                    "review" if reviews else "complete" if count else "archived",
+                    count,
+                    "; ".join(reviews)[:4000] if reviews else None,
+                    url,
+                ),
+            )
+        return count
     if kind == "supply":
         from pipelines.ingestion.supply import publish_supply
 
