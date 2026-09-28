@@ -7,6 +7,8 @@ Read-only database snapshot: **2026-09-27T21:46:25.658175+00:00**. It contains *
 
 Mi finca UI follow-up: manual profitability/budget calculators are retired. `/farm` keeps location, weather, terrain and crop references; `/plan` and legacy `?tab=budget` links expose read-only `CropReferences` calendar/cost/history panels. This does not remove any source, price, original document or stored farm/scenario data. Source-family checks below still require their own evidence.
 
+Later recovery evidence is recorded separately in the [DANE follow-up](APP_DATA_SPOTCHECK_MATRIX_2026-09-27.md#dane-source-follow-up-begun-september-28-utc), preserving the timestamped counts below. The deployed worker through `47c751b` includes city-v5 compact-unit recovery, inputs-pdf-v7 wrapped-place recovery, versioned structured-input rounding preservation, and municipal/chart milk processing with explicit bulletin precedence. Twenty real paired-OCR chart labels and ten native chart labels have been published and independently reconciled; the remaining modern chart cohort is still being processed. This does not close the scanned municipal-milk or input-PDF typed-publication gaps.
+
 ## Every ingestion kind
 
 Counts below are assets by queue status; one URL may have multiple immutable originals, while ZIP members and generated responses may have no independent queue asset. `none` means a direct/derived family, not absent data. All source-family sign-offs remain **WEB NR / ANDROID NR / IOS NR** until the full required sample set is executed on each platform. Existing field-level evidence stays in the main matrix.
