@@ -1,0 +1,271 @@
+[
+  {
+    "name": "static-farm-05674-2040201",
+    "route": "/plan?municipality=05674&crop=2040201",
+    "ready": "!!document.querySelector('.calendar-table tbody tr') && !!document.querySelector('.crop-references h2')",
+    "steps": [
+      {
+        "action": "window.__staticFarm=await(await fetch('/api/planning/farm?id=05674')).json();document.querySelector('.crop-references').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-DIVIPOLA-ID",
+            "condition": "document.querySelector('select')?.value===\"05674\" && document.querySelector('.crop-references .eyebrow')?.textContent.includes(\"SAN VICENTE FERRER\") && document.querySelector('.crop-references .eyebrow')?.textContent.includes(\"ANTIOQUIA\")",
+            "expected": "Exact retained DIVIPOLA 05674 SAN VICENTE FERRER, ANTIOQUIA"
+          },
+          {
+            "id": "STATIC-EVA-NUMBERS",
+            "condition": "document.querySelector('.crop-references h2')?.textContent===\"Aguacate Hass\" && document.querySelector('.crop-references').textContent.includes('EVA 2025') && [[11000.0,\" kg/ha\"],[9900.0,\" toneladas\"],[900.0,\" ha\"]].every(([v,u])=>document.querySelector('.crop-references').textContent.includes((v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(v)+u))",
+            "expected": "Printed 2025 original rows[1759]: 9900.0t / 900.0ha x1000=11000.0kg/ha; UI rounds only display"
+          },
+          {
+            "id": "STATIC-EVA-SOURCE",
+            "condition": "!!document.querySelector('a[href=\"/evidence/0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3?municipality=05674\"]')",
+            "expected": "EVA exact original and municipality context link"
+          },
+          {
+            "id": "STATIC-FARM-BOUNDARY",
+            "condition": "document.querySelector('.crop-references').textContent.includes('no es una medición de tu finca ni un rendimiento garantizado')",
+            "expected": "Municipal yield not represented as a farm measurement"
+          },
+          {
+            "id": "STATIC-API-FULL-PRECISION",
+            "condition": "(({\"planted_ha\":970.0,\"harvested_ha\":900.0,\"production_t\":9900.0,\"yield_kg_ha\":11000.0,\"crop\":\"Aguacate\",\"variety\":\"Aguacate Hass\",\"reference_year\":2025,\"cycle\":\"Permanente\",\"physical_state\":\"En fresco\",\"document_id\":\"0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3\",\"source_rows\":[1759],\"crop_code\":\"2040201\",\"municipality_id\":\"05674\"}),Object.entries({\"planted_ha\":970.0,\"harvested_ha\":900.0,\"production_t\":9900.0,\"yield_kg_ha\":11000.0,\"crop\":\"Aguacate\",\"variety\":\"Aguacate Hass\",\"reference_year\":2025,\"cycle\":\"Permanente\",\"physical_state\":\"En fresco\",\"document_id\":\"0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3\",\"source_rows\":[1759],\"crop_code\":\"2040201\",\"municipality_id\":\"05674\"}).every(([k,v])=>{let a=window.__staticFarm.crops.find(c=>c.crop_code===\"2040201\")?.[k];return typeof v==='number'&&typeof a==='number'?Math.abs(a-v)<=1e-12*Math.max(1,Math.abs(v)):JSON.stringify(a)===JSON.stringify(v)})) && Object.entries({\"id\":\"05674\",\"name\":\"SAN VICENTE FERRER\",\"department\":\"ANTIOQUIA\",\"department_id\":\"05\",\"latitude\":6.282164,\"longitude\":-75.332616,\"document_id\":\"3233ec7f93da58c043d5175bd456f61d1ba62e148b63527eecac2287a68ffa03\"}).every(([k,v])=>window.__staticFarm.municipality[k]===v)",
+            "expected": "Raw original dates/identity/coordinates/source rows and original precision and pre-display arithmetic agree with API within1e-12 floating representation"
+          },
+          {
+            "id": "STATIC-CALENDAR-12-CELLS",
+            "condition": "[...document.querySelectorAll('.calendar-table tbody tr')].some(r=>r.querySelector('th')?.textContent===\"Cosechas · 2024\" && JSON.stringify([...r.querySelectorAll('td')].slice(0,12).map(d=>d.textContent))===JSON.stringify([11.67,11.67,8.33,1.67,1.67,8.33,8.33,1.67,3.33,10.0,13.33,20.0].map(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))))",
+            "expected": "ANTIOQUIA Aguacate Cosechas2024: all12 literal original monthly percentages, row38"
+          },
+          {
+            "id": "STATIC-CALENDAR-SOURCE",
+            "condition": "document.querySelector('.calendar-table tbody a.evidence-link')?.getAttribute('href')===\"/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f?department=05\"",
+            "expected": "Calendar source retains exact original and department filter"
+          },
+          {
+            "id": "STATIC-CALENDAR-HISTORICAL",
+            "condition": "document.querySelector('.harvest-panel').textContent.includes('no indica la fecha óptima de siembra de este año')",
+            "expected": "2024 historical percentages are not a current planting recommendation"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector('.harvest-panel').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-CALENDAR-COUNT",
+            "condition": "document.querySelectorAll('.calendar-table tbody tr').length===1",
+            "expected": "All1activity records for selected crop shown"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-eva-original-05674",
+    "route": "/evidence/0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3?municipality=05674",
+    "ready": "!!document.querySelector('.evidence-records details')",
+    "steps": [
+      {
+        "action": "window.__staticRecord=[...document.querySelectorAll('.evidence-records details')].find(d=>d.querySelector('summary').textContent===\"Aguacate Hass\");window.__staticRecord.open=true;window.__staticRecord.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-EVA-VIEWER-LITERALS",
+            "condition": "window.__staticRecord.querySelector('summary').textContent===\"Aguacate Hass\" && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Año de referencia\"&&d.querySelector('dd').textContent===\"2025\") && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Estado del producto\"&&d.querySelector('dd').textContent===\"En fresco\") && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Registros en el archivo\"&&d.querySelector('dd').textContent===\"1759\") && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Área sembrada (ha)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(970.0)) && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Área cosechada (ha)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(900.0)) && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Producción (t)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(9900.0)) && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Rendimiento (kg/ha)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(11000.0))",
+            "expected": "Original-backed yield/area/production/source-row fields for 05674 Aguacate Hass"
+          },
+          {
+            "id": "STATIC-EVA-VIEWER-CONTEXT",
+            "condition": "document.querySelector('.applied-filters').textContent.includes(\"05674\")",
+            "expected": "Visible exact municipality context"
+          },
+          {
+            "id": "STATIC-EVA-ORIGINAL-ID",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3/content\"",
+            "expected": "Immutable EVA2025 original download"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-calendar-original-05",
+    "route": "/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f?department=05",
+    "ready": "!!document.querySelector('.evidence-records details')",
+    "steps": [
+      {
+        "action": "window.__staticCalendar=[...document.querySelectorAll('.evidence-records details')].filter(d=>d.querySelector('summary').textContent===\"Aguacate\");window.__staticCalendar.forEach(d=>d.open=true);window.__staticCalendar[0].scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-CALENDAR-VIEWER-LITERALS",
+            "condition": "[{\"activity\":\"Cosechas\",\"crop\":\"Aguacate\",\"reference_year\":2024,\"percentages\":[11.67,11.67,8.33,1.67,1.67,8.33,8.33,1.67,3.33,10.0,13.33,20.0],\"source_row\":38,\"document_id\":\"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\",\"department_id\":\"05\"}].every(e=>window.__staticCalendar.some(d=>{let v=Object.fromEntries([...d.querySelectorAll('dl>div')].map(r=>[r.querySelector('dt').textContent,r.querySelector('dd').textContent]));return v['Actividad']===e.activity&&v['Año de referencia']==='2024'&&v['Registro original']===String(e.source_row)&&v['Porcentajes de enero a diciembre']===e.percentages.join(' · ')}))",
+            "expected": "Every selected activity original row and12 unrounded percentages retained"
+          },
+          {
+            "id": "STATIC-CALENDAR-VIEWER-CONTEXT",
+            "condition": "document.querySelector('.applied-filters').textContent.includes(\"ANTIOQUIA\")",
+            "expected": "Visible exact department source context"
+          },
+          {
+            "id": "STATIC-CALENDAR-ORIGINAL-ID",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f/content\"",
+            "expected": "Immutable2024 calendar original download"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-farm-52001-1060100",
+    "route": "/plan?municipality=52001&crop=1060100",
+    "ready": "!!document.querySelector('.calendar-table tbody tr') && !!document.querySelector('.crop-references h2')",
+    "steps": [
+      {
+        "action": "window.__staticFarm=await(await fetch('/api/planning/farm?id=52001')).json();document.querySelector('.crop-references').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-DIVIPOLA-ID",
+            "condition": "document.querySelector('select')?.value===\"52001\" && document.querySelector('.crop-references .eyebrow')?.textContent.includes(\"PASTO\") && document.querySelector('.crop-references .eyebrow')?.textContent.includes(\"NARIÑO\")",
+            "expected": "Exact retained DIVIPOLA 52001 PASTO, NARIÑO"
+          },
+          {
+            "id": "STATIC-EVA-NUMBERS",
+            "condition": "document.querySelector('.crop-references h2')?.textContent===\"Arveja\" && document.querySelector('.crop-references').textContent.includes('EVA 2025') && [[1868.888888888889,\" kg/ha\"],[50.46,\" toneladas\"],[27.0,\" ha\"]].every(([v,u])=>document.querySelector('.crop-references').textContent.includes((v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(v)+u))",
+            "expected": "Printed 2025 original rows[15935, 15936]: 50.46t / 27.0ha x1000=1868.888888888889kg/ha; UI rounds only display"
+          },
+          {
+            "id": "STATIC-EVA-SOURCE",
+            "condition": "!!document.querySelector('a[href=\"/evidence/0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3?municipality=52001\"]')",
+            "expected": "EVA exact original and municipality context link"
+          },
+          {
+            "id": "STATIC-FARM-BOUNDARY",
+            "condition": "document.querySelector('.crop-references').textContent.includes('no es una medición de tu finca ni un rendimiento garantizado')",
+            "expected": "Municipal yield not represented as a farm measurement"
+          },
+          {
+            "id": "STATIC-API-FULL-PRECISION",
+            "condition": "(({\"planted_ha\":27.0,\"harvested_ha\":27.0,\"production_t\":50.46,\"yield_kg_ha\":1868.888888888889,\"crop\":\"Arveja\",\"variety\":\"Arveja\",\"reference_year\":2025,\"cycle\":\"Transitorio\",\"physical_state\":\"Grano\",\"document_id\":\"0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3\",\"source_rows\":[15935,15936],\"crop_code\":\"1060100\",\"municipality_id\":\"52001\"}),Object.entries({\"planted_ha\":27.0,\"harvested_ha\":27.0,\"production_t\":50.46,\"yield_kg_ha\":1868.888888888889,\"crop\":\"Arveja\",\"variety\":\"Arveja\",\"reference_year\":2025,\"cycle\":\"Transitorio\",\"physical_state\":\"Grano\",\"document_id\":\"0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3\",\"source_rows\":[15935,15936],\"crop_code\":\"1060100\",\"municipality_id\":\"52001\"}).every(([k,v])=>{let a=window.__staticFarm.crops.find(c=>c.crop_code===\"1060100\")?.[k];return typeof v==='number'&&typeof a==='number'?Math.abs(a-v)<=1e-12*Math.max(1,Math.abs(v)):JSON.stringify(a)===JSON.stringify(v)})) && Object.entries({\"id\":\"52001\",\"name\":\"PASTO\",\"department\":\"NARIÑO\",\"department_id\":\"52\",\"latitude\":1.212352,\"longitude\":-77.278795,\"document_id\":\"3233ec7f93da58c043d5175bd456f61d1ba62e148b63527eecac2287a68ffa03\"}).every(([k,v])=>window.__staticFarm.municipality[k]===v)",
+            "expected": "Raw original dates/identity/coordinates/source rows and original precision and pre-display arithmetic agree with API within1e-12 floating representation"
+          },
+          {
+            "id": "STATIC-CALENDAR-12-CELLS",
+            "condition": "[...document.querySelectorAll('.calendar-table tbody tr')].some(r=>r.querySelector('th')?.textContent===\"Cosechas · 2024\" && JSON.stringify([...r.querySelectorAll('td')].slice(0,12).map(d=>d.textContent))===JSON.stringify([11.65,11.65,6.7,6.7,6.7,6.65,6.65,11.65,11.65,6.7,6.65,6.65].map(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))))",
+            "expected": "NARIÑO Arveja Cosechas2024: all12 literal original monthly percentages, row618"
+          },
+          {
+            "id": "STATIC-CALENDAR-12-CELLS",
+            "condition": "[...document.querySelectorAll('.calendar-table tbody tr')].some(r=>r.querySelector('th')?.textContent===\"Siembras · 2024\" && JSON.stringify([...r.querySelectorAll('td')].slice(0,12).map(d=>d.textContent))===JSON.stringify([6.65,6.65,6.7,11.7,11.7,6.65,6.65,6.65,11.65,11.7,6.65,6.65].map(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))))",
+            "expected": "NARIÑO Arveja Siembras2024: all12 literal original monthly percentages, row1365"
+          },
+          {
+            "id": "STATIC-CALENDAR-SOURCE",
+            "condition": "document.querySelector('.calendar-table tbody a.evidence-link')?.getAttribute('href')===\"/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f?department=52\"",
+            "expected": "Calendar source retains exact original and department filter"
+          },
+          {
+            "id": "STATIC-CALENDAR-HISTORICAL",
+            "condition": "document.querySelector('.harvest-panel').textContent.includes('no indica la fecha óptima de siembra de este año')",
+            "expected": "2024 historical percentages are not a current planting recommendation"
+          }
+        ]
+      },
+      {
+        "action": "document.querySelector('.harvest-panel').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-CALENDAR-COUNT",
+            "condition": "document.querySelectorAll('.calendar-table tbody tr').length===2",
+            "expected": "All2activity records for selected crop shown"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-eva-original-52001",
+    "route": "/evidence/0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3?municipality=52001",
+    "ready": "!!document.querySelector('.evidence-records details')",
+    "steps": [
+      {
+        "action": "window.__staticRecord=[...document.querySelectorAll('.evidence-records details')].find(d=>d.querySelector('summary').textContent===\"Arveja\");window.__staticRecord.open=true;window.__staticRecord.scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-EVA-VIEWER-LITERALS",
+            "condition": "window.__staticRecord.querySelector('summary').textContent===\"Arveja\" && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Año de referencia\"&&d.querySelector('dd').textContent===\"2025\") && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Estado del producto\"&&d.querySelector('dd').textContent===\"Grano\") && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Registros en el archivo\"&&d.querySelector('dd').textContent===\"15935 · 15936\") && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Área sembrada (ha)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(27.0)) && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Área cosechada (ha)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(27.0)) && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Producción (t)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(50.46)) && [...window.__staticRecord.querySelectorAll('dl>div')].some(d=>d.querySelector('dt').textContent===\"Rendimiento (kg/ha)\"&&d.querySelector('dd').textContent===(v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v))(1868.888888888889))",
+            "expected": "Original-backed yield/area/production/source-row fields for 52001 Arveja"
+          },
+          {
+            "id": "STATIC-EVA-VIEWER-CONTEXT",
+            "condition": "document.querySelector('.applied-filters').textContent.includes(\"52001\")",
+            "expected": "Visible exact municipality context"
+          },
+          {
+            "id": "STATIC-EVA-ORIGINAL-ID",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/0447935cfcc12651268032e334d14d85687a39e065febe86de653c2691386cc3/content\"",
+            "expected": "Immutable EVA2025 original download"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-calendar-original-52",
+    "route": "/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f?department=52",
+    "ready": "!!document.querySelector('.evidence-records details')",
+    "steps": [
+      {
+        "action": "window.__staticCalendar=[...document.querySelectorAll('.evidence-records details')].filter(d=>d.querySelector('summary').textContent===\"Arveja\");window.__staticCalendar.forEach(d=>d.open=true);window.__staticCalendar[0].scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-CALENDAR-VIEWER-LITERALS",
+            "condition": "[{\"activity\":\"Cosechas\",\"crop\":\"Arveja\",\"reference_year\":2024,\"percentages\":[11.65,11.65,6.7,6.7,6.7,6.65,6.65,11.65,11.65,6.7,6.65,6.65],\"source_row\":618,\"document_id\":\"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\",\"department_id\":\"52\"},{\"activity\":\"Siembras\",\"crop\":\"Arveja\",\"reference_year\":2024,\"percentages\":[6.65,6.65,6.7,11.7,11.7,6.65,6.65,6.65,11.65,11.7,6.65,6.65],\"source_row\":1365,\"document_id\":\"b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f\",\"department_id\":\"52\"}].every(e=>window.__staticCalendar.some(d=>{let v=Object.fromEntries([...d.querySelectorAll('dl>div')].map(r=>[r.querySelector('dt').textContent,r.querySelector('dd').textContent]));return v['Actividad']===e.activity&&v['Año de referencia']==='2024'&&v['Registro original']===String(e.source_row)&&v['Porcentajes de enero a diciembre']===e.percentages.join(' · ')}))",
+            "expected": "Every selected activity original row and12 unrounded percentages retained"
+          },
+          {
+            "id": "STATIC-CALENDAR-VIEWER-CONTEXT",
+            "condition": "document.querySelector('.applied-filters').textContent.includes(\"NARIÑO\")",
+            "expected": "Visible exact department source context"
+          },
+          {
+            "id": "STATIC-CALENDAR-ORIGINAL-ID",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/b76b50795b68b43c8d9b6b282b6c88cfcc5c1780169cc7a1c4687beca81e029f/content\"",
+            "expected": "Immutable2024 calendar original download"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "static-divipola-two-original-rows",
+    "route": "/evidence/3233ec7f93da58c043d5175bd456f61d1ba62e148b63527eecac2287a68ffa03",
+    "ready": "!!document.querySelector('.evidence-heading')",
+    "steps": [
+      {
+        "action": "window.__divipola=await(await fetch('/api/evidence/3233ec7f93da58c043d5175bd456f61d1ba62e148b63527eecac2287a68ffa03/content')).text();document.querySelector('.evidence-notes').open=true;document.querySelector('.evidence-heading').scrollIntoView({block:'start'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "STATIC-DIVIPOLA-ORIGINAL-ROW",
+            "condition": "window.__divipola.split(/\\r?\\n/).map(l=>l.split('\\t')).some(r=>r[2]===\"05674\" && r[3]===\"SAN VICENTE FERRER\" && r[0]===\"05\" && r[1]===\"ANTIOQUIA\" && Number(r[5])===-75.332616 && Number(r[6])===6.282164)",
+            "expected": "Actual retained TSV row:05674 SAN VICENTE FERRER,code/name/department/coordinate literals"
+          },
+          {
+            "id": "STATIC-DIVIPOLA-ORIGINAL-ROW",
+            "condition": "window.__divipola.split(/\\r?\\n/).map(l=>l.split('\\t')).some(r=>r[2]===\"52001\" && r[3]===\"PASTO\" && r[0]===\"52\" && r[1]===\"NARIÑO\" && Number(r[5])===-77.278795 && Number(r[6])===1.212352)",
+            "expected": "Actual retained TSV row:52001 PASTO,code/name/department/coordinate literals"
+          },
+          {
+            "id": "STATIC-DIVIPOLA-LIMIT",
+            "condition": "document.querySelector('.evidence-heading').textContent.includes('Directorio de referencia') && document.querySelector('.evidence-notes').textContent.includes('no delimitan ni ubican una finca')",
+            "expected": "Directory and reference-coordinate scope disclosed"
+          },
+          {
+            "id": "STATIC-DIVIPOLA-ORIGINAL-ID",
+            "condition": "document.querySelector('a[download]')?.getAttribute('href')===\"/api/evidence/3233ec7f93da58c043d5175bd456f61d1ba62e148b63527eecac2287a68ffa03/content\"",
+            "expected": "Exact retained municipality directory original"
+          }
+        ]
+      }
+    ]
+  }
+]
