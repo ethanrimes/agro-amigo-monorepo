@@ -93,7 +93,7 @@ export async function seasonality(
     years: years.rows,
     unit: coffee ? "kg de pergamino seco" : latest.rows[0]?.unit || "kg",
     method:
-      "Para cada año completo se divide el precio del mes objetivo por el precio del mes de referencia, en el mismo mercado y producto. Se aplican los percentiles 25, 50 y 75 de esas razones al precio reciente. Mínimo 3 años completos. Valores nominales; no es un pronóstico de venta ni incorpora inflación futura.",
+      "Para cada año completo se divide el precio de cada mes por el promedio de sus 12 precios mensuales y se multiplica por 100. El gráfico muestra la mediana de esos índices para cada mes, en el mismo producto y mercado. Se requieren al menos 3 años completos y comparables. Los precios de la tabla son nominales, sin ajuste por inflación. El patrón describe la historia; no calcula precios futuros ni recomienda un mes de venta.",
   };
 }
 /** Catalog reads select a winner before loading its previous-month price.
