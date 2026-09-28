@@ -59,7 +59,7 @@ MONTH_NUM.update({"sept": 9, "agos": 8})
 LOCK = 914070912
 RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
-    "daily-index": "source-v4",
+    "daily-index": "source-v5",
     "daily-zip": "daily-zip-v2",
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
@@ -142,6 +142,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/milk_publication.py",
     "pipelines/ingestion/city_link_recovery.py",
     "pipelines/ingestion/city_discovery.py",
+    "pipelines/ingestion/daily_discovery.py",
     "pipelines/ingestion/daily_archives.py",
     "pipelines/ingestion/dane_daily_query.py",
     "pipelines/ingestion/query_publication.py",
@@ -315,6 +316,7 @@ def queue(db, url, kind, day=None):
 def discover_daily(db, url):
     from .city_discovery import archive_day
     from .daily_archives import is_daily_archive
+    from .daily_discovery import verified_daily_day
 
     count = 0
     for label, u in links(url):
@@ -337,7 +339,7 @@ def discover_daily(db, url):
             or re.search(r"/sipsa/(?:bol|anex)_(?:may_)?[a-z]+_\d{1,2}_20\d{2}\.", path)
         ):
             continue
-        day = date_from_text(path) or date_from_text(label)
+        day = verified_daily_day(u) or date_from_text(path) or date_from_text(label)
         if day is None or day > today():
             continue
         queue(db, u, "daily" if path.endswith((".xls", ".xlsx")) else "daily-pdf", day)
@@ -1324,7 +1326,7 @@ def _process_asset(db, url, kind, day):
     if kind == "daily-index":
         n = discover_daily(db, url)
         db.execute(
-            "UPDATE ingestion_asset SET status='complete',processor_version='source-v4',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
+            "UPDATE ingestion_asset SET status='complete',processor_version='source-v5',records=%s,checked_at=now(),attempts=attempts+1,error=NULL WHERE url=%s",
             (n, url),
         )
         return n
