@@ -85,7 +85,7 @@ class NativeDailyArchives(unittest.TestCase):
             (url.replace(".zip", ".pdf"), "Anexo"),
         ]:
             self.assertFalse(adapter.is_daily_archive(target, label))
-        self.assertEqual(worker.parser_version("daily-index"), "source-v4")
+        self.assertEqual(worker.parser_version("daily-index"), "source-v5")
         self.assertTrue(
             worker.parser_version("daily-zip").startswith(adapter.VERSION + ":")
         )
