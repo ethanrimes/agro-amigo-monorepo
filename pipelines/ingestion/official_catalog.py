@@ -26,7 +26,13 @@ LATEST_FOR_KEYS_SQL = """WITH identities(quote_key) AS (SELECT unnest(%s::text[]
         AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
       AND NOT EXISTS(SELECT 1 FROM official_source_review r WHERE r.document_id=q.document_id
         AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-    ORDER BY d.retrieved_at DESC,q.parsed_at DESC,q.source_locator LIMIT 1
+    ORDER BY CASE WHEN q.series='dane-milk-macroregion'
+      AND q.observed_on=(date_trunc('month',q.observed_on)+interval '1 month - 1 day')::date
+      AND COALESCE(NULLIF(q.details->>'bulletin_period',''),d.reference_period) IN (
+        to_char(q.observed_on,'YYYY-MM-DD'),
+        to_char(date_trunc('month',q.observed_on)+interval '2 months - 1 day','YYYY-MM-DD'))
+    THEN COALESCE(NULLIF(q.details->>'bulletin_period',''),d.reference_period)
+    END DESC NULLS LAST,d.retrieved_at DESC,q.parsed_at DESC,q.source_locator LIMIT 1
   ) p LEFT JOIN LATERAL (
     SELECT prior.price FROM (
       SELECT q.observed_on FROM official_price_quote q
@@ -43,7 +49,13 @@ LATEST_FOR_KEYS_SQL = """WITH identities(quote_key) AS (SELECT unnest(%s::text[]
           AND a.status='review' AND (a.observed_on IS NULL OR a.observed_on=q.observed_on))
         AND NOT EXISTS(SELECT 1 FROM official_source_review r WHERE r.document_id=q.document_id
           AND r.source_locator=q.source_locator AND r.created_at>=q.parsed_at)
-      ORDER BY d.retrieved_at DESC,q.parsed_at DESC,q.source_locator LIMIT 1
+      ORDER BY CASE WHEN q.series='dane-milk-macroregion'
+      AND q.observed_on=(date_trunc('month',q.observed_on)+interval '1 month - 1 day')::date
+      AND COALESCE(NULLIF(q.details->>'bulletin_period',''),d.reference_period) IN (
+        to_char(q.observed_on,'YYYY-MM-DD'),
+        to_char(date_trunc('month',q.observed_on)+interval '2 months - 1 day','YYYY-MM-DD'))
+    THEN COALESCE(NULLIF(q.details->>'bulletin_period',''),d.reference_period)
+    END DESC NULLS LAST,d.retrieved_at DESC,q.parsed_at DESC,q.source_locator LIMIT 1
     ) prior
   ) previous ON true"""
 

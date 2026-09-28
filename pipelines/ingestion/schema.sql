@@ -248,7 +248,13 @@ CREATE OR REPLACE VIEW published_official_price AS
  AND NOT EXISTS(SELECT 1 FROM official_source_review r
    WHERE r.document_id=q.document_id AND r.source_locator=q.source_locator
      AND r.created_at>=q.parsed_at)
- ORDER BY q.quote_key,q.observed_on,d.retrieved_at DESC,q.parsed_at DESC,q.source_locator;
+ ORDER BY q.quote_key,q.observed_on,CASE WHEN q.series='dane-milk-macroregion'
+      AND q.observed_on=(date_trunc('month',q.observed_on)+interval '1 month - 1 day')::date
+      AND COALESCE(NULLIF(q.details->>'bulletin_period',''),d.reference_period) IN (
+        to_char(q.observed_on,'YYYY-MM-DD'),
+        to_char(date_trunc('month',q.observed_on)+interval '2 months - 1 day','YYYY-MM-DD'))
+    THEN COALESCE(NULLIF(q.details->>'bulletin_period',''),d.reference_period)
+    END DESC NULLS LAST,d.retrieved_at DESC,q.parsed_at DESC,q.source_locator;
 GRANT SELECT ON published_official_price TO agro_reader;
 CREATE INDEX IF NOT EXISTS input_municipal_locations_recent ON input_municipal_price(observed_on,department,municipality,id);
 CREATE INDEX IF NOT EXISTS input_department_locations_recent ON input_price(observed_on,department,id);

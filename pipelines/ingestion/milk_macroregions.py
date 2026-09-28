@@ -417,6 +417,7 @@ def parse_reading(chart, reading, *, method="paired-image-ocr"):
                         "price_statistic": "published_mean",
                         "period": "monthly",
                         "period_type": "monthly",
+                        "bulletin_period": chart.report_month.isoformat(),
                         "period_end": day.isoformat(),
                         "original_unit": "Precio por litro",
                         "literal_price": literal,
