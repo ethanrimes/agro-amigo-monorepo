@@ -20,7 +20,14 @@ from urllib.parse import urlparse
 
 from psycopg.types.json import Jsonb
 
-VERSION = "daily-zip-v1"
+VERSION = "daily-zip-v2"
+LOCATOR_VERSION = (
+    "daily-zip-v1"  # Native cell semantics/physical locators are unchanged.
+)
+
+
+class NativeLayoutUnavailable(ValueError):
+    """Native cells did not expose a recognized price layout."""
 
 
 def is_daily_archive(url, label):
@@ -140,7 +147,7 @@ def _package_rows(sheet, rows, bound):
                         "market": market,
                         "date": day.isoformat(),
                         "price": None,
-                        "source_locator": f"{sheet}!row {row_no},cols D:G,round {rnd}; {VERSION}",
+                        "source_locator": f"{sheet}!row {row_no},cols D:G,round {rnd}; {LOCATOR_VERSION}",
                         "details": {
                             "quality_issue": "Native city workbook range is incomplete, nonnumeric or reversed",
                             "literal_cells": list(rows[row_no - 1][:7]),
@@ -162,7 +169,7 @@ def _package_rows(sheet, rows, bound):
         match = re.search(r"row (\d+),round (\d+)", row[0])
         result.append(
             (
-                f"{sheet}!row {match[1]},cols D:G,round {match[2]}; {VERSION}",
+                f"{sheet}!row {match[1]},cols D:G,round {match[2]}; {LOCATOR_VERSION}",
                 *row[1:-1],
                 None,
             )
@@ -265,7 +272,7 @@ def _daily_mean_rows(sheet, rows, bound):
                 "price": mean,
                 "min": low,
                 "max": high,
-                "source_locator": f"{sheet}!row {number},cols F:H; {VERSION}",
+                "source_locator": f"{sheet}!row {number},cols F:H; {LOCATOR_VERSION}",
                 "identity_dimensions": {"source_product": product},
                 "details": {
                     "price_statistic": "published_mean",
@@ -364,6 +371,21 @@ def _daily_changes(data, parsed):
     return {**parsed, "rows": out}
 
 
+def _unavailable_layout(message, rows, bound):
+    from .worker import SourceDateMismatch, clean, date_from_text, today
+
+    # A recoverable image cannot override a conflicting readable date. Dates
+    # that are absent from the text may still be present in the retained image.
+    days = {
+        date_from_text(clean(v)) for row in rows[:12] for v in row if isinstance(v, str)
+    } - {None}
+    if any(d > today() or (bound and d > bound) for d in days):
+        raise SourceDateMismatch(
+            "Native daily ZIP date conflicts with archive; OCR cannot override it"
+        )
+    raise NativeLayoutUnavailable(message)
+
+
 def parse_member(data, expected_day=None):
     from .daily_recovery import parse_daily
     from .worker import clean, slug, workbooks
@@ -377,6 +399,16 @@ def parse_member(data, expected_day=None):
         )
         for name, rows in sheets
     ):
+        if not any(
+            sum(clean(v) == "Precio" for v in row) >= 3
+            for _, rows in sheets
+            for row in rows[:12]
+        ):
+            _unavailable_layout(
+                "Daily workbook native price matrix is unavailable",
+                sheets[0][1],
+                expected_day,
+            )
         return MemberPrices(
             "daily", [], [], [], _daily_changes(data, parse_daily(data, expected_day))
         )
@@ -401,7 +433,9 @@ def parse_member(data, expected_day=None):
         ):
             official.extend(_daily_mean_rows(name, rows, expected_day))
         else:
-            raise ValueError("Unsupported native daily ZIP worksheet: " + name)
+            _unavailable_layout(
+                "Unsupported native daily ZIP worksheet: " + name, rows, expected_day
+            )
     if not regional and not official:
         raise ValueError("Daily ZIP workbook contains no supported native price table")
     return MemberPrices(
@@ -543,12 +577,31 @@ def publish(db, data, zip_id, url, day):
                         }
                     )
             except ValueError as exc:
+                # Do not spend OCR on conflicting native dates or numeric cells.
+                # Unknown layouts may contain image-only prices even when some
+                # headings extracted. Retain/queue their literal image objects;
+                # this member kind has no typed OCR price publisher, so paired
+                # readings remain reviewed evidence until a layout is supported.
+                if isinstance(exc, NativeLayoutUnavailable):
+                    from .ocr import scan_document
+
+                    _budget()
+                    scan_document(
+                        db, body, did, "daily-zip-member", normal_extraction_failed=True
+                    )
                 record = {
                     "archive_id": zip_id,
                     "entry_name": member.filename,
                     "document_id": did,
                     "source_url": url,
                     "reason": str(exc),
+                    **(
+                        {
+                            "ocr_status": "Native extraction failed; embedded images scanned/retained for paired OCR. Typed daily ZIP image publication remains unsupported."
+                        }
+                        if isinstance(exc, NativeLayoutUnavailable)
+                        else {}
+                    ),
                 }
                 db.execute(
                     "INSERT INTO official_source_review(document_id,source_locator,parser_version,record,reason) VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING",

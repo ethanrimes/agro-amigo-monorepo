@@ -60,7 +60,7 @@ LOCK = 914070912
 RUN_DEADLINE = ContextVar("ingestion_deadline", default=None)
 PARSER_VERSIONS = {
     "daily-index": "source-v4",
-    "daily-zip": "daily-zip-v1",
+    "daily-zip": "daily-zip-v2",
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
