@@ -3,6 +3,7 @@ Pesticide quantities in historical publications are never turned into applicatio
 """
 from import_references import *
 from cost_regions import ARVEJA_SOURCE, arveja_municipalities, cost_region
+from cost_junca import SOURCE as JUNCA_SOURCE, parse_junca_tables
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import subprocess
@@ -37,6 +38,16 @@ def costs(cur):
    system='Monocultivo, región Ariari; ciclo de un año' if crop=='Plátano' else 'Sistema regional reportado por UPRA; consultar variedades y tecnología en la tabla'
    cur.execute('INSERT INTO cost_template VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET costs=excluded.costs,document_id=excluded.document_id,municipalities=excluded.municipalities',(ident,crop,crop+' · '+region,region,Jsonb(codes),year,system,out_yield,Jsonb(lines),did,i+1,notes))
    report.append({'id':ident,'source':name,'page':i+1,'region':region,'total':total,'yield_kg_ha':out_yield,'municipalities':codes})
+ # This publication has an explicitly continued table and a different total
+ # label. Validate all three regional tables before saving any new template.
+ junca=CACHE/JUNCA_SOURCE
+ junca_rows=parse_junca_tables([p.extract_text() for p in PdfReader(junca).pages],municipalities)
+ junca_did=doc(cur,junca,'UPRA - estructura de costos de cebolla junca 2023','UPRA',URLS[JUNCA_SOURCE],2023,'cost-cebolla-de-rama')
+ for review in junca_rows.reviews:
+  cur.execute('INSERT INTO official_source_review(document_id,source_locator,parser_version,record,reason) VALUES (%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING',(junca_did,review['source_locator'],review['parser_version'],Jsonb(review['record']),review['reason']))
+ for row in junca_rows.rows:
+  cur.execute('INSERT INTO cost_template VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING',(row['id'],row['crop'],row['title'],row['region'],Jsonb(row['municipalities']),row['reference_year'],row['production_system'],row['yield_kg_ha'],Jsonb(row['costs']),junca_did,row['source_page'],row['notes']))
+  report.append({'id':row['id'],'source':JUNCA_SOURCE,'page':row['source_page'],'region':row['region'],'total':sum(c['amount'] for c in row['costs']),'yield_kg_ha':row['yield_kg_ha'],'municipalities':row['municipalities']})
  # Archive additional studies, even where multi-year tables are not flattened into one-year budgets.
  for p in CACHE.glob('cost-*.pdf'):
   if p.name not in files:doc(cur,p,'UPRA - '+p.name.removeprefix('cost-').replace('_',' '),'UPRA',URLS.get(p.name,'https://upra.gov.co/es-co/eva'),'Consultar período en el documento','reference-'+slug(p.stem))
