@@ -35,6 +35,44 @@ TABLES = (
 )
 DAY = date(2026, 9, 7)
 ROOT = Path(__file__).resolve().parents[2]
+NOVEMBER_ORIGINAL = Path(__file__).resolve().parent / "testdata/city_regionales_05nov2025.zip"
+
+
+class DatedCityCarryoverTests(unittest.TestCase):
+    def test_exact_official_original_has_distinct_printed_day_and_40_ranges(self):
+        body = NOVEMBER_ORIGINAL.read_bytes()
+        digest = sha256(body).hexdigest()
+        self.assertEqual(digest, city_reports._CARRYOVER_PARENT_SHA)
+        self.assertTrue(
+            city_reports._is_carryover_parent(
+                body,
+                digest,
+                city_reports._CARRYOVER_PARENT_URL,
+                date(2025, 11, 5),
+            )
+        )
+        with zipfile.ZipFile(io.BytesIO(body)) as archive:
+            member = archive.read(city_reports._CARRYOVER_MEMBER_NAME)
+        self.assertEqual(sha256(member).hexdigest(), city_reports._CARRYOVER_MEMBER_SHA)
+        with self.assertRaises(worker.SourceDateMismatch):
+            list(city_reports.parse_city_pdf(member, date(2025, 11, 5)))
+        rows = list(city_reports.parse_city_pdf(member, date(2025, 11, 6)))
+        self.assertEqual(len(rows), 40)
+        self.assertEqual({row[1] for row in rows}, {date(2025, 11, 6)})
+        self.assertEqual(
+            {row[4] for row in rows}, {"Medellín, Central Mayorista de Antioquia"}
+        )
+
+    def test_exception_requires_exact_parent_url_day_and_bytes(self):
+        body = NOVEMBER_ORIGINAL.read_bytes()
+        digest = sha256(body).hexdigest()
+        for candidate in (
+            (body, digest, city_reports._CARRYOVER_PARENT_URL, date(2025, 11, 6)),
+            (body, digest, city_reports._CARRYOVER_PARENT_URL.replace("05nov", "06nov"), date(2025, 11, 5)),
+            (body + b"changed", digest, city_reports._CARRYOVER_PARENT_URL, date(2025, 11, 5)),
+        ):
+            with self.subTest(candidate=candidate[2:]):
+                self.assertFalse(city_reports._is_carryover_parent(*candidate))
 
 
 def native_pdf(name="Limón tahití"):
@@ -271,6 +309,51 @@ class CityPublicationPostgresTests(unittest.TestCase):
             self.assertEqual(self.archive.call_args.kwargs["filename"], "bad.pdf")
         self.assertEqual(self.count("regional_price"), 4)
         self.assertEqual(self.count("city_insert_attempt"), 4)
+
+    def test_official_november_carryover_publishes_distinct_pdf_and_keeps_parent_review(self):
+        self.data = NOVEMBER_ORIGINAL.read_bytes()
+        self.did = self.local_archive(
+            self.db,
+            city_reports._CARRYOVER_PARENT_URL,
+            self.data,
+            "city-zip",
+        )
+
+        def publish():
+            return city_reports.publish_city_zip(
+                self.db,
+                self.data,
+                self.did,
+                city_reports._CARRYOVER_PARENT_URL,
+                date(2025, 11, 5),
+                processor_version="city-november-test",
+            )
+
+        for attempt in range(2):
+            with self.assertRaises(city_reports.CityZipPartialReview) as failure:
+                publish()
+            self.assertEqual(failure.exception.count, 1311)
+            self.assertEqual(len(failure.exception.failures), 1)
+            self.assertIn("40 native price ranges published", str(failure.exception))
+            self.assertEqual(self.count("regional_price"), 1311)
+            self.assertEqual(
+                self.db.execute(
+                    "SELECT count(*) FROM regional_price WHERE document_id=%s AND observed_on=%s",
+                    (city_reports._CARRYOVER_MEMBER_SHA, date(2025, 11, 6)),
+                ).fetchone(),
+                (40,),
+            )
+            self.assertEqual(
+                self.db.execute(
+                    "SELECT count(*) FROM ingestion_checkpoint WHERE document_id=%s AND processor_version='city-november-test' AND step LIKE 'city-member:%%'",
+                    (self.did,),
+                ).fetchone(),
+                (25,),
+            )
+            if attempt == 0:
+                self.archive.reset_mock()
+            else:
+                self.archive.assert_not_called()
 
     def test_actual_september_26_archive_matches_every_native_price_and_original(self):
         path = (

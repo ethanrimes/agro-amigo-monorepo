@@ -5,12 +5,45 @@ import json
 import re
 import time
 import zipfile
+from datetime import date
 from decimal import Decimal
 from hashlib import sha256
 
 import pdfplumber
 
 VERSION = "city-v5"
+
+# DANE's 5 November ZIP contains this separately dated, native 6 November
+# Medellín PDF. Preserve the actual parent and PDF hashes: the 6 November ZIP
+# contains a different revision with the same basename. Only this exact pair
+# may use the PDF's printed date for publication; the parent stays in review.
+_CARRYOVER_PARENT_URL = (
+    "https://www.dane.gov.co/files/operaciones/SIPSA/"
+    "bol-SIPSADiario-regionales-05nov2025.zip"
+)
+_CARRYOVER_PARENT_SHA = "a5e09dc5d3a759199d514813293d8e06ce10255c8e787a71a000cffd5a8abbae"
+_CARRYOVER_MEMBER_NAME = "Medellín, Central Mayorista de Antioquia-06-11-2025.pdf"
+_CARRYOVER_MEMBER_SHA = "79760ce3816cd8424c04a00b602fee46be073a7c797065fe791cafd9c76e2a4c"
+_CARRYOVER_DAY = date(2025, 11, 6)
+_CARRYOVER_PARENT_DAY = date(2025, 11, 5)
+
+
+def _carryover_review():
+    return {
+        "filename": _CARRYOVER_MEMBER_NAME,
+        "document_id": _CARRYOVER_MEMBER_SHA,
+        "error": "40 native price ranges published at printed 6 November 2025; parent ZIP link is dated 5 November 2025",
+        "error_type": "SourceDateMismatch",
+    }
+
+
+def _is_carryover_parent(data, zip_id, url, day):
+    return (
+        url == _CARRYOVER_PARENT_URL
+        and day == _CARRYOVER_PARENT_DAY
+        and zip_id == _CARRYOVER_PARENT_SHA
+        and sha256(data).hexdigest() == _CARRYOVER_PARENT_SHA
+    )
 
 
 class CityZipPartialReview(ValueError):
@@ -350,6 +383,7 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version=VERSION):
 
     total = 0
     failures = []
+    carryover_parent = _is_carryover_parent(data, zip_id, url, day)
     with zipfile.ZipFile(io.BytesIO(data)) as bundle:
         members = [
             m
@@ -370,8 +404,11 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version=VERSION):
         )
         for member in members:
             step = _member_step(member, day)
+            carryover_name = carryover_parent and member.filename == _CARRYOVER_MEMBER_NAME
             if step in completed:
                 total += completed[step]
+                if carryover_name:
+                    failures.append(_carryover_review())
                 continue
             deadline = RUN_DEADLINE.get()
             if deadline is not None and time.monotonic() >= deadline:
@@ -380,6 +417,7 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version=VERSION):
                 )
             # Read bytes without extracting paths supplied by the ZIP to disk.
             content = bundle.read(member)
+            carryover = carryover_name and sha256(content).hexdigest() == _CARRYOVER_MEMBER_SHA
             did = archive(
                 db,
                 url,
@@ -394,9 +432,24 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version=VERSION):
                 (zip_id, member.filename, did),
             )
             try:
+                if carryover and did != _CARRYOVER_MEMBER_SHA:
+                    raise ValueError("Verified Medellín carryover document ID changed")
                 with db.transaction():
                     extract_pages(db, content, did)
-                rows = list(parse_archived_city_pdf(db, content, did, day))
+                rows = list(
+                    parse_archived_city_pdf(
+                        db, content, did, _CARRYOVER_DAY if carryover else day
+                    )
+                )
+                if carryover and (
+                    len(rows) != 40
+                    or any(
+                        row[1] != _CARRYOVER_DAY
+                        or row[4] != "Medellín, Central Mayorista de Antioquia"
+                        for row in rows
+                    )
+                ):
+                    raise ValueError("Verified Medellín carryover price grid changed")
                 with db.transaction():
                     save_classifications(db, did, rows)
                     _bulk_insert(db, "regional_price", ((did, *r) for r in rows))
@@ -407,7 +460,14 @@ def publish_city_zip(db, data, zip_id, url, day, *, processor_version=VERSION):
                         "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) VALUES(%s,%s,%s,%s) ON CONFLICT DO NOTHING",
                         (zip_id, processor_version, step, len(rows)),
                     )
+                    if carryover:
+                        db.execute(
+                            "INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records) VALUES(%s,%s,%s,0) ON CONFLICT DO NOTHING",
+                            (zip_id, processor_version, _review_step(_carryover_review())),
+                        )
                 total += len(rows)
+                if carryover:
+                    failures.append(_carryover_review())
             except ValueError as exc:
                 failure = {
                     "filename": member.filename[:500],
