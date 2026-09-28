@@ -6,10 +6,16 @@ import unittest
 import zipfile
 from datetime import date
 from hashlib import sha256
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from .city_reports import CityZipPartialReview, _review_step, publish_city_zip
+from .city_reports import CityZipPartialReview, _member_step, _review_step, parse_city_pdf, publish_city_zip
 from .worker import SourceDateMismatch
+
+OFFICIAL_ZIP = Path(__file__).resolve().parent / "testdata/bol-SIPSADiario-regionales-19ago2025.zip"
+PEREIRA = "Pereira, Mercasa-18-08-2025.pdf"
+OFFICIAL_SHA = "054c4d08214f7c1e5bc5cbec71ae40fa902be3d084864d2b209c8d8704dcabe9"
+PEREIRA_SHA = "c3375a25925fa885ce006174aad3c49fb4fe3c4fa56b0393271cc1b76d41579f"
 
 
 def bundle_bytes(names):
@@ -21,6 +27,84 @@ def bundle_bytes(names):
 
 
 class CityZipReview(unittest.TestCase):
+    @unittest.skipUnless(OFFICIAL_ZIP.exists(), "Retained official DANE city ZIP required")
+    def test_official_header_only_pereira_has_verified_zero_rows(self):
+        data = OFFICIAL_ZIP.read_bytes()
+        self.assertEqual(sha256(data).hexdigest(), OFFICIAL_SHA)
+        with zipfile.ZipFile(io.BytesIO(data)) as bundle:
+            pdf = bundle.read(PEREIRA)
+        self.assertEqual(sha256(pdf).hexdigest(), PEREIRA_SHA)
+        self.assertEqual(list(parse_city_pdf(pdf, date(2025, 8, 19))), [])
+        with self.assertRaisesRegex(SourceDateMismatch, "future internal date"):
+            list(parse_city_pdf(pdf, date(2025, 8, 17)))
+
+    @unittest.skipUnless(OFFICIAL_ZIP.exists(), "Retained official DANE city ZIP required")
+    def test_official_empty_pereira_checkpoints_zero_and_67_siblings_publish(self):
+        data = OFFICIAL_ZIP.read_bytes()
+        self.assertEqual(sha256(data).hexdigest(), OFFICIAL_SHA)
+        with zipfile.ZipFile(io.BytesIO(data)) as bundle:
+            member = bundle.getinfo(PEREIRA)
+            self.assertEqual(len([m for m in bundle.infolist() if m.filename.endswith(".pdf")]), 68)
+        db = MagicMock()
+        db.execute.return_value.fetchall.return_value = []
+        with (
+            patch("pipelines.ingestion.worker.archive", side_effect=lambda db, url, body, *a, **kw: sha256(body).hexdigest()) as archive,
+            patch("pipelines.ingestion.pdf_sources.extract_pages") as extract,
+            patch("pipelines.ingestion.city_reports.save_classifications") as classify,
+            patch("pipelines.ingestion.city_reports._bulk_insert") as insert,
+        ):
+            count = publish_city_zip(
+                db, data, OFFICIAL_SHA,
+                "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-19ago2025.zip",
+                date(2025, 8, 19),
+            )
+        self.assertEqual(count, 3421)
+        self.assertEqual(archive.call_count, 68)
+        self.assertEqual(extract.call_count, 68)
+        self.assertEqual(classify.call_count, 68)
+        self.assertEqual(insert.call_count, 68)
+        checkpoints = [
+            call.args[1] for call in db.execute.call_args_list
+            if "INSERT INTO ingestion_checkpoint" in call.args[0]
+        ]
+        self.assertEqual(len(checkpoints), 68)
+        self.assertEqual(sum(args[3] for args in checkpoints), 3421)
+        self.assertEqual(sum(args[3] == 0 for args in checkpoints), 1)
+        self.assertIn((OFFICIAL_SHA, "city-v5", _member_step(member, date(2025, 8, 19)), 0), checkpoints)
+
+    @unittest.skipUnless(OFFICIAL_ZIP.exists(), "Retained official DANE city ZIP required")
+    def test_heading_without_native_grid_or_with_unparsed_text_is_not_empty(self):
+        from pypdf import PdfReader, PdfWriter
+        from reportlab.pdfgen import canvas
+
+        with zipfile.ZipFile(OFFICIAL_ZIP) as bundle:
+            source = bundle.read(PEREIRA)
+        writer = PdfWriter(clone_from=io.BytesIO(source))
+        heading = "\n".join([
+            "PRECIOS DE VENTA MAYORISTA", "Pereira, Mercasa",
+            "PRODUCTOS PRIMERA CALIDAD - Boletín Gratuito",
+            "18 de Agosto de 2025", "Ronda 1", "Ronda 2",
+            "Producto Presentación Unidades -",
+            "Mínimo Máximo Mínimo Máximo", "Pagina 1 de 1",
+        ])
+        plain = io.BytesIO()
+        pdf = canvas.Canvas(plain)
+        for n, line in enumerate(heading.splitlines()):
+            pdf.drawString(36, 750 - n * 20, line)
+        pdf.save()
+        with self.assertRaisesRegex(ValueError, "No city price ranges parsed"):
+            list(parse_city_pdf(plain.getvalue(), date(2025, 8, 19)))
+
+        extra = io.BytesIO()
+        pdf = canvas.Canvas(extra)
+        pdf.drawString(36, 90, "Producto sin cuadrícula: precio 42.000")
+        pdf.save()
+        writer.pages[0].merge_page(PdfReader(io.BytesIO(extra.getvalue())).pages[0])
+        altered = io.BytesIO()
+        writer.write(altered)
+        with self.assertRaisesRegex(ValueError, "No city price ranges parsed"):
+            list(parse_city_pdf(altered.getvalue(), date(2025, 8, 19)))
+
     def test_review_key_remains_bounded_for_long_unicode_member_names(self):
         step = _review_step(
             {

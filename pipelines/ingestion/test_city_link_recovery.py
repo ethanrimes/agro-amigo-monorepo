@@ -1,17 +1,26 @@
 """Exact ZIP recovery, printed-date coverage and immutable candidate evidence."""
 
 import io
+import os
 import unittest
 import zipfile
 from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
+from urllib.error import HTTPError
+from urllib.parse import urlsplit
+from urllib.request import urlopen
 
+import requests
+
+from . import worker
 from .city_link_recovery import ALIASES, _validate_member, recover_link
 
 URL = "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-22jul2023.zip"
 DAY = date(2023, 7, 22)
+FEB_URL = "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-10feb2024.zip"
+FEB_DAY = date(2024, 2, 10)
 ROOT = Path("artifacts/source-ambiguity-2026-09-27/city-milk")
 FIXTURE = ROOT / "city-24jul2023.zip"
 
@@ -36,6 +45,121 @@ def valid_member(body, filename, archive_day):
 
 
 class CityLinkRecovery(unittest.TestCase):
+    def test_worker_keeps_recovered_rows_but_marks_unknown_roster_for_review(self):
+        alias = ALIASES[FEB_URL]
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as archive:
+            for index in range(22):
+                archive.writestr(f"market{index}-10-02-2024.pdf", b"%PDF-mock")
+        body = buf.getvalue()
+        response = requests.Response()
+        response.status_code = 404
+        missing = requests.HTTPError("missing original", response=response)
+
+        class DB:
+            def __init__(self):
+                self.rows = []
+                self.asset = {"status": "failed", "records": 0, "error": None}
+                self.calls = []
+
+            def execute(self, sql, args=()):
+                self.calls.append((sql, args))
+                if sql.startswith("SELECT processor_version"):
+                    return Mock(fetchone=lambda: (worker.parser_version("city-zip"),))
+                if sql.startswith("SELECT document_id,status,records"):
+                    return Mock(fetchone=lambda: ("older", "failed", 0))
+                if "SET document_id=%s,status=%s,records=(SELECT count(*)" in sql:
+                    self.asset.update(
+                        status=args[1], records=len(self.rows), error=args[3]
+                    )
+                return Mock(fetchone=lambda: None)
+
+        db = DB()
+
+        def checked_member(_body, filename, archive_day):
+            self.assertEqual(archive_day, alias.archive_day)
+            return {"filename": filename, "observed_on": str(FEB_DAY), "records": 1}
+
+        def publish(_db, data, did, url, day, **kwargs):
+            self.assertEqual((data, did, url, day), (body, "candidate-id", alias.canonical_url, alias.archive_day))
+            db.rows.extend(range(22))
+            return len(db.rows)
+
+        with (
+            patch.object(worker, "fetch_asset", side_effect=missing),
+            patch.object(worker, "fetch", return_value=body) as fetch,
+            patch.object(worker, "archive", return_value="candidate-id") as archive,
+            patch("pipelines.ingestion.city_link_recovery._validate_member", side_effect=checked_member),
+            patch("pipelines.ingestion.city_reports.publish_city_zip", side_effect=publish),
+            patch("pipelines.ingestion.daily_publication.retain_resolution") as retain,
+            patch("pipelines.ingestion.query_publication.recover", return_value=0),
+        ):
+            count = worker._process_asset(db, FEB_URL, "city-zip", FEB_DAY)
+
+        self.assertEqual(count, 22)
+        self.assertEqual(db.asset["status"], "review")
+        self.assertEqual(db.asset["records"], 22)
+        self.assertIn("full roster is unknown", db.asset["error"])
+        fetch.assert_called_once_with(alias.canonical_url)
+        self.assertEqual(archive.call_args_list[0].args[4], alias.archive_day)
+        self.assertEqual(archive.call_args_list[1].args[4], alias.archive_day)
+        self.assertEqual(archive.call_args_list[1].args[1], alias.canonical_url)
+        resolution = [
+            call.args[2]
+            for call in retain.call_args_list
+            if call.args[1] == "source_link_resolution"
+        ]
+        self.assertEqual(resolution[0]["original_url"], FEB_URL)
+        self.assertEqual(resolution[0]["original_http_status"], 404)
+
+    def test_february_alias_keeps_failed_url_and_official_archive_provenance(self):
+        alias = ALIASES[FEB_URL]
+        self.assertEqual(alias.archive_day, date(2024, 2, 12))
+        self.assertIn("febrero-de-2024", alias.archive_url)
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as archive:
+            for index in range(22):
+                archive.writestr(f"market{index}-10-02-2024.pdf", b"%PDF-mock")
+
+        def feb_member(body, filename, archive_day):
+            self.assertEqual(archive_day, alias.archive_day)
+            return {"filename": filename, "observed_on": str(FEB_DAY), "records": 1}
+
+        with patch(
+            "pipelines.ingestion.city_link_recovery._validate_member",
+            side_effect=feb_member,
+        ):
+            result = recover_link(FEB_URL, 404, FEB_DAY, lambda _: buf.getvalue())
+        self.assertEqual(result.evidence["original_url"], FEB_URL)
+        self.assertEqual(result.evidence["original_http_status"], 404)
+        self.assertEqual(result.evidence["canonical_url"], alias.canonical_url)
+        self.assertEqual(result.evidence["archive_url"], alias.archive_url)
+        self.assertEqual(result.evidence["requested_day_price_members"], 22)
+        self.assertIn("full roster is unknown", result.evidence["coverage_note"])
+
+    @unittest.skipUnless(os.getenv("DANE_LIVE_CITY_RECOVERY"), "live DANE check opt-in")
+    def test_live_official_february_zip_retains_original_printed_dates(self):
+        alias = ALIASES[FEB_URL]
+        with urlopen(alias.archive_url, timeout=45) as response:
+            self.assertIn(f'href="{urlsplit(FEB_URL).path}"'.encode(), response.read())
+        with self.assertRaises(HTTPError) as failed:
+            urlopen(FEB_URL, timeout=45)
+        self.assertEqual(failed.exception.code, 404)
+        failed.exception.close()
+        with urlopen(alias.canonical_url, timeout=45) as response:
+            body = response.read()
+        result = recover_link(FEB_URL, 404, FEB_DAY, lambda _: body)
+        evidence = result.evidence
+        self.assertTrue(evidence["matches_audited_bytes"])
+        self.assertEqual(evidence["member_count"], 51)
+        self.assertEqual(
+            evidence["members_by_date"],
+            {"2024-02-10": 22, "2024-02-11": 5, "2024-02-12": 24},
+        )
+        self.assertEqual(evidence["requested_day_price_members"], 22)
+        self.assertEqual(evidence["requested_day_records"], 919)
+        self.assertEqual(evidence["records"], 2342)
+
     def test_only_exact_missing_url_and_permanent_status_can_fetch(self):
         fetcher = Mock()
         for status in (200, 304, 403, 429, 500, 503):

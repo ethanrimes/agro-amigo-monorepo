@@ -64,8 +64,8 @@ PARSER_VERSIONS = {
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
-    "inputs-pdf": "inputs-pdf-v10",
-    "inputs-reference": "inputs-reference-v5",
+    "inputs-pdf": "inputs-pdf-v11",
+    "inputs-reference": "inputs-reference-v6",
     "city-zip": "city-v5",
     "monthly": "monthly-units-v2",
     "monthly-annex": "monthly-annex-v3",
@@ -151,6 +151,7 @@ RELEASE_FILES = [
     "pipelines/ingestion/daily_publication.py",
     "pipelines/ingestion/source_link_recovery.py",
     "pipelines/ingestion/pdf_link_recovery.py",
+    "pipelines/ingestion/supply_link_recovery.py",
     "pipelines/ingestion/workbook_preview.py",
     "pipelines/ingestion/queue_plan.py",
     "pipelines/ingestion/resumable_inputs.py",
@@ -260,8 +261,24 @@ def fetch_asset(db, url, force=False):
             headers["If-Modified-Since"] = prior[1]
     response = SESSION.get(url, headers=headers, timeout=(20, 120))
     if response.status_code == 304:
-        db.execute("UPDATE ingestion_asset SET checked_at=now() WHERE url=%s", (url,))
-        return None
+        if not headers:
+            # A 304 cannot validate an unconditional request. Retry past an
+            # intermediary cache so a pending asset or parser upgrade is not
+            # silently treated as complete without processing its bytes.
+            response = SESSION.get(
+                url, headers={"Cache-Control": "no-cache"}, timeout=(20, 120)
+            )
+            if response.status_code == 304:
+                if prior and prior[3] and prior[2] in ("complete", "archived", "processed"):
+                    retained = db.execute(
+                        "SELECT content FROM source_document WHERE id=%s", (prior[3],)
+                    ).fetchone()
+                    if retained:
+                        return bytes(retained[0])
+                raise ValueError("HTTP 304 without a conditional asset request")
+        else:
+            db.execute("UPDATE ingestion_asset SET checked_at=now() WHERE url=%s", (url,))
+            return None
     response.raise_for_status()
     db.execute(
         "UPDATE ingestion_asset SET http_etag=%s,http_last_modified=%s WHERE url=%s",
@@ -1440,6 +1457,10 @@ def _process_asset(db, url, kind, day):
                 lambda candidate_url: fetch_candidate(candidate_url, rule.observed_on),
                 kind=kind,
             )
+        elif kind == "supply-reference-pdf":
+            from .supply_link_recovery import recover_link as recover_supply_link
+
+            recovered = recover_supply_link(url, status, day, fetch_candidate)
         else:
             recovered = (
                 recover_link(url, status, day, fetch_candidate)
@@ -1639,7 +1660,7 @@ def _process_asset(db, url, kind, day):
             "UPDATE ingestion_asset SET document_id=%s,status=%s,records=(SELECT count(*) FROM regional_price WHERE document_id IN (SELECT document_id FROM source_archive_member WHERE archive_id=%s)),checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
             (
                 did,
-                "review" if member_error else "complete",
+                "review" if member_error or recovered else "complete",
                 did,
                 member_error
                 or (recovered.evidence["coverage_note"] if recovered else None),
@@ -1671,13 +1692,15 @@ def _process_asset(db, url, kind, day):
 
         with db.transaction():
             count, reviews = supply_period_summaries.publish(db, data, did, kind, day)
+            coverage_note = recovered.evidence["coverage_note"] if recovered else None
+            error = "; ".join([*reviews, *([coverage_note] if coverage_note else [])])
             db.execute(
                 "UPDATE ingestion_asset SET document_id=%s,status=%s,records=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s",
                 (
                     did,
                     "review" if reviews else "complete" if count else "archived",
                     count,
-                    "; ".join(reviews)[:4000] if reviews else None,
+                    error[:4000] if error else None,
                     url,
                 ),
             )
@@ -1731,7 +1754,15 @@ def _process_asset(db, url, kind, day):
     if kind == "daily-pdf":
         parser = lambda b: parse_pdf(b, day)
     if kind == "inputs-pdf":
-        from pipelines.ingestion.pdf_sources import parse_input_pdf
+        from pipelines.ingestion.pdf_sources import (
+            MIXED_FEB2018_INPUT_SHA,
+            MIXED_FEB2018_INPUT_URL,
+            parse_input_pdf,
+            publish_mixed_feb2018_input,
+        )
+
+        if url == MIXED_FEB2018_INPUT_URL and did == MIXED_FEB2018_INPUT_SHA:
+            return publish_mixed_feb2018_input(db, data, did, url, day)
 
         parser = lambda b: parse_input_pdf(b, day)
     if kind == "coffee-pdf":

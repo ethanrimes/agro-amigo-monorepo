@@ -8,7 +8,18 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v10"
+INPUT_PDF_VERSION = "inputs-pdf-v11"
+MIXED_FEB2018_INPUT_URL = (
+    "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/"
+    "Bol_Insumos_feb_2018.pdf"
+)
+MIXED_FEB2018_INPUT_SHA = (
+    "54cb32e0d9f7a5f02468fa5efb56acac8618897e4c8210d5d39d019dba897de5"
+)
+MIXED_FEB2018_REVIEW_NOTE = (
+    "Published 10,758 verified February 2018 rows from pages 1-140; "
+    "pages 141-150 print 2017 (febrero) and remain in page-level review"
+)
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
@@ -554,7 +565,10 @@ def _input_wrapped_department(lines, index, price_left, numeric, percentage):
             or max(w["x1"] for w in location_words) >= price_left
         ):
             return None
-        if not -1 <= top - max(w["bottom"] for w in location_words) <= 5:
+        # In this native layout the numeric baseline is vertically centered
+        # between the municipality and department baselines. Their word boxes
+        # overlap by about 2.3 pt although the printed lines are distinct.
+        if not -3.5 <= top - max(w["bottom"] for w in location_words) <= 5:
             return None
         location = clean(_input_line_text(location_words))
         price = match[1]
@@ -573,7 +587,7 @@ def _input_wrapped_department(lines, index, price_left, numeric, percentage):
             min(w["x0"] for w in suffix_words) - min(w["x0"] for w in location_words)
         )
         > 5
-        or not -1 <= next_top - max(w["bottom"] for w in words) <= 5
+        or not -3.5 <= next_top - max(w["bottom"] for w in words) <= 5
     ):
         return None
     suffix = clean(_input_line_text(suffix_words))
@@ -662,7 +676,7 @@ def _input_continuation_review(current, previous):
     return previous.get("continuation_review")
 
 
-def parse_input_pdf(data, day):
+def parse_input_pdf(data, day, *, last_page=None):
     """Read each dated two-column table, including layouts without variation.
 
     Table-local titles/date stamps avoid borrowing the date of an unrelated chart
@@ -673,6 +687,8 @@ def parse_input_pdf(data, day):
     last_row_heading = None
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for page_no, page in enumerate(pdf.pages, 1):
+            if last_page is not None and page_no > last_page:
+                break
             text = page.extract_text() or ""
             if "mercados" not in text or "Precio" not in text or "medio" not in text:
                 page.close()
@@ -1102,3 +1118,99 @@ def parse_input_pdf(data, day):
                             f"Recognized input monetary table has no verified rows: page {page_no}, col {col}"
                         )
             page.close()
+
+
+def parse_mixed_feb2018_input(data, day):
+    """Keep the exact 2018 price tables and identify every old-year table page.
+
+    This exception is tied to one immutable original. A changed download, date,
+    page count, table title, or printed period returns to ordinary date review.
+    """
+    from datetime import date
+
+    from .worker import SourceDateMismatch
+
+    if sha256(data).hexdigest() != MIXED_FEB2018_INPUT_SHA or day != date(2018, 2, 28):
+        raise SourceDateMismatch("Mixed input PDF exception requires the exact retained February 2018 original")
+    reviews = []
+    with pdfplumber.open(io.BytesIO(data)) as pdf:
+        if len(pdf.pages) != 151 or (pdf.pages[150].extract_text() or "").strip():
+            raise SourceDateMismatch("Mixed input PDF page boundary differs from reviewed original")
+        for page_no in range(141, 151):
+            text = pdf.pages[page_no - 1].extract_text() or ""
+            captions = re.findall(r"\b20\d{2}\s*\([a-záéíóú]+\)", text, re.IGNORECASE)
+            table = 14 if page_no <= 144 else 15
+            if (
+                captions != ["2017 (febrero)"]
+                or not re.search(rf"Cuadro\s+{table}\.\s+Precios de", text)
+                or "Precio medio" not in text
+                or "mercados" not in text
+            ):
+                raise SourceDateMismatch(
+                    f"Mixed input PDF reviewed table changed: page {page_no}"
+                )
+            reviews.append(
+                {
+                    "page": page_no,
+                    "source_locator": f"PDF page {page_no}; printed period",
+                    "table": table,
+                    "printed_caption": captions[0],
+                    "archive_period": "2018-02",
+                    "reason": "Printed 2017 (febrero) table conflicts with February 2018 archive link",
+                }
+            )
+    rows = list(parse_input_pdf(data, day, last_page=140))
+    if len(rows) != 10758 or {r[-1]["page"] for r in rows} != set(range(8, 141)):
+        raise SourceDateMismatch("Mixed input PDF verified 2018 page coverage changed")
+    return rows, reviews
+
+
+def publish_mixed_feb2018_input(db, data, did, url, day):
+    """Commit valid rows, page reviews, checkpoint, and review status together."""
+    from .worker import SourceDateMismatch, project, save_rows
+
+    if url != MIXED_FEB2018_INPUT_URL or did != MIXED_FEB2018_INPUT_SHA:
+        raise SourceDateMismatch("Mixed input PDF exception requires the exact source URL and document")
+    rows, reviews = parse_mixed_feb2018_input(data, day)
+    with db.transaction():
+        count = save_rows(db, did, rows)
+        if count != 10758:
+            raise SourceDateMismatch("Mixed input PDF validated row count changed")
+        project(db, did, url, "inputs-pdf")
+        with db.cursor() as cur:
+            cur.executemany(
+                """INSERT INTO official_source_review
+                (document_id,source_locator,parser_version,record,reason)
+                VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING""",
+                [
+                    (
+                        did,
+                        review["source_locator"],
+                        INPUT_PDF_VERSION,
+                        Jsonb({"source_sha256": did, **review}),
+                        review["reason"],
+                    )
+                    for review in reviews
+                ],
+            )
+            cur.executemany(
+                """INSERT INTO ingestion_checkpoint
+                (document_id,processor_version,step,records)
+                VALUES(%s,%s,%s,0) ON CONFLICT DO NOTHING""",
+                [
+                    (did, INPUT_PDF_VERSION, f"inputs-pdf:date-review:page-{r['page']}")
+                    for r in reviews
+                ],
+            )
+        db.execute(
+            """UPDATE ingestion_asset SET document_id=%s,status='review',records=%s,
+            processor_version=%s,checked_at=now(),attempts=attempts+1,error=%s WHERE url=%s""",
+            (
+                did,
+                count,
+                INPUT_PDF_VERSION,
+                MIXED_FEB2018_REVIEW_NOTE,
+                url,
+            ),
+        )
+    return count

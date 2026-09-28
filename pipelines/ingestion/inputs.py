@@ -56,7 +56,9 @@ LEGACY_CATEGORIES = {
     "material-de-propagacion": "3.6",
     "empaques": "3.3",
     "elementos-pecuarios": "3.2",
+    "elementos-agropecuarios": "3.2",
     "especie-productiva": "3.4",
+    "especies-productivas": "3.4",
     "jornales": "3.5",
 }
 
@@ -92,18 +94,22 @@ def parse_inputs(data):
                         "Productos y mercados",
                         "Tipo de jornal y mercados",
                         "Tipo de pago, mercado",
+                        "Tipo de arriendo y mercados",
+                        "Especies y mercados",
+                        "Especie y mercados",
+                        "Servicios y mercados",
                     )
                 ),
                 None,
             )
             if not legacy_heading and any(
-                re.fullmatch(r"Precio medio \w+", value, re.IGNORECASE)
+                re.fullmatch(r"Precio (?:medio|de) \w+", value, re.IGNORECASE)
                 for value in normalized
             ):
                 raise ValueError(f"Unmapped legacy input table header: {sheet}")
             if legacy_heading:
                 prices = [
-                    (i, re.fullmatch(r"Precio medio (\w+)", value, re.IGNORECASE))
+                    (i, re.fullmatch(r"Precio (?:medio|de) (\w+)", value, re.IGNORECASE))
                     for i, value in enumerate(normalized)
                 ]
                 prices = [(i, match) for i, match in prices if match]
@@ -112,7 +118,9 @@ def parse_inputs(data):
                     # The independently printed column month must agree; never
                     # use the preceding comparison column as the current price.
                     stamp = re.search(
-                        r"\b([A-ZÁÉÍÓÚ]+)\s?(\d{2}|20\d{2})$", sheet, re.IGNORECASE
+                        r"\b([A-ZÁÉÍÓÚ]+)\s*(\d{2}|20\d{2})$",
+                        sheet.strip(),
+                        re.IGNORECASE,
                     )
                     if not stamp:
                         raise ValueError(f"Unverified legacy input period: {sheet}")
@@ -139,6 +147,19 @@ def parse_inputs(data):
                     category_key = LEGACY_CATEGORIES.get(slug(sheet[: stamp.start()]))
                     if category_key is None:
                         raise ValueError(f"Unmapped legacy input category: {sheet}")
+                    specific_headings = {
+                        "Tipo de arriendo y mercados": "3.1",
+                        "Especies y mercados": "3.4",
+                        "Especie y mercados": "3.4",
+                        "Servicios y mercados": "3.7",
+                    }
+                    if (
+                        (expected := specific_headings.get(legacy_heading))
+                        and category_key != expected
+                    ):
+                        raise ValueError(
+                            f"Conflicting legacy input heading/category: {sheet}"
+                        )
                     if legacy_heading == "Tipo de pago, mercado" and (
                         slug(sheet[: stamp.start()]) != "distritos-de-riego"
                         or "Distrito de riego" not in normalized

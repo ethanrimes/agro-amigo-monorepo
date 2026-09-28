@@ -633,6 +633,11 @@ def _native_column(
                 f"PDF page {page_no},table {table_no},column {side},line {anchor['number']}",
                 page=page_no,
                 exceptions=exceptions,
+                # A fully printed quote can have an empty market cell (DANE
+                # 7–13 March 2020, printed page 37). Only a named product with
+                # three literal prices reaches this review-only path; _row
+                # withholds its price rather than borrowing a nearby market.
+                allow_missing_identity=bool(product and not anchor["labels"]),
             )
             if recovered_heading:
                 record["details"].update(

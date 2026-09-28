@@ -16,11 +16,16 @@ from hashlib import sha256
 
 import pdfplumber
 
-VERSION = "city-link-recovery-v1"
+VERSION = "city-link-recovery-v2"
 _ARCHIVE_URL = (
     "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/"
     "sistema-de-informacion-de-precios-sipsa/"
     "componente-precios-mayoristas-julio-de-2023"
+)
+_FEB_2024_ARCHIVE_URL = (
+    "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/"
+    "sistema-de-informacion-de-precios-sipsa/"
+    "componente-precios-mayoristas-febrero-de-2024"
 )
 _BASE = "https://www.dane.gov.co/files/operaciones/SIPSA/"
 
@@ -32,6 +37,7 @@ class CityAlias:
     archive_day: date
     minimum_requested_price_members: int
     audit_sha256: str
+    archive_url: str = _ARCHIVE_URL
 
 
 ALIASES = {
@@ -41,6 +47,14 @@ ALIASES = {
         date(2023, 7, 24),
         23,
         "a4f67faf5b18b081dd6b0075a12bc601bfaec0cf265af241ac8c90d6d9edd051",
+    ),
+    _BASE + "bol-SIPSADiario-regionales-10feb2024.zip": CityAlias(
+        _BASE + "bol-SIPSADiario-regionales-12feb2024.zip",
+        date(2024, 2, 10),
+        date(2024, 2, 12),
+        22,
+        "dd9f0254207604693ce901ffee0ed6207630d1f20bf7e47a1ef698706bb3abf4",
+        _FEB_2024_ARCHIVE_URL,
     ),
 }
 
@@ -189,7 +203,7 @@ def recover_link(
         "original_url": url,
         "original_http_status": status,
         "canonical_url": alias.canonical_url,
-        "archive_url": _ARCHIVE_URL,
+        "archive_url": alias.archive_url,
         "requested_day": expected_day.isoformat(),
         "archive_day": alias.archive_day.isoformat(),
         "validation": "all-native-city-members",
