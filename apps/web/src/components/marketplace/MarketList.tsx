@@ -40,7 +40,10 @@ export function MarketList({
       </div>
       <div className="market-sort">
         <span className="muted" style={{ fontSize: 12 }}>
-          {markets.length} {coffee ? "sucursales Almacafé" : "mercados"} ·{" "}
+          {markets.length}{" "}
+          {coffee
+            ? markets.length === 1 ? "sucursal Almacafé" : "sucursales Almacafé"
+            : markets.length === 1 ? "mercado" : "mercados"} ·{" "}
           {coffee
             ? "COP por carga de 125 kg"
             : markets[0]?.series === "city"
