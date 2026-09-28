@@ -179,9 +179,8 @@ export default function Sources() {
             unidad. La historia incorporada y sus documentos se mantienen:
             algunas vistas muestran los últimos 12 meses por defecto y permiten
             seleccionar todo el histórico disponible. La carga de archivos
-            históricos continúa. La historia estacional se guarda por separado:
-            cinco años completos,
-            con al menos tres años comparables para mostrar un patrón estacional. Las
+            históricos continúa. El patrón estacional usa años completos
+            disponibles, con al menos tres años comparables. Las
             referencias técnicas conservan su año de publicación. No inventa
             registros para completar períodos faltantes.
           </p>
@@ -200,8 +199,8 @@ export default function Sources() {
         <details>
           <summary>¿Qué cambia si soy comprador?</summary>
           <p>
-            Los mercados se ordenan por el menor precio y la calculadora suma el
-            transporte para estimar tu presupuesto. Los precios publicados no
+            Puedes comparar mercados usando el mismo producto, presentación y
+            unidad, y ordenar los precios de menor a mayor. Los precios publicados no
             indican existencias, un proveedor disponible ni una oferta de venta.
             Confirma cantidad, calidad y entrega directamente con tu proveedor.
           </p>
@@ -211,9 +210,10 @@ export default function Sources() {
           <p>
             Los favoritos y tus preferencias se guardan en este navegador. No
             necesitas una cuenta. El perfil de finca, las ofertas y los
-            escenarios guardados permanecen en este navegador. La ubicación
-            redondeada se envía al proveedor de clima y se conserva junto al
-            pronóstico en Azure; los datos personales de las ofertas no se
+            registros guardados permanecen en este navegador. Para consultar
+            el tiempo, las coordenadas del pin se envían al servidor de AgroAmigo
+            y a Open-Meteo, y la respuesta se conserva en Azure.
+            Los datos personales de las ofertas no se
             envían ni se publican.
           </p>
         </details>
