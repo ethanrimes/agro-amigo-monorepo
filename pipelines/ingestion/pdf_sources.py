@@ -7,7 +7,7 @@ import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v7"
+INPUT_PDF_VERSION = "inputs-pdf-v8"
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
@@ -450,20 +450,130 @@ def _input_presentation(heading, heading_lines):
     return None
 
 
+def _input_heading_word(word):
+    """The 2019 native layout uses FuturaStd-Heavy for literal headings."""
+    font = word["fontname"]
+    return "Bold" in font or font.endswith("FuturaStd-Heavy")
+
+
+def _input_ruled_left(page, header_bottom, left, right, price_left):
+    """Use the literal underlined column boundary for centered 2019 headers."""
+    edges = sorted(
+        [
+            e
+            for e in page.horizontal_edges
+            if left <= e["x0"] < e["x1"] <= right and abs(e["top"] - header_bottom) <= 4
+        ],
+        key=lambda e: (round(e["top"], 1), e["x0"]),
+    )
+    spans = []
+    for edge in edges:
+        if (
+            spans
+            and abs(spans[-1][2] - edge["top"]) < 0.5
+            and abs(spans[-1][1] - edge["x0"]) < 0.5
+        ):
+            spans[-1][1] = edge["x1"]
+        else:
+            spans.append([edge["x0"], edge["x1"], edge["top"]])
+    candidates = [x0 for x0, x1, _ in spans if x0 < price_left and x1 > price_left + 40]
+    if len(set(candidates)) != 1:
+        raise ValueError("Input PDF centered header lacks a unique ruled body boundary")
+    return candidates[0]
+
+
+def _input_wrapped_department(lines, index, price_left, numeric, percentage):
+    """Bind only an adjacent explicit parenthesized department to its price row.
+
+    Some tables put a municipality and its numeric cells on one line, then the
+    department on the next. Others vertically center the cells between those
+    location lines. Never infer a department or carry it across a product.
+    """
+    from .special_prices import DEPARTMENTS
+    from .worker import clean
+
+    top, words = lines[index]
+    if any(_input_heading_word(w) for w in words):
+        return None
+    if numeric:
+        location, price = numeric.group(1, 2)
+        variation = numeric[3] if percentage else "n.d."
+        location_words = [w for w in words if w["x0"] < price_left]
+    else:
+        raw = clean(_input_line_text(words))
+        match = re.fullmatch(
+            r"(\d[\d.,]*)" + (r"\s+(n\.d\.|[-+]?\d[\d.,]*)" if percentage else ""),
+            raw,
+            re.IGNORECASE,
+        )
+        if not match or index == 0 or min(w["x0"] for w in words) < price_left - 10:
+            return None
+        _, location_words = lines[index - 1]
+        if (
+            any(_input_heading_word(w) for w in location_words)
+            or max(w["x1"] for w in location_words) >= price_left
+        ):
+            return None
+        if not -1 <= top - max(w["bottom"] for w in location_words) <= 5:
+            return None
+        location = clean(_input_line_text(location_words))
+        price = match[1]
+        variation = match[2] if percentage else "n.d."
+    if not location_words or not re.fullmatch(
+        r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ .'(\-]{1,119}", location
+    ):
+        return None
+    if index + 1 >= len(lines):
+        return None
+    next_top, suffix_words = lines[index + 1]
+    if (
+        any(_input_heading_word(w) for w in suffix_words)
+        or max(w["x1"] for w in suffix_words) >= price_left
+        or abs(
+            min(w["x0"] for w in suffix_words) - min(w["x0"] for w in location_words)
+        )
+        > 5
+        or not -1 <= next_top - max(w["bottom"] for w in words) <= 5
+    ):
+        return None
+    suffix = clean(_input_line_text(suffix_words))
+    combined = (
+        location[:-1] + suffix if location.endswith("-") else location + " " + suffix
+    )
+    match = re.fullmatch(r"(.+?)\s*\(([^)]+)\)\s*\*?", combined)
+    if not match and "(" not in location:
+        # The publisher twice omits the opening parenthesis on a separately
+        # printed, otherwise literal department. Its full name is required.
+        department = re.fullmatch(r"([^()]+)\)", suffix)
+        if department and department[1] in DEPARTMENTS:
+            combined = location + " (" + suffix
+            match = re.fullmatch(r"(.+?)\s*\(([^)]+)\)", combined)
+    if not match or match[2] not in DEPARTMENTS:
+        return None
+    return combined, price, variation, [location, suffix]
+
+
 def _input_location_prefix(previous, words, price_left):
     """Recover an adjacent, visibly wrapped municipality without guessing names.
 
-    Only a grammatical connector at the line boundary permits joining. The
-    first line must contain location-column text only, not a product heading,
+    A grammatical connector or a complete parenthesized department permits
+    joining. The first line must contain location-column text only, not a heading,
     price, note, or another complete municipality/department row.
     """
     if not previous or not words:
         return ""
     prior = previous[1]
-    if not prior or any("Bold" in w["fontname"] for w in prior):
+    if not prior or any(_input_heading_word(w) for w in prior):
         return ""
     prefix = " ".join(previous[2])
     connectors = {"de", "del", "la", "las", "los"}
+    from .special_prices import DEPARTMENTS
+
+    department = re.fullmatch(
+        r"\(([^)]+)\)\s*\*?",
+        _input_line_text([w for w in words if w["x0"] < price_left]).strip(),
+    )
+    explicit_department = bool(department and department[1] in DEPARTMENTS)
     if (
         len(prefix) > 80
         or not re.fullmatch(
@@ -472,7 +582,11 @@ def _input_location_prefix(previous, words, price_left):
         or max(w["x1"] for w in prior) >= price_left
         or abs(min(w["x0"] for w in prior) - min(w["x0"] for w in words)) > 2
         or not -1 <= min(w["top"] for w in words) - max(w["bottom"] for w in prior) <= 5
-        or not (words[0]["text"] in connectors or prefix.split()[-1] in connectors)
+        or not (
+            explicit_department
+            or words[0]["text"] in connectors
+            or prefix.split()[-1] in connectors
+        )
     ):
         return ""
     return prefix
@@ -527,6 +641,10 @@ def parse_input_pdf(data, day):
                         w["bottom"]
                         for w in [header, *percentage_headers, *month_headers]
                     )
+                    if "FuturaStd-" in header["fontname"]:
+                        table_left = _input_ruled_left(
+                            page, header_bottom, left, right, price_left
+                        )
                     end = min(
                         [h["top"] for h in headers if h["top"] > header_bottom]
                         or [page.height - 18]
@@ -555,8 +673,21 @@ def parse_input_pdf(data, day):
                         raise SourceDateMismatch(
                             f"Input PDF table month differs from archive link: page {page_no}, {stamp[0]}"
                         )
+                    printed_price_months = sorted(
+                        {w["text"].lower() for w in month_headers}
+                    )
+                    date_issue = (
+                        "Printed price-column month "
+                        + ", ".join(printed_price_months)
+                        + " conflicts with table caption "
+                        + stamp[0]
+                        if any(MONTH_NUM[m] != day.month for m in printed_price_months)
+                        else None
+                    )
                     # Use the last table title, not an earlier table on the same page.
-                    title = re.split(r"Cuadro\s+\d+\.\s+", prefix[: stamp.start()])[-1]
+                    title = re.split(
+                        r"(?:Cuadro|Tabla)\s+\d+\.\s+", prefix[: stamp.start()]
+                    )[-1]
                     category = input_category(title)
                     if category != previous_category:
                         heading = ""
@@ -622,6 +753,22 @@ def parse_input_pdf(data, day):
                             + r"\s*$"
                         )
                         numeric = re.match(pattern, line, re.IGNORECASE)
+                        wrapped = _input_wrapped_department(
+                            lines,
+                            line_no - 1,
+                            price_left,
+                            numeric,
+                            bool(percentage_headers),
+                        )
+                        if wrapped:
+                            location, price, variation, wrapped_location_lines = wrapped
+                            line = (
+                                location
+                                + " "
+                                + price
+                                + (" " + variation if percentage_headers else "")
+                            )
+                            numeric = re.match(pattern, line, re.IGNORECASE)
                         if numeric and (
                             re.match(r"^(.*?)\s*\(([^)]+)\)\s*\*?$", numeric[1])
                             or re.fullmatch(
@@ -629,8 +776,10 @@ def parse_input_pdf(data, day):
                             )
                         ):
                             location, price = numeric.group(1, 2)
-                            printed_location_lines = [location]
-                            if location_prefix:
+                            printed_location_lines = (
+                                wrapped_location_lines if wrapped else [location]
+                            )
+                            if location_prefix and not wrapped:
                                 printed_location_lines = preceding_line[2] + [location]
                                 location = location_prefix + " " + location
                             variation = numeric[3] if percentage_headers else "n.d."
@@ -646,6 +795,10 @@ def parse_input_pdf(data, day):
                             if not heading and not unresolved:
                                 raise ValueError(
                                     f"Input PDF price without product/presentation: page {page_no}, col {col}, line {line_no}"
+                                )
+                            if not municipality:
+                                raise ValueError(
+                                    f"Input PDF numeric row lacks a municipality: page {page_no}, col {col}"
                                 )
                             quality_issue = None
                             split_heading = _input_presentation(heading, heading_lines)
@@ -673,6 +826,12 @@ def parse_input_pdf(data, day):
                                     "Sin presentación verificable",
                                 )
                                 quality_issue = "Native product heading has no explicit, separable presentation"
+                            if date_issue:
+                                quality_issue = "; ".join(
+                                    issue
+                                    for issue in [quality_issue, date_issue]
+                                    if issue
+                                )
                             value = float(price.replace(".", "").replace(",", "."))
                             if value <= 0:
                                 continue
@@ -707,12 +866,20 @@ def parse_input_pdf(data, day):
                                     "page": page_no,
                                     "printed_heading": heading,
                                     "printed_heading_lines": heading_lines.copy(),
+                                    **(
+                                        {
+                                            "printed_table_caption": stamp[0],
+                                            "printed_price_column_months": printed_price_months,
+                                        }
+                                        if date_issue
+                                        else {}
+                                    ),
                                     "quality_issue": quality_issue,
                                 },
                             )
                             previous_heading = False
                         elif (
-                            all("Bold" in w["fontname"] for w in ws)
+                            all(_input_heading_word(w) for w in ws)
                             or (
                                 # Native continuation lines can change font on
                                 # one suffix, or entirely. Require an adjacent

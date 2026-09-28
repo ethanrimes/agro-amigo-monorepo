@@ -63,7 +63,7 @@ PARSER_VERSIONS = {
     "inputs": "inputs-v4",
     "inputs-municipal": "inputs-v4",
     "inputs-annex": "inputs-v4",
-    "inputs-pdf": "inputs-pdf-v7",
+    "inputs-pdf": "inputs-pdf-v8",
     "inputs-reference": "inputs-reference-v5",
     "city-zip": "city-v5",
     "monthly": "monthly-units-v2",
