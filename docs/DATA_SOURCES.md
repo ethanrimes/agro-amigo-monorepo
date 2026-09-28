@@ -8,11 +8,13 @@ AgroAmigo keeps publisher, observation period, unit and source document attached
 |---|---|---|
 | [DANE SIPSA](https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa) daily/monthly prices | Product and market histories/comparisons | Keep daily, monthly and city/package series distinct; do not merge varieties by similar names |
 | DANE city bulletins | Package quotations and price rounds | Preserve printed market, quantity, presentation, unit and round |
+| DANE daily annex ZIPs | Original workbook members and their price/source views | Package ranges, daily matrices and published daily means retain their own identities and exact worksheet locators |
 | DANE weekly bulletins | Official reference detail/history | Published weekly mean and min/max retain their own period and basis |
 | DANE SIPSA-I | Input catalog and comparisons | Commercial identity includes presentation and available manufacturer/registration metadata; municipality and department scopes remain separate |
 | DANE raw milk | Farmgate municipal prices and separate macroregional references | COP/litre; a macroregion mean never substitutes for a municipality quotation |
 | DANE rice mill series | Mill-level prices and comparisons | Preserve the mill basis; tonne-to-kg conversions apply consistently to price and ranges |
 | DANE SIPSA-A | Supply by food, destination market and month | Reported arrivals, not inventory; partial months retain actual reporting coverage |
+| DANE daily supply summaries | Original source viewer and separately typed references | Provisional tonnes by market and reported-market total; missing cells are not zeroes, and summary totals are not added to the food microdata |
 | [FNC](https://federaciondecafeteros.org/estadisticas-cafeteras/) | Coffee reference, yield factors and delivery branches | Dry parchment coffee, usually COP per 125 kg load; not a verified buyer offer |
 | [SFC TRM](https://www.datos.gov.co/resource/32sa-8pi3.json) | Currency context | Dated COP/USD exchange rate, not a product price |
 | [Other Colombian publishers](OFFICIAL_COLOMBIA_SOURCES.md) | Cacao, palm, cattle, pigs and Corabastos references | Source-specific product, geography, unit and basis |

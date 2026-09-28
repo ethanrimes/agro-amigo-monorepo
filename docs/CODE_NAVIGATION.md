@@ -21,10 +21,12 @@ Use this map to find the implementation of a feature. [Architecture](ARCHITECTUR
 | [inputs.py](../pipelines/ingestion/inputs.py), [resumable_inputs.py](../pipelines/ingestion/resumable_inputs.py), [input_references.py](../pipelines/ingestion/input_references.py) | Input identities, resumable publication and ancillary annex data |
 | [pdf_sources.py](../pipelines/ingestion/pdf_sources.py) | Native PDF text/tables, monetary guards and input PDF parsing |
 | [city_reports.py](../pipelines/ingestion/city_reports.py) | ZIP members, city packages, rounds, classification and member checkpoints |
+| [daily_discovery.py](../pipelines/ingestion/daily_discovery.py), [daily_archives.py](../pipelines/ingestion/daily_archives.py), [daily_publication.py](../pipelines/ingestion/daily_publication.py) | Historical daily archives, native annex workbook members, percentage semantics and retained corrections |
 | [dane_weekly.py](../pipelines/ingestion/dane_weekly.py) | Weekly PDF/XLS/XLSX periods, means, ranges and review rows |
 | [special_prices.py](../pipelines/ingestion/special_prices.py) | Municipal milk and mill rice observations |
 | [milk_macroregions.py](../pipelines/ingestion/milk_macroregions.py), [milk_publication.py](../pipelines/ingestion/milk_publication.py) | Separate milk chart identities and municipal/chart publication coordination |
 | [supply.py](../pipelines/ingestion/supply.py) | Bounded supply aggregation with exact original row ranges |
+| [supply_summaries.py](../pipelines/ingestion/supply_summaries.py) | Separate provisional daily market totals, native cells and missing-value semantics |
 | [coffee_sources.py](../pipelines/ingestion/coffee_sources.py), [colombia_sources.py](../pipelines/ingestion/colombia_sources.py), [international_sources.py](../pipelines/ingestion/international_sources.py) | Publisher-specific price semantics |
 | [official_sources.py](../pipelines/ingestion/official_sources.py), [official_catalog.py](../pipelines/ingestion/official_catalog.py) | Official quote publication, reviews and current catalog refresh |
 | [ocr.py](../pipelines/ingestion/ocr.py) | Retained images, paired readings and supported typed fallback dispatch |
