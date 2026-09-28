@@ -1,46 +1,175 @@
-"""Publish the exact demo calculation rules as a versioned PDF in PostgreSQL."""
-from import_references import *
-from reportlab.platypus import SimpleDocTemplate,Spacer,PageBreak
-from reportlab.lib.styles import getSampleStyleSheet
+"""Render and archive the current explanatory method, preserving prior versions."""
 
-def publish(cur):
- p=OUT/'planning-method.pdf';styles=getSampleStyleSheet();styles['BodyText'].fontName='Helvetica';styles['BodyText'].fontSize=10;styles['BodyText'].leading=15
- story=[]
- def para(t):story.append(Paragraph(t,styles['BodyText']));story.append(Spacer(1,10))
- def heading(t):story.append(Paragraph(t,styles['Heading2']));story.append(Spacer(1,8))
- story.append(Paragraph('AgroAmigo | Cómo se calculan tus escenarios',styles['Title']));para('Versión 1 · 6 de septiembre de 2026. Reglas de la aplicación; no son recomendaciones oficiales de las entidades citadas.')
- heading('1. Historia, unidades y períodos')
- para('Las observaciones de precios, TRM e insumos se limitan a los últimos 12 meses, con fecha de Colombia. Se conservan aparte cinco años calendario completos (2021–2025) para estacionalidad, y documentos técnicos más antiguos con su período visible. No se rellenan datos faltantes.')
- para('SIPSA mensual: COP nominales por kilogramo y mercado. La fecha representa el cierre del mes. FNC: COP por carga de 125 kg de café pergamino seco. Para escenarios se divide la referencia FNC por 125. La referencia diaria nacional, los factores y la tabla Almacafé pueden tener fechas distintas; se muestran por separado.')
- heading('2. Escenarios estacionales')
- para('Para un producto, mercado y año con 12 meses válidos: razón = precio del mes objetivo / precio del mes de la referencia reciente. Se requieren al menos 3 años completos. Se calculan los percentiles 25, 50 y 75 de las razones (interpolación lineal) y se multiplican por el precio reciente. En café se usan promedios mensuales históricos y el último precio diario como ancla. No se mezclan mercados para generar la estacionalidad.')
- para('El gráfico divide cada precio mensual por el promedio anual del mismo año, luego muestra la mediana entre años. Un índice de 100 es igual al promedio de ese año. Son patrones descriptivos: no incorporan inflación futura, clima futuro, choques de oferta ni garantizan el precio que recibirá el productor.')
- para('Cuatro combinaciones de producto, mercado y año con precios duplicados contradictorios se excluyeron completas; el archivo seasonality-exclusions.json permite revisarlas. Cada año conserva el documento y las filas de origen.')
- heading('3. Producción y presupuesto')
- para('Rendimiento EVA = producción municipal en toneladas × 1.000 / área cosechada en hectáreas, para la misma variedad y sistema. Es una referencia agregada, no el rendimiento esperado de cada finca. En cultivos permanentes corresponde a áreas cosechadas; no se aplica automáticamente a un cultivo recién establecido.')
- para('Cosecha vendible = área × rendimiento por hectárea × (1 − pérdida / 100). Costos totales = área × suma de costos por hectárea + gastos adicionales de venta. Precio de equilibrio = costos totales / [cosecha vendible × (1 − comisión / 100)]. Con cosecha cero no existe precio de equilibrio finito.')
- story.append(PageBreak());heading('4. Ingresos y efectivo necesario')
- para('Saldo = cantidad vendida × precio × (1 − comisión / 100) − costos totales. No equivale a utilidad completa si se omiten trabajo propio, arriendo, financiación, impuestos u otros gastos. La aplicación permite incorporarlos a los rubros editables.')
- para('Los escenarios combinan precio bajo/central/alto con cosecha menor/central/mayor. La variación inicial de cosecha de ±20 % es un supuesto editable, no un intervalo estadístico. El descuento frente al mayorista también es un supuesto: SIPSA no mide directamente el pago en finca.')
- para('El efectivo asignado antes de cosecha suma únicamente los rubros marcados para ese momento. No representa un flujo de caja mensual ni considera crédito o anticipos. Las estructuras UPRA mantienen los pesos del año de estudio. El usuario debe actualizarlos; no se indexan automáticamente. Transporte y empaques pueden estar ya incluidos: evita duplicarlos.')
- heading('5. Ofertas privadas')
- para('Pago bruto = kilos aceptados × precio por kilo. Deducción = pago bruto × porcentaje de descuento. Neto del agricultor = bruto − deducción − transporte − empaque − otros cargos. Se ordena el neto por kilo aceptado para que una oferta parcial no parezca comparable por total; se muestran también cantidad restante, total y plazo de pago.')
- para('Para compradores: costo puesto en destino = bruto − deducción + los gastos que paga el comprador. Solo compara ofertas de la misma variedad, calidad y presentación. Carga = 125 kg; arroba = 12,5 kg. Ofertas vencidas no entran en la recomendación. No se descuentan financieramente los plazos; se muestran en días. No existen cotizaciones privadas verificadas ni inventario comercial en esta demo.')
- heading('6. Clima y tareas')
- para('Open-Meteo entrega un pronóstico de modelo para 7 días. Se consulta como máximo una vez por hora por coordenada redondeada a 0,01 grados. La coordenada del modelo puede diferir de la solicitada. Cada respuesta se archiva con hora y URL pública sin claves. Si falla la actualización se identifica el dato guardado y no se generan ventanas de trabajo.')
- para('Reglas: lluvia de 20 mm o más en 24 horas: revisar desagües o resguardo de cosecha. Dos días con lluvia de hasta 1 mm/día y probabilidad menor al 30 %: posible ventana con poca lluvia para cosecha o café. Máxima de 32 °C o más: considerar labores en horas más frescas. Menos de 5 mm en 5 días y sin riego registrado: comprobar humedad en campo. Son umbrales transparentes de planificación, no alertas oficiales ni modelos validados para cada cultivo. No calculan dosis de riego o plaguicidas.')
- story.append(PageBreak());heading('7. Qué cultivar y cuándo cosechar')
- para('Las opciones muestran cultivos registrados por EVA en el municipio y, cuando existe una capa compatible, las áreas de aptitud de UPRA SIPRA. Se suman hectáreas por clasificación y municipio; se prioriza el área de aptitud alta y media. La zonificación regional no determina la aptitud de un lote ni su rentabilidad. Sin capa compatible se indica que no hay evaluación integrada. El semestre modifica las capas que son semestrales.')
- para('Los calendarios UPRA muestran porcentajes históricos departamentales de siembra y cosecha de 2024. Describen actividad pasada, no la mejor fecha de siembra para este año. La simulación por duración suma a la fecha de inicio los días que ingresa el usuario.')
- para('Café: Cenicafé, Avance Técnico 194 (1993), describe 28–30 semanas de floración a maduración por debajo de 1.200 m, y 34–36 semanas por encima de 1.700 m. Sin clasificación precisa se muestra una ventana amplia de 28–36 semanas. Se usa la floración registrada, no la siembra. La ventana no sustituye observar madurez. Papa: la referencia de 120 días corresponde a Alhaja en el Nudo de los Pastos; no se generaliza a otras variedades o zonas.')
- para('AGROSAVIA: los resúmenes de pH y materia orgánica corresponden a muestras enviadas al laboratorio por demanda del servicio, sin ubicación de parcela. No representan el suelo de una finca. Se excluyen valores censurados y pH fuera de 0–14, y se conservan número de muestras y fechas. No se recomienda fertilización a partir de la mediana municipal.')
- heading('8. Documentos, privacidad y actualización')
- para('Azure PostgreSQL conserva los archivos originales y extractos generados por AgroAmigo. Cada archivo se identifica con SHA-256; una actualización produce otro identificador. Los extractos PDF de precios mantienen el valor original y localizadores de libro, hoja y fila. El visor distingue documentos oficiales, extractos y este método. Una hoja de cálculo permanece descargable como original; el PDF es una representación trazable, no un boletín oficial inventado.')
- para('Perfil de finca, favoritos, ofertas y escenarios se guardan en el navegador o dispositivo, sin cuenta ni publicación. La ubicación redondeada se envía al servidor y al proveedor de clima; se conserva con el pronóstico. Las referencias y precios son una carga de demostración con fecha visible; su renovación se realiza mediante los importadores. El clima sí se consulta al usar la app. El servicio alojado gratuito de Open-Meteo se utiliza para esta demostración no comercial; existe configuración para su API comercial.')
- def footer(c,d):c.setFont('Helvetica',8);c.setFillColor(colors.HexColor('#526259'));c.drawString(42,25,'AgroAmigo · Método de cálculo · Versión 1');c.drawRightString(570,25,str(d.page))
- SimpleDocTemplate(str(p),pagesize=(612,792),rightMargin=42,leftMargin=42,topMargin=38,bottomMargin=44,title='AgroAmigo - fórmulas y supuestos',author='AgroAmigo').build(story,onFirstPage=footer,onLaterPages=footer)
- doc(cur,p,'AgroAmigo - fórmulas, supuestos y trazabilidad','AgroAmigo','https://agroamigo-demo-9a04.azurewebsites.net/sources','Versión 1 · septiembre 2026','planning-method',kind='methodology')
-if __name__=='__main__':
- config=json.loads((ROOT/'.azure-local/database.json').read_text())
- with psycopg.connect(host=config['host'],dbname=config['database'],user=config['user'],password=config['password'],sslmode='verify-full',sslrootcert=certifi.where(),connect_timeout=15) as conn:publish(conn.cursor())
- print('Methodology PDF archived.')
+import argparse
+import hashlib
+import io
+from pathlib import Path
+
+from pypdf import PdfReader
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer
+
+VERSION = "2"
+TITLE = "AgroAmigo - referencias históricas y trazabilidad"
+PERIOD = "Versión 2 · septiembre de 2026"
+SOURCE_URL = "https://agroamigo-demo-9a04.azurewebsites.net/sources"
+DEFAULT_OUTPUT = (
+    Path(__file__).resolve().parents[2] / "output/pdf/planning-method-v2.pdf"
+)
+
+SECTIONS = [
+    (
+        "Historia, fechas y unidades",
+        [
+            "La aplicación conserva historia y originales. Las vistas recientes y las consultas de historia completa indican su alcance; no se limita toda la historia a los últimos 12 meses. Cada dato conserva su fecha, unidad, fuente y, cuando existe, hoja, fila o página. No se rellenan observaciones faltantes.",
+            "Los precios mensuales DANE SIPSA se muestran en COP nominales por kilogramo y mercado; la fecha corresponde al cierre del mes. Las cotizaciones por presentación conservan su cantidad y unidad. Los porcentajes de variación son cambios, no precios. Una referencia mayorista no equivale a un pago en finca ni a una oferta de compra.",
+            "La referencia nacional FNC se publica en COP por carga de 125 kg de café pergamino seco. Convertirla a COP/kg requiere dividir por 125. La referencia nacional, los factores y las tablas por lugar pueden tener fechas distintas y conservan sus fuentes propias.",
+        ],
+    ),
+    (
+        "Patrón estacional descriptivo",
+        [
+            "Se compara el mismo producto, mercado y unidad. Para cada año completo, se divide el precio de cada mes por el promedio de sus 12 precios mensuales y se multiplica por 100. El gráfico muestra, para cada mes, la mediana de los índices de los años válidos. Un índice de 100 equivale al promedio de ese año.",
+            "Se requieren al menos 3 años completos y comparables, con 12 precios finitos y positivos. Si no los hay, se muestran los años disponibles sin generar un patrón. La tabla conserva los precios mensuales nominales y los enlaces a sus originales; no ajusta por inflación.",
+            "El precio reciente se informa por separado: no multiplica los índices del gráfico. Este patrón describe historia; no calcula precios futuros, ingresos ni rentabilidad y no recomienda un mes para vender. No incorpora un pronóstico de clima, oferta o inflación.",
+        ],
+    ),
+    (
+        "Mi finca: referencias publicadas",
+        [
+            "Mi finca permite consultar ubicación, clima, cultivos, suelos, calendarios e información de costos de las fuentes disponibles. Las referencias de costos se muestran con su cultivo, región, unidad, año y documento. Se conservan los datos guardados de la finca; la vista actual no ofrece calculadoras manuales de presupuesto o rentabilidad.",
+            "El rendimiento agregado EVA se obtiene de la producción municipal en toneladas multiplicada por 1.000 y dividida por el área cosechada en hectáreas, para la misma clasificación de cultivo. No es una predicción del rendimiento de una finca.",
+            "Los calendarios departamentales muestran porcentajes históricos de siembra y cosecha del año publicado. La aptitud regional UPRA SIPRA y los resúmenes de muestras de suelo AGROSAVIA son referencias a su escala; no determinan por sí solos la aptitud, fertilización o fecha de siembra de un lote.",
+        ],
+    ),
+    (
+        "Otras herramientas y clima",
+        [
+            "Las ofertas guardadas conservan cantidades, precios, descuentos, gastos, vigencia y plazo. Sus resultados dependen de los valores ingresados y deben compararse con la misma variedad, calidad y presentación. No son cotizaciones verificadas por AgroAmigo.",
+            "El clima identifica el proveedor, la ubicación y la fecha de consulta. El pronóstico de modelo y los avisos orientativos no sustituyen la observación del lote ni constituyen alertas oficiales. Cuando se muestra una respuesta guardada, su antigüedad debe permanecer visible.",
+        ],
+    ),
+    (
+        "Originales, revisiones y límites",
+        [
+            "Los originales y las versiones derivadas se conservan con identificadores SHA-256. Una nueva versión del archivo tiene otro identificador; no reemplaza sus bytes históricos. El visor distingue el original de la entidad, los extractos y documentos explicativos de AgroAmigo como este.",
+            "Las tablas Excel y los PDF conservan acceso al archivo descargable. Los registros en revisión permanecen retenidos, con su motivo, y se excluyen de las cifras publicadas cuando su interpretación no es segura. La existencia de un original archivado no certifica la publicación de todas sus tablas.",
+            "Este documento explica la presentación actual de las referencias. Las cifras, fechas y condiciones particulares deben comprobarse en el original enlazado junto a cada dato. Las versiones anteriores de este método permanecen archivadas y describen funciones de su momento.",
+        ],
+    ),
+]
+
+
+def render(path=DEFAULT_OUTPUT):
+    """Generate deterministic bytes locally, without database or network access."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    styles = getSampleStyleSheet()
+    styles["BodyText"].fontName = "Helvetica"
+    styles["BodyText"].fontSize = 10
+    styles["BodyText"].leading = 14
+    styles["Heading2"].textColor = colors.HexColor("#164b35")
+    story = [
+        Paragraph("AgroAmigo | Referencias históricas y trazabilidad", styles["Title"]),
+        Spacer(1, 10),
+        Paragraph(
+            PERIOD
+            + ". Documento explicativo de AgroAmigo; no es una recomendación oficial de las entidades citadas.",
+            styles["BodyText"],
+        ),
+        Spacer(1, 14),
+    ]
+    for title, paragraphs in SECTIONS:
+        if title == "Mi finca: referencias publicadas":
+            story.append(PageBreak())
+        story.extend([Paragraph(title, styles["Heading2"]), Spacer(1, 5)])
+        for paragraph in paragraphs:
+            story.extend([Paragraph(paragraph, styles["BodyText"]), Spacer(1, 9)])
+
+    def footer(canvas, document):
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.HexColor("#526259"))
+        canvas.drawString(
+            42, 25, "AgroAmigo · Referencias y trazabilidad · Versión " + VERSION
+        )
+        canvas.drawRightString(570, 25, str(document.page))
+
+    SimpleDocTemplate(
+        str(path),
+        pagesize=(612, 792),
+        rightMargin=42,
+        leftMargin=42,
+        topMargin=38,
+        bottomMargin=44,
+        title=TITLE,
+        author="AgroAmigo",
+        invariant=1,
+    ).build(story, onFirstPage=footer, onLaterPages=footer)
+    return path
+
+
+def publish(cur, path=None):
+    """Insert a new immutable PDF and retain the previous alias before switching.
+
+    Caller owns the transaction and normal ingestion writer lock. Blob upload can
+    precede this operation; source_document also retains the complete PDF bytes.
+    """
+    from psycopg.types.json import Jsonb
+
+    path = Path(path) if path else render()
+    data = path.read_bytes()
+    did = hashlib.sha256(data).hexdigest()
+    old = cur.execute(
+        "SELECT document_id FROM document_alias WHERE alias='planning-method' FOR UPDATE"
+    ).fetchone()
+    prior = old[0] if old else None
+    metadata = {
+        "method_version": VERSION,
+        "generated_by": "pipelines/planning/methodology.py",
+        "note": "Current descriptive reference method; previous method documents remain immutable.",
+    }
+    if prior and prior != did:
+        metadata["parents"] = [prior]
+    cur.execute(
+        """INSERT INTO source_document(id,title,publisher,source_url,media_type,kind,reference_period,page_count,content,metadata)
+      VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING""",
+        (
+            did,
+            TITLE,
+            "AgroAmigo",
+            SOURCE_URL,
+            "application/pdf",
+            "methodology",
+            PERIOD,
+            len(PdfReader(io.BytesIO(data)).pages),
+            data,
+            Jsonb(metadata),
+        ),
+    )
+    if prior and prior != did:
+        record = {
+            "alias": "planning-method",
+            "document_id": prior,
+            "replacement_document_id": did,
+            "reason": "Current descriptive seasonal index and read-only Mi finca reference method",
+            "method_version": VERSION,
+        }
+        cur.execute(
+            """INSERT INTO retained_record(table_name,fingerprint,record)
+          VALUES('document_alias_revision',md5(%s::jsonb::text),%s) ON CONFLICT DO NOTHING""",
+            (Jsonb(record), Jsonb(record)),
+        )
+    cur.execute(
+        "INSERT INTO document_alias(alias,document_id) VALUES('planning-method',%s) ON CONFLICT(alias) DO UPDATE SET document_id=excluded.document_id",
+        (did,),
+    )
+    return did
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    args = parser.parse_args()
+    result = render(args.output)
+    print(result, hashlib.sha256(result.read_bytes()).hexdigest())
