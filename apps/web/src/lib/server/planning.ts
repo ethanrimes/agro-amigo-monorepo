@@ -1,4 +1,5 @@
 import "server-only";
+import { SOURCE_DOCUMENT_EVIDENCE_SQL } from "./source-document-sql";
 import { EVIDENCE_REVIEW_COUNT_SQL } from "./evidence-review-sql";
 import { OFFICIAL_EVIDENCE_ROWS_SQL } from "./official-evidence-sql";
 import { showsSupplySummaryRecords } from "./supply-summary-evidence";
@@ -382,7 +383,7 @@ export async function evidence(
   }
   const r = (
     await db.query<Evidence>(
-      `SELECT id,title,publisher,source_url,media_type,kind,reference_period,retrieved_at,page_count,octet_length(content) AS bytes,metadata FROM source_document WHERE id=$1 OR id=(SELECT document_id FROM document_alias WHERE alias=$1) LIMIT 1`,
+      SOURCE_DOCUMENT_EVIDENCE_SQL,
       [id],
     )
   ).rows[0];
