@@ -42,7 +42,10 @@ test("image files match their hashes and the crop selection is specific", () => 
   expect(photoFor("Café tostado").key).toBe("coffee-roasted");
   expect(photoFor("Tomate de árbol").key).toBe("tamarillo");
   expect(photoFor("Manzana roja").key).toBe("apple");
-  expect(photoFor("Cacao en polvo").key).toBe("produce-neutral");
+  expect(photoFor("Cacao en polvo").key).toBe("cocoa-powder");
+  expect(photoFor("Café molido").key).toBe("coffee-ground");
+  expect(photoFor("Café instantáneo").key).toBe("coffee-instant");
+  expect(photoFor("Atún en lata").key).toBe("tuna-canned");
   expect(photoFor("Chocolate de cacao").key).toBe("chocolate");
   expect(photoFor("Palma").key).toBe("oil-palm-fruit");
   expect(photoFor("Palmiste").key).toBe("oil-palm-fruit");
@@ -106,7 +109,7 @@ async function shot(page: Page, name: string) {
 test("browser: credited crop and Colombian context photos load with source details", async ({ page }) => {
   await mockApi(page);
   await page.goto("/credits");
-  for (const key of ["apple", "blueberry", "farm-colombia", "produce-colombia", "coffee-parchment", "potato", "seeds-general", "seedlings-general", "cacao-pods", "sugarcane-colombia", "oil-palm-fruit", "palm-oil-unbranded", "rose-colombia", "rose-red-cut", "cattle-colombia", "coffee-green-beans", "bell-pepper-green"]) {
+  for (const key of ["apple", "blueberry", "farm-colombia", "produce-colombia", "coffee-parchment", "coffee-ground", "coffee-instant", "cocoa-powder", "peas-dried", "tuna-canned", "potato", "seeds-general", "seedlings-general", "cacao-pods", "sugarcane-colombia", "oil-palm-fruit", "palm-oil-unbranded", "rose-colombia", "rose-red-cut", "cattle-colombia", "coffee-green-beans", "bell-pepper-green"]) {
     const entry = imageLibrary[key];
     const article = page.locator(".credits-grid article").filter({ has: page.getByRole("heading", { name: entry.title, exact: true }) });
     await article.scrollIntoViewIfNeeded();

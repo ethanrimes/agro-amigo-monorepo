@@ -14,7 +14,8 @@ type Photo = {
 export const imageLibrary = library as Record<string, Photo>;
 const families: [RegExp, string][] = [
   [/cafe.*tostado/, "coffee-roasted"],
-  [/cafe.*(instantaneo|molido)/, "produce-neutral"],
+  [/cafe.*(instantaneo|soluble)/, "coffee-instant"],
+  [/cafe.*molido/, "coffee-ground"],
   [/cafe.*pergamino/, "coffee-parchment"],
   [/cafe.*(almendra sana|excelso)/, "coffee-green-beans"],
   [/aguacate/, "avocado"],
@@ -24,7 +25,8 @@ const families: [RegExp, string][] = [
   [/platano/, "plantain"],
   [/banano/, "banana"],
   [/chocolate/, "chocolate"],
-  [/cacao.*(polvo|manteca|licor)/, "produce-neutral"],
+  [/cacao.*polvo/, "cocoa-powder"],
+  [/cacao.*(manteca|licor)/, "produce-neutral"],
   [/cacao/, "cacao-pods"],
   [/can[a] de azucar/, "sugarcane-colombia"],
   [/^palma$|palma (de aceite|africana)|fruto de palma|palmiste/, "oil-palm-fruit"],
@@ -34,6 +36,7 @@ const families: [RegExp, string][] = [
   [/arandano/, "blueberry"],
   [/jengibre/, "ginger"],
   [/camaron/, "shrimp"],
+  [/atun (en lata|enlatado)/, "tuna-canned"],
   [/pescado seco/, "dried-fish"],
   [/\bbagre\b/, "bagre"],
   [/\bbasa\b/, "basa"],
@@ -79,7 +82,7 @@ const families: [RegExp, string][] = [
   [/ajo/, "garlic"],
   [/alcachofa/, "artichoke"],
   [/apio/, "celery"],
-  [/arveja seca/, "produce-neutral"],
+  [/arveja seca/, "peas-dried"],
   [/arveja/, "peas"],
   [/berenjena/, "aubergine"],
   [/brocoli/, "broccoli"],
@@ -206,6 +209,16 @@ export function photoFor(
             ? `Fotografía ilustrativa de café pergamino; la presentación de ${name} puede diferir.`
           : key === "coffee-green-beans"
             ? `Fotografía ilustrativa de granos de café sin tostar; no acredita el origen ni grado comercial de ${name}.`
+          : key === "coffee-ground"
+            ? `Fotografía ilustrativa de café molido sin marca; no acredita el origen ni la presentación comercial de ${name}.`
+          : key === "coffee-instant"
+            ? `Fotografía ilustrativa de un gránulo de café instantáneo; la presentación de ${name} puede diferir.`
+          : key === "cocoa-powder"
+            ? `Fotografía ilustrativa de cacao en polvo; no acredita el origen ni la presentación comercial de ${name}.`
+          : key === "peas-dried"
+            ? `Fotografía ilustrativa de arvejas secas enteras; el color y origen de ${name} pueden diferir.`
+          : key === "tuna-canned"
+            ? `Fotografía ilustrativa de atún en una lata abierta; no representa la marca ni la presentación comercial de ${name}.`
           : ["bagre", "basa", "bocachico", "cachama", "tilapia", "trout", "dried-fish"].includes(key)
             ? `Fotografía ilustrativa para ${name}. ${imageLibrary[key].description}`
           : key === "palm-oil-unbranded"
