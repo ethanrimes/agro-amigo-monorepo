@@ -395,13 +395,14 @@ export async function evidence(
     const dates = sourceReviews.map((review) => review.observed_on).filter(Boolean);
     r.metadata.review_note = `La fuente tiene referencias pendientes de verificación${dates.length ? ": " + dates.join(", ") : ""}. Conservamos el archivo original; la fecha del enlace no sustituye la fecha validada de cada precio.`;
   }
-  const reviewedRows = (await db.query<{ count: number }>(
+  const review = (await db.query<{ count: number; identity_note: string | null }>(
     EVIDENCE_REVIEW_COUNT_SQL,
     [r.id],
-  )).rows[0]?.count || 0;
+  )).rows[0];
+  const reviewedRows = review?.count || 0;
   if (reviewedRows) {
     r.metadata.record_review_count = reviewedRows;
-    r.metadata.record_review_note = `Hay ${reviewedRows.toLocaleString("es-CO")} ${reviewedRows === 1 ? "registro de este archivo pendiente" : "registros de este archivo pendientes"} de verificación. Se conservan en el historial y no se usan como precios publicados.`;
+    r.metadata.record_review_note = review?.identity_note || `Hay ${reviewedRows.toLocaleString("es-CO")} ${reviewedRows === 1 ? "registro de este archivo pendiente" : "registros de este archivo pendientes"} de verificación. Se conservan en el historial y no se usan como precios publicados.`;
   }
   const correctedIdentities = (await db.query<{ count: number }>(
     "SELECT count(*)::int AS count FROM price_observation_review WHERE document_id=$1",

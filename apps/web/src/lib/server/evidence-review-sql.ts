@@ -13,4 +13,6 @@ SELECT ((SELECT count(DISTINCT r.source_locator)
     WHERE h.document_id=r.document_id AND h.source_locator=r.source_locator))
   + (SELECT count(*) FROM historical_price h JOIN latest_input v
       ON h.details->>'parser_version'=v.processor_version
-    WHERE h.document_id=$1 AND h.series='dane-inputs-pdf-unresolved'))::int AS count`;
+    WHERE h.document_id=$1 AND h.series='dane-inputs-pdf-unresolved'))::int AS count,
+  (SELECT min(reason) FROM official_source_review
+    WHERE document_id=$1 AND source_locator='advisory source identity') AS identity_note`;

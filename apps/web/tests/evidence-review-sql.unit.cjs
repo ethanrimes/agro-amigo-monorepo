@@ -16,7 +16,7 @@ before(async () => {
   await db.query(`SET search_path=pg_temp; SET statement_timeout='10s';
     CREATE TEMP TABLE ingestion_checkpoint(document_id text,processor_version text,step text);
     CREATE TEMP TABLE historical_price(document_id text,source_locator text,series text,details jsonb,PRIMARY KEY(document_id,source_locator));
-    CREATE TEMP TABLE official_source_review(document_id text,source_locator text,created_at timestamptz);
+    CREATE TEMP TABLE official_source_review(document_id text,source_locator text,created_at timestamptz,reason text);
     CREATE TEMP TABLE official_price_quote(document_id text,source_locator text,parsed_at timestamptz);
     CREATE TEMP TABLE ingestion_asset(document_id text,status text,processor_version text);
     INSERT INTO ingestion_checkpoint VALUES ('input','inputs-pdf-v9','inputs-pdf:published');
@@ -46,4 +46,12 @@ check('later complete correction clears old input reviews without deleting raw',
   await db.query("INSERT INTO ingestion_checkpoint VALUES('input','inputs-pdf-v11','inputs-pdf:published')");
   assert.equal(await count('input'), 1);
   assert.equal((await db.query('SELECT count(*)::int n FROM historical_price')).rows[0].n, before);
+});
+check('misidentified advisory originals expose their specific review explanation', async () => {
+  const reason = 'El documento conservado corresponde a papa; el aviso de café enlaza ahora su artículo verificado.';
+  await db.query("INSERT INTO official_source_review(document_id,source_locator,created_at,reason) VALUES('wrong-advisory','advisory source identity',now(),$1)", [reason]);
+  const row = (await db.query(SQL, ['wrong-advisory'])).rows[0];
+  assert.equal(row.count, 1);
+  assert.equal(row.identity_note, reason);
+  assert.equal((await db.query(SQL, ['input'])).rows[0].identity_note, null);
 });
