@@ -1,0 +1,46 @@
+[
+  {
+    "name": "legacy-coco-exact-region-visual",
+    "route": "/product/coco?region=Quind%C3%ADo&series=city&presentation=Docena&units=15+Kilogramo&market=sipsa-armenia-mercar&history=all",
+    "ready": "!!document.querySelector('.chart-data tbody tr')",
+    "steps": [
+      {
+        "action": "document.querySelector('.applied-filters').scrollIntoView({block:'center'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "VISUAL-CITY-SCOPE",
+            "condition": "['Armenia, Mercar','Docena','15 Kilogramo','Quindío'].every(s=>document.querySelector('.applied-filters').textContent.includes(s))",
+            "expected": "Visible exactQuindío/Armenia, Docena15kg scope"
+          },
+          {
+            "id": "VISUAL-CITY-SCOPE-VIEWPORT",
+            "condition": "(()=>{let r=document.querySelector('.applied-filters').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight})()",
+            "expected": "Applied filters actually inside screenshot viewport"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "legacy-coco-apr20-48000-visual",
+    "route": "/product/coco?region=Quind%C3%ADo&series=city&presentation=Docena&units=15+Kilogramo&market=sipsa-armenia-mercar&history=all",
+    "ready": "!!document.querySelector('.chart-data tbody tr')",
+    "steps": [
+      {
+        "action": "document.querySelector('.chart-data').open=true;window.__exactCoco=[...document.querySelectorAll('.chart-data tbody tr')].find(r=>r.cells[0].textContent==='20 de abril de 2023');if(!window.__exactCoco)throw Error('Exact historical row missing');window.__exactCoco.scrollIntoView({block:'center'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await new Promise(r=>setTimeout(r,500));",
+        "checks": [
+          {
+            "id": "VISUAL-CITY-EXACT-PRICE",
+            "condition": "window.__exactCoco.cells[0].textContent==='20 de abril de 2023'&&Number(window.__exactCoco.cells[1].textContent.replace(/[^0-9]/g,''))===48000",
+            "expected": "Exact20April2023CocoDocena15kg literal48000COP"
+          },
+          {
+            "id": "VISUAL-CITY-ROW-VIEWPORT",
+            "condition": "(()=>{let r=window.__exactCoco.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight})()",
+            "expected": "Actual48000 historical row inside screenshot viewport"
+          }
+        ]
+      }
+    ]
+  }
+]
