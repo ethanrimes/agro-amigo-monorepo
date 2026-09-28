@@ -83,6 +83,8 @@ test("generic photos disclose different cultivars, species, and commercial packs
     ["Mostaza doy pack", "mustard-unbranded", "no representa la marca ni el empaque"],
     ["Capaz Magdalena fresco", "capaz-fish", "no verifica la especie"],
     ["Cuchuco de cebada", "barley-groats", "molido"],
+    ["Bocadillo veleño", "bocadillo-colombiano", "no acredita el origen veleño"],
+    ["Jugo de frutas", "fruit-juice-mix", "presentación comercial"],
   ]) {
     const photo = photoFor(name);
     expect(photo.key).toBe(key);

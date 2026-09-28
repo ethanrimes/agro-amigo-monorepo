@@ -130,6 +130,8 @@ const families: [RegExp, string][] = [
   [/trigo/, "wheat"],
   [/mani/, "peanut"],
   [/panela/, "panela"],
+  [/bocadillo veleno/, "bocadillo-colombiano"],
+  [/^jugo de frutas$/, "fruit-juice-mix"],
   [/azucar/, "sugar"],
   [/aceite de palma/, "palm-oil-unbranded"],
   [/aceite (de )?girasol/, "sunflower-oil-unbranded"],
@@ -262,6 +264,10 @@ export function photoFor(
             ? `Fotografía ilustrativa de un ejemplar de Pimelodus grosskopfii; no verifica la especie, procedencia ni presentación comercial de ${name}.`
           : key === "barley-groats"
             ? `Fotografía ilustrativa de cebada quebrada sin cocinar; el molido y la presentación de ${name} pueden diferir.`
+          : key === "bocadillo-colombiano"
+            ? `Fotografía ilustrativa de bocadillo colombiano envuelto en hoja; no acredita el origen veleño ni el productor de ${name}.`
+          : key === "fruit-juice-mix"
+            ? `Fotografía ilustrativa de una mezcla de jugos de frutas servida en vaso; el sabor y la presentación comercial de ${name} pueden diferir.`
           : key === "cabbage" && n === "coles"
             ? `Fotografía ilustrativa de repollo como ejemplo de las coles; no identifica la variedad comercial de ${name}.`
           : key === "fava-green"

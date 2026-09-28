@@ -1791,5 +1791,29 @@
     "sha256": "7c55d058e33acdc543b6facd4612fbec16d9c600963aa5aa00f9cacc3115230b",
     "illustrative": true,
     "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "bocadillo-colombiano": {
+    "src": "/images/library/bocadillo-colombiano.jpg",
+    "title": "Bocadillo.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Bocadillo.jpg",
+    "author": "Trotskij",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "description": "Colombian bocadillo",
+    "sha256": "242e0ce7b955b49c2a86d45eceb2eda7f0ca87c4373913371c640bcb5b79a5bc",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "fruit-juice-mix": {
+    "src": "/images/library/fruit-juice-mix.jpg",
+    "title": "Mixture of fruit juices.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Mixture_of_fruit_juices.jpg",
+    "author": "Filo gèn'",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "mixture of fruit juice, alcohol-free drink that can be found in restaurants",
+    "sha256": "551e3be63bc35ab980466104154e4f4376a3aab216e3517785d4435f20277638",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   }
 }
