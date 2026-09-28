@@ -107,3 +107,21 @@ def backfill_candidates(db, limit):
                WHEN kind LIKE 'international-%%' THEN 2 ELSE 3 END,kind LIMIT %s""",
         (expected_versions(), max(1, min(int(limit), 1000))),
     ).fetchall()
+
+
+def supply_validation_retry(db):
+    """Give one interrupted whole-workbook validation a full hourly window.
+
+    Supply must validate the entire native source before publication checkpoints.
+    Repeatedly appending it after current large input files can exhaust every run
+    before that first checkpoint. Only a time-budget deferral earns this slot;
+    malformed, reviewed or newly discovered sources keep the ordinary queue.
+    """
+    return db.execute(
+        """SELECT url,kind,observed_on FROM ingestion_asset
+        WHERE kind='supply' AND status='pending'
+          AND error IN ('Supply native validation exceeded the run budget',
+                        'Supply native validation deferred before starting')
+          AND (checked_at IS NULL OR checked_at<now()-interval '6 hours')
+        ORDER BY checked_at ASC NULLS FIRST,url LIMIT 1"""
+    ).fetchall()

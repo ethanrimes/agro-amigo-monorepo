@@ -1804,7 +1804,11 @@ def run(
     ocr_scan_limit=3,
     asset_url=None,
 ):
-    from .queue_plan import backfill_candidates, daily_candidates
+    from .queue_plan import (
+        backfill_candidates,
+        daily_candidates,
+        supply_validation_retry,
+    )
     from .resumable_inputs import WorkDeferred
 
     started = time.monotonic()
@@ -1908,9 +1912,14 @@ def run(
                 if mode == "daily":
                     candidates = fresh
                 else:
-                    # Reserve half the hourly slots for archive progress.
-                    candidates = fresh[: max(1, limit // 2)] + backfill_candidates(
-                        db, limit
+                    # Whole-source supply validation has no partial native
+                    # checkpoint. One timed-out retry goes first so large fresh
+                    # inputs cannot consume its time window on every run.
+                    # The normal URL deduplication below still applies.
+                    candidates = (
+                        supply_validation_retry(db)
+                        + fresh[: max(1, limit // 2)]
+                        + backfill_candidates(db, limit)
                     )
             processed = set()
             remaining_passes = 1 if periodic else 0
