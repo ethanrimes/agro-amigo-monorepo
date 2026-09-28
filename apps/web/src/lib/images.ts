@@ -38,6 +38,7 @@ const families: [RegExp, string][] = [
   [/camaron/, "shrimp"],
   [/atun (en lata|enlatado)/, "tuna-canned"],
   [/sardinas? en lata/, "sardines-canned"],
+  [/capaz magdalena/, "capaz-fish"],
   [/pescado seco/, "dried-fish"],
   [/\bbagre\b/, "bagre"],
   [/\bbasa\b/, "basa"],
@@ -89,8 +90,10 @@ const families: [RegExp, string][] = [
   [/berenjena/, "aubergine"],
   [/brocoli/, "broccoli"],
   [/ahuyama|zapallo/, "pumpkin"],
+  [/ahuyamin|^calabaza$/, "squash-moschata"],
   [/calabacin/, "zucchini"],
   [/cebolla.*(junca|larga)/, "spring-onion"],
+  [/cebollin chino/, "chinese-chives"],
   [/cebolla/, "onion"],
   [/cilantro/, "cilantro"],
   [/perejil/, "parsley"],
@@ -105,10 +108,12 @@ const families: [RegExp, string][] = [
   [/pepino/, "cucumber"],
   [/pimenton.*verde/, "bell-pepper-green"],
   [/pimenton/, "bell-pepper"],
+  [/aji topito dulce/, "aji-dulce"],
   [/\baji\b/, "produce-neutral"],
   [/remolacha/, "beet"],
   [/rabano rojo/, "radish-red"],
   [/repollo/, "cabbage"],
+  [/^coles$/, "cabbage"],
   [/zanahoria/, "carrot"],
   [/arracacha/, "arracacha"],
   [/yuca/, "cassava"],
@@ -119,6 +124,7 @@ const families: [RegExp, string][] = [
   [/frijol/, "beans"],
   [/garbanzo/, "chickpeas"],
   [/avena/, "oats"],
+  [/cuchuco de cebada/, "barley-groats"],
   [/^harinas$/, "produce-neutral"],
   [/harina/, "flour"],
   [/trigo/, "wheat"],
@@ -126,9 +132,13 @@ const families: [RegExp, string][] = [
   [/panela/, "panela"],
   [/azucar/, "sugar"],
   [/aceite de palma/, "palm-oil-unbranded"],
+  [/aceite (de )?girasol/, "sunflower-oil-unbranded"],
+  [/aceite (de )?soya/, "soybean-oil-unbranded"],
   [/aceite/, "produce-neutral"],
   [/\bsal\b/, "salt"],
   [/pasta/, "pasta"],
+  [/mayonesa/, "mayonnaise-unbranded"],
+  [/mostaza/, "mustard-unbranded"],
   [/galletas dulces redondas con crema/, "cookies-sandwich"],
   [/galletas saladas/, "crackers-saltine"],
   [/chocolate/, "chocolate"],
@@ -234,6 +244,26 @@ export function photoFor(
             ? `Fotografía ilustrativa de galletas redondas con crema; el sabor, la marca y la presentación de ${name} pueden diferir.`
           : key === "tangelo"
             ? `Fotografía ilustrativa de un tangelo Minneola; la variedad y procedencia de ${name} pueden diferir.`
+          : key === "sunflower-oil-unbranded"
+            ? `Fotografía ilustrativa de aceite de girasol junto a una flor y semillas; no representa el refinado, origen ni empaque de ${name}.`
+          : key === "soybean-oil-unbranded"
+            ? `Fotografía ilustrativa de aceite de soya en un recipiente de laboratorio; no representa el refinado, origen ni empaque de ${name}.`
+          : key === "aji-dulce"
+            ? `Fotografía ilustrativa de un ají dulce; no acredita la variedad topito ni la procedencia de ${name}.`
+          : key === "squash-moschata"
+            ? `Fotografía ilustrativa de una calabaza Cucurbita moschata cortada; no acredita el cultivar ni la forma comercial de ${name}.`
+          : key === "chinese-chives"
+            ? `Fotografía ilustrativa de cebollino chino tipo ajo; la especie y presentación comercial de ${name} pueden diferir.`
+          : key === "mayonnaise-unbranded"
+            ? `Fotografía ilustrativa de mayonesa servida en un cuenco; no representa la marca ni el empaque doy pack de ${name}.`
+          : key === "mustard-unbranded"
+            ? `Fotografía ilustrativa de mostaza servida en un cuenco; no representa la marca ni el empaque doy pack de ${name}.`
+          : key === "capaz-fish"
+            ? `Fotografía ilustrativa de un ejemplar de Pimelodus grosskopfii; no verifica la especie, procedencia ni presentación comercial de ${name}.`
+          : key === "barley-groats"
+            ? `Fotografía ilustrativa de cebada quebrada sin cocinar; el molido y la presentación de ${name} pueden diferir.`
+          : key === "cabbage" && n === "coles"
+            ? `Fotografía ilustrativa de repollo como ejemplo de las coles; no identifica la variedad comercial de ${name}.`
           : key === "fava-green"
             ? `Fotografía ilustrativa de habas verdes en vaina; la presentación de ${name} puede diferir.`
           : key === "parsley"
