@@ -13,6 +13,23 @@ The web interface is shared by Android and iOS clients. The five main sections a
 
 Demo: [web application](https://agroamigo-demo-9a04.azurewebsites.net) · [Android installation](https://agroamigo-demo-9a04.azurewebsites.net/android).
 
+## See AgroAmigo in action
+
+A 70-second walkthrough of the live app: find a product, filter its market and presentation, explore historical prices, compare markets, and consult the original DANE PDF and Excel files. The tour also shows input prices and crop references in **Mi finca**.
+
+https://github.com/user-attachments/assets/14bdb322-6cd6-4502-8d97-66bb3d41b302
+
+| Time | What you can do |
+|---|---|
+| 0:06 | Find products and narrow the results by department |
+| 0:12 | Inspect the selected price, its history and the data table |
+| 0:27 | Open an original DANE city report inside the app |
+| 0:34 | Compare a market with the national average for matching products |
+| 0:41 | Explore input prices and the read-only Excel source viewer |
+| 0:54 | Browse local crop references and historical calendars |
+
+Recorded on September 27, 2026, using public source data. Prices and coverage may change as new reports are published.
+
 ## Repository
 
 | Directory | Purpose |
