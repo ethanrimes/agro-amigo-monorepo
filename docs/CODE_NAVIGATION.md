@@ -26,7 +26,7 @@ Use this map to find the implementation of a feature. The [app site map](SITE_MA
 | [special_prices.py](../pipelines/ingestion/special_prices.py) | Municipal milk and mill rice observations |
 | [milk_macroregions.py](../pipelines/ingestion/milk_macroregions.py), [milk_publication.py](../pipelines/ingestion/milk_publication.py) | Separate milk chart identities and municipal/chart publication coordination |
 | [supply.py](../pipelines/ingestion/supply.py) | Bounded supply aggregation with exact original row ranges |
-| [supply_summaries.py](../pipelines/ingestion/supply_summaries.py) | Separate provisional daily market totals, native cells and missing-value semantics |
+| [supply_summaries.py](../pipelines/ingestion/supply_summaries.py), [supply_period_summaries.py](../pipelines/ingestion/supply_period_summaries.py) | Separate daily/monthly/fortnight totals, shares, native precision and missing-value semantics |
 | [coffee_sources.py](../pipelines/ingestion/coffee_sources.py), [colombia_sources.py](../pipelines/ingestion/colombia_sources.py), [international_sources.py](../pipelines/ingestion/international_sources.py) | Publisher-specific price semantics |
 | [official_sources.py](../pipelines/ingestion/official_sources.py), [official_catalog.py](../pipelines/ingestion/official_catalog.py) | Official quote publication, reviews and current catalog refresh |
 | [ocr.py](../pipelines/ingestion/ocr.py) | Retained images, paired readings and supported typed fallback dispatch |

@@ -3,6 +3,7 @@
 Public documentation describes AgroAmigo's functionality, data semantics,
 architecture and main implementation components.
 
+- [App site map and navigation](SITE_MAP.md)
 - [Architecture and user journeys](ARCHITECTURE.md)
 - [Code navigation](CODE_NAVIGATION.md)
 - [Data sources and interpretation](DATA_SOURCES.md)
