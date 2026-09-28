@@ -59,6 +59,8 @@ def parse_junca_tables(pages, municipalities):
         if not match:
             raise ValueError("Missing native junca cost heading")
         text = re.split(r"\n\s*Tabla\s+\d+\.", text[match.end():], maxsplit=1)[0]
+        if not re.match(r"\s*Actividad\s+\$\s+%", text):
+            raise ValueError("Missing junca table-local monetary header")
         if " ".join(text.split()).count(footer) != 1:
             raise ValueError("Unverified junca municipality footer")
         if not re.search(r"Rendimientos\s+t/ha", text):

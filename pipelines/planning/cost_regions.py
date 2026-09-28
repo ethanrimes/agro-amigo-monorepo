@@ -65,6 +65,8 @@ def cost_region(text, source_name, page, crop, year):
         )
         if headings != [expected]:
             raise ValueError("Unverified Arveja cost heading, region or period")
+        if expected + " Actividad ($) (%)" not in flat:
+            raise ValueError("Missing Arveja table-local monetary header")
         return region
 
     heading = re.search(

@@ -44,6 +44,7 @@ class CostRegions(unittest.TestCase):
             original.replace("Tabla 2.", "Tabla 3."),
             original + "\n" + heading(12),
             original.replace("arveja", "frijol"),
+            original.replace("Actividad ($) (%)", "Actividad (%)"),
         ):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 cost_region(text, ARVEJA_SOURCE, 9, "Arveja", 2024)
