@@ -34,3 +34,15 @@ apps/web/public/release.json
 
 apps/web/public/maplibre/
 **/.next-dev/
+
+# Public docs are functionality / architecture guides only. Internal audits,
+# research, operational notes and local QA evidence belong in docs/private/.
+/docs/*
+!/docs/README.md
+!/docs/ARCHITECTURE.md
+!/docs/CODE_NAVIGATION.md
+!/docs/DATA_SOURCES.md
+!/docs/MI_FINCA_DATA.md
+!/docs/OFFICIAL_COLOMBIA_SOURCES.md
+!/docs/OFFICIAL_INTERNATIONAL_SOURCES.md
+/docs/private/
