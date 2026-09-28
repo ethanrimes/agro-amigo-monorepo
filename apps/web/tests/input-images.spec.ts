@@ -44,7 +44,8 @@ test("checked-in DANE food names use matching forms and species", () => {
   expect(photoFor("Jengibre").key).toBe("ginger");
   expect(photoFor("Acelga").key).toBe("chard");
   expect(photoFor("Papas negras otras").key).toBe("potato");
-  expect(photoFor("Arveja seca importada").key).toBe("produce-neutral");
+  expect(photoFor("Arveja seca importada").key).toBe("peas-dried");
+  expect(photoFor("Arveja seca importada").alt).toContain("origen");
   expect(photoFor("Harinas").key).toBe("produce-neutral");
   expect(photoFor("Arveja verde").key).toBe("peas");
   expect(photoFor("Harina de trigo").key).toBe("flour");

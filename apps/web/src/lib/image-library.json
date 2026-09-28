@@ -1539,5 +1539,65 @@
     "sha256": "47463d9b5a0ea8ccccba7c314c095ad68ad776f5ff2c91c94bfb0dd07e378423",
     "illustrative": true,
     "modifications": "Miniatura redimensionada a 1280 px de ancho por Wikimedia Commons; recorte visual en la interfaz."
+  },
+  "cocoa-powder": {
+    "src": "/images/library/cocoa-powder.jpg",
+    "title": "Cocoa powder.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Cocoa_powder.jpg",
+    "author": "blair",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "description": "A bowl of cocoa powder.",
+    "sha256": "bd5537c6147e5254b8d607de3c72848b34bfe5e619cb2028edc89379c61d2d38",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "coffee-ground": {
+    "src": "/images/library/coffee-ground.jpg",
+    "title": "A black container filled with finely ground coffee.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:A_black_container_filled_with_finely_ground_coffee.jpg",
+    "author": "Shixart1985",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "description": "A black container filled with finely ground coffee sits on a wooden table. The rich brown texture of the coffee is visible, waiting to be brewed into a delicious drink.",
+    "sha256": "f2cfd1f17f9e751cca8f466225d68be62735bb6d3fbe5bde2d77b39ce9c6eead",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "coffee-instant": {
+    "src": "/images/library/coffee-instant.jpg",
+    "title": "Grain of instant coffee.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Grain_of_instant_coffee.jpg",
+    "author": "Armin Beck",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Closeup photo of Grain of instant coffee",
+    "sha256": "43293b573d144727a8c58a8d02414014b3b59d9fdca22761f055df87c179d675",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "peas-dried": {
+    "src": "/images/library/peas-dried.jpg",
+    "title": "Dried Green Peas.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Dried_Green_Peas.jpg",
+    "author": "Gaurav Dhwaj Khadka",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Dried Green Peas.",
+    "sha256": "4435781c46606355f2bdc08124fcc4193d16fa42c77d10f41026472b83493c2e",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
+  },
+  "tuna-canned": {
+    "src": "/images/library/tuna-canned.jpg",
+    "title": "Thunfisch (in geöffneter Dose) 1.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Thunfisch_(in_ge%C3%B6ffneter_Dose)_1.jpg",
+    "author": "IgorCalzone1",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Thunfisch (in geöffneter Dose) 2",
+    "sha256": "e97f3514eaeea3edff90492fa1d18aebdc459b2053a431c661a01caea29f9b8e",
+    "illustrative": true,
+    "modifications": "Versión local redimensionada respecto al original; recorte visual en la interfaz."
   }
 }
