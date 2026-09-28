@@ -4,6 +4,7 @@ Pesticide quantities in historical publications are never turned into applicatio
 from import_references import *
 from cost_regions import ARVEJA_SOURCE, arveja_municipalities, cost_region
 from cost_junca import SOURCE as JUNCA_SOURCE, parse_junca_tables
+from cost_municipalities import corrected_cost_municipalities
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import subprocess
@@ -32,6 +33,8 @@ def costs(cur):
    foot=re.search(r'\*\s*Incluye(.*?)(?:\*\*|Fuente:|$)',text,re.S|re.I);foot=slug(foot[1]) if foot else ''
    codes=[mid for mid,mun,dep in municipalities if slug(dep) in foot and ('-'+slug(mun)+'-') in ('-'+foot+'-')]
    if name==ARVEJA_SOURCE:codes=arveja_municipalities(text,i+1,municipalities)
+   verified_codes=corrected_cost_municipalities(text,name,i+1,municipalities)
+   if verified_codes is not None:codes=verified_codes
    lines=[{'label':'Labores antes de cosecha','amount':round(labor-harvest,2),'timing':'before'},{'label':'Semilla e insumos','amount':inputs,'timing':'before'},{'label':'Mano de obra de cosecha','amount':harvest,'timing':'harvest'},{'label':'Otros rubros del total publicado','amount':round(max(0,total-labor-inputs),2),'timing':'before'}]
    ident=slug(crop)+'-'+str(year)+'-'+str(i+1)
    notes='Pesos nominales del período del estudio, sin actualización automática. Otros rubros pueden incluir transporte y empaques: evita contarlos dos veces. La asignación del momento de pago es editable; no proviene de un calendario financiero de UPRA.'
