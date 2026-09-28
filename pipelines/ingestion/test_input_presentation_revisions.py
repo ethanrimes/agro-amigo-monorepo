@@ -144,6 +144,77 @@ class InputPresentationRevision(unittest.TestCase):
             self.db.execute("SELECT count(*) FROM historical_price").fetchone()[0], 4
         )
 
+    def test_same_original_label_repair_keeps_newer_equal_value_watermark(self):
+        self.publish("old", "3 M.U.I.", pdf=True, version="inputs-pdf-v7")
+        self.publish("new", "3 M.U.I.", pdf=True, version="inputs-pdf-v7")
+        self.assert_current("old", "3 M.U.I.", locator_suffix="inputs-pdf-v7")
+        before = self.db.execute(
+            "SELECT md5(to_jsonb(h)::text) FROM historical_price h"
+        ).fetchall()
+        watermark = self.db.execute(
+            "SELECT * FROM input_revision ORDER BY municipality"
+        ).fetchall()
+        self.publish("old", "3 M. U. I.", pdf=True, version="inputs-pdf-v8")
+        self.assert_current("old", "3 M. U. I.", locator_suffix="inputs-pdf-v8")
+        self.assertEqual(
+            self.db.execute(
+                "SELECT * FROM input_revision ORDER BY municipality"
+            ).fetchall(),
+            watermark,
+        )
+        self.assertTrue(
+            set(before)
+            <= set(
+                self.db.execute(
+                    "SELECT md5(to_jsonb(h)::text) FROM historical_price h"
+                ).fetchall()
+            )
+        )
+        # The label repair grants no authority to an intermediate price revision.
+        self.publish("mid", "3 M. U. I.", "11000", pdf=True, version="inputs-pdf-v8")
+        self.assert_current("old", "3 M. U. I.", locator_suffix="inputs-pdf-v8")
+
+    def test_current_version_stale_presentation_repair_is_idempotent(self):
+        self.publish("old", "3 M. U. I.", pdf=True, version="inputs-pdf-v8")
+        # Simulate the prior projection bug: the correct raw row/locator was
+        # retained but its exact presentation was omitted from the UPSERT.
+        for table in ("input_price", "input_municipal_price"):
+            self.db.execute(f"UPDATE {table} SET presentation='3 M.U.I.'")
+        self.publish("new", "3 M.U.I.", pdf=True, version="inputs-pdf-v8")
+        watermark = self.db.execute(
+            "SELECT * FROM input_revision ORDER BY municipality"
+        ).fetchall()
+        self.publish("old", "3 M. U. I.", pdf=True, version="inputs-pdf-v8")
+        self.assert_current("old", "3 M. U. I.", locator_suffix="inputs-pdf-v8")
+        attempts = self.db.execute("SELECT count(*) FROM input_attempt").fetchone()[0]
+        self.publish("old", "3 M. U. I.", pdf=True, version="inputs-pdf-v8")
+        self.assertEqual(
+            self.db.execute("SELECT count(*) FROM input_attempt").fetchone()[0],
+            attempts,
+        )
+        self.assertEqual(
+            self.db.execute(
+                "SELECT * FROM input_revision ORDER BY municipality"
+            ).fetchall(),
+            watermark,
+        )
+
+    def test_label_repair_never_accepts_other_source_or_changed_price(self):
+        self.publish("new", "3 M.U.I.", pdf=True, version="inputs-pdf-v7")
+        self.publish("old", "3 M. U. I.", pdf=True, version="inputs-pdf-v8")
+        self.assert_current("new", "3 M.U.I.", locator_suffix="inputs-pdf-v7")
+        # The same-original provenance path also cannot change a price after
+        # a newer equal-value validation has advanced the per-key watermark.
+        self.db.execute("UPDATE input_revision SET retrieved_at='2026-09-04'")
+        self.publish("new", "3 M. U. I.", "11168", pdf=True, version="inputs-pdf-v8")
+        for table in ("input_price", "input_municipal_price"):
+            self.assertEqual(
+                self.db.execute(
+                    f"SELECT presentation,price,document_id FROM {table}"
+                ).fetchone(),
+                ("3 M.U.I.", Decimal(11167), "new"),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
