@@ -53,7 +53,7 @@ export function WorkbookViewer({
             }}
           >
             {(data?.sheets || [sheet || "Cargando…"]).map((name) => (
-              <option key={name}>{name}</option>
+              <option key={name} value={name}>{name}</option>
             ))}
           </select>
         </label>
