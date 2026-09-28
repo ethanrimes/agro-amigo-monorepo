@@ -8,6 +8,7 @@ import { PdfViewer } from "@/components/planning/PdfViewer";
 import { WorkbookViewer } from "@/components/planning/WorkbookViewer";
 import type { Evidence } from "@/lib/planning-types";
 import { evidencePeriod } from "@/lib/evidence-period";
+import { evidenceValue } from "@/lib/evidence-value";
 import { dateLabel, number } from "@/lib/market-types";
 const labels: Record<string, string> = {
   product_name: "Producto",
@@ -215,15 +216,7 @@ export function EvidenceContent({
                         <div key={k}>
                           <dt>{labels[k] || k.replaceAll("_", " ")}</dt>
                           <dd>
-                            {v === null
-                              ? "Sin dato"
-                              : Array.isArray(v)
-                                ? v.join(" · ")
-                                : typeof v === "number"
-                                  ? number(v)
-                                  : typeof v === "object"
-                                    ? JSON.stringify(v)
-                                    : String(v)}
+                            {evidenceValue(k, v)}
                           </dd>
                         </div>
                       ))}
