@@ -40,15 +40,15 @@
         ]
       },
       {
-        "action": "document.querySelector('.price-chart').scrollIntoView({block:'start',behavior:'instant'});",
+        "action": "document.querySelector('.chart-panel').scrollIntoView({block:'start',behavior:'instant'});",
         "checks": [
           {
             "id": "SRC-D-RICE",
-            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight&&document.querySelector('.chart-data').open})()",
+            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight&&document.querySelector('.chart-data').open})()",
             "expected": "Price graph and opened numeric history visible in viewport"
           }
         ],
-        "ready": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+        "ready": "(()=>{const r=document.querySelector('.chart-panel').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
       }
     ]
   },
@@ -93,15 +93,15 @@
         ]
       },
       {
-        "action": "document.querySelector('.price-chart').scrollIntoView({block:'start',behavior:'instant'});",
+        "action": "document.querySelector('.chart-panel').scrollIntoView({block:'start',behavior:'instant'});",
         "checks": [
           {
             "id": "SRC-D-RICE",
-            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight&&document.querySelector('.chart-data').open})()",
+            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight&&document.querySelector('.chart-data').open})()",
             "expected": "Price graph and opened numeric history visible in viewport"
           }
         ],
-        "ready": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+        "ready": "(()=>{const r=document.querySelector('.chart-panel').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
       }
     ]
   },
@@ -146,15 +146,15 @@
         ]
       },
       {
-        "action": "document.querySelector('.price-chart').scrollIntoView({block:'start',behavior:'instant'});",
+        "action": "document.querySelector('.chart-panel').scrollIntoView({block:'start',behavior:'instant'});",
         "checks": [
           {
             "id": "SRC-D-RICE",
-            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight&&document.querySelector('.chart-data').open})()",
+            "condition": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight&&document.querySelector('.chart-data').open})()",
             "expected": "Price graph and opened numeric history visible in viewport"
           }
         ],
-        "ready": "(()=>{const r=document.querySelector('.price-chart').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
+        "ready": "(()=>{const r=document.querySelector('.chart-panel').getBoundingClientRect();return r.top>=-1&&r.top<innerHeight/2})()"
       }
     ]
   },
