@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import sourceStyles from "./source-links.module.css";
+import { ReportIssueLink } from "./reportar/report-issue-link";
 import {
   IoLeafOutline,
   IoHomeOutline,
@@ -82,6 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <IoHelpCircleOutline />
             Fuentes y ayuda
           </Link>
+          <ReportIssueLink className="help-link" icon />
           <div className="made-in">
             <span className="colombia-flag" />
             Hecho para Colombia
@@ -90,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
       <div className="main-shell">
         <header className="topbar">
-          <Link href="/" className="mobile-brand">
+          <Link href="/" className="mobile-brand" prefetch={false}>
             <IoLeafOutline /> agroamigo
           </Link>
           <span className="topbar-message">
@@ -101,6 +103,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href="/saved"
               className="topbar-icon"
               aria-label="Mis guardados"
+              prefetch={false}
             >
               <IoHeartOutline />
             </Link>
@@ -108,9 +111,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href="/sources"
               className="topbar-icon"
               aria-label="Fuentes y ayuda"
+              prefetch={false}
             >
               <IoHelpCircleOutline />
             </Link>
+            <ReportIssueLink className="topbar-icon" icon iconOnly label="Reportar un problema" prefetch={false} />
           </div>
         </header>
         <main
@@ -124,6 +129,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div><strong>AgroAmigo</strong><span>Del campo, para el campo.</span></div>
           <nav aria-label="Fuentes y créditos">
             <Link href="/sources">Fuentes y ayuda <span aria-hidden="true">→</span></Link>
+            <ReportIssueLink />
             <Link href="/credits">Créditos de imágenes <span aria-hidden="true">→</span></Link>
           </nav>
         </footer>
@@ -133,6 +139,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link
             href={href}
             key={href}
+            prefetch={false}
             className={selected(href) ? "active" : ""}
             aria-current={
               selected(href) ? (path === href ? "page" : "location") : undefined

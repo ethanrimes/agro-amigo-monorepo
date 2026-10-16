@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import secrets
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ import sys
 import tempfile
 import time
 import zipfile
+from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import quote
 
@@ -21,6 +23,10 @@ from infra.provision import GROUP, LOCAL, SERVER, az, private_write
 
 APP = "agroamigo-data-9a04"
 STORAGE = "agroamigodata9a04"
+# Timers and source viewers share the synchronous invocation pool. A two-slot
+# pool leaves every HTTP/status request queued behind ingestion and one cold
+# workbook. Identical immutable pages already share one load/parse operation.
+PYTHON_INVOCATION_THREADS = 24
 
 
 def database():
@@ -35,7 +41,7 @@ def database():
         if credentials.exists()
         else {"password": secrets.token_urlsafe(36) + "Aa1!"}
     )
-    with psycopg.connect(
+    connection = dict(
         host=c["host"],
         dbname=c["database"],
         user=c["user"],
@@ -43,7 +49,9 @@ def database():
         sslmode="verify-full",
         sslrootcert=certifi.where(),
         connect_timeout=20,
-    ) as db:
+    )
+    concurrent_indexes = []
+    with psycopg.connect(**connection) as db:
         db.execute("SET LOCAL lock_timeout='3s'")
         db.execute((ROOT / "pipelines/market/schema.sql").read_text())
         db.execute((ROOT / "pipelines/ingestion/schema.sql").read_text())
@@ -60,10 +68,13 @@ def database():
         )
         db.execute("GRANT SELECT ON ALL TABLES IN SCHEMA public TO agro_ingestor")
         db.execute(
-            "GRANT INSERT ON official_source_review,official_price_quote,historical_price,retained_record,source_document TO agro_ingestor"
+            "GRANT INSERT ON official_source_review,official_price_quote,historical_price,retained_record,source_document,source_archive_member TO agro_ingestor"
         )
         db.execute(
-            "GRANT INSERT,UPDATE ON ingestion_run,ingestion_asset,document_alias,product,market,price_observation,coffee_reference,coffee_factor,exchange_rate,daily_price,input_price,input_municipal_price,source_pdf_page,regional_price,source_archive_member,input_reference_row,seasonal_year,supply_observation TO agro_ingestor"
+            "GRANT INSERT,UPDATE ON ingestion_run,ingestion_asset,document_alias,product,market,price_observation,coffee_reference,coffee_factor,exchange_rate,daily_price,input_price,input_municipal_price,source_pdf_page,regional_price,input_reference_row,seasonal_year,supply_observation TO agro_ingestor"
+        )
+        db.execute(
+            "REVOKE UPDATE ON public.source_document,public.source_archive_member FROM agro_ingestor"
         )
         db.execute(
             "GRANT INSERT,UPDATE ON source_ocr_task TO agro_ingestor; GRANT INSERT ON regional_classification,source_ocr_scan,source_ocr_result,source_ocr_attempt TO agro_ingestor; GRANT USAGE ON SEQUENCE source_ocr_attempt_id_seq TO agro_ingestor"
@@ -71,7 +82,18 @@ def database():
         for migration in sorted(
             (ROOT / "pipelines/ingestion/migrations").glob("*.sql")
         ):
-            db.execute(migration.read_text())
+            statement = migration.read_text()
+            if re.search(r"\b(?:CREATE|DROP)\s+INDEX\s+CONCURRENTLY\b", statement, re.I):
+                concurrent_indexes.append((migration.name, statement))
+            else:
+                db.execute(statement)
+    # PostgreSQL forbids concurrent index creation/removal in a transaction. Apply
+    # those idempotent index migrations after the schema transaction commits.
+    if concurrent_indexes:
+        with psycopg.connect(**connection, autocommit=True) as db:
+            for name, statement in concurrent_indexes:
+                print(f"Applying concurrent index migration {name}.", flush=True)
+                db.execute(statement)
     worker["url"] = (
         f"postgresql://agro_ingestor:{quote(worker['password'], safe='')}@{c['host']}:5432/{c['database']}"
     )
@@ -92,7 +114,40 @@ def write_runtime_archive(archive):
         archive.write(ROOT / name, target)
 
 
-def deploy(code_only=False):
+@contextmanager
+def deployment_lock(wait_seconds=0):
+    """Keep package/settings restarts from interrupting an ingestion writer."""
+    import certifi
+    import psycopg
+    from pipelines.ingestion.worker import LOCK
+
+    c = json.loads((LOCAL / "database.json").read_text())
+    with psycopg.connect(
+        host=c["host"], dbname=c["database"], user=c["user"], password=c["password"],
+        sslmode="verify-full", sslrootcert=certifi.where(), connect_timeout=20,
+        autocommit=True,
+    ) as db:
+        deadline = time.monotonic() + max(0, wait_seconds)
+        while not db.execute("SELECT pg_try_advisory_lock(%s)", (LOCK,)).fetchone()[0]:
+            if time.monotonic() >= deadline:
+                raise RuntimeError(
+                    "An ingestion writer is active; deployment was not started. "
+                    "Use --wait-for-idle-seconds to wait for its committed checkpoint."
+                )
+            print("Waiting for the active ingestion writer before deployment.", flush=True)
+            time.sleep(min(15, max(0, deadline - time.monotonic())))
+        try:
+            yield
+        finally:
+            db.execute("SELECT pg_advisory_unlock(%s)", (LOCK,))
+
+
+def deploy(code_only=False, wait_for_idle_seconds=0):
+    with deployment_lock(wait_for_idle_seconds):
+        return _deploy(code_only=code_only)
+
+
+def _deploy(code_only=False):
     # Build a complete Linux/Python 3.11 package even when deploying from macOS.
     # Remote Oryx builds and run-from-package conflict on Dedicated Linux plans.
     bundle = LOCAL / "ingestion.zip"
@@ -232,7 +287,7 @@ def deploy(code_only=False):
         "AzureWebJobsStorage": storage,
         "DAILY_SCHEDULE": "0 0 23 * * *",
         "BACKFILL_SCHEDULE": "0 15 * * * *",
-        "OCR_SCHEDULE": "0 5 * * * *",
+        "OCR_SCHEDULE": "0 35 * * * *",
         "GEMINI_OCR_MODEL": "gemini-3.5-flash",
         "GEMINI_OCR_DAILY_REQUESTS": "40",
     }
@@ -240,7 +295,7 @@ def deploy(code_only=False):
         "FUNCTIONS_WORKER_RUNTIME": "python",
         "FUNCTIONS_EXTENSION_VERSION": "~4",
         "FUNCTIONS_WORKER_PROCESS_COUNT": "1",
-        "PYTHON_THREADPOOL_THREAD_COUNT": "2",
+        "PYTHON_THREADPOOL_THREAD_COUNT": str(PYTHON_INVOCATION_THREADS),
         "SCM_DO_BUILD_DURING_DEPLOYMENT": "false",
         "ENABLE_ORYX_BUILD": "false",
         "WEBSITE_RUN_FROM_PACKAGE": "1",
@@ -324,7 +379,13 @@ if __name__ == "__main__":
         action="store_true",
         help="Deploy runtime code using the already configured schema and restricted role",
     )
+    parser.add_argument("--wait-for-idle-seconds", type=int, default=0,
+                        help="Wait for the shared ingestion lock before changing or restarting the worker")
     args = parser.parse_args()
     if args.database_only and args.code_only:
         parser.error("Choose either --database-only or --code-only")
-    database() if args.database_only else deploy(code_only=args.code_only)
+    if args.database_only:
+        with deployment_lock(args.wait_for_idle_seconds):
+            database()
+    else:
+        deploy(code_only=args.code_only, wait_for_idle_seconds=args.wait_for_idle_seconds)

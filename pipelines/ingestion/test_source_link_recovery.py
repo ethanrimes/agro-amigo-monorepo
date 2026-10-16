@@ -11,9 +11,11 @@ from openpyxl import Workbook
 
 from pipelines.ingestion.source_link_recovery import VERIFIED_ALIASES, recover_link
 
-BROKEN = next(iter(VERIFIED_ALIASES))
+BROKEN = next(url for url in VERIFIED_ALIASES if url.endswith("mayoristas_agosto_11_2014s.xls"))
 DAY = date(2014, 8, 11)
 FIXTURES = Path(__file__).resolve().parents[2] / "artifacts/source-ambiguity-2026-09-27"
+JULY_BROKEN = next(url for url in VERIFIED_ALIASES if url.endswith("anex-SIPSADiario-31jul2024.zip"))
+JULY_ORIGINAL = Path(__file__).parent / "testdata/anex-SIPSADiario-31jul2024.xlsx"
 
 
 def workbook(day=DAY, price=500, bad_last_market=False):
@@ -40,6 +42,19 @@ def workbook(day=DAY, price=500, bad_last_market=False):
 
 
 class SourceLinkRecoveryTests(unittest.TestCase):
+    def test_actual_july_2024_mislinked_zip_recovers_exact_complete_workbook(self):
+        alias = VERIFIED_ALIASES[JULY_BROKEN]
+        body = JULY_ORIGINAL.read_bytes()
+        fetcher = Mock(return_value=body)
+        result = recover_link(JULY_BROKEN, 404, date(2024, 7, 31), fetcher)
+        self.assertEqual(result.evidence["validated_records"], 307)
+        self.assertTrue(result.evidence["matches_audited_bytes"])
+        self.assertEqual(result.evidence["original_url"], JULY_BROKEN)
+        self.assertEqual(result.canonical_url, alias.canonical_url)
+        fetcher.assert_called_once_with(alias.canonical_url)
+        self.assertIsNone(recover_link(JULY_BROKEN, 429, date(2024, 7, 31), fetcher))
+        with self.assertRaisesRegex(ValueError, "verified alias"):
+            recover_link(JULY_BROKEN, 404, date(2024, 7, 30), fetcher)
     def test_only_missing_response_on_exact_verified_alias_fetches(self):
         fetcher = Mock(return_value=workbook())
         for status in (200, 304, 400, 401, 403, 429, 500, 503):

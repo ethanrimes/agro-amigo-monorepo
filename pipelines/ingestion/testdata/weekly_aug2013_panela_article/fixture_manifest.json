@@ -1,0 +1,32 @@
+{
+  "original.pdf": {
+    "source_file": "original.pdf",
+    "sha256": "5a8af3b10894d3241907e149a39451d09488bf827d79b52d3789e5a8cfa60f4d",
+    "bytes": 2307113
+  },
+  "visual_oracle.json": {
+    "source_file": "VISUAL_ORACLE_ROOT_FIRST_A.json",
+    "sha256": "e15074e707bd612433ce4e25424fc9467d880fa575918a65c990c1db0ff0b369",
+    "bytes": 3435
+  },
+  "m_native_expected_quotes.json": {
+    "source_file": "NATIVE_EXPECTED_QUOTES.json",
+    "sha256": "5b6ae5721dd711fbf82a0f269ea9f1b0f08179ace98f169db41462916406df91",
+    "bytes": 3873892
+  },
+  "m_database_quotes.json": {
+    "source_file": "DATABASE_QUOTES.json",
+    "sha256": "a51a3de1d685094069d01f8e5f5ee7523c69f4e922e6d5a81e41ed6e769012c8",
+    "bytes": 3873892
+  },
+  "m_source_reviews.json": {
+    "source_file": "SOURCE_REVIEWS.json",
+    "sha256": "07ae3955af5adec9a508b960641b3994b3ba1b42d04076ee0956ebb67931051e",
+    "bytes": 181688
+  },
+  "m_source_readback.json": {
+    "source_file": "ROOT_ACCEPTED_NATURAL_AUG2013_NATIVE_DB_FIRST_A.json",
+    "sha256": "3671229b8ff67fa89c4853c06858c96a100d2725658314dee5510b67c71fe7a0",
+    "bytes": 2304
+  }
+}

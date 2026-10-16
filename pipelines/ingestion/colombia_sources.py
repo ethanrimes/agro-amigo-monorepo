@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import calendar
 import csv
+import hashlib
 import io
 import json
 import re
@@ -22,7 +23,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-VERSION = "colombia-prices-v5"
+VERSION = "colombia-prices-v6"
 AGRONET_CACAO = "https://agronet.gov.co/noticias/precio-de-referencia-semanal-de-compra-de-cacao-fuente-industria-nacional-exportadores-0"
 FEDEPALMA_FFP = "https://fedepalma.org/fondo-de-fomento-palmero-ffp/"
 FEDEGAN_PRICES = "https://estadisticas.fedegan.org.co/Indicadores/13"
@@ -627,7 +628,61 @@ def _corabastos_category(name):
     return "Productos de Corabastos"
 
 
-def _corabastos_legacy(page):
+def _corabastos_feb4_quantity_anchor_names(page, boundaries, body_words, money_rows):
+    """Group one source-pinned wrapped label by its nearest quantity-row anchor."""
+    quantity_words = [
+        w for w in body_words
+        if boundaries[2] <= w["x0"] < boundaries[3]
+        and 150 <= w["top"] <= 205
+        and re.fullmatch(r"\d+(?:[.,]\d+)?", w["text"])
+    ]
+    quantity_words.sort(key=lambda w: w["top"])
+    if len(quantity_words) != 2 or [w["text"] for w in quantity_words] != ["1.000", "1.000"]:
+        raise ValueError("Pinned Corabastos Feb 4 quantity anchors changed")
+    expected_quantity_tops = (169.72, 197.32)
+    if any(abs(w["top"] - expected) > 0.25 for w, expected in zip(quantity_words, expected_quantity_tops)):
+        raise ValueError("Pinned Corabastos Feb 4 quantity anchor geometry changed")
+
+    product_words = [
+        w for w in body_words
+        if boundaries[0] <= w["x0"] < boundaries[1] and 155 <= w["top"] <= 205
+    ]
+    product_groups = [[] for _ in quantity_words]
+    for word in product_words:
+        nearest = min(range(len(quantity_words)), key=lambda i: abs(word["top"] - quantity_words[i]["top"]))
+        if abs(word["top"] - quantity_words[nearest]["top"]) > 8.0:
+            raise ValueError("Pinned Corabastos Feb 4 product word is not row-anchored")
+        product_groups[nearest].append(word)
+    names = [
+        clean(" ".join(w["text"] for w in sorted(group, key=lambda w: (round(w["top"] / 3), w["x0"]))))
+        for group in product_groups
+    ]
+    if names != ["AGUACATE PIELES VERDES XTONELADA", "AGUACATE HASS X TONELADA"]:
+        raise ValueError("Pinned Corabastos Feb 4 wrapped product words changed")
+
+    selected_money_rows = [(y, prices) for y, prices in money_rows if 150 <= y <= 205]
+    if len(selected_money_rows) != 2:
+        raise ValueError("Pinned Corabastos Feb 4 price-row anchors changed")
+    expected_money_tops = (162.52, 190.12)
+    if any(abs(y - expected) > 0.25 for (y, _), expected in zip(selected_money_rows, expected_money_tops)):
+        raise ValueError("Pinned Corabastos Feb 4 price anchor geometry changed")
+    overrides = {}
+    used_quantity_rows = set()
+    old_names = ("AGUACATE PIELES VERDES", "XTONELADA AGUACATE HASS X TONELADA")
+    for (money_y, _), expected_old, corrected in zip(
+        selected_money_rows, old_names, names
+    ):
+        nearest = min(range(len(quantity_words)), key=lambda i: abs(money_y - quantity_words[i]["top"]))
+        if nearest in used_quantity_rows or abs(money_y - quantity_words[nearest]["top"]) > 8.0:
+            raise ValueError("Pinned Corabastos Feb 4 price row has no unique quantity anchor")
+        used_quantity_rows.add(nearest)
+        overrides[money_y] = (expected_old, corrected)
+    if used_quantity_rows != {0, 1}:
+        raise ValueError("Pinned Corabastos Feb 4 label rows do not map one-to-one")
+    return overrides
+
+
+def _corabastos_legacy(page, *, quantity_anchor_product_names=False):
     """Older bulletins have native text but no table grid: use printed columns."""
     lines = _pdf_lines(page, upright_only=True)
     headers = []
@@ -686,6 +741,10 @@ def _corabastos_legacy(page):
             ]
             if top + 10 < y < bottom and len(prices) == 3:
                 money_rows.append((y, prices))
+        product_name_overrides = (
+            _corabastos_feb4_quantity_anchor_names(page, boundaries, body_words, money_rows)
+            if quantity_anchor_product_names else {}
+        )
         parsed, misaligned = [], False
         for i, (y, prices) in enumerate(money_rows):
             low = (money_rows[i - 1][0] + y) / 2 if i else top + 10
@@ -700,6 +759,11 @@ def _corabastos_legacy(page):
                 # Text baselines can be displaced by a point relative to price glyphs.
                 selected.sort(key=lambda w: (round(w["top"] / 3), w["x0"]))
                 cells.append(clean(" ".join(w["text"] for w in selected)))
+            if y in product_name_overrides:
+                expected_old, corrected = product_name_overrides[y]
+                if cells[0] != expected_old:
+                    raise ValueError("Pinned Corabastos Feb 4 legacy name boundary changed")
+                cells[0] = corrected
             if not any(cells):
                 # Some publisher PDFs visibly repeat orphan price glyphs below
                 # the dairy table. Retain these as review evidence, never assign
@@ -734,12 +798,50 @@ def _corabastos_legacy(page):
             yield y, cells, "unidentified" if misaligned else semantics
 
 
+def _corabastos_quantity(raw, *, legacy, presentation, published_unit, semantic_correction=False):
+    """Parse only formats proven by this source family; never infer conversions."""
+    if not semantic_correction:
+        if not re.fullmatch(r"\d+(?:[.,]\d+)?", raw):
+            raise ValueError("Corabastos nonnumeric presentation quantity")
+        return float(raw.replace(",", "."))
+    if re.fullmatch(r"\d+", raw):
+        return float(raw)
+
+    match = re.fullmatch(r"(\d+)([.,])(\d+)", raw)
+    if not match:
+        raise ValueError("Corabastos nonnumeric presentation quantity")
+    whole, separator, fraction = match.groups()
+
+    # The reviewed legacy table uses dots for grouped thousands, and TONELADA
+    # with KILO identifies the one source-proven grouped literal. Do not extend
+    # that exception to unseen 0.500/1.250 values without source evidence.
+    legacy_tonne_kilo = (
+        legacy
+        and presentation.strip().casefold() == "tonelada"
+        and published_unit.strip().casefold() == "kilo"
+    )
+    if len(fraction) == 3:
+        if legacy_tonne_kilo and raw == "1.000":
+            return 1000.0
+        raise ValueError("Ambiguous Corabastos grouped/decimal quantity")
+    if len(fraction) not in (1, 2):
+        raise ValueError("Unsupported Corabastos quantity precision")
+
+    # One- and two-place decimal forms are preserved in either known layout.
+    return float(whole + "." + fraction)
+
+
 def _corabastos_quote_rows(
-    cells, day, locator, page_no, *, legacy=False, semantics="quality"
+    cells, day, locator, page_no, *, legacy=False, semantics="quality", semantic_correction=False
 ):
     name, presentation, quantity, published_unit = cells[:4]
-    if not re.fullmatch(r"\d+(?:[.,]\d+)?", quantity):
-        raise ValueError("Corabastos nonnumeric presentation quantity")
+    quantity_value = _corabastos_quantity(
+        quantity,
+        legacy=legacy,
+        presentation=presentation,
+        published_unit=published_unit,
+        semantic_correction=semantic_correction,
+    )
 
     def number(value):
         separator = r"\." if legacy else ","
@@ -779,7 +881,8 @@ def _corabastos_quote_rows(
             locator + f"; price column {column}",
             category=_corabastos_category(name),
             presentation=presentation,
-            quantity=float(quantity.replace(",", ".")),
+            quantity=quantity_value,
+            **({"quantity_as_published": quantity} if semantic_correction and quantity == "1.000" else {}),
             published_unit=published_unit,
             quality=quality,
             unit_price_as_published=per_unit,
@@ -791,6 +894,117 @@ def _corabastos_quote_rows(
             source_note="Cantidad/unidad literales del original. No se asume que cajas o bultos equivalgan a kg. Las columnas de calidad o Desde/Hasta permanecen separadas.",
         )
 
+
+_CORABASTOS_2025_08_19_SHA = "125c5e82ad45ab44a8912d1319ba7b8e57510de99946d05f343c62e2c584932a"
+_CORABASTOS_2025_08_19_PAGE_ROWS = (34, 44, 41, 41, 15)
+
+
+def _corabastos_2025_08_19(pdf, body, url):
+    """Read every priced row in one reviewed native Google Sheets PDF layout.
+
+    The publisher exports the first four pages' prices as split ``-$`` and
+    ``25.000-`` glyphs, while page five's egg prices use ``$12.000``. Generic
+    table extraction collapses most columns and misidentifies eggs as ``A``.
+    Keep this path SHA-bound until another original independently proves the
+    same geometry. The one printed ``158/000`` price remains a review row.
+    """
+    if hashlib.sha256(body).hexdigest() != _CORABASTOS_2025_08_19_SHA:
+        raise ValueError("Corabastos reviewed layout changed")
+    # This source alone prints "19 Agosto del 2025". Keep that grammar here
+    # so another legacy PDF cannot reach the generic partial-table reader.
+    printed = clean(pdf.pages[0].extract_text() or "")
+    if not re.search(r"\b19\s+Agosto\s+del\s+2025\b", printed, re.IGNORECASE):
+        raise ValueError("Corabastos reviewed original lacks its printed date")
+    day = date(2025, 8, 19)
+    if day != date(2025, 8, 19) or not url.lower().endswith("19082025.pdf"):
+        raise ValueError("Corabastos printed date differs from source link")
+    if len(pdf.pages) != 10 or any(page.images for page in pdf.pages[1:]) or any(
+        len((page.extract_text() or "").strip()) > 1 for page in pdf.pages[5:]
+    ):
+        raise ValueError("Corabastos reviewed page layout changed")
+
+    def amount(literal):
+        token = literal.strip("-$ ")
+        if not re.fullmatch(r"(?:\d{1,3}(?:\.\d{3})*|\d{1,6})", token):
+            return None
+        return float(token.replace(".", ""))
+
+    output = []
+    for page_no, page in enumerate(pdf.pages[:5], 1):
+        rows = []
+        continuation = None
+        for y, words, text in _pdf_lines(page, upright_only=True):
+            if "Nombre" in text and "Presentación" in text:
+                continue
+            if text == "MADERA" and continuation is not None:
+                if y - continuation["y"] > 12:
+                    raise ValueError("Corabastos wrapped package is displaced")
+                continuation["presentation"] += " MADERA"
+                continuation = None
+                continue
+            quantity = [
+                w for w in words if 240 <= w["x0"] < 305
+                and re.fullmatch(r"\d+[.,]\d+", w["text"])
+            ]
+            unit = [
+                w for w in words if 300 <= w["x0"] < 354
+                and w["text"].lower() in {"kilo", "unidad"}
+            ]
+            prices = [w["text"] for w in words if w["x0"] >= 354 and re.search(r"\d", w["text"])]
+            if not quantity and not unit and not prices:
+                continue
+            if prices and not quantity and not unit:
+                if "19 Agosto del 2025" in text:
+                    continue  # A dated section caption, never a product row.
+                raise ValueError(f"Unattached Corabastos price glyphs on page {page_no}")
+            if not (len(quantity) == len(unit) == 1 and len(prices) == 3):
+                if quantity or unit:
+                    raise ValueError(f"Incomplete Corabastos page {page_no} row at y {y:.1f}")
+                continue
+            name = " ".join(w["text"] for w in words if w["x0"] < 170)
+            presentation = " ".join(w["text"] for w in words if 170 <= w["x0"] < 240)
+            if not name or not presentation:
+                raise ValueError("Corabastos product or package missing")
+            row = {"page": page_no, "y": y, "name": name,
+                   "presentation": presentation, "quantity": quantity[0]["text"],
+                   "unit": unit[0]["text"], "raw_prices": prices}
+            rows.append(row)
+            continuation = row if presentation == "CAJA DE" else None
+        if len(rows) != _CORABASTOS_2025_08_19_PAGE_ROWS[page_no - 1] or any(
+            row["presentation"] == "CAJA DE" for row in rows
+        ):
+            raise ValueError(f"Incomplete Corabastos page {page_no} table")
+        for row in rows:
+            numbers = [amount(raw) for raw in row["raw_prices"]]
+            if numbers[2] is None:
+                raise ValueError("Corabastos unit-value cell is malformed")
+            for index, quality in enumerate(("extra", "primera")):
+                issue = (
+                    "Publisher printed malformed monetary cell; price requires review"
+                    if numbers[index] is None else None
+                )
+                # The egg grade AA is an identity dimension, not sentence case.
+                name = re.sub(r"\bAa\b", "AA", row["name"].title())
+                output.append(_row(
+                    name, "Corabastos S.A.",
+                    f"corabastos-quality-{quality}",
+                    f"Precio en bodega · calidad {quality}",
+                    f'{row["presentation"]} · cantidad {row["quantity"]} · {row["unit"]}',
+                    "Bogotá · Corabastos", day, numbers[index],
+                    f'PDF page {page_no}, native table y {row["y"]:.1f}; price column {index + 1}',
+                    category=_corabastos_category(row["name"]),
+                    presentation=row["presentation"],
+                    quantity=float(row["quantity"].replace(",", ".")),
+                    published_unit=row["unit"], quality=quality,
+                    unit_price_as_published=numbers[2],
+                    original_price=row["raw_prices"][index],
+                    source_page=page_no, original_product=row["name"],
+                    quality_issue=issue,
+                    source_note="Presentación, cantidad y dos calidades literales; no se infiere precio de una celda malformada.",
+                ))
+    if len(output) != 350 or sum(row["price"] is not None for row in output) != 349:
+        raise ValueError("Corabastos reviewed quote count changed")
+    return output
 
 def _corabastos_unruled(page):
     """2025 native tables have column headings but no usable PDF grid."""
@@ -1045,11 +1259,143 @@ def _corabastos_compact(pdf, day):
     return output
 
 
-def parse_corabastos(body, url):
+def _corabastos_id_compact(pdf, day):
+    """Read the native ID/Grupo sheet printout with two quality columns.
+
+    This layout prints bare integer money values and no per-unit column. Column
+    boundaries come from its own header; clipped/overprinted cells stay review.
+    """
+    boundaries = None
+    output = []
+    for page_no, page in enumerate(pdf.pages, 1):
+        for y, words, text in _pdf_lines(page, upright_only=True):
+            if all(label in text for label in ("ID Grupo Producto", "$ extra", "$ primera", "Cant.", "Presentación", "Variación")):
+                def x(label):
+                    return next(w["x0"] for w in words if w["text"] == label)
+
+                money = [w["x0"] for w in words if w["text"] == "$"]
+                if len(money) != 2:
+                    raise ValueError("Corabastos ID table has ambiguous price columns")
+                boundaries = [
+                    x("ID") - 2, x("Grupo") - 2, x("Producto") - 2,
+                    money[0] - 2, money[1] - 2, x("Cant.") - 2,
+                    x("Presentación") - 12, x("Variación") - 2, page.width,
+                ]
+                if any(a >= b for a, b in pairwise(boundaries)):
+                    raise ValueError("Corabastos ID table columns overlap")
+                continue
+            if boundaries is None or not re.match(r"^\d+\s+(?:\d+\.\s+|HUEVOS\b)", text):
+                continue
+            chars = [
+                c for c in page.chars
+                if c.get("upright", True) and abs(c["top"] - y) < 2
+            ]
+            fields = []
+            overlapping = False
+            for left, right in pairwise(boundaries):
+                selected = sorted(
+                    (c for c in chars if left <= (c["x0"] + c["x1"]) / 2 < right),
+                    key=lambda c: c["x0"],
+                )
+                ink = [c for c in selected if not c["text"].isspace()]
+                if any(a["x1"] > b["x0"] + 0.7 for a, b in pairwise(ink)):
+                    overlapping = True
+                fields.append(clean("".join(c["text"] for c in selected)))
+            row_id, group, name, extra_raw, first_raw, quantity, presentation, variation = fields
+            if not re.fullmatch(r"\d+", row_id):
+                continue
+            issue = None
+            if overlapping:
+                issue = "Publisher ID table has overlapping or clipped native glyphs"
+            if not name or not presentation or not re.fullmatch(r"\d+(?:[.,]\d+)?", quantity):
+                issue = "Publisher ID table has incomplete product/package alignment"
+            amounts = []
+            for raw in (extra_raw, first_raw):
+                literal = raw.replace(" ", "")
+                if not re.fullmatch(r"\$?\d+(?:\.\d{3})*", literal):
+                    issue = "Publisher ID table has malformed or overprinted money"
+                    amounts.append(None)
+                else:
+                    amounts.append(float(literal.removeprefix("$").replace(".", "")))
+            for column, (quality, amount, raw) in enumerate(
+                zip(("extra", "primera"), amounts, (extra_raw, first_raw)), 1
+            ):
+                row_issue = issue or (
+                    "Publisher zero price; no positive quote available" if amount == 0 else None
+                )
+                output.append(
+                    _row(
+                        name.title() or "Producto sin identificar",
+                        "Corabastos S.A.",
+                        "corabastos-quality-" + quality,
+                        "Precio en bodega · calidad " + quality,
+                        f"{presentation} · cantidad {quantity}",
+                        "Bogotá · Corabastos",
+                        day,
+                        None if row_issue else amount,
+                        f"PDF page {page_no}, ID table y {y:.1f}; price column {column}",
+                        category=_corabastos_category(name),
+                        presentation=presentation,
+                        quantity=float(quantity.replace(",", "."))
+                        if re.fullmatch(r"\d+(?:[.,]\d+)?", quantity) else None,
+                        published_unit=presentation,
+                        quality=quality,
+                        source_page=page_no,
+                        original_product=name,
+                        original_price=raw,
+                        original_row=text,
+                        original_group=group,
+                        original_id=row_id,
+                        variation_label=variation,
+                        quality_issue=row_issue,
+                        source_note="Presentación y cantidad literales; el original no publica precio por unidad. Las calidades Extra y Primera permanecen separadas.",
+                    )
+                )
+    return output
+
+
+_CORABASTOS_FEB4_WRAPPED_LABEL_URL = "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-04febrero2025.pdf"
+_CORABASTOS_FEB4_WRAPPED_LABEL_SHA = "0f1f1799263d38d85988fdc1e2b24aee07a6e616c638a414ece44b1ce0f22d5b"
+_SEMANTIC_TARGET_SOURCES = ({'url': 'https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-28enero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-29enero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-30enero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-31enero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-03febrero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-04febrero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-05febrero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-06febrero2025.pdf'}, {'url': 'https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-07febrero2025.pdf'})
+
+
+def parse_corabastos(body, url, *, semantic_mode=None):
+    semantic_correction = _valid_semantic_mode(semantic_mode, "colombia-corabastos-pdf", url, body)
     import pdfplumber
 
+    body_sha = hashlib.sha256(body).hexdigest()
+    if semantic_correction and url not in {r["url"] for r in _SEMANTIC_TARGET_SOURCES}:
+        raise ValueError("No semantic correction mode for this Corabastos URL")
+    if semantic_correction and url == _CORABASTOS_FEB4_WRAPPED_LABEL_URL and body_sha != _CORABASTOS_FEB4_WRAPPED_LABEL_SHA:
+        raise ValueError("Revised Corabastos Feb 4 wrapped-label original requires layout review")
+    if url.lower().endswith("19082025.pdf") and hashlib.sha256(body).hexdigest() != _CORABASTOS_2025_08_19_SHA:
+        raise ValueError("Revised Corabastos 19-Aug-2025 original requires layout review")
     output, seen = [], set()
     with pdfplumber.open(io.BytesIO(body)) as pdf:
+        if hashlib.sha256(body).hexdigest() == _CORABASTOS_2025_08_19_SHA:
+            return _corabastos_2025_08_19(pdf, body, url)
+        first_text = pdf.pages[0].extract_text() or ""
+        if "$ Cal. Extra" in first_text and re.search(r"-\$\s+\d[\d.]*-", first_text):
+            raise ValueError(
+                "Unreviewed Corabastos split-price layout requires complete table validation"
+            )
+        # This retained publisher original is a failed export: seven native
+        # pages contain only "Fecha" and a category legend, with no image or
+        # price cells. There is nothing for OCR to recover. Require its exact
+        # digest and page evidence so future unknown layouts still fail open to
+        # investigation rather than being mistaken for this empty original.
+        if hashlib.sha256(body).hexdigest() == "c4f5b171fddb72e9f666cf337cb939942fe3c695c8b480fbd9e5544d059ca70d":
+            texts = [clean(page.extract_text() or "") for page in pdf.pages]
+            if len(texts) == 7 and texts[:6] == ["Fecha", "", "", "", "", ""] and texts[6] == "CATEGORIA 1.Hortalizas 2.FRUTAS" and not any(page.images for page in pdf.pages):
+                return [{
+                    "source_locator": "PDF pages 1-7, empty publisher export",
+                    "price": None,
+                    "details": {
+                        "quality_issue": "Publisher original has no observation date or price table; seven native pages contain only Fecha and a category legend, with no images to OCR",
+                        "source_pages": list(range(1, 8)),
+                        "source_note": "No price or observation date inferred from the linked filename",
+                    },
+                }]
         day = _pdf_date(pdf.pages[0])
         stamp = re.search(r"(20\d{6})\.pdf$", url, re.IGNORECASE)
         if stamp and day.strftime("%Y%m%d") != stamp[1]:
@@ -1078,6 +1424,7 @@ def parse_corabastos(body, url):
                             day,
                             f"PDF page {page_no}, table {table_no}, row {row_no}",
                             page_no,
+                            semantic_correction=semantic_correction,
                         )
                     )
             for y, cells, semantics in _corabastos_unruled(page):
@@ -1094,13 +1441,22 @@ def parse_corabastos(body, url):
                         f"PDF page {page_no}, native table y {y:.1f}",
                         page_no,
                         semantics=semantics,
+                        semantic_correction=semantic_correction,
                     )
                 )
             # Only invoke the geometric native-text reader on the older header layout.
             if "$ Cal. Extra" in (page.extract_text() or "") or "$ Desde" in (
                 page.extract_text() or ""
             ):
-                for y, cells, semantics in _corabastos_legacy(page):
+                for y, cells, semantics in _corabastos_legacy(
+                    page,
+                    quantity_anchor_product_names=(
+                        semantic_correction
+                        and url == _CORABASTOS_FEB4_WRAPPED_LABEL_URL
+                        and body_sha == _CORABASTOS_FEB4_WRAPPED_LABEL_SHA
+                        and page_no == 3
+                    ),
+                ):
                     identity = tuple(cells[:4]) + (
                         (page_no, y) if semantics == "unidentified" else ()
                     )
@@ -1115,12 +1471,15 @@ def parse_corabastos(body, url):
                             page_no,
                             legacy=True,
                             semantics=semantics,
+                            semantic_correction=semantic_correction,
                         )
                     )
         if not output:
             output.extend(_corabastos_printed(pdf, day))
         if not output:
             output.extend(_corabastos_compact(pdf, day))
+        if not output:
+            output.extend(_corabastos_id_compact(pdf, day))
     if not output:
         raise ValueError(
             "No known Corabastos price table extracted; preserve PDF for review"
@@ -1860,7 +2219,73 @@ def parse_pork(body):
                         )
     if not output:
         raise ValueError("No known Porkcolombia price tables extracted")
-    return _pork_deduplicate(output)
+    rows = _pork_deduplicate(output)
+    # Exact Semana23 page-3 historical cell repeats its page-1 current quote.
+    if hashlib.sha256(body).hexdigest() == "1386adec00a45eded951ff1466127f4f9a64d6243ee1639f5ff11f46a86b5450":
+        old_locator = "PDF page 3, Cerdo en pie, y 426.0, market Antioquia"
+        current_locator = "PDF page 1, current prices column 1, y 471.0"
+        old = next((r for r in output if r["source_locator"] == old_locator
+                    and r["date"] == "2024-06-07" and r["market"] == "Antioquia"
+                    and r["unit"] == "kg en pie" and r["price"] == 9173.0
+                    and r["details"].get("original_price") == "9.173"), None)
+        current = next((r for r in rows if r["source_locator"] == current_locator
+                        and r["date"] == "2024-06-07" and r["market"] == "Antioquia"
+                        and r["unit"] == "kg en pie" and r["price"] == 9173.0), None)
+        if old and current and old["product_id"] == current["product_id"] and old["series"] == current["series"]:
+            rows.append({**old, "price": None, "details": {**old["details"],
+                "quality_issue": "Exact page-3 native cell duplicates the page-1 current quote",
+                "duplicate_of": current_locator,
+                "original_sha256": hashlib.sha256(body).hexdigest()}})
+    # An older parser published this one unqualified row locator. The native
+    # page-3 Caribe Norte cell is real, but its identical current quote is
+    # already represented by page 1. Retain an exact-cell review so a replay
+    # can reconcile that historical locator without inventing a second quote.
+    if hashlib.sha256(body).hexdigest() == "3b9009dd742d30db945636b203a20729df4d7aec19b5ffad64173f6cdba62084":
+        historical = next((r for r in output if
+            r["source_locator"] == "PDF page 3, Cerdo en pie, y 425.3, market Caribe Norte"
+            and r["date"] == "2024-09-06" and r["price"] == 9319.0
+            and r["details"].get("original_price") == "9.319"), None)
+        current = next((r for r in rows if
+            r["source_locator"] == "PDF page 1, current prices column 1, y 516.8"
+            and r["market"] == "Caribe Norte" and r["date"] == "2024-09-06"
+            and r["price"] == 9319.0), None)
+        if historical and current:
+            review = {**historical, "price": None,
+                "details": {**historical["details"],
+                    "quality_issue": "Exact page-3 native cell duplicates the page-1 current quote",
+                    "duplicate_of": current["source_locator"],
+                    "original_sha256": hashlib.sha256(body).hexdigest()}}
+            rows.append(review)
+    # Two further archived 2024 bulletins print the same national hot-carcass
+    # quote on page 4 and in the page-1 current-price table. Earlier parsers
+    # published the page-4 locator. Reconcile only these exact original bytes
+    # after both native rows have matching complete quote identities.
+    legacy_cells = {
+        "b92bdc9ae80330879b2f3e7039dd408836e596cea6fd1fcf0a9cbbc9c5a12393":
+            ("2024-07-26", 11991.0, "11.991", "PDF page 1, current prices column 2, y 562.5"),
+        "174627feeefd054fae66748e0b73806bea3c9bce0994ae134d5a2750de16b474":
+            ("2024-06-28", 12188.0, "12.188", "PDF page 1, current prices column 2, y 565.5"),
+    }
+    digest = hashlib.sha256(body).hexdigest()
+    if digest in legacy_cells:
+        day, price, printed, current_locator = legacy_cells[digest]
+        old_locator = "PDF page 4, Cerdo · canal caliente, y 468.0, market Colombia"
+        legacy = next((r for r in output if
+            r["source_locator"] == old_locator and r["date"] == day
+            and r["market"] == "Colombia" and r["unit"] == "kg canal"
+            and r["price"] == price and r["details"].get("original_price") == printed), None)
+        current = next((r for r in rows if
+            r["source_locator"] == current_locator and r["date"] == day
+            and r["market"] == "Colombia" and r["unit"] == "kg canal"
+            and r["price"] == price and r["details"].get("original_price") == printed), None)
+        identity = ("product_id", "series", "basis", "currency", "unit", "market")
+        if legacy and current and all(legacy[k] == current[k] for k in identity):
+            rows.append({**legacy, "price": None,
+                "details": {**legacy["details"],
+                    "quality_issue": "Exact page-4 native cell duplicates the page-1 current quote",
+                    "duplicate_of": current_locator,
+                    "original_sha256": digest}})
+    return rows
 
 
 def _pork_deduplicate(output):
@@ -1882,14 +2307,23 @@ def _pork_deduplicate(output):
     return [row for group in unique.values() for row in group]
 
 
-def parse(body, url, kind):
+def _valid_semantic_mode(mode, kind, url, body):
+    if mode is None:
+        return False
+    from .corabastos_semantic_correction import accepts_mode
+    if not accepts_mode(mode, kind, url, body):
+        raise ValueError("Invalid source-bound Corabastos semantic-mode token")
+    return True
+
+
+def parse(body, url, kind, *, semantic_mode=None):
     if not _trusted(url):
         raise ValueError("Untrusted Colombian price source")
     parsers = {
         "colombia-agronet-cacao": lambda: parse_cacao(body),
         "colombia-fedepalma-ffp": lambda: parse_palm(body, url),
         "colombia-fedegan-csv": lambda: parse_fedegan(body, url),
-        "colombia-corabastos-pdf": lambda: parse_corabastos(body, url),
+        "colombia-corabastos-pdf": lambda: parse_corabastos(body, url, semantic_mode=semantic_mode),
         "colombia-pork-pdf": lambda: parse_pork(body),
     }
     if kind in parsers:

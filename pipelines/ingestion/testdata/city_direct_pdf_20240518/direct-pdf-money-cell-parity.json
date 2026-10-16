@@ -1,0 +1,2402 @@
+[
+  {
+    "locator": "PDF page 1,table 1,row 7,round 1",
+    "printed": [
+      "170.000",
+      "180.000"
+    ],
+    "parsed": [
+      "170000",
+      "180000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 7,round 2",
+    "printed": [
+      "180.000",
+      "200.000"
+    ],
+    "parsed": [
+      "180000",
+      "200000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 8,round 1",
+    "printed": [
+      "110.000",
+      "120.000"
+    ],
+    "parsed": [
+      "110000",
+      "120000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 8,round 2",
+    "printed": [
+      "120.000",
+      "130.000"
+    ],
+    "parsed": [
+      "120000",
+      "130000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 9,round 1",
+    "printed": [
+      "100.000",
+      "110.000"
+    ],
+    "parsed": [
+      "100000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 9,round 2",
+    "printed": [
+      "100.000",
+      "110.000"
+    ],
+    "parsed": [
+      "100000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 10,round 1",
+    "printed": [
+      "38.000",
+      "40.000"
+    ],
+    "parsed": [
+      "38000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 10,round 2",
+    "printed": [
+      "38.000",
+      "40.000"
+    ],
+    "parsed": [
+      "38000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 11,round 1",
+    "printed": [
+      "38.000",
+      "40.000"
+    ],
+    "parsed": [
+      "38000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 11,round 2",
+    "printed": [
+      "38.000",
+      "40.000"
+    ],
+    "parsed": [
+      "38000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 12,round 1",
+    "printed": [
+      "65.000",
+      "75.000"
+    ],
+    "parsed": [
+      "65000",
+      "75000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 12,round 2",
+    "printed": [
+      "65.000",
+      "70.000"
+    ],
+    "parsed": [
+      "65000",
+      "70000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 14,round 1",
+    "printed": [
+      "8.000",
+      "9.000"
+    ],
+    "parsed": [
+      "8000",
+      "9000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 14,round 2",
+    "printed": [
+      "8.000",
+      "9.000"
+    ],
+    "parsed": [
+      "8000",
+      "9000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 15,round 1",
+    "printed": [
+      "7.500",
+      "8.000"
+    ],
+    "parsed": [
+      "7500",
+      "8000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 15,round 2",
+    "printed": [
+      "7.500",
+      "8.000"
+    ],
+    "parsed": [
+      "7500",
+      "8000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 16,round 1",
+    "printed": [
+      "38.000",
+      "40.000"
+    ],
+    "parsed": [
+      "38000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 16,round 2",
+    "printed": [
+      "37.000",
+      "40.000"
+    ],
+    "parsed": [
+      "37000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 17,round 1",
+    "printed": [
+      "3.300",
+      "3.500"
+    ],
+    "parsed": [
+      "3300",
+      "3500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 17,round 2",
+    "printed": [
+      "3.200",
+      "3.400"
+    ],
+    "parsed": [
+      "3200",
+      "3400"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 18,round 1",
+    "printed": [
+      "2.600",
+      "2.800"
+    ],
+    "parsed": [
+      "2600",
+      "2800"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 18,round 2",
+    "printed": [
+      "2.700",
+      "2.800"
+    ],
+    "parsed": [
+      "2700",
+      "2800"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 19,round 1",
+    "printed": [
+      "6.000",
+      "6.500"
+    ],
+    "parsed": [
+      "6000",
+      "6500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 19,round 2",
+    "printed": [
+      "6.000",
+      "6.000"
+    ],
+    "parsed": [
+      "6000",
+      "6000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 20,round 1",
+    "printed": [
+      "100.000",
+      "110.000"
+    ],
+    "parsed": [
+      "100000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 20,round 2",
+    "printed": [
+      "105.000",
+      "110.000"
+    ],
+    "parsed": [
+      "105000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 21,round 1",
+    "printed": [
+      "130.000",
+      "140.000"
+    ],
+    "parsed": [
+      "130000",
+      "140000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 21,round 2",
+    "printed": [
+      "130.000",
+      "140.000"
+    ],
+    "parsed": [
+      "130000",
+      "140000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 22,round 1",
+    "printed": [
+      "70.000",
+      "70.000"
+    ],
+    "parsed": [
+      "70000",
+      "70000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 22,round 2",
+    "printed": [
+      "70.000",
+      "70.000"
+    ],
+    "parsed": [
+      "70000",
+      "70000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 23,round 1",
+    "printed": [
+      "70.000",
+      "75.000"
+    ],
+    "parsed": [
+      "70000",
+      "75000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 23,round 2",
+    "printed": [
+      "70.000",
+      "75.000"
+    ],
+    "parsed": [
+      "70000",
+      "75000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 24,round 1",
+    "printed": [
+      "7.000",
+      "8.000"
+    ],
+    "parsed": [
+      "7000",
+      "8000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 24,round 2",
+    "printed": [
+      "7.000",
+      "7.000"
+    ],
+    "parsed": [
+      "7000",
+      "7000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 25,round 1",
+    "printed": [
+      "8.000",
+      "9.000"
+    ],
+    "parsed": [
+      "8000",
+      "9000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 25,round 2",
+    "printed": [
+      "8.000",
+      "8.500"
+    ],
+    "parsed": [
+      "8000",
+      "8500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 26,round 1",
+    "printed": [
+      "120.000",
+      "130.000"
+    ],
+    "parsed": [
+      "120000",
+      "130000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 26,round 2",
+    "printed": [
+      "120.000",
+      "120.000"
+    ],
+    "parsed": [
+      "120000",
+      "120000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 27,round 1",
+    "printed": [
+      "4.200",
+      "4.500"
+    ],
+    "parsed": [
+      "4200",
+      "4500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 27,round 2",
+    "printed": [
+      "4.000",
+      "4.500"
+    ],
+    "parsed": [
+      "4000",
+      "4500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 28,round 1",
+    "printed": [
+      "45.000",
+      "50.000"
+    ],
+    "parsed": [
+      "45000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 28,round 2",
+    "printed": [
+      "45.000",
+      "50.000"
+    ],
+    "parsed": [
+      "45000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 29,round 1",
+    "printed": [
+      "50.000",
+      "52.000"
+    ],
+    "parsed": [
+      "50000",
+      "52000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 29,round 2",
+    "printed": [
+      "50.000",
+      "50.000"
+    ],
+    "parsed": [
+      "50000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 30,round 1",
+    "printed": [
+      "160.000",
+      "170.000"
+    ],
+    "parsed": [
+      "160000",
+      "170000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 30,round 2",
+    "printed": [
+      "160.000",
+      "160.000"
+    ],
+    "parsed": [
+      "160000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 31,round 1",
+    "printed": [
+      "140.000",
+      "150.000"
+    ],
+    "parsed": [
+      "140000",
+      "150000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 31,round 2",
+    "printed": [
+      "140.000",
+      "145.000"
+    ],
+    "parsed": [
+      "140000",
+      "145000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 32,round 1",
+    "printed": [
+      "80.000",
+      "100.000"
+    ],
+    "parsed": [
+      "80000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 32,round 2",
+    "printed": [
+      "90.000",
+      "100.000"
+    ],
+    "parsed": [
+      "90000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 33,round 1",
+    "printed": [
+      "70.000",
+      "80.000"
+    ],
+    "parsed": [
+      "70000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 33,round 2",
+    "printed": [
+      "75.000",
+      "80.000"
+    ],
+    "parsed": [
+      "75000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 34,round 1",
+    "printed": [
+      "120.000",
+      "130.000"
+    ],
+    "parsed": [
+      "120000",
+      "130000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 34,round 2",
+    "printed": [
+      "120.000",
+      "130.000"
+    ],
+    "parsed": [
+      "120000",
+      "130000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 35,round 1",
+    "printed": [
+      "160.000",
+      "160.000"
+    ],
+    "parsed": [
+      "160000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 35,round 2",
+    "printed": [
+      "160.000",
+      "170.000"
+    ],
+    "parsed": [
+      "160000",
+      "170000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 36,round 1",
+    "printed": [
+      "130.000",
+      "140.000"
+    ],
+    "parsed": [
+      "130000",
+      "140000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 36,round 2",
+    "printed": [
+      "130.000",
+      "130.000"
+    ],
+    "parsed": [
+      "130000",
+      "130000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 37,round 1",
+    "printed": [
+      "160.000",
+      "170.000"
+    ],
+    "parsed": [
+      "160000",
+      "170000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 37,round 2",
+    "printed": [
+      "160.000",
+      "170.000"
+    ],
+    "parsed": [
+      "160000",
+      "170000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 38,round 1",
+    "printed": [
+      "40.000",
+      "40.000"
+    ],
+    "parsed": [
+      "40000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 38,round 2",
+    "printed": [
+      "38.000",
+      "40.000"
+    ],
+    "parsed": [
+      "38000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 39,round 1",
+    "printed": [
+      "2.500",
+      "2.800"
+    ],
+    "parsed": [
+      "2500",
+      "2800"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 39,round 2",
+    "printed": [
+      "2.500",
+      "3.000"
+    ],
+    "parsed": [
+      "2500",
+      "3000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 40,round 1",
+    "printed": [
+      "38.000",
+      "42.000"
+    ],
+    "parsed": [
+      "38000",
+      "42000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 40,round 2",
+    "printed": [
+      "37.000",
+      "40.000"
+    ],
+    "parsed": [
+      "37000",
+      "40000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 41,round 1",
+    "printed": [
+      "25.000",
+      "28.000"
+    ],
+    "parsed": [
+      "25000",
+      "28000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 41,round 2",
+    "printed": [
+      "25.000",
+      "25.000"
+    ],
+    "parsed": [
+      "25000",
+      "25000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 42,round 1",
+    "printed": [
+      "22.000",
+      "25.000"
+    ],
+    "parsed": [
+      "22000",
+      "25000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 42,round 2",
+    "printed": [
+      "20.000",
+      "23.000"
+    ],
+    "parsed": [
+      "20000",
+      "23000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 43,round 1",
+    "printed": [
+      "2.300",
+      "2.500"
+    ],
+    "parsed": [
+      "2300",
+      "2500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 43,round 2",
+    "printed": [
+      "2.500",
+      "2.500"
+    ],
+    "parsed": [
+      "2500",
+      "2500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 44,round 1",
+    "printed": [
+      "2.000",
+      "2.000"
+    ],
+    "parsed": [
+      "2000",
+      "2000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 44,round 2",
+    "printed": [
+      "2.000",
+      "2.000"
+    ],
+    "parsed": [
+      "2000",
+      "2000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 45,round 1",
+    "printed": [
+      "110.000",
+      "120.000"
+    ],
+    "parsed": [
+      "110000",
+      "120000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 45,round 2",
+    "printed": [
+      "110.000",
+      "110.000"
+    ],
+    "parsed": [
+      "110000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 46,round 1",
+    "printed": [
+      "40.000",
+      "45.000"
+    ],
+    "parsed": [
+      "40000",
+      "45000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 46,round 2",
+    "printed": [
+      "40.000",
+      "45.000"
+    ],
+    "parsed": [
+      "40000",
+      "45000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 47,round 1",
+    "printed": [
+      "8.000",
+      "9.000"
+    ],
+    "parsed": [
+      "8000",
+      "9000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 47,round 2",
+    "printed": [
+      "8.000",
+      "8.500"
+    ],
+    "parsed": [
+      "8000",
+      "8500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 48,round 1",
+    "printed": [
+      "30.000",
+      "35.000"
+    ],
+    "parsed": [
+      "30000",
+      "35000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 48,round 2",
+    "printed": [
+      "32.000",
+      "34.000"
+    ],
+    "parsed": [
+      "32000",
+      "34000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 49,round 1",
+    "printed": [
+      "80.000",
+      "85.000"
+    ],
+    "parsed": [
+      "80000",
+      "85000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 49,round 2",
+    "printed": [
+      "80.000",
+      "80.000"
+    ],
+    "parsed": [
+      "80000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 50,round 1",
+    "printed": [
+      "5.500",
+      "6.000"
+    ],
+    "parsed": [
+      "5500",
+      "6000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 50,round 2",
+    "printed": [
+      "5.500",
+      "6.000"
+    ],
+    "parsed": [
+      "5500",
+      "6000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 51,round 1",
+    "printed": [
+      "58.000",
+      "62.000"
+    ],
+    "parsed": [
+      "58000",
+      "62000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 1,table 1,row 51,round 2",
+    "printed": [
+      "55.000",
+      "60.000"
+    ],
+    "parsed": [
+      "55000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 5,round 1",
+    "printed": [
+      "120.000",
+      "120.000"
+    ],
+    "parsed": [
+      "120000",
+      "120000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 5,round 2",
+    "printed": [
+      "115.000",
+      "120.000"
+    ],
+    "parsed": [
+      "115000",
+      "120000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 6,round 1",
+    "printed": [
+      "75.000",
+      "80.000"
+    ],
+    "parsed": [
+      "75000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 6,round 2",
+    "printed": [
+      "75.000",
+      "75.000"
+    ],
+    "parsed": [
+      "75000",
+      "75000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 7,round 1",
+    "printed": [
+      "75.000",
+      "80.000"
+    ],
+    "parsed": [
+      "75000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 7,round 2",
+    "printed": [
+      "75.000",
+      "75.000"
+    ],
+    "parsed": [
+      "75000",
+      "75000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 8,round 1",
+    "printed": [
+      "80.000",
+      "85.000"
+    ],
+    "parsed": [
+      "80000",
+      "85000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 8,round 2",
+    "printed": [
+      "80.000",
+      "82.000"
+    ],
+    "parsed": [
+      "80000",
+      "82000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 11,round 1",
+    "printed": [
+      "100.000",
+      "120.000"
+    ],
+    "parsed": [
+      "100000",
+      "120000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 11,round 2",
+    "printed": [
+      "90.000",
+      "110.000"
+    ],
+    "parsed": [
+      "90000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 13,round 1",
+    "printed": [
+      "60.000",
+      "60.000"
+    ],
+    "parsed": [
+      "60000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 13,round 2",
+    "printed": [
+      "55.000",
+      "60.000"
+    ],
+    "parsed": [
+      "55000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 14,round 1",
+    "printed": [
+      "60.000",
+      "60.000"
+    ],
+    "parsed": [
+      "60000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 14,round 2",
+    "printed": [
+      "55.000",
+      "60.000"
+    ],
+    "parsed": [
+      "55000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 15,round 1",
+    "printed": [
+      "70.000",
+      "80.000"
+    ],
+    "parsed": [
+      "70000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 15,round 2",
+    "printed": [
+      "70.000",
+      "75.000"
+    ],
+    "parsed": [
+      "70000",
+      "75000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 17,round 1",
+    "printed": [
+      "140.000",
+      "160.000"
+    ],
+    "parsed": [
+      "140000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 17,round 2",
+    "printed": [
+      "160.000",
+      "160.000"
+    ],
+    "parsed": [
+      "160000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 18,round 1",
+    "printed": [
+      "140.000",
+      "160.000"
+    ],
+    "parsed": [
+      "140000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 18,round 2",
+    "printed": [
+      "150.000",
+      "150.000"
+    ],
+    "parsed": [
+      "150000",
+      "150000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 19,round 1",
+    "printed": [
+      "320.000",
+      "340.000"
+    ],
+    "parsed": [
+      "320000",
+      "340000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 19,round 2",
+    "printed": [
+      "330.000",
+      "350.000"
+    ],
+    "parsed": [
+      "330000",
+      "350000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 20,round 1",
+    "printed": [
+      "300.000",
+      "320.000"
+    ],
+    "parsed": [
+      "300000",
+      "320000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 20,round 2",
+    "printed": [
+      "310.000",
+      "330.000"
+    ],
+    "parsed": [
+      "310000",
+      "330000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 21,round 1",
+    "printed": [
+      "160.000",
+      "180.000"
+    ],
+    "parsed": [
+      "160000",
+      "180000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 21,round 2",
+    "printed": [
+      "170.000",
+      "180.000"
+    ],
+    "parsed": [
+      "170000",
+      "180000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 22,round 1",
+    "printed": [
+      "130.000",
+      "140.000"
+    ],
+    "parsed": [
+      "130000",
+      "140000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 22,round 2",
+    "printed": [
+      "130.000",
+      "140.000"
+    ],
+    "parsed": [
+      "130000",
+      "140000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 23,round 1",
+    "printed": [
+      "260.000",
+      "280.000"
+    ],
+    "parsed": [
+      "260000",
+      "280000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 23,round 2",
+    "printed": [
+      "260.000",
+      "270.000"
+    ],
+    "parsed": [
+      "260000",
+      "270000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 24,round 1",
+    "printed": [
+      "160.000",
+      "170.000"
+    ],
+    "parsed": [
+      "160000",
+      "170000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 24,round 2",
+    "printed": [
+      "160.000",
+      "170.000"
+    ],
+    "parsed": [
+      "160000",
+      "170000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 25,round 1",
+    "printed": [
+      "130.000",
+      "150.000"
+    ],
+    "parsed": [
+      "130000",
+      "150000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 25,round 2",
+    "printed": [
+      "130.000",
+      "140.000"
+    ],
+    "parsed": [
+      "130000",
+      "140000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 27,round 1",
+    "printed": [
+      "50.000",
+      "60.000"
+    ],
+    "parsed": [
+      "50000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 27,round 2",
+    "printed": [
+      "50.000",
+      "50.000"
+    ],
+    "parsed": [
+      "50000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 30,round 1",
+    "printed": [
+      "450.000",
+      "480.000"
+    ],
+    "parsed": [
+      "450000",
+      "480000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 30,round 2",
+    "printed": [
+      "450.000",
+      "470.000"
+    ],
+    "parsed": [
+      "450000",
+      "470000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 31,round 1",
+    "printed": [
+      "390.000",
+      "410.000"
+    ],
+    "parsed": [
+      "390000",
+      "410000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 31,round 2",
+    "printed": [
+      "400.000",
+      "400.000"
+    ],
+    "parsed": [
+      "400000",
+      "400000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 32,round 1",
+    "printed": [
+      "420.000",
+      "440.000"
+    ],
+    "parsed": [
+      "420000",
+      "440000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 32,round 2",
+    "printed": [
+      "430.000",
+      "450.000"
+    ],
+    "parsed": [
+      "430000",
+      "450000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 33,round 1",
+    "printed": [
+      "140.000",
+      "150.000"
+    ],
+    "parsed": [
+      "140000",
+      "150000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 33,round 2",
+    "printed": [
+      "140.000",
+      "150.000"
+    ],
+    "parsed": [
+      "140000",
+      "150000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 34,round 1",
+    "printed": [
+      "350.000",
+      "360.000"
+    ],
+    "parsed": [
+      "350000",
+      "360000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 34,round 2",
+    "printed": [
+      "340.000",
+      "350.000"
+    ],
+    "parsed": [
+      "340000",
+      "350000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 36,round 1",
+    "printed": [
+      "1.500",
+      "1.700"
+    ],
+    "parsed": [
+      "1500",
+      "1700"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 36,round 2",
+    "printed": [
+      "1.500",
+      "1.600"
+    ],
+    "parsed": [
+      "1500",
+      "1600"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 37,round 1",
+    "printed": [
+      "45.000",
+      "50.000"
+    ],
+    "parsed": [
+      "45000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 37,round 2",
+    "printed": [
+      "45.000",
+      "50.000"
+    ],
+    "parsed": [
+      "45000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 38,round 1",
+    "printed": [
+      "85.000",
+      "90.000"
+    ],
+    "parsed": [
+      "85000",
+      "90000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 38,round 2",
+    "printed": [
+      "90.000",
+      "90.000"
+    ],
+    "parsed": [
+      "90000",
+      "90000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 39,round 1",
+    "printed": [
+      "100.000",
+      "110.000"
+    ],
+    "parsed": [
+      "100000",
+      "110000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 39,round 2",
+    "printed": [
+      "100.000",
+      "100.000"
+    ],
+    "parsed": [
+      "100000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 40,round 1",
+    "printed": [
+      "2.500",
+      "2.500"
+    ],
+    "parsed": [
+      "2500",
+      "2500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 40,round 2",
+    "printed": [
+      "2.500",
+      "2.500"
+    ],
+    "parsed": [
+      "2500",
+      "2500"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 41,round 1",
+    "printed": [
+      "15.000",
+      "15.000"
+    ],
+    "parsed": [
+      "15000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 41,round 2",
+    "printed": [
+      "15.000",
+      "15.000"
+    ],
+    "parsed": [
+      "15000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 42,round 1",
+    "printed": [
+      "30.000",
+      "35.000"
+    ],
+    "parsed": [
+      "30000",
+      "35000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 42,round 2",
+    "printed": [
+      "30.000",
+      "35.000"
+    ],
+    "parsed": [
+      "30000",
+      "35000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 43,round 1",
+    "printed": [
+      "150.000",
+      "160.000"
+    ],
+    "parsed": [
+      "150000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 43,round 2",
+    "printed": [
+      "150.000",
+      "160.000"
+    ],
+    "parsed": [
+      "150000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 44,round 1",
+    "printed": [
+      "2.000",
+      "2.000"
+    ],
+    "parsed": [
+      "2000",
+      "2000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 44,round 2",
+    "printed": [
+      "2.000",
+      "2.000"
+    ],
+    "parsed": [
+      "2000",
+      "2000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 45,round 1",
+    "printed": [
+      "3.500",
+      "4.000"
+    ],
+    "parsed": [
+      "3500",
+      "4000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 45,round 2",
+    "printed": [
+      "3.500",
+      "4.000"
+    ],
+    "parsed": [
+      "3500",
+      "4000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 46,round 1",
+    "printed": [
+      "35.000",
+      "35.000"
+    ],
+    "parsed": [
+      "35000",
+      "35000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 46,round 2",
+    "printed": [
+      "35.000",
+      "35.000"
+    ],
+    "parsed": [
+      "35000",
+      "35000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 47,round 1",
+    "printed": [
+      "33.000",
+      "33.000"
+    ],
+    "parsed": [
+      "33000",
+      "33000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 47,round 2",
+    "printed": [
+      "33.000",
+      "33.000"
+    ],
+    "parsed": [
+      "33000",
+      "33000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 48,round 1",
+    "printed": [
+      "5.000",
+      "5.800"
+    ],
+    "parsed": [
+      "5000",
+      "5800"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 48,round 2",
+    "printed": [
+      "5.000",
+      "5.800"
+    ],
+    "parsed": [
+      "5000",
+      "5800"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 49,round 1",
+    "printed": [
+      "50.000",
+      "70.000"
+    ],
+    "parsed": [
+      "50000",
+      "70000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 49,round 2",
+    "printed": [
+      "50.000",
+      "60.000"
+    ],
+    "parsed": [
+      "50000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 50,round 1",
+    "printed": [
+      "4.200",
+      "5.000"
+    ],
+    "parsed": [
+      "4200",
+      "5000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 50,round 2",
+    "printed": [
+      "4.200",
+      "4.200"
+    ],
+    "parsed": [
+      "4200",
+      "4200"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 52,round 1",
+    "printed": [
+      "140.000",
+      "160.000"
+    ],
+    "parsed": [
+      "140000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 2,table 1,row 52,round 2",
+    "printed": [
+      "150.000",
+      "160.000"
+    ],
+    "parsed": [
+      "150000",
+      "160000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 5,round 1",
+    "printed": [
+      "75.000",
+      "80.000"
+    ],
+    "parsed": [
+      "75000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 5,round 2",
+    "printed": [
+      "70.000",
+      "80.000"
+    ],
+    "parsed": [
+      "70000",
+      "80000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 6,round 1",
+    "printed": [
+      "200.000",
+      "210.000"
+    ],
+    "parsed": [
+      "200000",
+      "210000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 6,round 2",
+    "printed": [
+      "200.000",
+      "210.000"
+    ],
+    "parsed": [
+      "200000",
+      "210000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 7,round 1",
+    "printed": [
+      "55.000",
+      "60.000"
+    ],
+    "parsed": [
+      "55000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 7,round 2",
+    "printed": [
+      "55.000",
+      "60.000"
+    ],
+    "parsed": [
+      "55000",
+      "60000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 9,round 1",
+    "printed": [
+      "50.000",
+      "55.000"
+    ],
+    "parsed": [
+      "50000",
+      "55000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 9,round 2",
+    "printed": [
+      "50.000",
+      "50.000"
+    ],
+    "parsed": [
+      "50000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 10,round 1",
+    "printed": [
+      "95.000",
+      "100.000"
+    ],
+    "parsed": [
+      "95000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 10,round 2",
+    "printed": [
+      "90.000",
+      "100.000"
+    ],
+    "parsed": [
+      "90000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 12,round 1",
+    "printed": [
+      "5.000",
+      "6.000"
+    ],
+    "parsed": [
+      "5000",
+      "6000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 12,round 2",
+    "printed": [
+      "5.000",
+      "5.000"
+    ],
+    "parsed": [
+      "5000",
+      "5000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 13,round 1",
+    "printed": [
+      "12.000",
+      "15.000"
+    ],
+    "parsed": [
+      "12000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 13,round 2",
+    "printed": [
+      "12.000",
+      "12.000"
+    ],
+    "parsed": [
+      "12000",
+      "12000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 14,round 1",
+    "printed": [
+      "90.000",
+      "100.000"
+    ],
+    "parsed": [
+      "90000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 14,round 2",
+    "printed": [
+      "90.000",
+      "90.000"
+    ],
+    "parsed": [
+      "90000",
+      "90000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 15,round 1",
+    "printed": [
+      "25.000",
+      "30.000"
+    ],
+    "parsed": [
+      "25000",
+      "30000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 15,round 2",
+    "printed": [
+      "25.000",
+      "25.000"
+    ],
+    "parsed": [
+      "25000",
+      "25000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 16,round 1",
+    "printed": [
+      "15.000",
+      "15.000"
+    ],
+    "parsed": [
+      "15000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 16,round 2",
+    "printed": [
+      "15.000",
+      "15.000"
+    ],
+    "parsed": [
+      "15000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 17,round 1",
+    "printed": [
+      "50.000",
+      "55.000"
+    ],
+    "parsed": [
+      "50000",
+      "55000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 17,round 2",
+    "printed": [
+      "50.000",
+      "55.000"
+    ],
+    "parsed": [
+      "50000",
+      "55000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 18,round 1",
+    "printed": [
+      "15.000",
+      "15.000"
+    ],
+    "parsed": [
+      "15000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 18,round 2",
+    "printed": [
+      "12.000",
+      "15.000"
+    ],
+    "parsed": [
+      "12000",
+      "15000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 19,round 1",
+    "printed": [
+      "45.000",
+      "50.000"
+    ],
+    "parsed": [
+      "45000",
+      "50000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 19,round 2",
+    "printed": [
+      "40.000",
+      "45.000"
+    ],
+    "parsed": [
+      "40000",
+      "45000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 20,round 1",
+    "printed": [
+      "24.000",
+      "26.000"
+    ],
+    "parsed": [
+      "24000",
+      "26000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 20,round 2",
+    "printed": [
+      "24.000",
+      "26.000"
+    ],
+    "parsed": [
+      "24000",
+      "26000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 21,round 1",
+    "printed": [
+      "25.000",
+      "30.000"
+    ],
+    "parsed": [
+      "25000",
+      "30000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 21,round 2",
+    "printed": [
+      "25.000",
+      "30.000"
+    ],
+    "parsed": [
+      "25000",
+      "30000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 22,round 1",
+    "printed": [
+      "90.000",
+      "90.000"
+    ],
+    "parsed": [
+      "90000",
+      "90000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 22,round 2",
+    "printed": [
+      "80.000",
+      "100.000"
+    ],
+    "parsed": [
+      "80000",
+      "100000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 23,round 1",
+    "printed": [
+      "120.000",
+      "130.000"
+    ],
+    "parsed": [
+      "120000",
+      "130000"
+    ],
+    "match": true
+  },
+  {
+    "locator": "PDF page 3,table 1,row 23,round 2",
+    "printed": [
+      "120.000",
+      "130.000"
+    ],
+    "parsed": [
+      "120000",
+      "130000"
+    ],
+    "match": true
+  }
+]

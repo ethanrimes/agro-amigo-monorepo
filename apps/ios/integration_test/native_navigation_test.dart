@@ -46,12 +46,33 @@ void main() {
       );
       expect(await state.controller.canGoBack(), true);
       await binding.takeScreenshot('ios-native-navigation-detail');
+      debugPrint('AWAIT_NATIVE_NONEDGE_SWIPE swipe horizontally from screen center');
+      await tester.pump(const Duration(seconds: 20));
+      expect(
+        await state.controller.runJavaScriptReturningResult(
+          'location.pathname.startsWith("/product/")',
+        ),
+        true,
+      );
+      debugPrint('PASS nonedge horizontal swipe keeps product');
+      debugPrint('AWAIT_NATIVE_VERTICAL_SWIPE scroll product vertically');
+      await tester.pump(const Duration(seconds: 20));
+      expect(
+        await state.controller.runJavaScriptReturningResult(
+          'location.pathname.startsWith("/product/")',
+        ),
+        true,
+      );
+      debugPrint('PASS vertical scroll keeps product');
       debugPrint('AWAIT_NATIVE_SWIPE left edge to right');
       await until(
         'location.pathname==="/products" && document.querySelector(".product-card")',
       );
       await binding.takeScreenshot('ios-native-navigation-back');
-      debugPrint('PASS actual native iOS back gesture');
+      debugPrint('AWAIT_NATIVE_SECOND_SWIPE left edge to right to home');
+      await until('location.pathname==="/" && document.querySelector(".home-sections")');
+      await binding.takeScreenshot('ios-native-navigation-home');
+      debugPrint('PASS actual native iOS nonedge, vertical and two-level back gestures');
     },
     timeout: const Timeout(Duration(minutes: 20)),
   );

@@ -7,6 +7,7 @@ versions mutable URLs before publishing the returned observations.
 from __future__ import annotations
 
 import calendar
+import hashlib
 import io
 import math
 import re
@@ -22,7 +23,15 @@ WORLD_BANK_INDEX = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cd
 WORLD_BANK_MONTHLY = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
 USDA_MIAMI = "https://www.ams.usda.gov/mnreports/mh_fv221.pdf"
 USDA_BOSTON = "https://www.ams.usda.gov/mnreports/bh_fv201.pdf"
-VERSION = "official-international-v9"
+USDA_MIAMI_AUG18_BROKEN = (
+    "https://esmis.nal.usda.gov/sites/default/release-files/4x51hj05x/"
+    "xp68nh41n/pg15dd132/MH_FV221.PDF"
+)
+USDA_MIAMI_AUG18_ALTERNATE = (
+    "https://esmis.nal.usda.gov/sites/default/release-files/4x51hj05x/"
+    "xp68nh41n/m900qs66q/MH_FV221.PDF"
+)
+VERSION = "official-international-v11"
 
 # Explicit series selection excludes energy, metals, indices and tobacco import
 # unit values. An import unit value is not an observed product market price.
@@ -147,6 +156,9 @@ ROOTS = [
     (WORLD_BANK_HOME, "international-worldbank-index"),
     (USDA_MIAMI, "international-usda-miami-flowers"),
     (USDA_BOSTON, "international-usda-boston-flowers"),
+    # The official 18-Aug-2025 ESMIS release links a 404 leaf. This distinct
+    # exact-date official original was independently downloaded and validated.
+    (USDA_MIAMI_AUG18_ALTERNATE, "international-usda-miami-flowers"),
 ]
 
 
@@ -322,6 +334,49 @@ def parse_world_bank(body, url):
         book.close()
 
 
+def retire_verified_aug18_404(db):
+    """Retire only the dead index leaf after the independent original publishes.
+
+    The previous 404 identity and its error remain visible; the alternative
+    has its own source URL and immutable original. No URL is relabelled.
+    """
+    replacement = db.execute(
+        "SELECT 1 FROM ingestion_asset a JOIN source_document d ON d.id=a.document_id "
+        "WHERE a.url=%s AND a.kind='international-usda-miami-flowers' "
+        "AND a.status='complete' AND a.document_id=%s "
+        "AND a.observed_on=DATE '2025-08-18' AND a.records=58 "
+        "AND d.kind='original' AND d.metadata->>'ingestion_kind'=a.kind "
+        "AND (SELECT count(*) FROM official_price_quote q WHERE q.document_id=d.id "
+        "AND q.observed_on=DATE '2025-08-18')=58 "
+        "AND EXISTS (SELECT 1 FROM official_source_review r WHERE r.document_id=d.id "
+        "AND r.source_locator='PDF page 1, col 1, text row 38-39, quote 3' "
+        "AND r.record->'details'->>'literal_price_range'='0.25-0.329')",
+        (USDA_MIAMI_AUG18_ALTERNATE, MIAMI_AUG18_2025_ALT_SHA),
+    ).fetchone()
+    if not replacement:
+        return False
+    old = db.execute(
+        "UPDATE ingestion_asset SET status='review',checked_at=now(),"
+        "error='USDA verified August 18 replacement: '||%s||'; prior error: '||coalesce(error,'') "
+        "WHERE url=%s AND kind='international-usda-miami-flowers' "
+        "AND status='failed' AND document_id IS NULL AND records=0 "
+        "AND coalesce(error,'') LIKE '%%404%%' RETURNING url",
+        (USDA_MIAMI_AUG18_ALTERNATE, USDA_MIAMI_AUG18_BROKEN),
+    ).fetchone()
+    if old:
+        from .daily_publication import retain_resolution
+
+        retain_resolution(db, 'usda_verified_broken_link', {
+            'broken_url': USDA_MIAMI_AUG18_BROKEN,
+            'replacement_url': USDA_MIAMI_AUG18_ALTERNATE,
+            'replacement_document_id': MIAMI_AUG18_2025_ALT_SHA,
+            'printed_date': '2025-08-18',
+            'published_quote_count': 58,
+            'literal_review_locator': 'PDF page 1, col 1, text row 38-39, quote 3',
+        })
+    return bool(old)
+
+
 def parse(body, url, kind):
     if kind in PUBLISHERS and kind.endswith("-index"):
         return []
@@ -330,7 +385,15 @@ def parse(body, url, kind):
     if kind == "international-usda-miami-flowers":
         if urlparse(url).path.lower().endswith(".txt"):
             return parse_text_flowers(body, url, "Miami")
-        return parse_miami_flowers(body, url)
+        if url == USDA_MIAMI_AUG18_ALTERNATE and hashlib.sha256(body).hexdigest() != MIAMI_AUG18_2025_ALT_SHA:
+            raise ValueError("Verified USDA August 18 alternate original bytes changed")
+        rows = parse_miami_flowers(body, url)
+        if url == USDA_MIAMI_AUG18_ALTERNATE and (
+            len(rows) != 59 or sum(row["price"] is not None for row in rows) != 58
+            or {row["date"] for row in rows} != {date(2025, 8, 18)}
+        ):
+            raise ValueError("Verified USDA August 18 alternate native matrix changed")
+        return rows
     if kind == "international-usda-boston-flowers":
         if urlparse(url).path.lower().endswith(".txt"):
             return parse_text_flowers(body, url, "Boston")
@@ -360,7 +423,20 @@ PRICE = re.compile(
 # Preserve the publisher's duplicated decimal point as one opaque price token.
 # Its numeric bounds are deliberately unknown; it must never become .25-.29.
 MIAMI_QUOTE = re.compile(
+    r"(?P<three_decimal>(?<![\d.])0\.25-\s*0\.329(?!\d|\.))|"
     r"(?P<malformed>(?<![\d.])\d*\.\d{1,2}-\s*\.\d+\.\d{1,2}(?!\d))|" + PRICE.pattern
+)
+MIAMI_AUG18_2025_ALT_SHA = "d6482e0f669d1d14cf09144f7d1dd18720af667be6ba392a8c1b269e127f4358"
+MIAMI_AUG18_2025_SECTION = {
+    (2, 2, 172): "SOUTH AMERICA IMPORTS - PORTS OF ENTRY SOUTH FLORIDA",
+    (2, 2, 173): "Sales F.O.B. Shipping Point and/or Delivered Sales, Shipping Point",
+    (2, 2, 174): "Basis",
+    (2, 2, 175): "2025 Season",
+}
+MIAMI_NO_MARKET_NOTICES = re.compile(
+    r"(?:[A-Za-z ]+ )?supplies in too few hands to establish a market\.?(?:; "
+    r"(?:[A-Za-z ]+ )?supplies in too few hands to establish a market\.?)*",
+    re.IGNORECASE,
 )
 UNIT = re.compile(
     r"per carton(?: \d+ bunches of \d+ stems)?|"
@@ -522,6 +598,7 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
     their literal printed parent context instead of inventing a classification.
     """
     day, lines = _pdf_parts(body, "MH_FV221", 2)
+    original_sha = hashlib.sha256(body).hexdigest()
     legacy_ends = _legacy_miami_narrative_ends(lines)
     found, name, variant, grade, unit = [], None, "", "", None
     in_intro = False
@@ -568,6 +645,8 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
         while MIAMI_QUOTE.search(line):
             tail = list(MIAMI_QUOTE.finditer(line))[-1]
             suffix = line[tail.end() :].strip(" ,;:.")
+            if MIAMI_NO_MARKET_NOTICES.fullmatch(suffix):
+                break
             if re.fullmatch(
                 r"Supplies sufficient to quote|[A-Za-z ]+,\s*no offerings", suffix, re.I
             ):
@@ -606,7 +685,46 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 suffix + " " + following,
                 re.I,
             ):
+                if (
+                    (page, column) == (next_page, next_column)
+                    and re.search(r"\bsupplies in too few hands to$", suffix, re.I)
+                    and re.fullmatch(r"establish a market\.?", following, re.I)
+                ):
+                    line += " " + following
+                    original_line += "\n" + following
+                    end_index += 1
+                    continued_rows.add(end_index)
+                    locator_rows = f"{index}-{end_index}"
+                    continue
                 break
+            if "supplies in" in suffix.lower():
+                # An unpriced color notice may wrap several times after a
+                # priced quote. Consume only a complete literal notice span
+                # in the same column; no price or new commodity may intervene.
+                notice_lines = []
+                for following, next_page, next_column in lines[end_index : end_index + 4]:
+                    if (
+                        (page, column) != (next_page, next_column)
+                        or following.startswith("---")
+                        or UNIT.match(following)
+                        or PRICE.search(following)
+                    ):
+                        break
+                    notice_lines.append(following)
+                    if MIAMI_NO_MARKET_NOTICES.fullmatch(
+                        suffix + " " + " ".join(notice_lines)
+                    ):
+                        line += " " + " ".join(notice_lines)
+                        original_line += "\n" + "\n".join(notice_lines)
+                        for consumed in range(end_index + 1, end_index + len(notice_lines) + 1):
+                            continued_rows.add(consumed)
+                        end_index += len(notice_lines)
+                        locator_rows = f"{index}-{end_index}"
+                        break
+                if MIAMI_NO_MARKET_NOTICES.fullmatch(
+                    suffix + " " + " ".join(notice_lines)
+                ):
+                    continue
             if (
                 (page, column) != (next_page, next_column)
                 or following.startswith("---")
@@ -636,8 +754,16 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             if end_index >= len(lines):
                 raise ValueError("Unfinished USDA printed price range")
             following, next_page, next_column = lines[end_index]
-            if (page, column) != (next_page, next_column) or not re.match(
-                r"^\d*\.\d{1,2}(?!\d|\.\d)", following
+            exact_three_decimal = (
+                original_sha == MIAMI_AUG18_2025_ALT_SHA
+                and day == date(2025, 8, 18)
+                and (page, column, index) == (1, 1, 38)
+                and line.endswith("Novelty Fancy 0.25-")
+                and following.startswith("0.329 mostly 0.26-0.27")
+            )
+            if (page, column) != (next_page, next_column) or not (
+                re.match(r"^\d*\.\d{1,2}(?!\d|\.\d)", following)
+                or exact_three_decimal
             ):
                 raise ValueError("Unrecognized USDA price range continuation")
             line += following
@@ -657,6 +783,15 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             if not (
                 re.fullmatch(r"(?:(?:to )?establish a )?market\.?", line_body, re.I)
                 or (
+                    line_body == "establish a market. LAST REPORT."
+                    and re.search(
+                        r"\bsupplies insufficient and in too few hands to$",
+                        lines[index - 2][0],
+                        re.IGNORECASE,
+                    )
+                    and (page, column) == lines[index - 2][1:]
+                )
+                or (
                     line_body == "REPORT."
                     and re.search(r"establish a market\. LAST$", lines[index - 2][0])
                 )
@@ -666,6 +801,13 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             continue
         matches = list(MIAMI_QUOTE.finditer(line_body))
         if not matches:
+            if (
+                original_sha == MIAMI_AUG18_2025_ALT_SHA
+                and day == date(2025, 8, 18)
+                and MIAMI_AUG18_2025_SECTION.get((page, column, index)) == line_body
+            ):
+                last = None
+                continue
             if re.search(
                 r"(?:supplies insufficient to quote|no offerings)\.?$", line_body, re.I
             ):
@@ -679,6 +821,10 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 last = None
                 no_quote_continuation = not bool(
                     re.search(r"\bmarket\.?$", line_body, re.I)
+                    or (
+                        line_body.endswith(";")
+                        and MIAMI_NO_MARKET_NOTICES.fullmatch(line_body[:-1])
+                    )
                 )
                 continue
             if unit_match or line_body in {
@@ -711,7 +857,14 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
             )
             if re.search(r"\d*\.\d", prefix):
                 raise ValueError("Unrecognized USDA numeric quote qualifier")
-            malformed = match["malformed"]
+            three_decimal = match["three_decimal"]
+            if three_decimal and not (
+                original_sha == MIAMI_AUG18_2025_ALT_SHA
+                and day == date(2025, 8, 18)
+                and (page, column, index) == (1, 1, 38)
+            ):
+                raise ValueError("Unverified USDA three-decimal quote")
+            malformed = match["malformed"] or three_decimal
             lo, hi = (
                 (None, None)
                 if malformed
@@ -797,6 +950,8 @@ def parse_miami_flowers(body, url=USDA_MIAMI):
                 last["details"]["literal_price_range"] = malformed
                 _text_review(
                     last,
+                    "Publisher's three-decimal upper bound requires review"
+                    if three_decimal else
                     "Malformed literal USDA price range; bounds cannot be inferred",
                 )
             found.append(last)
@@ -1087,6 +1242,59 @@ def _text_review(row, reason):
     row["details"]["quality_issue"] = previous + "; " + reason if previous else reason
 
 
+_NONFLOWER_TEXT_ORIGINALS = {
+    # Exact archived originals from a historical flower-archive link. Their
+    # own report codes and headings identify different USDA report families.
+    "7b3e3aec2397cd97a9f101733f9328e800849cf34ce2f74e177b959696495829":
+        ("Miami", "MH_FV121", "MIAMI Shipping Point Prices as of 01-APR-2020", "VEGETABLES", "5 lb cartons bagged Haricot Vert"),
+    "6464e852a510c57a17ade848dde1a13711e089aeb76a0a8e1dd5973ffc305875":
+        ("Boston", "BH_FV030", "BOSTON Terminal Prices as of 31-MAR-2022", "ONIONS AND POTATOES", "50 lb sacks jbo"),
+    "9089eac4ed88385532f20e6c6d5d5ff83aa9dab8e94eddc257ce21d98265b4e2":
+        ("Miami", "MH_FV156", "MIAMI Shipping Point Prices as of 29-APR-2024", "MISC TROPICAL FRUIT AND VEG", "lb cartons 42.00-44.00"),
+    "6fc0547080b02e24af546c86cd6bee4de000f16dfa1f6f7b24e683d620a7aa5d":
+        ("Miami", "MH_FV185", "REPORTING OFFICE:  MIAMI MAR 25 2020", "TRUCK, AIR, BOAT AND IMPORT SHIPMENTS", "PACKAGE       TOTAL"),
+    # The archive filename says MH_FV221, but these immutable bytes identify
+    # the 06-Jan-2022 Miami shipping-point non-citrus-fruit report MH_FV111.
+    "c49f43ee8fd6d91b86bad3acb382814762f07410060d6e35e02073745c76baeb":
+        ("Miami", "MH_FV111", "MIAMI Shipping Point Prices as of 06-JAN-2022", "PINEAPPLES", "30-35 lb cartons Tainung 9s 23.00-25.00"),
+    # This differently coded August 2021 native report contains ornamental
+    # shipment counts, not flower sale prices, despite the MH_FV221 filename.
+    "92e10731554bdff477913b2e961ca3237d1fda2f1e4b54f87117d93bd01e2727":
+        ("Miami", "MH_FV280", "REPORTING OFFICE:  MIAMI   AUG 23 2021", "IMPORTS THROUGH MIAMI AIRPORT", "STEM COUNT, UNLESS OTHERWISE DESIGNATED."),
+}
+
+
+def _nonflower_text_review(body, market):
+    evidence = _NONFLOWER_TEXT_ORIGINALS.get(hashlib.sha256(body).hexdigest())
+    if evidence is None:
+        return None
+    expected_market, code, header, commodity, unit_sample = evidence
+    text = body.decode("cp1252")
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if (
+        market != expected_market
+        or not lines or lines[0] != header
+        or code not in lines
+        or commodity not in text
+        or unit_sample not in text
+        or "Specialty Crops Market News" not in text[:1500]
+        or "USDA" not in text[:1500]
+    ):
+        raise ValueError("Known non-flower USDA original has changed native evidence")
+    return [{
+        "source_locator": f"TXT report {code}, non-flower native header",
+        "price": None,
+        "details": {
+            "quality_issue": "USDA original is a different report family, not flower prices",
+            "printed_header": header,
+            "native_report_code": code,
+            "printed_commodity": commodity,
+            "printed_unit_evidence": unit_sample,
+            "source_note": "Original text retained; vegetable prices or shipment volumes cannot enter flower series",
+        },
+    }]
+
+
 def _text_blocks(body, market):
     if len(body) > 5_000_000 or b"\x00" in body:
         raise ValueError("USDA native text report is not a bounded text document")
@@ -1152,6 +1360,9 @@ def parse_text_flowers(body, url, market):
     """
     if market not in {"Miami", "Boston"}:
         raise ValueError("Unsupported USDA text market")
+    nonflower = _nonflower_text_review(body, market)
+    if nonflower is not None:
+        return nonflower
     day, report, blocks = _text_blocks(body, market)
     if not blocks:
         lines = report.splitlines()

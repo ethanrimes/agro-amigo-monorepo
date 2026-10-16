@@ -7,15 +7,17 @@ import { usePreferences } from "./Preferences";
 import { useCatalogPage } from "./useCatalogPage";
 import { ProductCard, ErrorState, LoadingCards, Notice } from "./Shared";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
 import { MapButton } from "@/components/explore/ColombiaMap";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import type { CatalogPage, CatalogProduct } from "@/lib/catalog-types";
+import { categoryKey, categoryLabels, departmentLabel, departmentLabels } from "@/lib/filter-labels";
 import {
-  catalogCurrency,
   catalogHref,
   catalogIdentity,
   catalogReturnTo,
-  catalogUnit,
+  catalogSuggestionDetail,
 } from "@/lib/catalog-display";
 import styles from "./catalog.module.css";
 
@@ -38,20 +40,23 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
     window.addEventListener("popstate", restore);
     return () => window.removeEventListener("popstate", restore);
   }, []);
+  const [search, setSearch] = useState("");
   const returnTo = catalogReturnTo(
     savedOnly ? "/saved" : "/products",
     query,
     category,
     currency,
   );
+  // Keep the address in step with the debounced query. WebKit limits history
+  // writes, so updating it on every keystroke can crash an ordinary search.
   useEffect(() => {
     if (
       filtersReady &&
+      query === search &&
       window.location.pathname + window.location.search !== returnTo
     )
-      window.history.replaceState(window.history.state, "", returnTo);
-  }, [filtersReady, returnTo]);
-  const [search, setSearch] = useState("");
+      window.history.replaceState(null, "", returnTo);
+  }, [filtersReady, returnTo, query, search]);
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(query), 250);
     return () => window.clearTimeout(timer);
@@ -79,9 +84,8 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
   const metadata = data || (loaded.key === criteriaKey ? loaded.metadata : null);
   const products = loaded.key === criteriaKey ? loaded.products : data?.products || [];
   const total = metadata?.total || 0;
-  const categories = [...new Set([
-    ...(metadata?.categories || []), ...(category !== "Todos" ? [category] : []),
-  ])].sort((a, b) => a.localeCompare(b, "es"));
+  const categories = categoryLabels(metadata?.categories || []);
+  const selectedCategory = categories.find((label) => categoryKey(label) === categoryKey(category)) || category;
   const currencies = [...new Set([
     ...(metadata?.currencies || []), ...(currency ? [currency] : []),
   ])].sort();
@@ -102,32 +106,42 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
               : "Busca tu producto o variedad y consulta sus precios."}
           </p>
         </div>
-        {!savedOnly && !loading && mapProduct && (
-          <MapButton
-            kind="product"
-            id={mapProduct.id}
-            filters={{
-              region,
-              series: mapProduct.series,
-              presentation: mapProduct.presentation,
-              units: mapProduct.units,
-            }}
-          />
+        {!savedOnly && (
+          <span aria-hidden={!loading && !mapProduct} style={{ visibility: !loading && !mapProduct ? "hidden" : undefined }}>
+            <MapButton
+              kind="product"
+              id={mapProduct?.id}
+              disabled={loading || !mapProduct}
+              filters={{
+                region,
+                category: selectedCategory === "Todos" ? "" : selectedCategory,
+                history: mapProduct?.series === "city" ? "all" : "recent",
+                series: mapProduct?.series,
+                presentation: mapProduct?.presentation,
+                units: mapProduct?.units,
+              }}
+            />
+          </span>
         )}
       </div>
+      {!savedOnly && (
+        <p><Link className="button secondary" href="/daily">Consultar boletines diarios por fecha →</Link></p>
+      )}
       <div className={styles.controls}>
         <div className={styles.search}>
-          <span>Producto o variedad</span>
+          <span>Producto, variedad o mercado</span>
           <SearchBox
-            label="Buscar producto"
-            placeholder="Café arábica, cacao, rosas, tomate…"
+            label="Buscar producto, variedad o mercado"
+            placeholder="Sardinas Armenia, café, cacao…"
             value={query}
             onChange={setQuery}
             filterOptions={false}
+            loading={loading}
+            error={Boolean(error)}
             options={products.map((p) => ({
               id: catalogIdentity(p),
               label: p.name,
-              detail: `${p.category} · ${catalogCurrency(p)} / ${catalogUnit(p)}`,
+              detail: catalogSuggestionDetail(p),
             }))}
             onSelect={(option) => {
               const product = products.find(
@@ -140,39 +154,22 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
             }}
           />
         </div>
-        <label className={`${styles.field} ${styles.department}`}>
-          <span>Departamento</span>
-          <select
-            aria-label="Departamento"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-          >
-            <option value="">Sin filtro de departamento</option>
-            {[
-              ...new Set([
-                ...(metadata?.regions || []),
-                ...(region ? [region] : []),
-              ]),
-            ]
-              .sort()
-              .map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          <span>Categoría</span>
-          <select
-            aria-label="Categoría"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="Todos">Todas</option>
-            {categories.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-        </label>
+        <SearchableSelect
+          className={`${styles.field} ${styles.department}`}
+          label="Departamento"
+          value={departmentLabel(region)}
+          onChange={setRegion}
+          options={departmentLabels([...(metadata?.regions || []), ...(region ? [region] : [])]).map((name) => ({ id: name, label: name }))}
+          emptyLabel="Sin filtro de departamento"
+          loading={loading && !metadata}
+        />
+        <HierarchicalCategorySelect
+          className={styles.field}
+          value={selectedCategory === "Todos" ? "" : selectedCategory}
+          onChange={(value) => setCategory(value || "Todos")}
+          paths={categories}
+          loading={loading && !metadata}
+        />
         <label className={styles.field}>
           <span>Moneda</span>
           <select
@@ -195,7 +192,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
       </div>
       {metadata?.filters?.excluded_nonregional_reason && (
         <p className={styles.regionNote}>
-          {metadata.filters.excluded_nonregional_reason}
+          El filtro de departamento incluye solo ubicaciones verificadas. Si quieres, quítalo para consultar todas las referencias.
         </p>
       )}
       <div className={styles.activeFilters}>
@@ -203,12 +200,12 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
           items={[
             {
               label: "Departamento",
-              value: region || "Sin filtro",
+              value: departmentLabel(region) || "Sin filtro",
               clear: region ? () => setRegion("") : undefined,
             },
             {
               label: "Categoría",
-              value: category === "Todos" ? "Todas" : category,
+              value: category === "Todos" ? "Todas" : selectedCategory,
               clear:
                 category !== "Todos" ? () => setCategory("Todos") : undefined,
             },
@@ -275,7 +272,7 @@ export function CatalogView({ savedOnly = false }: { savedOnly?: boolean }) {
                 disabled={loading}
                 onClick={() => error ? retry() : setPosition({ key: criteriaKey, offset: metadata.pagination.offset + metadata.pagination.limit })}
               >
-                {loading ? "Cargando productos…" : error ? "Reintentar cargar más" : `Ver más productos (${Math.max(0, total - products.length)})`}
+                {loading ? "Cargando resultados…" : error ? "Reintentar cargar más" : `Ver más resultados (${Math.max(0, total - products.length)})`}
               </button>
             </div>
           )}

@@ -33,6 +33,7 @@ TABLES = (
     "source_archive_member",
     "ingestion_checkpoint",
     "official_price_quote",
+    "official_catalog_current",
     "official_source_review",
     "retained_record",
     "ingestion_asset",
@@ -86,7 +87,7 @@ class NativeDailyArchives(unittest.TestCase):
             (url.replace(".zip", ".pdf"), "Anexo"),
         ]:
             self.assertFalse(adapter.is_daily_archive(target, label))
-        self.assertEqual(worker.parser_version("daily-index"), "source-v5")
+        self.assertEqual(worker.parser_version("daily-index"), "source-v6")
         self.assertTrue(
             worker.parser_version("daily-zip").startswith(adapter.VERSION + ":")
         )
@@ -423,7 +424,10 @@ class ArchivePublicationPostgres(unittest.TestCase):
             )
 
     def test_defer_after_complete_member_resumes_without_reparsing_it(self):
-        data = bundle([("first.xlsx", workbook()), ("second.xlsx", workbook())])
+        # Both ZIP members intentionally share one immutable original. Separate
+        # saves can cross an OOXML timestamp boundary and produce different IDs.
+        body = workbook()
+        data = bundle([("first.xlsx", body), ("second.xlsx", body)])
         did = worker.archive(self.db, self.url, data, "daily-zip", self.day)
         original = adapter.parse_member
         with (

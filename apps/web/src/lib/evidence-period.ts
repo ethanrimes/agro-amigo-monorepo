@@ -1,17 +1,25 @@
 import type { Evidence } from "./planning-types";
 import { dateLabel } from "./market-types";
 
+/** Legacy archive metadata used this placeholder even for a single bulletin.
+ * It cannot establish either the document's dates or completeness. */
+export function sourceReferencePeriod(period: string): string {
+  return period === "Serie histórica completa"
+    ? "Período indicado en el documento"
+    : period;
+}
+
 /** City evidence returns the complete verified PDF row set, unlike capped or
  * filtered workbook previews, which cannot establish the whole file's period. */
 export function evidencePeriod(data: Evidence): string {
   if (data.metadata.ingestion_kind !== "city-pdf" || !data.records?.length)
-    return data.reference_period;
+    return sourceReferencePeriod(data.reference_period);
   const days = data.records.map((row) => row.observed_on);
   if (days.some((day) => typeof day !== "string" ||
     !/^\d{4}-\d{2}-\d{2}$/.test(day) ||
     !Number.isFinite(new Date(day + "T12:00:00Z").getTime()) ||
     new Date(day + "T12:00:00Z").toISOString().slice(0, 10) !== day))
-    return data.reference_period;
+    return sourceReferencePeriod(data.reference_period);
   const sorted = [...new Set(days as string[])].sort();
   return sorted.length === 1
     ? dateLabel(sorted[0])

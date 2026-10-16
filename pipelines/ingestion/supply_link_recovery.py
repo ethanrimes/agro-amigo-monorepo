@@ -1,4 +1,4 @@
-"""One verified DANE supply bulletin whose official archive href is broken."""
+"""Verified April 2024 DANE supply bulletin and annex archive-link repairs."""
 
 import io
 import re
@@ -18,6 +18,9 @@ ARCHIVE = (
 BROKEN_PDF = FILES + "bol-SIPSAabastecimiento-1raquinabr2024.pdf"
 CANONICAL_PDF = FILES + "bol-SIPSAabastecimiento-1raquincenaAbril2024.pdf"
 AUDITED_SHA256 = "5f13827ea2517a6238cb79108eb88a8efbeda30ca7df3a22224b13fd38848791"
+BROKEN_XLSX = FILES + "anex-SIPSAabastecimiento-1raquinabr2024.xlsx"
+CANONICAL_XLSX = FILES + "anex-SIPSAabastecimiento-1raquinabril2024.xlsx"
+AUDITED_XLSX_SHA256 = "a3c543fd44ec8c07699c2755b51bc64df400e647393a3cd6009ae6ce0ca46ca3"
 PERIOD_START = date(2024, 4, 1)
 PERIOD_END = date(2024, 4, 15)
 
@@ -28,6 +31,61 @@ class RecoveredSupplyPDF:
     body: bytes = field(repr=False)
     archive_day: None
     evidence: dict
+
+
+@dataclass(frozen=True)
+class RecoveredSupplyWorkbook:
+    canonical_url: str
+    body: bytes = field(repr=False)
+    archive_day: None
+    evidence: dict
+
+
+def recover_workbook(url, status, expected_day, fetcher):
+    """Resolve only the audited April first-fortnight annex after its archive 404."""
+    if url != BROKEN_XLSX or status not in (404, 410):
+        return None
+    if expected_day is not None:
+        raise ValueError("Supply recovery requires the archive's undated fortnight asset")
+    body = fetcher(CANONICAL_XLSX)
+    if not isinstance(body, bytes) or not body.startswith(b"PK\x03\x04"):
+        raise ValueError("Supply recovery candidate is not a native XLSX")
+    digest = sha256(body).hexdigest()
+    if digest != AUDITED_XLSX_SHA256:
+        raise ValueError("Supply recovery workbook differs from immutable audited SHA-256")
+
+    from .supply_period_summaries import parse_workbook
+
+    rows, reviews = parse_workbook(body)
+    if reviews or len(rows) != 983:
+        raise ValueError("Supply recovery workbook has incomplete native summary tables")
+    totals = [
+        row for row in rows
+        if row["details"]["statistic"] == "market_arrivals"
+        and row["details"]["aggregation_level"] == "reported_markets_total"
+        and row["details"]["period_end"] == PERIOD_END.isoformat()
+    ]
+    if len(totals) != 1 or abs(totals[0]["details"]["value"] - 307711.5221) > 0.0001:
+        raise ValueError("Supply recovery workbook native April total differs")
+    return RecoveredSupplyWorkbook(
+        CANONICAL_XLSX, body, None,
+        {
+            "recovery_version": VERSION,
+            "original_url": url,
+            "original_http_status": status,
+            "canonical_url": CANONICAL_XLSX,
+            "archive_url": ARCHIVE,
+            "archive_label": "Abril 2024; Anexos 1ra quincena",
+            "period_start": PERIOD_START.isoformat(),
+            "period_end": PERIOD_END.isoformat(),
+            "frequency": "first_fortnight",
+            "sha256": digest,
+            "audited_sha256": AUDITED_XLSX_SHA256,
+            "bytes": len(body),
+            "validated_records": len(rows),
+            "coverage_note": "Official workbook has native first-fortnight April tables; its index retains a stale March caption.",
+        },
+    )
 
 
 def recover_link(url, status, expected_day, fetcher):
@@ -96,10 +154,9 @@ def recover_link(url, status, expected_day, fetcher):
             "bytes": len(body),
             "pages": 15,
             "coverage_note": (
-                "Recovered only the verified first-fortnight April 2024 PDF. "
-                "The archive's companion XLSX remains HTTP 404 with no verified "
-                "alternate. Native rounded PDF market summaries can be published; "
-                "the missing workbook's detailed values are not inferred."
+                "Recovered the verified first-fortnight April 2024 PDF. "
+                "The archive's companion XLSX URL is also HTTP 404; its "
+                "separately verified official workbook is recovered under its own URL."
             ),
         },
     )

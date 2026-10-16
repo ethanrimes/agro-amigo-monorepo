@@ -41,7 +41,7 @@ class CoffeeRolloverPostgresTests(unittest.TestCase):
         self.addCleanup(self.db.close)
         self.assertTrue(self.db.autocommit)
         self.db.execute("SET search_path=pg_temp")
-        for table in TABLES:
+        for table in (*TABLES, "official_catalog_current"):
             self.db.execute(
                 f"CREATE TEMP TABLE {table} (LIKE public.{table} INCLUDING ALL)"
             )
@@ -162,7 +162,9 @@ class CoffeeRolloverPostgresTests(unittest.TestCase):
         self.day = DAY2
         self.unconditional_304 = True
         self.assertGreater(self.publish(), 0)
-        self.assertEqual(self.responses[-1], {})
+        self.assertNotIn("If-None-Match", self.responses[-1])
+        self.assertNotIn("If-Modified-Since", self.responses[-1])
+        self.assertEqual(self.responses[-1].get("Cache-Control"), "no-cache")
         self.assertEqual(self.native.call_count, 2)
         self.assertEqual(
             self.db.execute("SELECT count(*) FROM coffee_reference").fetchone(), (2,)

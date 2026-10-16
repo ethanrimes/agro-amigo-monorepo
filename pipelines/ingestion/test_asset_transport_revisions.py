@@ -124,6 +124,11 @@ class AssetTransportRevisionTests(unittest.TestCase):
         self.db.execute("""CREATE TEMP TABLE ingestion_checkpoint(
             document_id text,processor_version text,step text,records bigint,
             PRIMARY KEY(document_id,processor_version,step))""")
+        self.db.execute("""CREATE TEMP TABLE official_source_review(
+            document_id text,source_locator text,parser_version text,
+            record jsonb NOT NULL,reason text NOT NULL,
+            created_at timestamptz NOT NULL DEFAULT now(),
+            PRIMARY KEY(document_id,source_locator,parser_version))""")
         self.db.execute("INSERT INTO ingestion_asset(url,kind) VALUES(%s,'supply')", (self.url,))
         session = requests.Session()
         session.mount("http://", worker.SESSION.get_adapter("https://"))

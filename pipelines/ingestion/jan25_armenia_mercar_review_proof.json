@@ -1,0 +1,123 @@
+{
+  "format": 1,
+  "manual_review_path": "artifacts/qa-resumed-20261001/root-armenia-mercar-manual-review-20261016-a/ROOT_MANUAL_59_ROW_REVIEW_FIRST_A.json",
+  "manual_review_sha256": "45ef651698eaf9c47bd6c529bb4681c46b8e25752b612a379c30ee3c34f5f03c",
+  "manifest_sha256": "8a74f482b469759b17dad711b268e89b7c70f3bfb81d1b4921bc4e07e41bd891",
+  "roster_sha256": "caead03dd510cb3bf0c4565d8a8a804840f5a28a61eab07529ca7e398ca750fe",
+  "roster_pairs_sha256": "70895deb08cf4c04deec1ffc730bb7eef4d002bba402eff78329fa979998d377",
+  "source": {
+    "url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-25ene2024.zip",
+    "archive_sha256": "503a044d44069e1bbb39d18f5082c86cc1489ad697c823c1345920cda56b8a2b",
+    "archive_publication_day": "2024-01-25",
+    "entry": "Armenia, Mercar 25-1-2024.pdf",
+    "child_sha256": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412",
+    "printed_market": "Armenia, Mercar",
+    "printed_date": "2024-01-25"
+  },
+  "pages": [
+    {
+      "page": 1,
+      "image_id": "c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3",
+      "image_sha256": "c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3",
+      "reading_sha256": {
+        "0": "f977deac859493b2cfd2000c8f5dce12725bf4ba8efddc39fd42eafccccfd424",
+        "1": "c4260cc1bb9bd968739bbc1f23049c4605674716d3fcf2d97cef597b046eb0cb"
+      },
+      "task_status": "review",
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Armenia, Mercar",
+        "page": 1,
+        "page_count": 2
+      }
+    },
+    {
+      "page": 2,
+      "image_id": "b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b",
+      "image_sha256": "b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b",
+      "reading_sha256": {
+        "0": "c2ba76fa321fa13ef9a62b850674759e40fe5602906073192e9ca6a8e8b93cf2",
+        "1": "7b59fed38741a9ad0e57cd4a58b0a8c27d97d83df12ced7b59ec38e9883a7dd6"
+      },
+      "task_status": "review",
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Armenia, Mercar",
+        "page": 2,
+        "page_count": 2
+      }
+    }
+  ],
+  "manual_row_count": 59,
+  "page_counts": {
+    "1": 37,
+    "2": 22
+  },
+  "text_adjudication": {
+    "presentation": {
+      "printed_raw": "Caja de cartÓn",
+      "canonical_display": "Caja de cartón",
+      "manual_ordinals": [
+        10,
+        17,
+        18,
+        19,
+        25,
+        28,
+        40
+      ],
+      "source_ocr_rows": {
+        "1": [
+          "Fresa",
+          "Manzana roja importada",
+          "Manzana royal gala importada",
+          "Manzana verde importada",
+          "Pera importada",
+          "Uva red globe nacional"
+        ],
+        "2": [
+          "Ajo importado"
+        ]
+      }
+    },
+    "category_heading": {
+      "printed_source_heading": "Tuberculos, raices y platanos",
+      "canonical_parser_heading": "Tubérculos, raíces y plátanos",
+      "manual_ordinals": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "canonical_subcategory_pairs": {
+        "Otros tuberculos": "Otros tubérculos",
+        "Plátano": "Plátano",
+        "Papa": "Papa",
+        "Yuca": "Yuca"
+      }
+    },
+    "plantain_heading": {
+      "printed": "PlÁtano",
+      "paired_ocr_variants": [
+        "PIÁtano",
+        "PlÁtano"
+      ],
+      "canonical_category": "Plátano"
+    }
+  },
+  "limitations": [
+    "OCR image/task/result history remains immutable",
+    "No numerical correction is authorized",
+    "No generic fuzzy identity or accent normalization is authorized",
+    "This proof does not create or assert an O6 accepted cohort head"
+  ]
+}

@@ -1,0 +1,725 @@
+{
+  "children": [
+    {
+      "blank_evidence_sha256": "9845a76023cec9959a617ca8bce3c37edde4cbc817e89cc2c9e165c79a316019",
+      "category_heading_count": 3,
+      "child_sha256": "f5d39758d2921991b120381bafbfa2f3dd3cdd07cbbdfc8611f60d51c3a5dd93",
+      "count": {
+        "blanks": 2,
+        "noquotes": 25,
+        "priced": 170,
+        "reviews": 5
+      },
+      "headings_sha256": "7ee29c83115e7543f2ae0ff571185430f7155e7a06994c61e119cc4e9af5b4c4",
+      "noquote_evidence_sha256": "f59f4bbab4e9cfac603626cdf65ada708fa5df8f9870cd2445a113c0fb8dc4a5",
+      "page_count": 3,
+      "priced_17_sha256": "901a86a23328d680ccc90c03ac7c5a3d3dc12eb93157704579ad9e653e97770e",
+      "priced_evidence_sha256": "0b1dccf0d053b23804e958bd1c3fa9abcae6fc068888442fb510993df515df56",
+      "review_evidence_sha256": "ff45edee3774c1b0335064967548438c774ffe2febd5f387d870a559d3aaf492",
+      "source_line_count": 100
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 3,
+      "child_sha256": "f74ba57880a0a199d6926b8fb5652b652926d7d6ec7bfd17efea320186de1b2c",
+      "count": {
+        "blanks": 0,
+        "noquotes": 24,
+        "priced": 21,
+        "reviews": 3
+      },
+      "headings_sha256": "3912444e6d95cebdc4f0dc906c60c0fba4504bcc8f3a448442f262dd97107bfb",
+      "noquote_evidence_sha256": "2b2751885be9241f93f91f005cf2eb9734dc7d6b68d574b22bcd5a7532dae435",
+      "page_count": 1,
+      "priced_17_sha256": "1a298c93a72bba1d18b61ae32da44daa85968e450ea6ffb0acecc4061b3554d9",
+      "priced_evidence_sha256": "303d3b006533c3dd1ceb3a97df1e285511c158692f7f9ec3e93d482fd1719877",
+      "review_evidence_sha256": "808b62752208f06014ec0d77fe1211c082867d270759d1a5b8a07a02b6697e39",
+      "source_line_count": 24
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 3,
+      "child_sha256": "16381c4b870066c7f3f4aab8c0d732dc36187d3b088c68bb308a46ec6c33b463",
+      "count": {
+        "blanks": 0,
+        "noquotes": 69,
+        "priced": 39,
+        "reviews": 0
+      },
+      "headings_sha256": "30a67b4527dc716f1768bfb78e278ace03c33ff3195f6a7d2327eb52734e4b33",
+      "noquote_evidence_sha256": "3339156fcfc0b947fda144172b3f4a591950e72d08db23373999a1839ad06618",
+      "page_count": 2,
+      "priced_17_sha256": "0098aac3723e5d5dcf7e7f561353965340e8e10895cd6e80dec589a2f7c1024b",
+      "priced_evidence_sha256": "48a857e06f3a1273b4c16733010ab014470b1ba1254fa2ca91274bed7942d7b6",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "source_line_count": 54
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 10,
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "count": {
+        "blanks": 0,
+        "noquotes": 113,
+        "priced": 92,
+        "reviews": 21
+      },
+      "headings_sha256": "2b5068e3db442ea6b77732298ff571c14a0383b6d53fd72ef98addc6369d3b43",
+      "noquote_evidence_sha256": "f4626b223a2aee31883f62bf3fc42f12786c0562a053b3fa7f99a2fc780a9037",
+      "page_count": 2,
+      "priced_17_sha256": "1f3de11c82fe947d614eb0b93c49acadef10350340bf4adac8f5c099409c3f2d",
+      "priced_evidence_sha256": "b2930a742d84bb348aa1a2cdbd2539d89c074476e472f11af7f9da996a0f9d01",
+      "review_evidence_sha256": "70b1e99217e4ebce6a04fd67539f50ceef13b711ab5edb611b742bed9dd2757d",
+      "source_line_count": 113
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 3,
+      "child_sha256": "36058d3e2ab35b83737c3379870dfc94cfc8f93798f6873101beb296f2bd68ad",
+      "count": {
+        "blanks": 0,
+        "noquotes": 64,
+        "priced": 146,
+        "reviews": 0
+      },
+      "headings_sha256": "6623bb610c41078f900b5a0776d162ca14b7c512c653d0afa46c2677389bcf76",
+      "noquote_evidence_sha256": "52b054d52a5e6af59e7625ae7de54f1283042e1b1c623d2f47cf1bb0553c753c",
+      "page_count": 3,
+      "priced_17_sha256": "6fad87acf17d9b68875aef074b6f2855a1ff1c5b64455c8e3c9eb9e7ec6ce6d2",
+      "priced_evidence_sha256": "420a61c5baf6eeca0436f88c1dc9b011bea491aa39f4f3fece0d3e54a61015ef",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "source_line_count": 105
+    },
+    {
+      "blank_evidence_sha256": "36d844af9bd7a54c852be014f682e716daa886138653a1d7a8ff386e91ba903a",
+      "category_heading_count": 3,
+      "child_sha256": "eaaafa06421b7ffba4828df57827e90987d9e889bbd854d5174b88831a32148f",
+      "count": {
+        "blanks": 1,
+        "noquotes": 74,
+        "priced": 32,
+        "reviews": 32
+      },
+      "headings_sha256": "782c10b90af3f5cdcda5d1fc28b16685d19c7b418042a9b846a9f55e71698520",
+      "noquote_evidence_sha256": "54f3ee7b2f903ed55c9923ef9e8aa9cf9bcf239ddf4184457c8ce175f7425c38",
+      "page_count": 2,
+      "priced_17_sha256": "33f31e44112ef211c95ecf06a6a1088cc381d2ec1ac1271118eac80dfc7699c7",
+      "priced_evidence_sha256": "34f334459f09dcd026e349e14e0583a64593da3c4ad79d23f9b0244b05d71ae3",
+      "review_evidence_sha256": "1a252b183ea495763cbad5c800c30266057bf24c0c73f4c8ca6bf14b1925d5c0",
+      "source_line_count": 69
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 4,
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "count": {
+        "blanks": 0,
+        "noquotes": 94,
+        "priced": 53,
+        "reviews": 27
+      },
+      "headings_sha256": "1866b887b7403640ac04f4d37ae1e4af20e46184b8890000c0afc760e8e54d93",
+      "noquote_evidence_sha256": "ed2d2aed4e8c6f150ff92a0b25491f3c0a8c24e59e02d91a8dce7b1210dff5a8",
+      "page_count": 2,
+      "priced_17_sha256": "da0eb7d646ae23dc3959965919d05b8ba1b7eebd185666441381ce1973ee620f",
+      "priced_evidence_sha256": "1c72ff01e8950cf3b340428530935c1fa079ffb457cd2b20642e1b74468fec65",
+      "review_evidence_sha256": "99978a1324b1e181a8cb2225a3b55963733e632318f4546d45148e91c781d23e",
+      "source_line_count": 87
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 3,
+      "child_sha256": "cc58e5ce38fa751138de088436ece59fb35610fc14eca39d1811f76d2009bd78",
+      "count": {
+        "blanks": 0,
+        "noquotes": 23,
+        "priced": 19,
+        "reviews": 4
+      },
+      "headings_sha256": "69f6759e6671816cdb1727615ec43487719e7c757befd62762f4c0eeb1398e85",
+      "noquote_evidence_sha256": "11802b5e5f7e76cdeadfeaccbe1400740d651028b3c42e2783f25d5a3395a1dc",
+      "page_count": 1,
+      "priced_17_sha256": "4b4441eb27276157d01582f108772b2c7905a2d2b940835412e2f393bb83b123",
+      "priced_evidence_sha256": "dc2fc7327a72b297a2d7872ecfe95450b8517785ae3aa4b655e08bac39b81917",
+      "review_evidence_sha256": "e081030bfea7b6d339ef4a049fc9dec54dadd1d68c01652ec32bfcada90dabc9",
+      "source_line_count": 23
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 3,
+      "child_sha256": "32c73fee19652051a882222b51178105fd36e65098c9004992bfb971ead116fc",
+      "count": {
+        "blanks": 0,
+        "noquotes": 49,
+        "priced": 44,
+        "reviews": 5
+      },
+      "headings_sha256": "f940593f6156f97df5e77163ec5aad158aa3f5e668c7c8d70478462205a94abd",
+      "noquote_evidence_sha256": "6e3ddd56ba94224d495deb0568003f3deca683e4a2dc0ef6d2ebbc3a999f5074",
+      "page_count": 2,
+      "priced_17_sha256": "37589c6ec597d27447fe2c50dbdf54a5121c7e546fb5c9d075e458a1db71c566",
+      "priced_evidence_sha256": "7b8e5c481ce29e54bd583a7023d1d899774ae0f6fb3f12eede4f82d86583b332",
+      "review_evidence_sha256": "1c8d3879f345967c44a582651bd1e36cb6b84dc283a8f7416e15b5d5a32d8702",
+      "source_line_count": 49
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 7,
+      "child_sha256": "479bb6418ba84694e41bdf3b6249761127dd88fa1227b5e2dd3e3975430d5aa6",
+      "count": {
+        "blanks": 0,
+        "noquotes": 59,
+        "priced": 182,
+        "reviews": 7
+      },
+      "headings_sha256": "16ba5d2ed9c4d05f37ee8aa841bbb65127f1386cdc6783eadf44b0e0450f0ece",
+      "noquote_evidence_sha256": "a575f6098637e0012fa8e959825a730fb41d1dce774f1db6733a17b7202f7f90",
+      "page_count": 3,
+      "priced_17_sha256": "8b5af3c04f9edba77acf36653554928ec58880bfd9b26241f3879284295254ee",
+      "priced_evidence_sha256": "a13a6000afd635522feb565167c4c07d726b17ef7e0eb97cb8d36855fdf37cb9",
+      "review_evidence_sha256": "19f8bccd46c03e7a0d7c39ef9f5ca2b8164ea91a6b4953996fadfac02925ebae",
+      "source_line_count": 124
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "category_heading_count": 3,
+      "child_sha256": "80009b21f92c47bac30d7a8d181605682fa3404c43a96610d93305b4cfbf1058",
+      "count": {
+        "blanks": 0,
+        "noquotes": 40,
+        "priced": 38,
+        "reviews": 0
+      },
+      "headings_sha256": "944f88f0901ff8b5f9434c3ff19d3aec395391f772339e7e64733e1ba28ed7c2",
+      "noquote_evidence_sha256": "6f794fb51d936a2790622c58e7c51e51ad89a02672514fa66d2fca1b375ab3cb",
+      "page_count": 1,
+      "priced_17_sha256": "1fa8009b37009cbb47d9c5cc46525997b44960264412bf5e9e75c3fa5f2b7687",
+      "priced_evidence_sha256": "cc7c124a3a2e9a42abc3bc60d160d442021e872ba9925bc0301cf96adaa06500",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "source_line_count": 39
+    }
+  ],
+  "independent_comparator_sha256": "a7fe8f06b4b9ac65062f465b80d85305bcb834020ac0fa2f2064927a2989a099",
+  "qualification": "47 source-bound ambiguous line hints contain no priced row answers; all 836 typed rows rederive from original bytes.",
+  "review_identity_hints": [
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Aceite vegetal mezcla",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "2343a0569906b11a566eeb8834ec3f64f8658d580cb16284cb4544b850a76c32",
+      "native_y": 318.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Aceite vegetal mezcla",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "10d3eacf5392840a32f6dc5690790f3ad8618d9d7712aa83fa002263fe9cd389",
+      "native_y": 333.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Avena hojuelas",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "a6bc36bbf50efae205ffcadd29c37e221e5cbcf1092bc41ae0c5cb6f9931be1a",
+      "native_y": 348.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Avena molida",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "891a613f3e6e6fbd0f6fda502047a1c37cd0c7d35a15b7fee05517fd94fbd6b2",
+      "native_y": 363.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Café instantáneo",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "430eb1b17c28bbc811b676cc99943abdcc225b9d22405aff607cf113f82545b8",
+      "native_y": 393.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Café molido",
+        "Paca",
+        ""
+      ],
+      "literal_cells_sha256": "699244eda830073ddfb60e80b3ec4ad72b025c63f6a2ffd83f9fb0d281f87de3",
+      "native_y": 408.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Chocolate amargo",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "df88c1522232f94c153d2365d083af172a033313eca9174ed8b51999ff38c548",
+      "native_y": 423.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Fécula de maíz",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "30dcc82ed4ff56d9c89450564696efa64b04e3471edcce3038c386d230a63582",
+      "native_y": 438.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Galleta salada 3 tacos",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "de07d7acb691e3ed21b28fb1a939020005b74f4247357f338fbc93c03a9cfd31",
+      "native_y": 453.7,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Gelatina",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "8e37e0b60ed07e93ea962e362f080af09c30b909ea2c702b758a3d0c06dbae2a",
+      "native_y": 468.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Harina de trigo",
+        "Paca",
+        ""
+      ],
+      "literal_cells_sha256": "51612673e06a09bbb8c7fe67e5bf505c81a74fa47f72639eb19d743924408ff9",
+      "native_y": 483.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Harina precocida maíz",
+        "Paca",
+        ""
+      ],
+      "literal_cells_sha256": "4f2fabc801c15c75095cd5be5bd7b9f1a93aa4ff0938b58b58f8ef3abeb20f6d",
+      "native_y": 498.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Jugo instantaneo sobre",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "c72b3fc46e6ce118769de6d615f8b332800fe93220da2b6d27f70cfd7dae35ff",
+      "native_y": 513.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Leche en polvo",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "9c53fa6ec0bd83cfd583dd0160df9fff95f4ec134a19488c2d812bcc3c16df32",
+      "native_y": 528.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Leche en polvo",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "385b0e4b4b28690d70f16c0d4001bbf72c6249bc81b23f2a2a65afb0780548f8",
+      "native_y": 543.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Manteca",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "16bd894181cb92947f56b338cc1658b7c95a1b6550d03d5015c39ea98b9169de",
+      "native_y": 558.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Margarina",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "2071756006ac0ea0dfc89226ab3b520c404bf73ca7e52ceff08e77c5b3a43130",
+      "native_y": 573.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Mayoneza doy pack",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "5a0f34e4aa9eef4802f511e9a230c51e8973aa51d80859d7207657e42d24b5fd",
+      "native_y": 588.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Mayoneza doy pack",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "c67d9c147ac02376e6e3e9dc9cc7b6e26249d9d2516e805d931ae1f74d946006",
+      "native_y": 603.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Panela cuadrada morena",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "731068e83975f19bbb69dd7ca089409156308f1b1d86f56996b9685cfe93b8bb",
+      "native_y": 618.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Pastas alimenticias",
+        "Paca",
+        ""
+      ],
+      "literal_cells_sha256": "7035ad5b12b9c387e582b513f6886ce13a339e1dc065a7afcdd0c3e9eed87093",
+      "native_y": 633.72,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Salsa tomate doy pack",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "a223a4e49cd01878a08fa92764d22c90cdd60e138c4b2f569c406511382e5438",
+      "native_y": 663.75,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Salsa tomate doy pack",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "869544d0b18216e54982e716222c34dcb6916dbbe785e4a5ca65fcd8323d7877",
+      "native_y": 678.75,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Atún en lata",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "feb89b195c22221edbc9b75e6f0ba71138d13af5d600106aa9487733cc00abf0",
+      "native_y": 693.75,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Sardinas en lata",
+        "Caja",
+        ""
+      ],
+      "literal_cells_sha256": "024c4532fbc158dbff077fb974559b609e47d0b2b405ebca8166171fa111429a",
+      "native_y": 708.75,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Huevo rojo A",
+        "Panal",
+        ""
+      ],
+      "literal_cells_sha256": "8967310c39b8fbde05866ddeebe27457484ba90372b11f7f01120594a9b2b6f0",
+      "native_y": 723.75,
+      "page": 2
+    },
+    {
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "independent_poppler_identity_cells": [
+        "Huevo rojo AA",
+        "Panal",
+        ""
+      ],
+      "literal_cells_sha256": "2e9879d2146fe1177a34421ca6043c425582e84fb27c2433aeffcb1c4e6f15e9",
+      "native_y": 738.75,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Cebolla cabezona blanca roja",
+        "Bulto",
+        "50 Kg"
+      ],
+      "literal_cells_sha256": "36a3412f49fcc66f922505e21da172f7f9d60e941493cc204fadd4750d43a7f6",
+      "native_y": 258.56,
+      "page": 1
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Arroz de primera",
+        "Bulto",
+        "25 UNIDAD- 45 Kg"
+      ],
+      "literal_cells_sha256": "f85fe86ad4b65f2e32b389c5517b30fb57027418593caa3e6eda99adb59863f0",
+      "native_y": 798.64,
+      "page": 1
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "",
+        "",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "43e1b768dfa26ec576d3b67d64b667bb31f6b20a329a1da63cc3af4e49d065a8",
+      "native_y": 445.43,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "",
+        "",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "1b041dcb14b603f5f815fd5bccf61ab3f344a695ae70ae0d45327df016e9c448",
+      "native_y": 457.43,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Carne de cerdo, costilla",
+        "Kilogramo",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "7385bf591040dc5ae1f0e2d15e7250cd57aba9bfa0107ba5bff5fac77435ccc8",
+      "native_y": 469.45,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Carne de cerdo, espinazo lomo con",
+        "Kilogramo",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "76bf762e5531e77790a3d665a7a7dd4dc6ee1cdebe29c127b3e7e063b52397e5",
+      "native_y": 481.45,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Carne de cerdo, lomo pernil sin con hueso",
+        "Kilogramo",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "e7bb599afb7c13af1bc2841e0847fe71c1f617d4b1f6b62357f7e584b377204c",
+      "native_y": 505.45,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "hueso Carne de cerdo, pernil sin",
+        "Kilogramo",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "dd55ed8f278651b8559009dc8a6917cc62a3083dc38cc0734a4b0fa41625930f",
+      "native_y": 517.45,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Pollo Piernas entero de pollo congelado sin",
+        "Kilogramo",
+        "1 Kg"
+      ],
+      "literal_cells_sha256": "0756f39835ce2412a6a22ba3b2fccd2bf800b074e29cee8d4e36c22bdca29336",
+      "native_y": 589.45,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Chocolate dulce",
+        "Kilogramo",
+        "100 1 Unid Kgr 90"
+      ],
+      "literal_cells_sha256": "4e88de9c5d430bf6adb4176a6efe8a6bb39e3a11664082ca8e6a42a129db7783",
+      "native_y": 733.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Fécula de maíz",
+        "Caja de cartón",
+        "48 Unidad GR 110"
+      ],
+      "literal_cells_sha256": "19f8141b2a1b68b7a075f8dbcfd66873da632386f08f381ed9b39498abe3e871",
+      "native_y": 745.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Galletas saladas",
+        "Caja de cartón",
+        "25 Unidad GR 500"
+      ],
+      "literal_cells_sha256": "2d0609dcdfe42da4cd4d5db7519938f801ab74185ded15ba4f39088a8539a069",
+      "native_y": 757.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Harina precocida de maíz",
+        "Bolsa",
+        "20 Unidad 12 Kgr 18"
+      ],
+      "literal_cells_sha256": "0fb7c524af89585637c121646eaecf873cfe84449fc19b28fa29397a1b937f8d",
+      "native_y": 781.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Jugo instantáneo (sobre)",
+        "Caja de cartón",
+        "48 Unidad GR 170"
+      ],
+      "literal_cells_sha256": "12b1a4a31eaaf08a481483b9ee9b00ddfe495b213650db22993779540586f4f0",
+      "native_y": 793.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Panela redonda morena",
+        "Kilogramo",
+        "50 Unidad 1 Kgr 125"
+      ],
+      "literal_cells_sha256": "579deb29c71c03fc074d6e27df7b0de95a252ad5ab9a3b678187e93f51fbae25",
+      "native_y": 829.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Pastas alimenticias",
+        "Bolsa",
+        "25 Unidad GR 500"
+      ],
+      "literal_cells_sha256": "155bde26d60fc9ee5e3498898fa79e049bfbcd74dfbfbfa66e067623a5e1a764",
+      "native_y": 841.48,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Salsa de tomate doy pack",
+        "Caja de cartón",
+        "24 Unid 48 Unid 43GR"
+      ],
+      "literal_cells_sha256": "788c35932a5d772dec66fc4bafa585258de1571efcd23f6b2d043fa33fa5828b",
+      "native_y": 865.5,
+      "page": 2
+    },
+    {
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "independent_poppler_identity_cells": [
+        "Sardinas en lata",
+        "Caja de cartón",
+        "24 425GR Unid"
+      ],
+      "literal_cells_sha256": "d24eab74a546a0ae61c527c4317099685d16d8d9e25bd5baf9691f62b7d0ffe6",
+      "native_y": 877.5,
+      "page": 2
+    },
+    {
+      "child_sha256": "f5d39758d2921991b120381bafbfa2f3dd3cdd07cbbdfc8611f60d51c3a5dd93",
+      "independent_poppler_identity_cells": [
+        "",
+        "",
+        ""
+      ],
+      "literal_cells_sha256": "9d879c28d85c41e602c0415f66dc9f1cf6c2e6f017592657aa590484a525793f",
+      "native_y": 510.61,
+      "page": 1
+    },
+    {
+      "child_sha256": "f5d39758d2921991b120381bafbfa2f3dd3cdd07cbbdfc8611f60d51c3a5dd93",
+      "independent_poppler_identity_cells": [
+        "Uva Isabela",
+        "CAJA CARTON",
+        ""
+      ],
+      "literal_cells_sha256": "7047ca6f93fa6f26e5edec8c6ccf1538442b770d2b76e4a5c745966ce31d8ceb",
+      "native_y": 752.68,
+      "page": 2
+    }
+  ],
+  "source_parent_sha256": "cbd378bc2d1863439c9e0a806dcdaa5026ebdd9e920fbd9c63dc1473de589edf",
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-01-09-2021.zip"
+}

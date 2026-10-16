@@ -1,6 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { CatalogPage } from "@/lib/catalog-types";
+import {
+  fetchJson,
+  JsonFetchTimeoutError,
+  JsonResponseParseError,
+} from "@/lib/client/fetch-json";
+
+class CatalogDisplayError extends Error {}
 
 /** An aborted or older response cannot repaint a newer filter selection. */
 export function useCatalogPage(body: string | null) {
@@ -10,15 +17,24 @@ export function useCatalogPage(body: string | null) {
     if (!body) return;
     const controller = new AbortController();
     setResult({ key: body, data: null, loading: true, error: "" });
-    fetch("/api/catalog", {
+    fetchJson<unknown>("/api/catalog", {
       method: "POST", headers: { "Content-Type": "application/json" }, body,
       signal: controller.signal,
-    }).then(async (response) => {
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "No pudimos cargar los productos.");
-      if (!controller.signal.aborted) setResult({ key: body, data, loading: false, error: "" });
-    }).catch((error) => {
-      if (!controller.signal.aborted) setResult({ key: body, data: null, loading: false, error: error.message });
+    }).then(({ response, data }) => {
+      if (!response.ok) throw new CatalogDisplayError(
+        typeof (data as { error?: unknown } | null)?.error === "string"
+          ? (data as { error: string }).error
+          : "No pudimos cargar los productos. Intenta de nuevo.",
+      );
+      if (!controller.signal.aborted) setResult({ key: body, data: data as CatalogPage, loading: false, error: "" });
+    }).catch((error: unknown) => {
+      if (!controller.signal.aborted) setResult({ key: body, data: null, loading: false,
+        error: error instanceof CatalogDisplayError ? error.message
+          : error instanceof JsonFetchTimeoutError
+            ? "El catálogo tardó demasiado en responder. Revisa tu conexión e intenta de nuevo."
+            : error instanceof JsonResponseParseError
+              ? "No pudimos leer la respuesta del catálogo. Intenta de nuevo."
+              : "No pudimos conectar con el catálogo. Revisa tu conexión e intenta de nuevo." });
     });
     return () => controller.abort();
   }, [body, version]);

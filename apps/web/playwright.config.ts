@@ -23,7 +23,7 @@ export default defineConfig({
   projects: [
     {
       name: "iphone-webkit",
-      testMatch: ["layout.spec.ts", "explore.spec.ts", "farms.spec.ts", "weather-view.spec.ts", "farm-location.spec.ts"],
+      testMatch: ["layout.spec.ts", "explore.spec.ts", "farms.spec.ts", "weather-view.spec.ts", "farm-location.spec.ts", "map-price-disclosure.spec.ts", "data-reference-record-search.spec.ts", "category-hierarchy.spec.ts", "supply-original-row-search.spec.ts", "history-date-search.spec.ts", "history-slash-date-search.spec.ts", "catalog-loading-layout.spec.ts", "source-archive.spec.ts", "search-hydration.spec.ts", "wage-source-context.spec.ts", "inputs-slow-catalog.spec.ts"],
       use: { ...devices["iPhone 13"] },
     },
     {

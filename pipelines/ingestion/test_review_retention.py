@@ -40,6 +40,11 @@ class ReviewRetentionTests(unittest.TestCase):
                 ).fetchone(),
                 ("t",),
             )
+        # The hosted migration is not applied to the isolated full-suite PG;
+        # run initialization must still read a real TEMP cooldown relation.
+        self.db.execute("""CREATE TEMP TABLE source_host_cooldown(
+            host text PRIMARY KEY,retry_at timestamptz,checked_at timestamptz,
+            response_status smallint,retry_after_literal text)""")
         # Use the production publication predicate, bound to TEMP relations.
         definition = self.db.execute(
             "SELECT pg_get_viewdef('public.published_price_observation'::regclass,true)"
@@ -150,6 +155,65 @@ class ReviewRetentionTests(unittest.TestCase):
 
     def test_deferred_recovery_keeps_original_reviewed_and_old_prices_hidden(self):
         self.check_failure(WorkDeferred("Independent query requires another run"))
+
+    def test_cooldown_initialization_failure_releases_lock_and_contexts(self):
+        lock = 914070967
+        prior_deadline = worker.RUN_DEADLINE.set(12345.0)
+        marker = object()
+        prior_cooldown = worker.HOST_COOLDOWNS.set(marker)
+        self.addCleanup(lambda: worker.RUN_DEADLINE.reset(prior_deadline))
+        self.addCleanup(lambda: worker.HOST_COOLDOWNS.reset(prior_cooldown))
+        with (
+            patch.object(worker, "connect", return_value=nullcontext(self.db)),
+            patch.object(worker, "LOCK", lock),
+            patch.object(worker, "HostCooldowns", side_effect=RuntimeError("cooldown init failed")),
+            redirect_stdout(io.StringIO()),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "cooldown init failed"):
+                worker.run("backfill", limit=1, time_budget=60, asset_url=self.url)
+        self.assertEqual(worker.RUN_DEADLINE.get(), 12345.0)
+        self.assertIs(worker.HOST_COOLDOWNS.get(), marker)
+        self.assertEqual(self.db.execute(
+            "SELECT status FROM ingestion_run ORDER BY started_at DESC LIMIT 1"
+        ).fetchone(), ("failed",))
+        with worker.connect() as other:
+            self.assertTrue(other.execute("SELECT pg_try_advisory_lock(%s)", (lock,)).fetchone()[0])
+            other.execute("SELECT pg_advisory_unlock(%s)", (lock,))
+
+    def test_unavailable_lock_restores_context_without_cooldown_init(self):
+        lock = 914070968
+        prior_deadline = worker.RUN_DEADLINE.set(12345.0)
+        marker = object()
+        prior_cooldown = worker.HOST_COOLDOWNS.set(marker)
+        self.addCleanup(lambda: worker.RUN_DEADLINE.reset(prior_deadline))
+        self.addCleanup(lambda: worker.HOST_COOLDOWNS.reset(prior_cooldown))
+        with worker.connect() as holder:
+            self.assertTrue(holder.execute("SELECT pg_try_advisory_lock(%s)", (lock,)).fetchone()[0])
+            try:
+                with (
+                    patch.object(worker, "connect", return_value=nullcontext(self.db)),
+                    patch.object(worker, "LOCK", lock),
+                    patch.object(worker, "HostCooldowns", side_effect=AssertionError("unexpected cooldown init")),
+                    redirect_stdout(io.StringIO()),
+                ):
+                    self.assertEqual(worker.run("backfill", limit=1, time_budget=60),
+                                     {"status": "skipped_overlap"})
+            finally:
+                holder.execute("SELECT pg_advisory_unlock(%s)", (lock,))
+        self.assertEqual(worker.RUN_DEADLINE.get(), 12345.0)
+        self.assertIs(worker.HOST_COOLDOWNS.get(), marker)
+
+    def test_connect_failure_does_not_replace_existing_contexts(self):
+        prior_deadline = worker.RUN_DEADLINE.set(12345.0)
+        marker = object()
+        prior_cooldown = worker.HOST_COOLDOWNS.set(marker)
+        self.addCleanup(lambda: worker.RUN_DEADLINE.reset(prior_deadline))
+        self.addCleanup(lambda: worker.HOST_COOLDOWNS.reset(prior_cooldown))
+        with patch.object(worker, "connect", side_effect=RuntimeError("connect failed")):
+            with self.assertRaisesRegex(RuntimeError, "connect failed"):
+                worker.run("backfill", limit=1, time_budget=60)
+        self.assertEqual(worker.RUN_DEADLINE.get(), 12345.0)
+        self.assertIs(worker.HOST_COOLDOWNS.get(), marker)
 
 
 if __name__ == "__main__":

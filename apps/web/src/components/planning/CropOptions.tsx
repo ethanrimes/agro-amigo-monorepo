@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { photoFor } from "@/lib/images";
 import {
   IoLeafOutline,
@@ -10,8 +10,9 @@ import {
 } from "react-icons/io5";
 import type { CropReference, FarmData } from "@/lib/planning-types";
 import { cropMapKeys, fold, MONTHS } from "@/lib/planning-math";
-import { number, dateLabel } from "@/lib/market-types";
+import { number } from "@/lib/market-types";
 import { EvidenceLink } from "./EvidenceLink";
+import { SoilSampleReference } from "./SoilSampleReference";
 export function CropOptions({
   data,
   select,
@@ -19,13 +20,10 @@ export function CropOptions({
   data: FarmData;
   select?: (crop: CropReference) => void;
 }) {
-  const [query, setQuery] = useState(""),
-    [month, setMonth] = useState(new Date().getMonth() + 1),
-    [more, setMore] = useState(false);
+  const [chosen, setChosen] = useState("");
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const selected = data.crops.some((c) => c.crop_code === chosen) ? chosen : "";
   const candidates = data.crops
-    .filter(
-      (c) => !query || fold(c.crop + " " + c.variety).includes(fold(query)),
-    )
     .map((c) => {
       const keys = cropMapKeys(c.crop, c.variety, month);
       const mapped = data.suitability.filter((s) => keys.includes(s.crop_key)),
@@ -40,7 +38,6 @@ export function CropOptions({
     .sort(
       (a, b) => b.suitable - a.suitable || b.c.harvested_ha - a.c.harvested_ha,
     );
-  const soil = data.soil;
   return (
     <>
       <section className="plan-intro panel">
@@ -55,23 +52,17 @@ export function CropOptions({
           fuentes de cada referencia.
         </p>
         <div className="form-grid">
-          <div className="form-field">
-            <span>Buscar cultivo</span>
-            <SearchBox
-              label="Buscar cultivo"
+            <SearchableSelect
+              label="Consultar cultivo reportado"
               placeholder="Café, aguacate, frijol…"
-              value={query}
-              onChange={(v) => {
-                setQuery(v);
-                setMore(false);
-              }}
+              value={selected}
+              onChange={setChosen}
               options={data.crops.map((c) => ({
                 id: c.crop_code,
                 label: c.variety,
                 detail: c.crop,
               }))}
             />
-          </div>
           <label className="form-field">
             Mes que estás considerando
             <select value={month} onChange={(e) => setMonth(+e.target.value)}>
@@ -87,9 +78,10 @@ export function CropOptions({
           </label>
         </div>
       </section>
+      {data.crops.length > 9 && !selected && <p className="field-help">Busca y elige uno de los {data.crops.length} cultivos reportados para consultar sus datos y fuentes.</p>}
       <div className="crop-options">
         {candidates
-          .slice(0, more ? undefined : 9)
+          .filter(({ c }) => selected ? c.crop_code === selected : data.crops.length <= 9)
           .map(({ c, mapped, total, suitable }) => (
             <article className="crop-option panel" key={c.crop_code}>
               <div className="crop-option-photo">
@@ -216,61 +208,8 @@ export function CropOptions({
           </p>
         </div>
       )}
-      {candidates.length > 9 && (
-        <button
-          className="button secondary show-more"
-          onClick={() => setMore(!more)}
-        >
-          {more
-            ? "Mostrar menos"
-            : `Ver los ${candidates.length} sistemas reportados`}
-        </button>
-      )}
       <div className="regional-context">
-        <section className="panel">
-          <h3>Lo que sabemos del suelo de la zona</h3>
-          {soil ? (
-            <>
-              <p>
-                AGROSAVIA dispone de {number(soil.samples)} muestras de
-                laboratorio identificadas con este municipio.
-              </p>
-              {soil.ph_median !== null && (
-                <div className="soil-stat">
-                  <strong>{number(soil.ph_median)}</strong>
-                  <span>
-                    pH mediano de {number(soil.ph_samples)} muestras
-                    <br />
-                    La mitad central: {number(soil.ph_low!)} a{" "}
-                    {number(soil.ph_high!)}.
-                  </span>
-                </div>
-              )}
-              {soil.oldest && soil.newest && (
-                <p className="privacy-note">
-                  Análisis entre {dateLabel(soil.oldest)} y{" "}
-                  {dateLabel(soil.newest)}.
-                </p>
-              )}
-              <EvidenceLink
-                id={soil.document_id}
-                municipality={data.municipality.id}
-              >
-                Ver origen y resumen de las muestras
-              </EvidenceLink>
-            </>
-          ) : (
-            <p>
-              No encontramos muestras de laboratorio vinculadas a este
-              municipio.
-            </p>
-          )}
-          <p className="inline-note">
-            Son muestras enviadas a un laboratorio, sin ubicación exacta de
-            parcela. No describen necesariamente el suelo de tu finca ni se usan
-            para indicar fertilización.
-          </p>
-        </section>
+        <SoilSampleReference data={data} />
         <section className="panel">
           <h3>Antes de elegir, confirma tres cosas</h3>
           <ol className="plain-steps">

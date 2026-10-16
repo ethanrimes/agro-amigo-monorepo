@@ -1,0 +1,32 @@
+{
+  "version": "input-identity-equivalences-v1",
+  "groups": [
+    {
+      "canonical_id": "wuxal-tapa-negra-16-16-12-1-litro",
+      "canonical_name": "Wuxal tapa negra 16-16-12",
+      "guard": {
+        "category": "Fertilizantes y enmiendas",
+        "presentation": "1 litro",
+        "brand": "",
+        "registration": "",
+        "product_line": ""
+      },
+      "members": [
+        {
+          "id": "wuxal-tapa-negra-16-16-12-1-litro",
+          "names": [
+            "Wuxal tapa negra 16-16-12",
+            "Wuxal Tapa Negra 16-16-12"
+          ]
+        },
+        {
+          "id": "wuxal-16-16-12-tapa-negra-1-litro",
+          "names": [
+            "Wuxal 16-16-12 tapa negra",
+            "Wuxal 16-16-12 Tapa Negra"
+          ]
+        }
+      ]
+    }
+  ]
+}

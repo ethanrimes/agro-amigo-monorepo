@@ -1,0 +1,116 @@
+{
+  "header_2022": "1.5!C10 Pesos por kilogramo",
+  "footnote_2022": "1.5!A211 * Los precios reportados para los huevos son $/unidad.",
+  "header_2026": "1.5!A6 1.5. Huevos y lácteos**",
+  "footnote_2026": "1.4!A313 ** Los precios reportados para los huevos son $/unidad.",
+  "products": [
+    {
+      "product_id": "huevo-rojo-a",
+      "product_name": "Huevo rojo A",
+      "unit": "unit",
+      "source_examples": [
+        {
+          "date": "2022-06-24",
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "eaca99348931b5503de5e945a0050a60d4e3b8c330b5c0597420dac025440e73",
+          "min": 440,
+          "max": 440,
+          "price": 440,
+          "document_id": "0f7aaace0f54fb2c31b016011076acd2bb782f9993ca5ddcfe13ed2b4fe3c486",
+          "source_locator": "1.5!row 31,cols C:E"
+        },
+        {
+          "date": "2026-10-02",
+          "market": "Bogotá, D.C., Corabastos",
+          "key": "a1360107c91b34f86c3fffb50b1fe399db684db4e36d6afa48b168559fa4cca9",
+          "min": 450,
+          "max": 467,
+          "price": 458,
+          "document_id": "e2deb9c3957bbaa55ff2ecbc8599515b0423a737e403af5a9d53729c069408b7",
+          "source_locator": "1.5!row 23,cols C:E"
+        }
+      ]
+    },
+    {
+      "product_id": "huevo-rojo-aa",
+      "product_name": "Huevo rojo AA",
+      "unit": "unit",
+      "source_examples": [
+        {
+          "date": "2022-06-24",
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "c291b39161e8519979da007f93981dfda6f0569804dc7cf2c8de253f67f5d43b",
+          "min": 460,
+          "max": 470,
+          "price": 463,
+          "document_id": "0f7aaace0f54fb2c31b016011076acd2bb782f9993ca5ddcfe13ed2b4fe3c486",
+          "source_locator": "1.5!row 55,cols C:E"
+        },
+        {
+          "date": "2026-10-02",
+          "market": "Bogotá, D.C., Corabastos",
+          "key": "91693afa5a1376b5dce59d73c269978e814a2f436e84fc65b9ca693e85305d5b",
+          "min": 483,
+          "max": 500,
+          "price": 494,
+          "document_id": "e2deb9c3957bbaa55ff2ecbc8599515b0423a737e403af5a9d53729c069408b7",
+          "source_locator": "1.5!row 48,cols C:E"
+        }
+      ]
+    },
+    {
+      "product_id": "huevo-rojo-b",
+      "product_name": "Huevo rojo B",
+      "unit": "unit",
+      "source_examples": [
+        {
+          "date": "2022-06-24",
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "5bfbc6858e1c1a2bafbf8b5109897665df7f6a87d5934df9a67511ac0abe5c4e",
+          "min": 420,
+          "max": 430,
+          "price": 423,
+          "document_id": "0f7aaace0f54fb2c31b016011076acd2bb782f9993ca5ddcfe13ed2b4fe3c486",
+          "source_locator": "1.5!row 78,cols C:E"
+        },
+        {
+          "date": "2026-10-02",
+          "market": "Bogotá, D.C., Corabastos",
+          "key": "063c1d60f7ed79deb79c8cab8ba9ed58f9784eec6e87822429d8a0fb92908efe",
+          "min": 410,
+          "max": 423,
+          "price": 417,
+          "document_id": "e2deb9c3957bbaa55ff2ecbc8599515b0423a737e403af5a9d53729c069408b7",
+          "source_locator": "1.5!row 71,cols C:E"
+        }
+      ]
+    },
+    {
+      "product_id": "huevo-rojo-extra",
+      "product_name": "Huevo rojo extra",
+      "unit": "unit",
+      "source_examples": [
+        {
+          "date": "2022-06-24",
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "794dd9108eb9631977babf4b2487c26ce7aa276183dba72e64e314f3c08c3473",
+          "min": 480,
+          "max": 500,
+          "price": 490,
+          "document_id": "0f7aaace0f54fb2c31b016011076acd2bb782f9993ca5ddcfe13ed2b4fe3c486",
+          "source_locator": "1.5!row 90,cols C:E"
+        },
+        {
+          "date": "2026-10-02",
+          "market": "Bogotá, D.C., Corabastos",
+          "key": "a80841d12b4d761655d056d8b8e3fdd26d445df229e3f10819aa1af40f7f8cf1",
+          "min": 500,
+          "max": 550,
+          "price": 529,
+          "document_id": "e2deb9c3957bbaa55ff2ecbc8599515b0423a737e403af5a9d53729c069408b7",
+          "source_locator": "1.5!row 82,cols C:E"
+        }
+      ]
+    }
+  ]
+}

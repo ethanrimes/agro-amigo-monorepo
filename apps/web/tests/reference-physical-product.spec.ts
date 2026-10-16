@@ -95,8 +95,9 @@ test("grain references exclude canned and pod peas without a manual pricing fall
       exact: true,
     })
     .click();
-  const picker = page.getByLabel("Producto comparable");
-  await expect(picker.locator("option")).toHaveText([
+  const picker = page.getByRole("group", { name: "Producto comparable" });
+  await picker.getByRole("combobox").fill("Arveja");
+  await expect(picker.getByRole("option")).toHaveText([
     "Arveja amarilla seca importada",
     "Arveja verde seca importada",
   ]);

@@ -1,0 +1,180 @@
+{
+  "reviewed_at": "2026-10-12T12:42:59.357586+00:00",
+  "source_sha256": "5a8af3b10894d3241907e149a39451d09488bf827d79b52d3789e5a8cfa60f4d",
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_20ago_23ago_2013.pdf",
+  "unit_literal": "Precios por kilo",
+  "statistic": "Single price printed in article table, no min/max or inferred mean.",
+  "weeks": [
+    [
+      "2013-07-20",
+      "2013-07-26"
+    ],
+    [
+      "2013-07-27",
+      "2013-08-02"
+    ],
+    [
+      "2013-08-03",
+      "2013-08-09"
+    ],
+    [
+      "2013-08-10",
+      "2013-08-16"
+    ],
+    [
+      "2013-08-17",
+      "2013-08-23"
+    ]
+  ],
+  "tables": [
+    {
+      "page": 43,
+      "table": 1,
+      "product": "panela cuadrada morena",
+      "title": "Tabla 1. Precios por kilo de la panela cuadrada morena",
+      "rows": [
+        [
+          "Caparrapí (Cundinamarca)",
+          [
+            1450,
+            1450,
+            1500,
+            1500,
+            1500
+          ]
+        ],
+        [
+          "Charalá (Santander)",
+          [
+            1531,
+            1531,
+            1594,
+            1656,
+            1656
+          ]
+        ],
+        [
+          "Nocaima (Cundinamarca)",
+          [
+            1398,
+            1459,
+            1390,
+            1375,
+            1415
+          ]
+        ],
+        [
+          "San Gil (Santander)",
+          [
+            1675,
+            1675,
+            1625,
+            1675,
+            1725
+          ]
+        ],
+        [
+          "Villeta (Cundinamarca)",
+          [
+            1463,
+            1430,
+            1423,
+            1464,
+            1433
+          ]
+        ]
+      ]
+    },
+    {
+      "page": 44,
+      "table": 2,
+      "product": "panela cuadrada blanca",
+      "title": "Tabla 2. Precios por kilo de la panela cuadrada blanca",
+      "rows": [
+        [
+          "Charalá (Santander)",
+          [
+            1531,
+            1531,
+            1594,
+            1656,
+            1656
+          ]
+        ],
+        [
+          "Güepsa (Santander)",
+          [
+            1600,
+            1620,
+            1600,
+            1600,
+            1600
+          ]
+        ],
+        [
+          "Moniquirá (Boyacá)",
+          [
+            1550,
+            1595,
+            1500,
+            1500,
+            1550
+          ]
+        ],
+        [
+          "San Gil (Santander)",
+          [
+            1675,
+            1675,
+            1625,
+            1675,
+            1725
+          ]
+        ],
+        [
+          "Santana (Boyacá)",
+          [
+            1630,
+            1600,
+            1605,
+            1575,
+            1585
+          ]
+        ],
+        [
+          "Vélez (Santander)",
+          [
+            1525,
+            1600,
+            1600,
+            1600,
+            1600
+          ]
+        ]
+      ]
+    },
+    {
+      "page": 44,
+      "table": 3,
+      "product": "panela redonda morena",
+      "title": "Tabla 3. Precios por kilo de la panela redonda morena",
+      "rows": [
+        [
+          "Caparrapí (Cundinamarca)",
+          [
+            1400,
+            1350,
+            1450,
+            1450,
+            1400
+          ]
+        ]
+      ]
+    }
+  ],
+  "all_60_price_cells_independently_read_in_rendered_original": true,
+  "main_weekly_tables_unchanged": true,
+  "not_published": true,
+  "no_ocr": true,
+  "origin_push": false
+}

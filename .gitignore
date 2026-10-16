@@ -9,6 +9,7 @@
 .claude/
 # Dependencies, builds, generated assets and verification output
 node_modules/
+**/node_modules
 .next/
 .next-*/
 .venv/
@@ -20,6 +21,7 @@ __pycache__/
 artifacts/
 output/
 tmp/
+/data/
 pipelines/**/cache/
 apps/web/public/pdfjs/
 apps/web/public/downloads/

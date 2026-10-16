@@ -105,7 +105,9 @@ class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
       );
     }
     if (platform is WebKitWebViewController) {
-      unawaited(platform.setAllowsBackForwardNavigationGestures(true));
+      // The wrapper owns the edge gesture. WKWebView's parallel recognizer can
+      // navigate the same swipe a second time.
+      unawaited(platform.setAllowsBackForwardNavigationGestures(false));
     }
     unawaited(_start());
   }
@@ -282,7 +284,10 @@ class FarmBrowserState extends State<FarmBrowser> with WidgetsBindingObserver {
           children: [
             EdgeBackGesture(
               enabled: canGoBack && !failed,
-              onBack: () => unawaited(controller.goBack()),
+              // WKWebView.goBack skips Next.js pushState entries. Page history
+              // returns to the actual filtered route the user came from.
+              onBack: () =>
+                  unawaited(controller.runJavaScript('history.back()')),
               child: WebViewWidget(controller: controller),
             ),
             if (loading)

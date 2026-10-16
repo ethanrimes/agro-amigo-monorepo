@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { moraPageRow, verifyMoraQuote, latestMoraPackages } from "./helpers/mora-source";
+import { money } from "../src/lib/market-types";
 import {
   compareQuotes,
   summarizeComparisons,
@@ -21,6 +23,11 @@ const quote = (fields: Partial<ComparisonQuote> = {}): ComparisonQuote => ({
   document_id: "a".repeat(64),
   source_locator: "PDF page 1",
   ...fields,
+});
+
+test("original Mora row oracle rejects another package size", () => {
+  const printed = "Barranquilla, Barranquillita\n02 de Octubre de 2026\nMora de castilla Caja de cartÓn 2.5 Kilogramo 20.000 21.000 0 0";
+  expect(() => moraPageRow(printed, "12.5", 1)).toThrow();
 });
 
 test("comparison only matches exact commercial identity and units", () => {
@@ -95,7 +102,7 @@ test("category and overall differences are unweighted means of matched percentag
   ).toBe(-10);
 });
 
-test("city comparison serves both mora package sizes and auditable national prices", async ({
+test("city comparison serves both mora package sizes and verifies each latest original PDF", async ({
   request,
 }) => {
   const response = await request.get(
@@ -108,14 +115,11 @@ test("city comparison serves both mora package sizes and auditable national pric
     (r: { a: ComparisonQuote }) =>
       r.a.presentation.toLocaleLowerCase("es") === "caja de cartón",
   );
-  expect(
-    packages.find((r: { a: ComparisonQuote }) => r.a.units === "2.5 Kilogramo")
-      ?.a.price,
-  ).toBe(21000);
-  expect(
-    packages.find((r: { a: ComparisonQuote }) => r.a.units === "12.5 Kilogramo")
-      ?.a.price,
-  ).toBe(79500);
+  for (const units of ["2.5 Kilogramo", "12.5 Kilogramo"] as const) {
+    const current = packages.find((r: { a: ComparisonQuote }) => r.a.units === units)?.a;
+    expect(current, `${units} latest Barranquillita quote`).toBeDefined();
+    await verifyMoraQuote(request, current!);
+  }
   for (const row of data.rows) {
     if (!row.b) continue;
     expect(
@@ -135,8 +139,9 @@ test("city comparison serves both mora package sizes and auditable national pric
 });
 
 test("market comparison filters stay visible and category summaries follow them", async ({
-  page,
+  page, request,
 }) => {
+  const originals = await latestMoraPackages(request);
   await page.goto(
     "/compare/markets?a=sipsa-barranquilla-barranquillita&series=city",
   );
@@ -144,18 +149,24 @@ test("market comparison filters stay visible and category summaries follow them"
   await page
     .getByRole("searchbox", { name: "Buscar producto", exact: true })
     .fill("mora");
-  await page
-    .getByRole("combobox", { name: "Unidades", exact: true })
-    .selectOption("2.5 Kilogramo");
+  const unitsChoice = page.getByRole("group", { name: "Unidades", exact: true });
+  await unitsChoice.getByRole("combobox").fill("2.5 Kilogramo");
+  await unitsChoice.getByRole("option", { name: "2.5 Kilogramo", exact: true }).click();
   const applied = page.getByLabel("Filtros aplicados");
   await expect(applied).toContainText("Barranquillita");
+  const baseChoice = page.getByRole("group", { name: "A · Mercado base" });
+  await baseChoice.getByRole("combobox").fill("Bogotá");
+  await expect(baseChoice).toContainText(/Seleccionado: .*Barranquillita/);
+  await expect(applied).toContainText("Barranquillita");
+  await baseChoice.getByRole("button", { name: /Borrar a · mercado base/i }).click();
+  await expect(baseChoice).toContainText(/Seleccionado: .*Barranquillita/);
   await expect(applied).toContainText("mora");
   await expect(applied).toContainText("2.5 Kilogramo");
   await expect(page.getByLabel("Resultado de la comparación")).toContainText(
-    "1 combinaciones de A bajo los filtros",
+    "1 combinación de A bajo los filtros",
   );
   await expect(page.getByRole("article")).toHaveCount(1);
-  await expect(page.getByRole("article")).toContainText("21.000");
+  await expect(page.getByRole("article")).toContainText(money(originals.get("2.5 Kilogramo")!.price));
   await expect(page.locator("body")).not.toHaveJSProperty("scrollWidth", 0);
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > window.innerWidth + 1,
@@ -163,27 +174,29 @@ test("market comparison filters stay visible and category summaries follow them"
   expect(overflow).toBeFalsy();
 });
 
-test("market price list expands, collapses and maintains exact filter links", async ({
+test("market price list keeps a bounded overview and exact filter links", async ({
   page,
 }) => {
   await page.goto("/market/sipsa-barranquilla-barranquillita");
-  await expect(
-    page.getByRole("button", { name: "Expandir lista completa", exact: true }),
-  ).toBeVisible();
-  const before = await page.getByRole("article").count();
-  await page
-    .getByRole("button", { name: "Expandir lista completa", exact: true })
-    .click();
-  expect(await page.getByRole("article").count()).toBeGreaterThan(before);
-  await page
-    .getByRole("button", { name: "Mostrar menos", exact: true })
-    .click();
-  await expect(page.getByRole("article")).toHaveCount(before);
+  const section = page.locator("section.panel").filter({ has: page.getByRole("heading", { name: "Precios en este mercado", exact: true }) });
+  await expect(section.getByRole("article")).toHaveCount(6);
+  await expect(section.getByRole("button", { name: "Expandir lista completa" })).toHaveCount(0);
+  const choice = section.getByRole("group", { name: "Consultar una cotización de este mercado" });
+  await choice.getByRole("combobox").fill("limon tahiti");
+  await expect(choice).toHaveAttribute("data-selected-value", "");
+  await expect(section.getByRole("article")).toHaveCount(6);
+  await expect(choice.getByRole("option").first()).toBeVisible();
+  await choice.getByRole("option").first().click();
+  await expect(choice).not.toHaveAttribute("data-selected-value", "");
+  expect(await section.getByRole("article").count()).toBeLessThanOrEqual(7);
+  await expect(section.getByRole("article").filter({ hasText: /Limón tahití/i }).getByRole("link", { name: "Consultar fuente" }).first()).toHaveAttribute("href", /\/evidence\//);
+  await choice.getByRole("button", { name: "Quitar selección" }).click();
+  await expect(section.getByRole("article")).toHaveCount(6);
   await page
     .getByRole("searchbox", { name: "Buscar producto", exact: true })
     .fill("limón tahití");
   const link = page
-    .getByRole("link", { name: "Limón tahití", exact: true })
+    .getByRole("link", { name: "Limón Tahití", exact: true })
     .first();
   await expect(link).toHaveAttribute(
     "href",

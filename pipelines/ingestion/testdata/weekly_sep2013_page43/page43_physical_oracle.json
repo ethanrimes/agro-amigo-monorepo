@@ -1,0 +1,524 @@
+{
+  "at": "2026-10-15T05:50:19.114876+00:00",
+  "authored_by": "root",
+  "corrected_at": "2026-10-15T05:53:16.781576+00:00",
+  "limitation": "Only full56-row Cuadro8 monetary grid onpage43; remaining4412PDFrows not independently transcribed here.",
+  "method": "Independent manual transcription from physically viewed complete page43.png before reading candidate price vectors",
+  "money_cells": 168,
+  "oracle_erratum": {
+    "cause": "Root manually miscopied three neighboring amounts and Placita name; caught by candidate comparison and independently re-read from full original render. Original erroneous oracle is retained.",
+    "corrections": [
+      {
+        "corrected": [
+          13094,
+          13094,
+          13094
+        ],
+        "market_literal": "Cartago (Valle del Cauca)",
+        "prior": [
+          12891,
+          12891,
+          12891
+        ],
+        "row_1_based": 5
+      },
+      {
+        "corrected": [
+          6456,
+          6456,
+          6456
+        ],
+        "market_literal": "Manizales (Caldas)",
+        "prior": [
+          6576,
+          6576,
+          6576
+        ],
+        "row_1_based": 32
+      },
+      {
+        "corrected": [
+          3701,
+          3701,
+          3701
+        ],
+        "market_literal": "Montería (Córdoba)",
+        "prior": [
+          6281,
+          6281,
+          6281
+        ],
+        "row_1_based": 36
+      },
+      {
+        "corrected": "Medellín, Placita de Flórez",
+        "field": "market_literal",
+        "prior": "Medellín, Plaza de Flórez",
+        "row_1_based": 35
+      }
+    ],
+    "logical_product_heading_note": "Salsa de tomate doy pack and right-column Sardinas heading print continuación; logical product names in oracle omit continuation marker; it is not part of product identity."
+  },
+  "page": 43,
+  "price_rows": 56,
+  "render_sha256": "eeec8096537b4a8dd6a0eea312068720a4adabdf62e4235944be1850453896ce",
+  "rows": [
+    {
+      "market_literal": "Cali, La Floresta",
+      "maximum": 12417,
+      "mean": 12417,
+      "minimum": 12417,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cali, Santa Helena",
+      "maximum": 13264,
+      "mean": 13264,
+      "minimum": 13264,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cali, Siloé",
+      "maximum": 12307,
+      "mean": 12307,
+      "minimum": 12307,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cartagena, Bazurto",
+      "maximum": 12891,
+      "mean": 12891,
+      "minimum": 12891,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cartago (Valle del Cauca)",
+      "maximum": 13094,
+      "mean": 13094,
+      "minimum": 13094,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Ibagué, Plaza La 21",
+      "maximum": 9000,
+      "mean": 9000,
+      "minimum": 9000,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Manizales (Caldas)",
+      "maximum": 13000,
+      "mean": 13000,
+      "minimum": 13000,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Medellín, Central Mayorista de Antioquia",
+      "maximum": 12139,
+      "mean": 12139,
+      "minimum": 12139,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Medellín, Coomerca",
+      "maximum": 12986,
+      "mean": 12986,
+      "minimum": 12986,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Montería (Córdoba)",
+      "maximum": 10667,
+      "mean": 10667,
+      "minimum": 10667,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Neiva, Surabastos",
+      "maximum": 9211,
+      "mean": 9211,
+      "minimum": 9211,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Palmira (Valle del Cauca)",
+      "maximum": 11500,
+      "mean": 11500,
+      "minimum": 11500,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Pasto (Nariño)",
+      "maximum": 13035,
+      "mean": 13035,
+      "minimum": 13035,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Pereira, Mercasa",
+      "maximum": 12975,
+      "mean": 12975,
+      "minimum": 12975,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Popayán (Cauca)",
+      "maximum": 11524,
+      "mean": 11524,
+      "minimum": 11524,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Sincelejo (Sucre)",
+      "maximum": 12542,
+      "mean": 12542,
+      "minimum": 12542,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Tuluá (Valle del Cauca)",
+      "maximum": 12326,
+      "mean": 12326,
+      "minimum": 12326,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Valledupar, Mercado Nuevo",
+      "maximum": 13042,
+      "mean": 13042,
+      "minimum": 13042,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Villavicencio, CAV",
+      "maximum": 12813,
+      "mean": 12813,
+      "minimum": 12813,
+      "product_literal": "Salsa de tomate doy pack",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Armenia, Mercar",
+      "maximum": 5118,
+      "mean": 5118,
+      "minimum": 5118,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Barranquilla, Barranquillita",
+      "maximum": 4325,
+      "mean": 4325,
+      "minimum": 4325,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Barranquilla, Granabastos",
+      "maximum": 4315,
+      "mean": 4315,
+      "minimum": 4315,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Bogotá, D. C., Corabastos",
+      "maximum": 4909,
+      "mean": 4909,
+      "minimum": 4909,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Buenaventura (Valle del Cauca)",
+      "maximum": 4716,
+      "mean": 4716,
+      "minimum": 4716,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cali, La Floresta",
+      "maximum": 5882,
+      "mean": 5882,
+      "minimum": 5882,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cali, Santa Helena",
+      "maximum": 5098,
+      "mean": 5098,
+      "minimum": 5098,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cali, Siloé",
+      "maximum": 4941,
+      "mean": 4941,
+      "minimum": 4941,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cartagena, Bazurto",
+      "maximum": 4056,
+      "mean": 4056,
+      "minimum": 4056,
+      "product_literal": "Sardinas en lata",
+      "source_column": 1
+    },
+    {
+      "market_literal": "Cartago (Valle del Cauca)",
+      "maximum": 5257,
+      "mean": 5257,
+      "minimum": 5257,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Cúcuta, Cenabastos",
+      "maximum": 4951,
+      "mean": 4951,
+      "minimum": 4951,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Cúcuta, La Nueva Sexta",
+      "maximum": 4755,
+      "mean": 4755,
+      "minimum": 4755,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Manizales (Caldas)",
+      "maximum": 6456,
+      "mean": 6456,
+      "minimum": 6456,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Medellín, Central Mayorista de Antioquia",
+      "maximum": 4527,
+      "mean": 4527,
+      "minimum": 4527,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Medellín, Coomerca",
+      "maximum": 4608,
+      "mean": 4608,
+      "minimum": 4608,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Medellín, Placita de Flórez",
+      "maximum": 4301,
+      "mean": 4301,
+      "minimum": 4301,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Montería (Córdoba)",
+      "maximum": 3701,
+      "mean": 3701,
+      "minimum": 3701,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Palmira (Valle del Cauca)",
+      "maximum": 5529,
+      "mean": 5529,
+      "minimum": 5529,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Pamplona (Norte de Santander)",
+      "maximum": 4984,
+      "mean": 4984,
+      "minimum": 4984,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Pasto (Nariño)",
+      "maximum": 3824,
+      "mean": 3824,
+      "minimum": 3824,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Pereira, Mercasa",
+      "maximum": 6271,
+      "mean": 6271,
+      "minimum": 6271,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Popayán (Cauca)",
+      "maximum": 3644,
+      "mean": 3644,
+      "minimum": 3644,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Sincelejo (Sucre)",
+      "maximum": 4069,
+      "mean": 4069,
+      "minimum": 4069,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Tuluá (Valle del Cauca)",
+      "maximum": 5137,
+      "mean": 5137,
+      "minimum": 5137,
+      "product_literal": "Sardinas en lata",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Bogotá, D. C., Corabastos",
+      "maximum": 31463,
+      "mean": 31463,
+      "minimum": 31463,
+      "product_literal": "Sopa de pollo (caja)",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Bogotá, D. C., Paloquemao",
+      "maximum": 33476,
+      "mean": 33476,
+      "minimum": 33476,
+      "product_literal": "Sopa de pollo (caja)",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Bogotá, D. C., Plaza España",
+      "maximum": 32194,
+      "mean": 32194,
+      "minimum": 32194,
+      "product_literal": "Sopa de pollo (caja)",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Barranquilla, Barranquillita",
+      "maximum": 1313,
+      "mean": 1313,
+      "minimum": 1313,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Barranquilla, Granabastos",
+      "maximum": 1305,
+      "mean": 1305,
+      "minimum": 1305,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Bucaramanga, Centroabastos",
+      "maximum": 1896,
+      "mean": 1896,
+      "minimum": 1896,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Bucaramanga, Mercados del centro",
+      "maximum": 2042,
+      "mean": 2042,
+      "minimum": 2042,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Cartagena, Bazurto",
+      "maximum": 1972,
+      "mean": 1972,
+      "minimum": 1972,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Cúcuta, Cenabastos",
+      "maximum": 1431,
+      "mean": 1431,
+      "minimum": 1431,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Cúcuta, La Nueva Sexta",
+      "maximum": 1396,
+      "mean": 1396,
+      "minimum": 1396,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Pamplona (Norte de Santander)",
+      "maximum": 1528,
+      "mean": 1528,
+      "minimum": 1528,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Sincelejo (Sucre)",
+      "maximum": 2047,
+      "mean": 2047,
+      "minimum": 2047,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    },
+    {
+      "market_literal": "Valledupar, Mercado Nuevo",
+      "maximum": 1694,
+      "mean": 1694,
+      "minimum": 1694,
+      "product_literal": "Vinagre",
+      "source_column": 2
+    }
+  ],
+  "separate_article_not_part_of_this_weekly_grid": true,
+  "separate_article_period": "2013 (24 de agosto al 27 de septiembre)",
+  "separate_article_title": "Precios de la panela",
+  "source_pdf_sha256": "ca2205284936795f03167c310ca401bb2beda72732c9db4d15a878134b378603",
+  "supersedes_sha256": "308cf1cb132fd7ea09edc47ebda4c21f26133ec124603a4cae33fcff66c27b02",
+  "table_period_end": "2013-09-27",
+  "table_period_start": "2013-09-21",
+  "table_title": "Cuadro 8. Mercados mayoristas. Precios de venta de productos procesados (conclusión)",
+  "units": "Pesos por kilogramo"
+}

@@ -14,7 +14,11 @@ class RunCheckBudget(unittest.TestCase):
             method="POST", url="https://example.invalid/api/run-check",
             params=params, body=b"",
         )
-        with patch.object(function_app, "run", return_value={}) as run:
+        with (
+            patch.object(function_app, "run", return_value={}) as run,
+            patch.object(function_app, "connect") as connect,
+        ):
+            connect.return_value.__enter__.return_value.execute.return_value.fetchone.return_value = (1,)
             response = function_app.run_check.build().get_user_function()(request)
         return response, run
 

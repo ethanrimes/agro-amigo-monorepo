@@ -1,6 +1,7 @@
 """Two real publisher aliases and a blank-page OCR boundary, with original proofs."""
 
 import io
+import hashlib
 import unittest
 from datetime import date
 from pathlib import Path
@@ -199,6 +200,23 @@ class BlankStationerySafety(unittest.TestCase):
             self.assertFalse(native_price_page_failure(self.page(), " ", []))
             needs.assert_not_called()
 
+    def test_repeated_daily_header_just_beyond_ten_percent_is_skipped(self):
+        # Retained 2014-17 daily PDFs have an 85-point header on a 792-point
+        # final leaf. The same images are present on the preceding text page.
+        header = image(0, 85, b"daily header")
+        footer = image(735, 756, b"daily footer")
+        page = self.page([header, footer])
+        page.height = 792
+        page.pdf.pages[0].images = [header, footer]
+        with patch("pipelines.ingestion.ocr.needs_ocr", return_value=True) as needs:
+            self.assertFalse(native_price_page_failure(page, "", []))
+            needs.assert_not_called()
+        # An unmatched header remains eligible for OCR even at this size.
+        page.pdf.pages[0].images = [image(0, 85, b"different"), footer]
+        with patch("pipelines.ingestion.ocr.needs_ocr", return_value=True) as needs:
+            self.assertTrue(native_price_page_failure(page, "", []))
+            needs.assert_called_once()
+
     def test_body_raster_unique_margin_and_corrupt_text_still_need_ocr(self):
         for page, text in [
             (self.page([image(100, 170, b"price grid")]), ""),
@@ -225,6 +243,32 @@ class BlankStationerySafety(unittest.TestCase):
             self.assertFalse(
                 queued_price_page_needs_ocr(body, date(2012, 10, 25), "daily-pdf", page)
             )
+
+    def test_exact_retained_daily_blank_final_leaves_do_not_request_ocr(self):
+        originals = (
+            (
+                "dane_daily_2014_06_09_blank_page4.pdf",
+                "778975fb47df1451af1c3a41f482c16bd10eebac6f8784c0e4030cc27d22f230",
+                date(2014, 6, 9),
+            ),
+            (
+                "dane_daily_2017_04_19_blank_page4.pdf",
+                "9186a400a844d31bcdad099d6198f4ad86aa8f375120efdd15ddd6915c2018a9",
+                date(2017, 4, 19),
+            ),
+        )
+        for filename, did, day in originals:
+            with self.subTest(filename=filename):
+                body = (Path(__file__).with_name("testdata") / filename).read_bytes()
+                self.assertEqual(hashlib.sha256(body).hexdigest(), did)
+                with pdfplumber.open(io.BytesIO(body)) as pdf:
+                    self.assertEqual(len(pdf.pages), 4)
+                    self.assertFalse((pdf.pages[3].extract_text() or "").strip())
+                    self.assertEqual(len(pdf.pages[3].images), 2)
+                    self.assertGreater(len(pdf.pages[2].extract_text() or ""), 100)
+                self.assertFalse(
+                    queued_price_page_needs_ocr(body, day, "daily-pdf", 4)
+                )
 
 
 if __name__ == "__main__":

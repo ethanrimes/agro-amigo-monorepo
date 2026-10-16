@@ -20,11 +20,17 @@ test("literal percent signs and text never rescale source data", () => {
 
 test("normal quotes, dates and unformatted historical files retain raw values", () => {
   expect(workbookCellText({ value: 2338, type: "number", number_format: "#,##0" })).toBe("2.338");
-  expect(workbookCellText({ value: 2120.976861274773, type: "number" })).toBe("2.120,976861274773");
+  expect(workbookCellText({ value: 2120.976861274773, type: "number" })).toBe("2120,976861274773");
   expect(workbookCellText({ value: "2012-07-31T00:00:00", type: "date" })).toBe("2012-07-31T00:00:00");
+  // April 2024 supply annex 1!D40 stores the formula result with an IEEE tail.
+  expect(workbookCellText({ value: 307711.52209999994, type: "number", number_format: "#,##0" })).toBe("307.711,5221");
+  expect(workbookCellText({ value: 0.30000000000000004, type: "number" })).toBe("0,3");
 });
 
 test("DANE identifier formats stay ungrouped without rounding raw tariffs", () => {
+  // Historical rice source 05b532...!A28 stores its year with General format.
+  expect(workbookCellText({ value: 2021, type: "number", number_format: "General" })).toBe("2021");
+  expect(workbookCellText({ value: 85010, type: "number", number_format: "General" })).toBe("85010");
   // Annual input source: 2.1!A82294, I82294, K82294; municipal 3.5!E2716.
   expect(workbookCellText({ value: 2026, type: "number", number_format: "0" })).toBe("2026");
   expect(workbookCellText({ value: 7487, type: "number", number_format: "@" })).toBe("7487");
@@ -40,7 +46,7 @@ test("source viewer renders percentages while retaining read-only sheet navigati
     metadata: {}, records: [], parents: [], source_url: "https://www.dane.gov.co/",
   } }));
   await page.route(`**/api/evidence/${id}/workbook?**`, route => {
-    expect(new URL(route.request().url()).searchParams.get("format")).toBe("native-formats-v2");
+    expect(new URL(route.request().url()).searchParams.get("format")).toBe("native-formats-v3");
     return route.fulfill({ json: {
       sheets: ["Precios"], sheet: "Precios", start: 6, totalRows: 6, totalColumns: 4, displayedColumns: 4, readOnly: true,
       rows: [[{ value: "n.d.", type: "text" }, ...[-0.02, 0, 0.02].map(value => ({ value, type: "number", number_format: "0%" }))]],

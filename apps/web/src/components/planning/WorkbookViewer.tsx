@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
-import { workbookCellText, WORKBOOK_PREVIEW_VERSION, type WorkbookCell } from "@/lib/workbook-cell";
+import { workbookCellText, WORKBOOK_PREVIEW_VERSION, WORKBOOK_REQUEST_TIMEOUT_MS, type WorkbookCell } from "@/lib/workbook-cell";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 
 type Workbook = {
   sheets: string[];
@@ -24,17 +25,31 @@ export function WorkbookViewer({
   id,
   initialSheet = "",
   initialRow = 1,
+  initialColumn = 0,
 }: {
   id: string;
   initialSheet?: string;
   initialRow?: number;
+  initialColumn?: number;
 }) {
   const [sheet, setSheet] = useState(initialSheet),
     [start, setStart] = useState(initialRow),
     [zoom, setZoom] = useState(1);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const { data, loading, error, retry } = useData<Workbook>(
     `/api/evidence/${id}/workbook?${new URLSearchParams({ sheet, start: String(start), format: WORKBOOK_PREVIEW_VERSION })}`,
+    WORKBOOK_REQUEST_TIMEOUT_MS,
   );
+  useEffect(() => {
+    if (!data || !initialColumn || data.sheet !== initialSheet ||
+        data.start > initialRow || initialRow >= data.start + data.rows.length) return;
+    const container = scrollRef.current;
+    const cell = container?.querySelector<HTMLElement>(".workbook-source-cell");
+    if (!container || !cell) return;
+    const viewport = container.getBoundingClientRect();
+    const target = cell.getBoundingClientRect();
+    container.scrollLeft += target.left - viewport.left - (viewport.width - target.width) / 2;
+  }, [data, initialColumn, initialRow, initialSheet]);
   return (
     <section
       className="pdf-viewer workbook-viewer"
@@ -42,21 +57,17 @@ export function WorkbookViewer({
     >
       <div className="pdf-toolbar workbook-toolbar">
         <strong>Excel · Solo lectura</strong>
-        <label>
-          Hoja
-          <select
-            aria-label="Hoja del archivo Excel"
-            value={data?.sheet || sheet}
-            onChange={(e) => {
-              setSheet(e.target.value);
-              setStart(1);
-            }}
-          >
-            {(data?.sheets || [sheet || "Cargando…"]).map((name) => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </select>
-        </label>
+        <SearchableSelect
+          label="Hoja del archivo Excel"
+          value={data?.sheet || sheet}
+          options={(data?.sheets || (sheet ? [sheet] : [])).map((name) => ({ id: name, label: name }))}
+          onChange={(value) => { if (value) { setSheet(value); setStart(1); } }}
+          selectedLabel={data?.sheet || sheet || undefined}
+          placeholder="Busca el nombre de la hoja"
+          loading={loading}
+          error={Boolean(error)}
+          allowClear={false}
+        />
         <label>
           Zoom
           <select
@@ -88,6 +99,7 @@ export function WorkbookViewer({
             </p>
             <div
               className="workbook-scroll"
+              ref={scrollRef}
               tabIndex={0}
               aria-label="Contenido de la hoja; desplázate para ver las columnas"
             >
@@ -109,7 +121,12 @@ export function WorkbookViewer({
                       {row.map((cell, c) => (
                         <td
                           key={c}
-                          className={cell.type === "number" ? "numeric" : ""}
+                          className={[
+                            cell.type === "number" ? "numeric" : "",
+                            data.sheet === initialSheet && data.start + i === initialRow && c + 1 === initialColumn ? "workbook-source-cell" : "",
+                          ].filter(Boolean).join(" ")}
+                          aria-label={data.sheet === initialSheet && data.start + i === initialRow && c + 1 === initialColumn
+                            ? `Celda ${columnLabel(c)}${initialRow} de la fuente` : undefined}
                         >
                           {workbookCellText(cell)}
                         </td>

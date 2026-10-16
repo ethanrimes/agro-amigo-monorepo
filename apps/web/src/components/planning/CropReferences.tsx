@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { money, number } from "@/lib/market-types";
 import type { MarketPrice } from "@/lib/market-types";
 import type { UnifiedCatalog } from "@/lib/catalog-types";
@@ -64,38 +65,29 @@ function HistoricalPrices({ crop }: { crop: CropReference }) {
     <section className="crop-history-references">
       {!coffee && (
         <div className="form-grid">
-          <label className="form-field">
-            Producto comparable
-            <select
-              value={product}
-              onChange={(e) => {
-                setProduct(e.target.value);
-                setMarket("");
-              }}
-            >
-              {!products.length && (
-                <option value="">Sin referencia comparable</option>
-              )}
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="form-field">
-            Mercado de referencia
-            <select value={market} onChange={(e) => setMarket(e.target.value)}>
-              {!markets.length && (
-                <option value="">Sin mercado disponible</option>
-              )}
-              {markets.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SearchableSelect
+            label="Producto comparable"
+            placeholder="Busca un producto comparable…"
+            emptyLabel="Sin referencia comparable"
+            value={product}
+            options={products.map((p) => ({ id: p.id, label: p.name }))}
+            onChange={(id) => { setProduct(id); setMarket(""); }}
+            loading={catalog.loading}
+            error={!!catalog.error}
+            allowClear={false}
+          />
+          <SearchableSelect
+            key={product}
+            label="Mercado de referencia"
+            placeholder="Busca un mercado…"
+            emptyLabel="Sin mercado disponible"
+            value={market}
+            options={markets.map((m) => ({ id: m.id, label: m.name }))}
+            onChange={setMarket}
+            loading={detail.loading}
+            error={!!detail.error}
+            allowClear={false}
+          />
         </div>
       )}
       <p className="privacy-note">

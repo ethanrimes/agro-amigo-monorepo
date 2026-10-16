@@ -10,27 +10,28 @@ The web interface is shared by Android and iOS clients. The five main sections a
 - **Mi finca:** a saved location, weather, territorial layers and read-only crop, calendar, cost-study and price-history references.
 - **Coffee and offers:** FNC reference conversions and private offer comparisons, kept separate from official market data.
 - **Sources:** PDF, spreadsheet and structured-data viewers with original downloads and provenance.
+- **Problem reports:** describe a data or app issue with its screen and source context, and optionally provide a reply email.
 
 Demo: [web application](https://agroamigo-demo-9a04.azurewebsites.net) · [Android installation](https://agroamigo-demo-9a04.azurewebsites.net/android).
 
 ## See AgroAmigo in action
 
-A 70-second walkthrough of the live app: find a product, filter its market and presentation, explore historical prices, compare markets, and consult the original DANE PDF and Excel files. The tour also shows input prices and crop references in **Mi finca**.
+A 97-second walkthrough recorded in the installed iOS app: find a product, inspect its dated price, open the original DANE PDF, compare input presentations and consult the read-only Excel workbook. The tour also compares Corabastos with the national average and expands the category differences.
 
 [![Recorded AgroAmigo walkthrough showing product search and prices](docs/media/agroamigo-preview.jpg)](docs/media/agroamigo-walkthrough.mp4)
 
-[Watch the 70-second walkthrough (MP4)](docs/media/agroamigo-walkthrough.mp4).
+[Watch the 97-second walkthrough (MP4)](docs/media/agroamigo-walkthrough.mp4).
 
 | Time | What you can do |
 |---|---|
-| 0:06 | Find products and narrow the results by department |
-| 0:12 | Inspect the selected price, its history and the data table |
-| 0:27 | Open an original DANE city report inside the app |
-| 0:34 | Compare a market with the national average for matching products |
-| 0:41 | Explore input prices and the read-only Excel source viewer |
-| 0:54 | Browse local crop references and historical calendars |
+| 0:03 | Find Cilantro in the product catalog |
+| 0:19 | Inspect its weekly price, reporting period and market |
+| 0:31 | View page 14 of its original DANE weekly PDF |
+| 0:36 | Find Wuxal Tapa Negra and compare the same presentation |
+| 1:07 | Open its original Excel workbook inside the app |
+| 1:23 | Compare Corabastos with Colombia and expand category differences |
 
-Recorded on September 27, 2026, using public source data. Prices and coverage may change as new reports are published.
+Recorded on October 7, 2026, using public source data. Prices and coverage may change as new reports are published.
 
 ## Repository
 

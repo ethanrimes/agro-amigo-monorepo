@@ -14,12 +14,15 @@ async function fixture(handler, check) {
   calls.push({url, init});
   return fetch(base + '/blob', init);
  };
- new Function('exports','require','fetch','process','setTimeout','clearTimeout',source)(exports,()=>({}),wrappedFetch,{env:{SOURCE_STORAGE_ACCOUNT:'teststorage',IDENTITY_ENDPOINT:'https://identity.test/token',IDENTITY_HEADER:'test-only'}},(fn, ms)=>setTimeout(fn,ms===20000?25:ms===60000?250:ms),clearTimeout);
+ // Keep the production header/body limits separate while allowing cold local
+ // HTTP startup under concurrent extraction QA. The delayed body outlives the
+ // scaled header limit, and the stall test still exercises a real abort.
+ new Function('exports','require','fetch','process','setTimeout','clearTimeout',source)(exports,()=>({}),wrappedFetch,{env:{SOURCE_STORAGE_ACCOUNT:'teststorage',IDENTITY_ENDPOINT:'https://identity.test/token',IDENTITY_HEADER:'test-only'}},(fn, ms)=>setTimeout(fn,ms===20000?250:ms===60000?2500:ms),clearTimeout);
  try { await check(exports.sourceBlob, calls); }
  finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 }
 test('stream finishes after header timeout without buffering or altering original bytes', async () => {
- await fixture((req,res)=>{res.writeHead(200, {'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Length':'6','ETag':'"original"'});res.flushHeaders();res.write(Buffer.from([0,1,255]));setTimeout(()=>res.end(Buffer.from([2,3,254])),85);},async sourceBlob=>{
+ await fixture((req,res)=>{res.writeHead(200, {'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Length':'6','ETag':'"original"'});res.flushHeaders();res.write(Buffer.from([0,1,255]));setTimeout(()=>res.end(Buffer.from([2,3,254])),850);},async sourceBlob=>{
   const response=await sourceBlob(id,'xlsx',null); assert.ok(response);assert.equal(response.headers.get('content-length'),'6'); assert.equal(response.headers.get('etag'),'"original"');
   const reader=response.body.getReader(); const first=await reader.read(); assert.deepEqual([...first.value],[0,1,255]);
   const second=await reader.read(); assert.deepEqual([...second.value],[2,3,254]); assert.equal((await reader.read()).done,true);
@@ -32,7 +35,7 @@ test('cancelled downstream reader aborts the upstream fetch',async()=>{
  await fixture((req,res)=>{res.writeHead(200);res.flushHeaders();res.write('start');},async(sourceBlob,calls)=>{const r=await sourceBlob(id,'xlsx',null);const reader=r.body.getReader();assert.equal(new TextDecoder().decode((await reader.read()).value),'start');await reader.cancel('client left');assert.equal(calls[0].init.signal.aborted,true);});
 });
 test('missing headers are bounded and retain the existing null fallback',async()=>{
- await fixture((req,res)=>{setTimeout(()=>res.end('late'),100);},async sourceBlob=>{assert.equal(await sourceBlob(id,'xlsx',null),null);});
+ await fixture((req,res)=>{setTimeout(()=>res.end('late'),1000);},async sourceBlob=>{assert.equal(await sourceBlob(id,'xlsx',null),null);});
 });
 test('a stalled body read errors instead of silently returning a truncated file',async()=>{
  await fixture((req,res)=>{res.writeHead(200);res.flushHeaders();res.write('first');},async sourceBlob=>{const r=await sourceBlob(id,'xlsx',null);await assert.rejects(r.arrayBuffer());});

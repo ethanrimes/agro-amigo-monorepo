@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import { paginateCatalog } from '../src/lib/catalog-page';
 import { catalogMatches, catalogSavedKey } from '../src/lib/catalog-display';
 import type { UnifiedCatalog } from '../src/lib/catalog-types';
+import { categoryLabels } from '../src/lib/filter-labels';
 const path = process.env.CATALOG_AUDIT_FIXTURE || resolve(__dirname, '../../../artifacts/app-data-audit-2026-09-27/prices/catalog.json');
 const catalog: UnifiedCatalog = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : {products:[],regions:[],latestDate:null,filters:{region:'',reference_scope:'all',excluded_nonregional_count:0,excluded_nonregional_reason:null}};
 
@@ -19,7 +20,7 @@ test('all retained quote identities remain reachable in bounded pages with uncha
   expect(rows).toEqual(catalog.products);
   const first = paginateCatalog(catalog, { limit: 24 });
   expect(Buffer.byteLength(JSON.stringify(first))).toBeLessThan(50_000);
-  expect(first.categories).toEqual(expect.arrayContaining([...new Set(catalog.products.map(p => p.category))]));
+  expect(first.categories).toEqual(categoryLabels(catalog.products.map(p => p.category)));
   expect(first.currencies).toContain('USD');
 });
 

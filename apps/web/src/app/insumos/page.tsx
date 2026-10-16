@@ -6,11 +6,18 @@ import { useData } from "@/components/marketplace/useData";
 import { usePreferences } from "@/components/marketplace/Preferences";
 import { ErrorState, LoadingCards } from "@/components/marketplace/Shared";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
+import { categoryMatches } from "@/lib/category-hierarchy";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { MapButton } from "@/components/explore/ColombiaMap";
 import { photoFor } from "@/lib/images";
 import { fold } from "@/lib/planning-math";
+import { departmentLabel, departmentLabels } from "@/lib/filter-labels";
+import { inputLocationDisplayLabel } from "@/lib/input-locations";
 import { money, dateLabel } from "@/lib/market-types";
+import { wageBasisNote, wagePresentationDisplay } from "@/lib/wage-basis-display";
+import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import type { InputPrice } from "@/lib/planning-types";
 function Inputs() {
   const q = useSearchParams(),
@@ -28,13 +35,12 @@ function Inputs() {
       "&scope=" +
       scope +
       (historical ? "&history=all" : ""),
+    60_000,
   );
   const { data: places } = useData<{ department: string }[]>(
     "/api/planning/municipalities",
   );
-  const departments = [
-    ...new Set((places || []).map((i) => i.department)),
-  ].sort();
+  const departments = departmentLabels((places || []).map((i) => i.department));
   const target = (i: InputPrice) =>
     "/insumo/" +
     i.id +
@@ -48,7 +54,7 @@ function Inputs() {
   const available = (data || []).filter(
     (i) =>
       (!department || fold(i.department) === fold(department)) &&
-      (category === "Todos" || i.category === category),
+      categoryMatches(i.category, category),
   );
   const grouped = new Map<string, InputPrice>();
   for (const i of [...available].sort(
@@ -71,6 +77,8 @@ function Inputs() {
         i.brand +
         " " +
         i.registration +
+        " " +
+        i.product_line +
         " " +
         i.category,
     ).includes(fold(query)),
@@ -121,7 +129,7 @@ function Inputs() {
             value:
               scope === "municipality" ? "Municipio" : "Promedio departamental",
           },
-          { label: "Departamento", value: department || "Colombia" },
+          { label: "Departamento", value: departmentLabel(department) || "Colombia" },
           { label: "Categoría", value: category },
           { label: "Historial", value: historical ? "Todo el historial" : "Últimos 12 meses" },
           { label: "Búsqueda", value: query },
@@ -143,6 +151,7 @@ function Inputs() {
         <label className="region-field">
           <span>Cobertura del precio</span>
           <select
+            aria-label="Cobertura del precio"
             value={scope}
             onChange={(e) => {
               setScope(e.target.value);
@@ -156,6 +165,8 @@ function Inputs() {
         </label>
         <SearchBox
           label="Buscar insumo"
+          loading={loading}
+          error={Boolean(error)}
           placeholder="Urea, cal, abono orgánico…"
           value={query}
           onChange={(v) => {
@@ -165,47 +176,32 @@ function Inputs() {
           options={unique.map((i) => ({
             id: i.id,
             label: i.name,
-            detail: i.presentation,
+            detail: [wagePresentationDisplay(i.name, i.presentation), i.product_line && `Línea: ${i.product_line}`]
+              .filter(Boolean)
+              .join(" · "),
+            searchText: [i.name, i.presentation, i.product_line, i.brand, i.registration]
+              .filter(Boolean).join(" "),
           }))}
           onSelect={(option) => {
             const i = unique.find((i) => i.id === option.id);
             if (i) router.push(target(i));
           }}
         />
-        <label className="region-field">
-          <span>Departamento</span>
-          <select
-            value={department}
-            onChange={(e) => {
-              setDepartment(e.target.value);
-              setLimit(24);
-            }}
-          >
-            <option value="">Toda Colombia</option>
-            {department && !departments.includes(department) && (
-              <option>{department}</option>
-            )}
-            {departments.map((d) => (
-              <option key={d}>{d}</option>
-            ))}
-          </select>
-        </label>
+        <SearchableSelect
+          className="region-field"
+          label="Departamento"
+          value={departmentLabel(department)}
+          options={departmentLabels([...departments, ...(department ? [department] : [])]).map((value) => ({ id: value, label: value }))}
+          onChange={(value) => { setDepartment(value); setLimit(24); }}
+          emptyLabel="Toda Colombia"
+        />
       </div>
-      <div className="category-filters">
-        {["Todos", ...new Set((data || []).map((i) => i.category))].map((c) => (
-          <button
-            key={c}
-            aria-pressed={category === c}
-            className={category === c ? "active" : ""}
-            onClick={() => {
-              setCategory(c);
-              setLimit(24);
-            }}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
+      <HierarchicalCategorySelect
+        label="Categoría de insumo"
+        value={category === "Todos" ? "" : category}
+        paths={[...new Set((data || []).map((item) => item.category))]}
+        onChange={(value) => { setCategory(value || "Todos"); setLimit(24); }}
+      />
       {loading ? (
         <LoadingCards />
       ) : error ? (
@@ -236,12 +232,61 @@ function Inputs() {
                   <div>
                     <span className="eyebrow">{i.category}</span>
                     <h2>{i.name}</h2>
-                    <p>{i.presentation}</p>
+                    <p>{wagePresentationDisplay(i.name, i.presentation)}</p>
+                    {wageBasisNote(i.name, i.presentation) && <small>{wageBasisNote(i.name, i.presentation)}</small>}
+                    {i.product_line && <small>Línea: {i.product_line}</small>}
                     {i.brand && <small>{i.brand}</small>}
-                    <strong className="input-price">{money(i.price)}</strong>
+                    {i.identity_conflict ? (
+                      <div role="alert" className="input-price-conflict">
+                        <strong>Precios distintos para la misma fecha</strong>
+                        <ul>
+                          {(i.identity_conflict_quotes || []).map((quote) => (
+                            <li key={`${quote.source_input_id}:${quote.document_id}:${quote.source_locator}`}>
+                              {money(Number(quote.price))} · {dateLabel(String(quote.observed_on))} · {quote.source_name}
+                              {quote.document_id && <EvidenceLink
+                                id={quote.document_id}
+                                locator={quote.source_locator}
+                                input={quote.source_input_id || i.id}
+                                department={i.department}
+                                municipality={i.municipality}
+                                productName={quote.source_name || i.name}
+                                presentation={i.presentation}
+                                month={String(quote.observed_on)}
+                              >
+                                Consultar fuente
+                              </EvidenceLink>}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <>
+                        <strong className="input-price">{money(i.price)}</strong>
+                        {(i.identity_conflict_quotes?.length || 0) > 1 && (
+                          <details>
+                            <summary>Consultar {i.identity_conflict_quotes!.length} fuentes del precio</summary>
+                            <ul>
+                              {i.identity_conflict_quotes!.map((quote) => (
+                                <li key={`${quote.source_input_id}:${quote.document_id}:${quote.source_locator}`}>
+                                  {quote.source_name} · {quote.document_id && <EvidenceLink
+                                    id={quote.document_id}
+                                    locator={quote.source_locator}
+                                    input={quote.source_input_id || i.id}
+                                    department={i.department}
+                                    municipality={i.municipality}
+                                    productName={quote.source_name || i.name}
+                                    presentation={i.presentation}
+                                    month={String(quote.observed_on)}
+                                  >Consultar fuente</EvidenceLink>}
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
+                        )}
+                      </>
+                    )}
                     <small>
-                      {i.municipality ? i.municipality + ", " : ""}
-                      {i.department} · {dateLabel(i.observed_on)}
+                      {inputLocationDisplayLabel(i.department, i.municipality)} · {dateLabel(i.observed_on)}
                     </small>
                     <span className="input-card-action">
                       Ver precios y cobertura →

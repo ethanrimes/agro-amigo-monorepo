@@ -5,15 +5,17 @@ written: public table definitions are copied, then search_path is TEMP only.
 """
 
 import os
+import threading
 import unittest
 from datetime import date
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
+import psycopg
 from psycopg import IntegrityError
 from psycopg.pq import TransactionStatus
 
-from . import official_sources, worker
+from . import official_sources, worker, write_pacing
 from .resumable_inputs import WorkDeferred
 
 
@@ -44,12 +46,17 @@ def quotes(count):
 )
 class OfficialBatchPostgresTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(patch.object(write_pacing.time, "sleep"))
+        self.enterContext(patch.object(write_pacing, "clock", return_value=100))
         # This suite isolates raw batching/routing; dedicated catalog tests cover
         # the derived refresh hook against the actual migration and SQL.
         self.enterContext(
             patch(
                 "pipelines.ingestion.official_catalog.refresh_document", return_value=0
             )
+        )
+        self.enterContext(
+            patch("pipelines.ingestion.official_catalog.mark_document_dirty")
         )
         self.db = worker.connect()
         self.addCleanup(self.db.close)
@@ -113,8 +120,8 @@ class OfficialBatchPostgresTests(unittest.TestCase):
             self.publish(iter(rows))
         self.assertEqual(clock.call_count, 2)
         self.assertEqual(self.db.info.transaction_status, TransactionStatus.IDLE)
-        self.assertEqual(self.count("official_price_quote"), 2000)
-        self.assertEqual(self.count("official_insert_attempt"), 2000)
+        self.assertEqual(self.count("official_price_quote"), 256)
+        self.assertEqual(self.count("official_insert_attempt"), 256)
         self.assertEqual(self.count("ingestion_checkpoint"), 0)
         self.assertIsNone(
             self.db.execute("SELECT to_regclass('pg_temp.official_stage')").fetchone()[
@@ -129,12 +136,12 @@ class OfficialBatchPostgresTests(unittest.TestCase):
             self.db.execute("SELECT max(price) FROM official_price_quote").fetchone()[
                 0
             ],
-            2000,
+            256,
         )
         # Even an explicit rollback after the deferred call cannot erase the
         # already committed first batch (the connection is idle at this point).
         self.db.rollback()
-        self.assertEqual(self.count("official_price_quote"), 2000)
+        self.assertEqual(self.count("official_price_quote"), 256)
         worker.RUN_DEADLINE.set(None)
         self.assertEqual(self.publish(iter(rows)), 4001)
         self.assertEqual(self.count("official_price_quote"), 4001)
@@ -158,6 +165,69 @@ class OfficialBatchPostgresTests(unittest.TestCase):
         self.assertEqual(self.publish(iter(rows)), 4001)
         self.assertEqual(self.count("official_price_quote"), 4001)
         self.assertEqual(self.count("official_insert_attempt"), 4001)
+        self.assertEqual(self.count("ingestion_checkpoint"), 1)
+
+    def test_active_reader_defers_after_committed_quote_batch_then_resumes(self):
+        # This is an isolated local PostgreSQL cluster. An actual agro_reader
+        # backend exercises the SECURITY DEFINER visibility bridge while TEMP
+        # quote tables prove that a deadline preserves and resumes raw rows.
+        self.assertTrue(self.db.info.host.startswith("/tmp/agro-"))
+        self.assertFalse(self.db.execute(
+            "SELECT pg_has_role('agro_ingestor','pg_read_all_stats','member')"
+        ).fetchone()[0])
+        self.assertFalse(self.db.execute(
+            "SELECT EXISTS(SELECT 1 FROM pg_proc p CROSS JOIN LATERAL aclexplode(p.proacl) acl "
+            "WHERE p.oid='public.agro_readers_active()'::regprocedure "
+            "AND acl.grantee=0 AND acl.privilege_type='EXECUTE')"
+        ).fetchone()[0])
+        self.assertTrue(self.db.execute(
+            "SELECT has_function_privilege('agro_ingestor','public.agro_readers_active()','EXECUTE')"
+        ).fetchone()[0])
+        reader_login = self.db.execute(
+            "SELECT rolcanlogin FROM pg_roles WHERE rolname='agro_reader'"
+        ).fetchone()[0]
+        if not reader_login:
+            self.db.execute("ALTER ROLE agro_reader LOGIN")
+            self.addCleanup(lambda: self.db.execute("ALTER ROLE agro_reader NOLOGIN"))
+        reader_dsn = psycopg.conninfo.make_conninfo(
+            os.environ["DATABASE_URL"], user="agro_reader"
+        )
+        reader = psycopg.connect(reader_dsn, autocommit=True)
+        self.addCleanup(reader.close)
+        failure = []
+        def hold_reader():
+            try:
+                reader.execute("SELECT pg_sleep(3)").fetchone()
+            except Exception as exc:
+                failure.append(exc)
+        thread = threading.Thread(target=hold_reader)
+        thread.start()
+        self.addCleanup(thread.join)
+        for _ in range(30):
+            if self.db.execute("SELECT public.agro_readers_active()").fetchone()[0]:
+                break
+            threading.Event().wait(.03)
+        else:
+            self.fail(f"Private agro_reader backend never became active: {failure}")
+        ticks = [100.0]
+        worker.RUN_DEADLINE.set(102.0)
+        with (
+            patch.object(official_sources, "time", SimpleNamespace(monotonic=lambda: 0)),
+            patch.object(write_pacing, "clock", side_effect=lambda: ticks[0]),
+            patch.object(write_pacing.time, "sleep", side_effect=lambda seconds: ticks.__setitem__(0, ticks[0] + seconds)),
+            self.assertRaisesRegex(WorkDeferred, "Committed official batches retained"),
+        ):
+            self.publish(iter(quotes(257)))
+        self.assertEqual(self.db.info.transaction_status, TransactionStatus.IDLE)
+        self.assertEqual(self.count("official_price_quote"), 256)
+        self.assertEqual(self.count("official_insert_attempt"), 256)
+        self.assertEqual(self.count("ingestion_checkpoint"), 0)
+        thread.join()
+        self.assertFalse(failure)
+        worker.RUN_DEADLINE.set(None)
+        self.assertEqual(self.publish(iter(quotes(257))), 257)
+        self.assertEqual(self.count("official_price_quote"), 257)
+        self.assertEqual(self.count("official_insert_attempt"), 257)
         self.assertEqual(self.count("ingestion_checkpoint"), 1)
 
     def test_invalid_final_row_prevents_any_source_publication_or_review(self):

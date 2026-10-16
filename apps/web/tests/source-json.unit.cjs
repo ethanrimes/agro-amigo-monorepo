@@ -130,3 +130,25 @@ test("malformed ArcGIS features never create a retained no-coverage snapshot", a
     assert.match(queries[0], /^SELECT/);
   }
 });
+
+test('static exact-point layers reuse the retained source after month changes; monthly and other points stay distinct',async()=>{
+ const exports={};const keys=[];let network=0;
+ const retained={id:'retained-native-soil',fetched_at:'2026-09-28T02:40:18Z',source_url:'https://official.example/query?geometry=-76.123456,1.912345',records:[{UCSuelo:'MQAf2',latitud:1.912345,longitud:-76.123456}]};
+ const mockedRequire=id=>id==='server-only'?{}:id==='./db'?{database:()=>({query:async(sql,params)=>{
+  keys.push(params[0]);return {rows:params[0]==='point:soil:1:1.912345:-76.123456'?[retained]:[]};
+ }})}:id==='./source-json'?{sourceJson:async()=>{network++;throw Error('Entity unavailable')}}:id==='../planning-math'?{}:require(id);
+ vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(__dirname,'../src/lib/server/location.ts'),'utf8'),{
+  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}
+ }).outputText,{exports,require:mockedRequire,URL,URLSearchParams,Buffer,Error});
+ const soil={id:'soil',monthly:false,service:'https://official.example',layer:0};
+ for(const month of [1,11,12]){
+  const reading=await exports.spatialPoint(soil,1.912345,-76.123456,month);
+  assert.equal(reading.documentId,'spatial-retained-native-soil');assert.equal(reading.records[0].UCSuelo,'MQAf2');
+ }
+ assert.equal(network,0,'Changing an unrelated month does not need another upstream request');
+ await assert.rejects(exports.spatialPoint({...soil,id:'temperature',monthly:true,monthYear:2000,monthField:'month'},1.912345,-76.123456,11),/Entity unavailable/);
+ assert.equal(keys.at(-1),'point:temperature:11:1.912345:-76.123456');
+ await assert.rejects(exports.spatialPoint(soil,4.625,-74.1,11),/Entity unavailable/);
+ assert.equal(keys.at(-1),'point:soil:1:4.625000:-74.100000');
+ assert.equal(network,2,'No substitution of another month or another point');
+});

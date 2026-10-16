@@ -7,9 +7,15 @@ const root=path.join(__dirname,'../src');
 function load(file,mocks){const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(root,file),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require:n=>Object.hasOwn(mocks,n)?mocks[n]:{}});return exports;}
 test('published method describes the actual median annual-normalized chart without projecting latest price',async()=>{
  const years=[2021,2022,2023].map((year,i)=>({reference_year:year,monthly_prices:Array.from({length:12},(_,m)=>(m+1)*(i+1)*100),source_rows:Array.from({length:12},(_,m)=>`native-${year}-${m+1}`),source_documents:Array.from({length:12},()=>[`source-${year}`])}));
- const planning=load('lib/server/planning.ts',{'./db':{WINDOW:'true',database:()=>({query:async sql=>({rows:sql.includes('FROM seasonal_year')?years:[{price:99999,unit:'kg',date:'2026-08-31',market:'Native source market'}]})})}});
+ const planning=load('lib/server/planning.ts',{
+  './db':{WINDOW:'true',database:()=>({query:async sql=>({rows:sql.includes('FROM seasonal_year')?years:[{price:99999,unit:'kg',date:'2026-08-31',market:'Quindio'}]})})},
+  './city-partial-review':load('lib/server/city-partial-review.ts',{}),
+  '../label-normalization':{normalizeLabel:(value,domain)=>domain==='place'&&value==='Quindio'?'Quindío':value},
+ });
  const data=await planning.seasonality('tomate-chonto','source-market');
  assert.deepEqual(data.years,years);
+ assert.equal(data.latest.market,'Quindío');
+ assert.equal(data.latest.price,99999);
  assert.match(data.method,/promedio de sus 12 precios mensuales/);
  assert.match(data.method,/multiplica por 100/);
  assert.match(data.method,/mediana de esos índices/);

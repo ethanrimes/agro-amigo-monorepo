@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { evidenceValue } from "../src/lib/evidence-value";
+import { evidenceValue, evidenceUnitNote } from "../src/lib/evidence-value";
 
 test("original EVA and calendar years and physical row identifiers stay ungrouped", () => {
   expect(evidenceValue("reference_year", 2025)).toBe("2025");
@@ -24,4 +24,14 @@ test("original arrays and missing or structured values retain their content", ()
   expect(evidenceValue("details", { period: "2025A" })).toBe('{"period":"2025A"}');
   // Invalid fractional identifiers must not be rounded into an invented row/year.
   expect(evidenceValue("source_row", 12.5)).toBe("12,5");
+});
+
+test("rice source unit explanation requires a persisted normalized quote", () => {
+  const converted = { unit: "kg", price: 1433.3333333333333,
+    source_locator: "precios de arroz en molino!row 804; COP/tonelada dividido entre 1000 = COP/kg" };
+  expect(evidenceUnitNote([converted])).toContain("precio original se divide entre 1.000");
+  expect(evidenceUnitNote([{ ...converted, unit: "tonne" }])).toBeNull();
+  expect(evidenceUnitNote([{ ...converted, price: undefined }])).toBeNull();
+  expect(evidenceUnitNote([{ ...converted, source_locator: "Precios leche en finca!row 53; precio en finca, COP/litro" }])).toBeNull();
+  expect(evidenceUnitNote()).toBeNull();
 });

@@ -14,6 +14,7 @@ This Azure Functions service discovers official agricultural publications, retai
 | [supply_summaries.py](supply_summaries.py), [supply_period_summaries.py](supply_period_summaries.py) | Daily, monthly and first-fortnight market summaries, kept separate from food microdata |
 | [official_sources.py](official_sources.py) | Official reference validation and publication |
 | [official_catalog.py](official_catalog.py) | Current eligible reference read model |
+| [label_normalization.py](label_normalization.py), [shared lexicon](../../shared/label-normalization.json) | Reviewed spelling, accents and casing; bounded metadata cleanup and retained correction evidence |
 | [ocr.py](ocr.py) | Images, independent readings and typed fallback dispatch |
 | [schema.sql](schema.sql), [migrations](migrations) | Source, queue, checkpoint and publication structures |
 
@@ -43,13 +44,23 @@ A changed file at the same URL creates a new SHA-256 original. Raw observations 
 
 Publication validates source dates, identities, positive price cells and units. Reviews can coexist with valid sibling rows. Contradictory input PDF continuation headings preserve their literal values for review without guessing a product or presentation. Source chronology and family-specific precedence prevent an older replay from replacing a newer eligible observation. A source-matching whole-peso PDF input value does not discard the precision of its structured annex; materially conflicting values are not labelled as rounding differences.
 
+City report publication compares every stored price field, source locator and classification against the complete native PDF. A disagreement keeps the affected original available for consultation while withholding that PDF’s prices pending review. Each ZIP member is processed independently: a malformed file or an HTML error page named as a PDF is retained for review without preventing valid sibling reports from being published. Report rounds and package quantities remain explicit; the application uses the latest available round for the selected market, package and date.
+
 Daily workbook variation uses the native cell format to distinguish a stored fraction from percentage points. A printed average remains the published average, rather than a midpoint calculated from its range. Supply summary totals are separately typed references and never added to the food-level microdata totals or published as prices.
 
-Original storage, parsing, projection and current-catalog refresh are distinct stages. Official quote/review changes mark affected catalog keys dirty; bounded refresh rebuilds eligible latest/previous values. The frontend reads that current model while historical quotations remain available.
+Original storage, parsing, projection and current-catalog refresh are distinct stages. Official quote/review changes mark affected catalog keys dirty; the catalog drain refreshes at most twelve 100-key chunks or twenty seconds per stage, checking the deadline between chunks and pacing committed chunks for active readers. A SQL statement already running can exceed the time window, subject to its existing statement timeout. The summary reports processed work and whether more may remain, without changing the existing source and winner checks. The frontend reads the current model while historical quotations remain available.
+
+Published labels use a shared, versioned lexicon grounded in the native DANE product selector and source classifications. Cleanup composes Unicode accents, removes formatting characters, collapses whitespace and standardizes recognized full labels. Input commercial names receive formatting cleanup only; brands, ICA registrations, formulations, quantities and varieties keep their identity. Unknown spellings remain literal rather than being matched by similarity.
+
+Daily refresh and historical backfill automatically scan existing product metadata before and after publication using a bounded, durable cursor. Each metadata change commits with append-only evidence containing its previous label, corrected label and lexicon hash. The cursor and audit also identify the cleanup-rule version, so a rule upgrade rechecks existing labels while retaining earlier correction evidence. Original observations, files, IDs, prices, dates and source locators remain retained. Identity-changing PDF spacing and line-wrap repairs require native geometry or official geographic agreement in the source adapter; a display dictionary alone cannot merge products or markets.
+
+The archived city-PDF scan reserves a small part of each batch for exact recognized food names whose words may have been joined during extraction. It selects these documents through indexed product/source identities while retaining the ordinary historical queue. Priority selection is only a review cue: publication still requires the retained original and a complete native comparison showing that only the supported name/identity changes. Prices, packages, dates and source row locators must agree. Completed reviews and retry cooldowns remain effective.
 
 ## Native extraction and OCR
 
 Native cells or PDF text/geometry are tried first. Supported failed layouts select required images, retain two independent readings and pass them through a typed parser before publication. Source dates, units, original locators and uncertainty remain mandatory.
+
+Weekly native geometry separates tightly printed mean and tendency columns and keeps unavailable market rows as explicit reviews. Printed dots, dash cells and missing-price zero means never become monetary quotes or attach a market name to the following market's price. A versioned repair can replay an exact registered native-readable original previously left in the OCR queue. Independently reviewed decorative page tasks can be retired only for their registered original bytes, URL, source kind and page; that review does not complete or certify the parent document.
 
 Daily/monthly monetary PDFs, city PDFs, weekly PDFs, supported Pork reports, milk macroregion charts and certain workbook kinds have specific fallback paths. This does not imply universal OCR support. Scanned input PDFs and municipal milk PDFs lack a typed OCR price-publication path; image-only weekly workbooks remain unsupported. Generic images/readings can be retained without publishing prices. Decorative pages, narrative context and percentage-only tables are not monetary observations.
 

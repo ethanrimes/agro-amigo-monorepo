@@ -1,4 +1,6 @@
 "use client";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useData } from "@/components/marketplace/useData";
@@ -20,10 +22,12 @@ export default function References() {
     [publisher, setPublisher] = useState(""),
     [currency, setCurrency] = useState(""),
     [page, setPage] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
     setQ(p.get("q") || "");
     setCategory(p.get("category") || "");
+    setHydrated(true);
   }, []);
   const { data, loading, error, retry } = useData<Catalog>(
     "/api/references?" +
@@ -70,6 +74,7 @@ export default function References() {
           <label className="form-field">
             Buscar referencia
             <input
+              disabled={!hydrated}
               value={q}
               onChange={(e) => {
                 setQ(e.target.value);
@@ -78,39 +83,22 @@ export default function References() {
               placeholder="Café, cacao, rosas…"
             />
           </label>
-          <label className="form-field">
-            Categoría
-            <select
-              value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-                setPage(0);
-              }}
-            >
-              <option value="">Todas</option>
-              {options.categories.map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </select>
-          </label>
-          <label className="form-field">
-            Entidad
-            <select
-              value={publisher}
-              onChange={(e) => {
-                setPublisher(e.target.value);
-                setPage(0);
-              }}
-            >
-              <option value="">Todas</option>
-              {options.publishers.map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </select>
-          </label>
+          <HierarchicalCategorySelect
+            value={category}
+            paths={options.categories}
+            onChange={(value) => { setCategory(value); setPage(0); }}
+          />
+          <SearchableSelect
+            label="Entidad"
+            value={publisher}
+            options={options.publishers.map((value) => ({ id: value, label: value }))}
+            onChange={(value) => { setPublisher(value); setPage(0); }}
+            emptyLabel="Todas las entidades"
+          />
           <label className="form-field">
             Moneda
             <select
+              disabled={!hydrated}
               value={currency}
               onChange={(e) => {
                 setCurrency(e.target.value);
@@ -180,6 +168,10 @@ export default function References() {
                       id={r.document_id}
                       page={r.source_page}
                       locator={r.source_locator}
+                      productName={r.product_name}
+                      marketName={r.market}
+                      units={r.unit}
+                      month={r.observed_on}
                     >
                       Consultar fuente
                     </EvidenceLink>

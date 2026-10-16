@@ -4,16 +4,26 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
+import { categoryMatches } from "@/lib/category-hierarchy";
 import {
   AppliedFilters,
   priceSeriesLabel,
 } from "@/components/explore/AppliedFilters";
 import { fold } from "@/lib/planning-math";
+import { normalizeLabel } from "@/lib/label-normalization";
+import { quotePresentationOptions } from "@/lib/quote-filter-options";
 import { summarizeComparisons } from "@/lib/comparison-math";
-import type { ComparisonData, ComparisonKind } from "@/lib/comparison-types";
+import type { ComparisonData, ComparisonKind, ComparisonRow } from "@/lib/comparison-types";
+import { dateLabel } from "@/lib/market-types";
 import { ComparisonRowCard } from "./ComparisonRowCard";
 import { percentLabel } from "./format";
 import styles from "./comparison.module.css";
+
+const comparisonChoiceKey = (row: ComparisonRow) => JSON.stringify([
+  row.key, row.a.date, row.a.document_id, row.a.source_locator,
+]);
 
 export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
   const initial = useSearchParams();
@@ -28,7 +38,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
   const [units, setUnits] = useState(initial.get("units") || "");
   const [matching, setMatching] = useState("all");
   const [sort, setSort] = useState("difference");
-  const [limit, setLimit] = useState(20);
+  const [selectedRowKey, setSelectedRowKey] = useState("");
   const params = new URLSearchParams(requested);
   const { data, loading, error, retry } = useData<ComparisonData>(
     `/api/compare/${kind}?${params}`,
@@ -41,7 +51,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
     : { ...metadata?.filters, ...requested };
   const setFilter = (key: string, value: string) => {
     setRequested((current) => ({ ...current, [key]: value }));
-    setLimit(20);
+    setSelectedRowKey("");
     setCategory("");
     setPresentation("");
     setUnits("");
@@ -50,7 +60,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
     () =>
       (data?.rows || []).filter(
         (r) =>
-          (!category || r.a.category_path.join(" > ") === category) &&
+          categoryMatches(r.a.category_path.join(" > "), category) &&
           (!presentation || r.a.presentation === presentation) &&
           (!units || r.a.units === units) &&
           (matching !== "matched" || r.b) &&
@@ -59,6 +69,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
               r.a.name,
               r.a.brand,
               r.a.registration,
+              r.a.product_line,
               r.a.presentation,
               ...r.a.category_path,
             ].join(" "),
@@ -76,6 +87,10 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
           ? a.a.name.localeCompare(b.a.name, "es")
           : (b.percent ?? -Infinity) - (a.percent ?? -Infinity),
   );
+  const selectedRow = ordered.find((row) => comparisonChoiceKey(row) === selectedRowKey);
+  const visibleRows = ordered.slice(0, 6);
+  if (selectedRow && !visibleRows.some((row) => comparisonChoiceKey(row) === selectedRowKey))
+    visibleRows.push(selectedRow);
   const locations = (metadata?.locations || []).filter(
     (l) => !l.series || l.series.includes(filters.series || ""),
   );
@@ -132,7 +147,10 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
     {
       label: "Producto seleccionado",
       value: filters.product
-        ? metadata?.rows[0]?.a.name || filters.product
+        ? metadata?.rows[0]?.a
+          ? [metadata.rows[0].a.name, metadata.rows[0].a.product_line && `Línea: ${metadata.rows[0].a.product_line}`]
+              .filter(Boolean).join(" · ")
+          : filters.product
         : "",
       clear: () => setFilter("product", ""),
     },
@@ -143,7 +161,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
     },
     {
       label: "Presentación",
-      value: presentation || "Todas · comparación por coincidencia exacta",
+      value: normalizeLabel(presentation, "presentation") || "Todas · comparación por coincidencia exacta",
       ...(presentation ? { clear: () => setPresentation("") } : {}),
     },
     {
@@ -182,38 +200,35 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
       </div>
       <section className="panel" aria-label="Filtros de comparación">
         <div className={styles.controls}>
-          <label>
-            A · {kind === "markets" ? "Mercado base" : "Lugar base"}
-            <select
-              value={selectedA}
-              onChange={(e) => setFilter("a", e.target.value)}
-            >
-              <option value="" disabled>
-                Selecciona un lugar
-              </option>
-              {locations.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            B · Comparar con
-            <select
-              value={selectedB}
-              onChange={(e) => setFilter("b", e.target.value)}
-            >
-              <option value="__national__">Promedio de Colombia</option>
-              {locations
-                .filter((l) => l.id !== selectedA)
-                .map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                  </option>
-                ))}
-            </select>
-          </label>
+          <SearchableSelect
+            label={`A · ${kind === "markets" ? "Mercado base" : "Lugar base"}`}
+            placeholder="Busca el lugar base…"
+            emptyLabel="Selecciona un lugar"
+            value={selectedA}
+            options={locations.map((l) => ({ id: l.id, label: l.name }))}
+            selectedLabel={metadata?.a_name}
+            onChange={(id) => {
+              setFilter("a", id);
+              if (selectedB === id) setRequested((current) => ({ ...current, b: "__national__" }));
+            }}
+            allowClear={false}
+            loading={loading && !metadata}
+            error={!!error && !metadata}
+          />
+          <SearchableSelect
+            label="B · Comparar con"
+            placeholder="Busca el lugar de comparación…"
+            value={selectedB}
+            options={[
+              { id: "__national__", label: "Promedio de Colombia" },
+              ...locations.filter((l) => l.id !== selectedA)
+                .map((l) => ({ id: l.id, label: l.name })),
+            ]}
+            onChange={(id) => setFilter("b", id)}
+            allowClear={false}
+            loading={loading && !metadata}
+            error={!!error && !metadata}
+          />
           {kind === "markets" ? (
             <label>
               Tipo de precio
@@ -246,7 +261,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
                   setCategory("");
                   setPresentation("");
                   setUnits("");
-                  setLimit(20);
+                  setSelectedRowKey("");
                 }}
               >
                 <option value="department">Promedios por departamento</option>
@@ -271,7 +286,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
-                setLimit(20);
+                setSelectedRowKey("");
               }}
               placeholder={
                 kind === "markets"
@@ -280,52 +295,27 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
               }
             />
           </label>
-          <label>
-            Categoría
-            <select
-              value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-                setLimit(20);
-              }}
-            >
-              <option value="">Todas las categorías</option>
-              {categories.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Presentación
-            <select
-              value={presentation}
-              onChange={(e) => {
-                setPresentation(e.target.value);
-                setUnits("");
-                setLimit(20);
-              }}
-            >
-              <option value="">Todas las presentaciones</option>
-              {presentations.map((p) => (
-                <option key={p}>{p}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Unidades
-            <select
-              value={units}
-              onChange={(e) => {
-                setUnits(e.target.value);
-                setLimit(20);
-              }}
-            >
-              <option value="">Todas las unidades</option>
-              {unitOptions.map((u) => (
-                <option key={u}>{u}</option>
-              ))}
-            </select>
-          </label>
+          <HierarchicalCategorySelect
+            value={category}
+            paths={categories}
+            onChange={(id) => { setCategory(id); setSelectedRowKey(""); }}
+          />
+          <SearchableSelect
+            label="Presentación"
+            placeholder="Busca una presentación…"
+            emptyLabel="Todas las presentaciones"
+            value={presentation}
+            options={quotePresentationOptions(presentations)}
+            onChange={(id) => { setPresentation(id); setUnits(""); setSelectedRowKey(""); }}
+          />
+          <SearchableSelect
+            label="Unidades"
+            placeholder="Busca unidades…"
+            emptyLabel="Todas las unidades"
+            value={units}
+            options={unitOptions.map((u) => ({ id: u, label: u }))}
+            onChange={(id) => { setUnits(id); setSelectedRowKey(""); }}
+          />
         </div>
         <AppliedFilters items={filtersForDisplay} />
         <p className={styles.note}>
@@ -379,11 +369,13 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
               </div>
               <div>
                 <p>
-                  <b>{summary.matched}</b> combinaciones comparables
+                  <b>{summary.matched}</b>{" "}
+                  {summary.matched === 1 ? "combinación comparable" : "combinaciones comparables"}
                 </p>
                 <p className={styles.muted}>
                   {summary.unmatched} sin una cotización equivalente en B ·{" "}
-                  {rows.length} combinaciones de A bajo los filtros
+                  {rows.length}{" "}
+                  {rows.length === 1 ? "combinación" : "combinaciones"} de A bajo los filtros
                 </p>
               </div>
             </section>
@@ -429,7 +421,7 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
                     value={matching}
                     onChange={(e) => {
                       setMatching(e.target.value);
-                      setLimit(20);
+                      setSelectedRowKey("");
                     }}
                   >
                     <option value="all">Todos los productos de A</option>
@@ -451,9 +443,35 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
                   </select>
                 </label>
               </div>
+              {ordered.length > 6 && (
+                <>
+                  <p className={styles.note}>
+                    Se muestran seis combinaciones según el orden elegido y la combinación seleccionada.
+                    Busca entre las {ordered.length} combinaciones para consultar otra.
+                  </p>
+                  <SearchableSelect
+                    label="Consultar una combinación de la comparación"
+                    placeholder="Busca producto, marca, presentación o unidades…"
+                    value={selectedRow ? selectedRowKey : ""}
+                    options={ordered.map((row) => ({
+                      id: comparisonChoiceKey(row),
+                      label: [row.a.name, row.a.product_line, normalizeLabel(row.a.presentation, "presentation"), row.a.units]
+                        .filter(Boolean).join(" · "),
+                      detail: [row.a.brand, row.a.registration && `ICA ${row.a.registration}`,
+                        dateLabel(row.a.date), percentLabel(row.percent), row.a.source_locator]
+                        .filter(Boolean).join(" · "),
+                      searchText: [row.a.name, row.a.product_line, row.a.brand, row.a.registration,
+                        row.a.presentation, row.a.units, row.a.category_path.join(" > "),
+                        row.a.date, row.a.document_id, row.a.source_locator].filter(Boolean).join(" "),
+                    }))}
+                    onChange={setSelectedRowKey}
+                    emptyLabel="Elige una combinación exacta para verla junto a las seis primeras"
+                  />
+                </>
+              )}
               <div className={styles.list}>
-                {ordered.slice(0, limit).map((row) => (
-                  <ComparisonRowCard key={row.key} row={row} context={data} />
+                {visibleRows.map((row) => (
+                  <ComparisonRowCard key={comparisonChoiceKey(row)} row={row} context={data} />
                 ))}
               </div>
               {!rows.length && (
@@ -464,32 +482,9 @@ export function ComparisonWorkspace({ kind }: { kind: ComparisonKind }) {
               )}
               <div className={styles.expand}>
                 <span className={styles.total}>
-                  {Math.min(limit, rows.length)} de {rows.length} combinaciones
+                  {visibleRows.length} de {rows.length}{" "}
+                  {rows.length === 1 ? "combinación" : "combinaciones"}
                 </span>
-                {rows.length > limit && (
-                  <>
-                    <button
-                      className="button secondary"
-                      onClick={() => setLimit((n) => n + 40)}
-                    >
-                      Ver 40 más
-                    </button>
-                    <button
-                      className="button secondary"
-                      onClick={() => setLimit(rows.length)}
-                    >
-                      Expandir lista completa
-                    </button>
-                  </>
-                )}
-                {limit > 20 && (
-                  <button
-                    className="button secondary"
-                    onClick={() => setLimit(20)}
-                  >
-                    Mostrar menos
-                  </button>
-                )}
               </div>
             </section>
           </>

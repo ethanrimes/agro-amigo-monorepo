@@ -8,8 +8,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===1440",
-            "expected": "COP 1440 midpoint of manually read original range 1440–1440, page 1"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 1440 midpoint of manually read original range 1440–1440, page 1"
           },
           {
             "id": "PRD-02",
@@ -30,8 +30,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/banano-criollo?region=Atl%C3%A1ntico&series=city&presentation=Kilogramo&units=1+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -59,8 +65,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===3450",
-            "expected": "COP 3450 midpoint of manually read original range 3400–3500, page 1"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 3450 midpoint of manually read original range 3400–3500, page 1"
           },
           {
             "id": "PRD-02",
@@ -81,8 +87,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/coco?region=Atl%C3%A1ntico&series=city&presentation=Kilogramo&units=1+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -110,8 +122,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===74500",
-            "expected": "COP 74500 midpoint of manually read original range 74000–75000, page 1"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 74500 midpoint of manually read original range 74000–75000, page 1"
           },
           {
             "id": "PRD-02",
@@ -132,8 +144,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/guayaba-comun?region=Atl%C3%A1ntico&series=city&presentation=Canastilla&units=25+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -161,8 +179,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===311000",
-            "expected": "COP 311000 midpoint of manually read original range 310000–312000, page 1"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 311000 midpoint of manually read original range 310000–312000, page 1"
           },
           {
             "id": "PRD-02",
@@ -183,8 +201,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/papa-criolla-limpia?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=50+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -212,8 +236,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===117500",
-            "expected": "COP 117500 midpoint of manually read original range 115000–120000, page 1"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 117500 midpoint of manually read original range 115000–120000, page 1"
           },
           {
             "id": "PRD-02",
@@ -234,8 +258,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/habichuela?region=Atl%C3%A1ntico&series=city&presentation=Saco&units=20+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -263,8 +293,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===45500",
-            "expected": "COP 45500 midpoint of manually read original range 45000–46000, page 2"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 45500 midpoint of manually read original range 45000–46000, page 2"
           },
           {
             "id": "PRD-02",
@@ -285,8 +315,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/pimenton?region=Atl%C3%A1ntico&series=city&presentation=Caja+de+cart%C3%B3n&units=12+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -314,8 +350,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===88000",
-            "expected": "COP 88000 midpoint of manually read original range 86000–90000, page 2"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 88000 midpoint of manually read original range 86000–90000, page 2"
           },
           {
             "id": "PRD-02",
@@ -336,8 +372,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/zanahoria?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=60+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -365,8 +407,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===119000",
-            "expected": "COP 119000 midpoint of manually read original range 118000–120000, page 2"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 119000 midpoint of manually read original range 118000–120000, page 2"
           },
           {
             "id": "PRD-02",
@@ -387,8 +429,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/cebolla-cabezona-roja-peruana?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=46+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -416,8 +464,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===124500",
-            "expected": "COP 124500 midpoint of manually read original range 123000–126000, page 2"
+            "condition": "!!window.__qaCurrentCityOriginal?.current && Number((document.querySelector('[data-testid=current-product-price]')?.innerText||'').replace(/[^0-9]/g,''))===Math.round(window.__qaCurrentCityOriginal.current.price) && (document.querySelector('.product-price-header')?.innerText||'').includes(new Date(window.__qaCurrentCityOriginal.current.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))",
+            "expected": "Current visible price/date match same-filter live DANE API; historical 2026-09-25 source oracle: COP 124500 midpoint of manually read original range 123000–126000, page 2"
           },
           {
             "id": "PRD-02",
@@ -438,8 +486,14 @@
             "id": "EVI-01",
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
+          },
+          {
+            "id": "EVI-02",
+            "condition": "!!window.__qaCurrentCityOriginal?.current?.sources?.[0]?.document_id && [...document.querySelectorAll('.detail-actions a.evidence-link')].some(a=>a.href.includes(window.__qaCurrentCityOriginal.current.sources[0].document_id))",
+            "expected": "Current price source link has the exact same-filter DANE source document identity"
           }
-        ]
+        ],
+        "action": "window.__qaCurrentCityOriginal=await fetch(\"/api/products/repollo-blanco?region=Atl%C3%A1ntico&series=city&presentation=Bulto&units=70+Kilogramo&market=sipsa-barranquilla-barranquillita&history=all\").then(async r=>{if(!r.ok)throw Error('Current city quote HTTP '+r.status);return r.json()});"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",

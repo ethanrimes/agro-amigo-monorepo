@@ -40,8 +40,14 @@ export function QuoteEvidence({
     <EvidenceLink
       id={quote.document_id}
       page={page}
+      locator={quote.source_locator}
       product={kind === "markets" ? quote.id : undefined}
+      productName={quote.name}
       market={kind === "markets" ? quote.location_id : undefined}
+      marketName={kind === "markets" ? quote.location_name : undefined}
+      presentation={quote.presentation}
+      units={quote.source_units || quote.units}
+      currency="COP"
       input={kind === "inputs" ? quote.id : undefined}
       department={quote.department}
       municipality={quote.municipality}

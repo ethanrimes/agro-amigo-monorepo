@@ -1,0 +1,29 @@
+page|paragraph|product_literal|place_literal|price_cop_per_kg|change_percent|place_binding
+1|2|habichuela|mercado de La 41 de Pereira|3860|189.50|explicit market
+1|2|habichuela|mercado de La 21 de Ibagué|2347|25.71|paragraph product context; explicit market
+1|2|habichuela|Cúcuta (Cenabastos)|2583|24.00|paragraph product context; explicit market
+1|3|cebolla junca|Cali (Santa Helena)|1274|43.33|same paragraph; price sentence refers to esta central
+1|3|cebolla junca|Neiva (Surabastos)|1450|31.82|paragraph product context; explicit market
+1|5|ahuyama|mercado de La 41 de Pereira|1200|-14.29|explicit product and market
+1|5|ahuyama|Cali (Santa Helena)|900|-10.00|paragraph product context; explicit market
+1|6|pimentón|capital del Huila|1464|57.69|requires preceding Neiva (Surabastos) clause binding; no city-name guessing
+1|6|pimentón|capital de Tolima|1313|-10.05|requires preceding Ibagué clause binding; native source does not name a market
+2|1|mango Tommy|Tunja|1333|17.33|native source names city only
+2|1|mango Tommy|Bucaramanga|1800|15.38|paragraph product and place context; native source names city only
+2|2|limón común|Cúcuta|2000|21.83|native source names city only
+2|2|limón común|Bucaramanga|1400|16.67|paragraph product context; native source names city only
+2|3|maracuyá|Tunja|2725|21.11|native source names city only
+2|3|maracuyá|Medellín|2400|12.94|paragraph product context; native source names city only
+2|4|mandarina|Bucaramanga|1413|-20.73|native source names city only; generic product has no stated variety
+2|4|mandarina|Cúcuta|1200|-14.29|paragraph product context; native source names city only
+2|4|mandarina|Medellín|3000|15.38|paragraph product context; native source names city only
+2|5|guayaba|Medellín|1200|-13.51|native source names city only; generic product has no stated variety
+2|5|guayaba|Ibagué|1233|-10.30|paragraph product context; native source names city only
+3|2|arracacha|Cúcuta (Cenabastos)|2075|38.33|explicit product and market
+3|2|arracacha|mercado La 21 de Ibagué|1280|12.28|paragraph product context; explicit market
+3|3|yuca|Bucaramanga (Centroabastos)|1149|13.53|explicit product and market
+3|4|papa negra|Cúcuta (Cenabastos)|668|11.25|explicit product and market; generic product has no stated variety
+3|4|papa negra|Pereira|475|-10.38|paragraph product context; native source names city only
+3|5|plátano guineo|Central Mayorista de Antioquia (CMA)|713|-10.94|explicit product and market
+3|6|papa criolla|Central Mayorista de Antioquia (CMA)|1225|-21.60|explicit product and market; generic product has no stated variety
+3|6|papa criolla|Tunja|1225|18.36|paragraph product context; native source names city only

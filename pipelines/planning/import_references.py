@@ -24,6 +24,8 @@ def doc(cur,path,title,publisher,url,period,alias=None,kind='original',metadata=
  data=path.read_bytes();did=hashlib.sha256(data).hexdigest();suffix=path.suffix.lower()
  mime=media or {'.pdf':'application/pdf','.xlsx':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','.json':'application/json','.tsv':'text/tab-separated-values','.html':'text/html'}.get(suffix,'text/plain')
  pages=len(PdfReader(io.BytesIO(data)).pages) if mime=='application/pdf' else None
+ from pipelines.ingestion.blob_archive import retain_original_blob
+ retain_original_blob(did,data,'.txt' if suffix=='.tsv' else suffix,mime)
  cur.execute('INSERT INTO source_document(id,title,publisher,source_url,media_type,kind,reference_period,page_count,content,metadata) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO NOTHING',(did,title,publisher,url,mime,kind,str(period),pages,data,Jsonb(metadata or {})))
  if alias:cur.execute('INSERT INTO document_alias VALUES (%s,%s) ON CONFLICT(alias) DO UPDATE SET document_id=excluded.document_id',(alias,did))
  return did

@@ -1,0 +1,34 @@
+{
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_abr_2016.pdf",
+  "sha256": "6cba3d6b39f171d2ae0f6e13b8afb7ab468e6dc4d2d807febc1f2a1c2731b2fc",
+  "published_page": 72,
+  "printed_period": "2016 (abril)",
+  "printed_table": "Cuadro 8. Insumos pecuarios. Precios de antibióticos, antimicóticos y antiparasitarios (continuación)",
+  "printed_product": "Levamisol 15%, 500 centímetros cúbicos",
+  "printed_market": "Villavicencio (Meta)(continuación)",
+  "printed_price": "21.333",
+  "printed_variation": "0,0",
+  "expected": {
+    "observed_on": "2016-04-30",
+    "product_name": "Levamisol 15%",
+    "presentation": "500 centímetros cúbicos",
+    "municipality": "Villavicencio",
+    "department": "Meta",
+    "price_cop": 21333,
+    "change_percent": 0.0,
+    "source_locator_without_version": "PDF page 72,col 1,y 163.3"
+  },
+  "independent_adjacent_cells": [
+    {"product_name": "Livanal", "presentation": "10 centímetros cúbicos", "municipality": "Chiquinquirá", "department": "Boyacá", "price_cop": 6250},
+    {"product_name": "Neguvon polvo", "presentation": "1 kilogramo", "municipality": "Villavicencio", "department": "Meta", "price_cop": 125250},
+    {"product_name": "Neguvon polvo", "presentation": "15 gramos", "municipality": "Guadalajara de Buga", "department": "Valle del Cauca", "price_cop": 2629}
+  ],
+  "visual_evidence": "artifacts/qa-resumed-20261001/dane-intake-readonly-20261003/input-continuacion-page72.png",
+  "independent_annex": {
+    "sha256": "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5",
+    "source_locator": "2.2!row 36882",
+    "department": "Meta",
+    "municipality": "Villavicencio",
+    "price_cop": "21333.333333333332"
+  }
+}

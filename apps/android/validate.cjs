@@ -155,6 +155,11 @@ let activeDevice;
     }, path);
   const navigate = async (path) => {
     await page.goto(origin + path, { waitUntil: "domcontentloaded" });
+    await page.locator(".mobile-nav").waitFor({ state: "visible" });
+    await page.waitForLoadState("load");
+    await page.evaluate(() =>
+      new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+    );
   };
   const nativeDownload = async (id, extension) => {
     const expected = await page.evaluate(async (id) => {
@@ -250,10 +255,26 @@ let activeDevice;
         ),
     ).toBe(true);
   };
+  const loadedDetailPicture = async () => {
+    const image = page.locator(".detail-picture img");
+    await expect(image).toBeVisible();
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(() => image.evaluate((img) => img.complete && img.naturalWidth > 0 && img.naturalHeight > 0)).toBe(true);
+    return image.evaluate((img) => ({
+      source: img.currentSrc,
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
+      renderedHeight: img.getBoundingClientRect().height,
+      top75PixelsRendered: img.getBoundingClientRect().height >= 75,
+    }));
+  };
   const descending = async (selector) => {
-    const values = (await page.locator(selector).allTextContents()).map(
-      numeric,
-    );
+    // Price cells also contain a source link (for example, "Consultar 31
+    // fuentes"). Read the price text node alone so that the source count
+    // cannot be appended to the amount while checking table order.
+    const values = (await page.locator(selector).evaluateAll((cells) =>
+      cells.map((cell) => cell.firstChild?.textContent || ""),
+    )).map(numeric);
     expect(values.length).toBeGreaterThan(0);
     expect(
       values.every(
@@ -434,6 +455,9 @@ let activeDevice;
         lemon.data.history.find((r) => r.date === "2026-09-07")?.price,
       ).toBe(86000);
       await navigate(`/product/${lemon.id}?${lemon.params}`);
+      const picture = await loadedDetailPicture();
+      expect(picture.top75PixelsRendered).toBe(true);
+      screenshot("03-limon-photo-current");
       await expect(page.getByTestId("current-product-price")).toHaveText(
         money(lemon.data.current.price),
       );
@@ -466,6 +490,7 @@ let activeDevice;
         current: lemon.data.current,
         fixtureSeptember7: 86000,
         package: "Bulto / 24 Kilogramo",
+        picture,
       };
     });
 
@@ -482,6 +507,8 @@ let activeDevice;
       );
       expect(fixture.data.history.find((r) => r.date === "2026-09-07")?.price).toBe(21000);
       await navigate(`/product/${fixture.id}?${fixture.params}`);
+      const picture = await loadedDetailPicture();
+      expect(picture.top75PixelsRendered).toBe(true);
       await expect(page.getByTestId("current-product-price")).toHaveText(
         money(fixture.data.current.price),
       );
@@ -568,6 +595,7 @@ let activeDevice;
         september7: {smallPackage: 21000, largePackage: 79500},
         smallKg: 2.5,
         largeKg: 12.5,
+        picture,
         rapidFilterChangesPreservedMarket: true,
         delayedMarketRequestMs: 750,
       };
@@ -1363,6 +1391,8 @@ let activeDevice;
       "22-offers-arithmetic-and-reload",
       async () => {
         await navigate("/offers");
+        await expect(page.getByRole("status").filter({ hasText: "Guardado en este navegador" }))
+          .toBeVisible();
         await page.getByLabel("Cantidad total que comparas (kg)").fill("250");
         await page.getByLabel("Unidad de las cotizaciones").selectOption("125");
         await page
@@ -1375,6 +1405,7 @@ let activeDevice;
           .fill("100000");
         await page.getByLabel("Empaque oferta 1", { exact: true }).fill("0");
         await page.getByLabel("Gastos oferta 1", { exact: true }).fill("0");
+        await page.getByLabel("Plazo oferta 1", { exact: true }).fill("0");
         await expect(page.locator(".offer-result strong").first()).toHaveText(
           money(3700000),
         );
@@ -1533,7 +1564,9 @@ let activeDevice;
       await expect(page.getByLabel("Latitud de la finca", { exact: true })).toHaveCount(0);
       await expect(page.getByLabel("Longitud de la finca", { exact: true })).toHaveCount(0);
       const weather = page.getByRole("region", { name: "Tiempo y pronóstico de mi finca" });
-      await expect(weather).toContainText("estimación del modelo");
+      await expect(weather).toContainText("estimaciones meteorológicas, no mediciones de un sensor");
+      await expect(weather).toContainText("La cuadrícula del modelo");
+      await expect(weather).toContainText("puede diferir del pin");
       await weather.getByRole("button", { name: "Próximos 7 días", exact: true }).click();
       await expect(weather.locator("article")).toHaveCount(7);
       await captureElement(weather, "25-current-weather-and-forecast");

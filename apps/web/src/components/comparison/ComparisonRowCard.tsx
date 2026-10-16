@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
 import { money, dateLabel } from "@/lib/market-types";
+import { normalizeLabel } from "@/lib/label-normalization";
+import { wageBasisNote, wagePaymentBasis, wagePresentationDisplay } from "@/lib/wage-basis-display";
 import type { ComparisonData, ComparisonRow } from "@/lib/comparison-types";
 import { ComparisonSources } from "./ComparisonSources";
 import { QuoteEvidence, quoteHref } from "./QuoteEvidence";
@@ -15,6 +17,8 @@ export function ComparisonRowCard({
   context: ComparisonData;
 }) {
   const kind = context.kind;
+  const wageBasis = kind === "inputs"
+    ? wagePaymentBasis(row.a.name, row.a.presentation) : null;
   return (
     <article className={styles.row}>
       <div className={styles.rowHead}>
@@ -24,13 +28,19 @@ export function ComparisonRowCard({
           </Link>
           <p>{row.a.category_path.join(" > ")}</p>
           <p>
-            {row.a.presentation}
-            {row.a.units !== row.a.presentation ? ` · ${row.a.units}` : ""}
+            {wageBasis
+              ? wagePresentationDisplay(row.a.name, row.a.presentation)
+              : normalizeLabel(row.a.presentation, "presentation")}
+            {!wageBasis && row.a.units !== row.a.presentation ? ` · ${row.a.units}` : ""}
           </p>
-          {(row.a.brand || row.a.registration) && (
+          {wageBasis && wageBasisNote(row.a.name, row.a.presentation) && (
+            <small>{wageBasisNote(row.a.name, row.a.presentation)}</small>
+          )}
+          {(row.a.brand || row.a.registration || row.a.product_line) && (
             <p className={styles.identity}>
               {row.a.brand}
               {row.a.registration ? ` · ICA ${row.a.registration}` : ""}
+              {row.a.product_line ? `${row.a.brand || row.a.registration ? " · " : ""}Línea: ${row.a.product_line}` : ""}
             </p>
           )}
         </div>

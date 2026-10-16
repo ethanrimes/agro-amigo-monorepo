@@ -13,32 +13,39 @@ import { departmentOutlines } from "@/lib/map-boundaries";
 import { mapLibrary, mapSpanish } from "@/lib/maplibre";
 import { Overlay } from "@/components/ui/Overlay";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { DetailTabs, type InformationMode } from "./DetailTabs";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
+import { SupplyMapEvidence } from "./SupplyMapEvidence";
 import { money, number, dateLabel, type Catalog } from "@/lib/market-types";
 import type { CatalogCard } from "@/lib/catalog-display";
+import { departmentKey, departmentLabel, departmentLabels } from "@/lib/filter-labels";
 import type { InputPrice } from "@/lib/planning-types";
+import { fold } from "@/lib/planning-math";
+import { normalizeLabel } from "@/lib/label-normalization";
+import { wagePaymentBasis, wagePresentationDisplay, wageRateUnitDisplay } from "@/lib/wage-basis-display";
+import { quotePresentationOptions } from "@/lib/quote-filter-options";
+import { categoryMatches, productCategoryPaths } from "@/lib/category-hierarchy";
 import type { MapData, MapPoint, MapFilters } from "@/lib/explore-types";
+import { resolveInputIdentity } from "@/lib/input-identity-equivalence";
 import { IoMapOutline } from "react-icons/io5";
 import "maplibre-gl/dist/maplibre-gl.css";
-const fold = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
 type Kind = "product" | "market" | "input";
 export function MapButton({
   kind,
   id,
   label = "Ver mapa",
   filters = {},
+  disabled = false,
 }: {
   kind: Kind;
   id?: string;
   label?: string;
   filters?: MapFilters;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -46,6 +53,7 @@ export function MapButton({
       <button
         type="button"
         className="button secondary map-button"
+        disabled={disabled}
         onClick={(e) => {
           e.currentTarget.focus({ preventScroll: true });
           setOpen(true);
@@ -54,7 +62,7 @@ export function MapButton({
         <IoMapOutline />
         {label}
       </button>
-      {open && (
+      {open && !disabled && (
         <Overlay
           title={`${kind === "input" ? "Insumos" : kind === "market" ? "Mercados" : "Productos"} en Colombia`}
           className="map-overlay"
@@ -81,12 +89,15 @@ function MapView({
     points: MapPoint[];
     title: string;
   } | null>(null);
+  const [popupQuote, setPopupQuote] = useState("");
   const bubble = useRef<Popup | null>(null);
   const showPopup = useRef<
     (points: MapPoint[], title: string, coords: [number, number]) => void
   >(() => {});
   const catalog = useData<Catalog>(
-    kind === "input" ? null : "/api/catalog?view=canonical",
+    kind === "input"
+      ? null
+      : "/api/catalog?" + new URLSearchParams({ view: "canonical", region: requested.region || "" }),
   );
   const inputs = useData<InputPrice[]>(
     kind === "input"
@@ -95,13 +106,14 @@ function MapView({
             grouped: "true",
             scope: requested.scope || "department",
             department: requested.region || "",
-            history: "recent",
+            history: requested.history === "all" ? "all" : "recent",
           })
       : null,
   );
   const [selected, setSelected] = useState(initialId || ""),
     [search, setSearch] = useState(""),
     [mode, setMode] = useState<InformationMode>("price");
+  const searchFocused = useRef(false);
   const [region, setRegion] = useState(""),
     [failure, setFailure] = useState(""),
     [ready, setReady] = useState(false);
@@ -115,7 +127,7 @@ function MapView({
             (inputs.data || [])
               .filter(
                 (i) =>
-                  (!requested.category || i.category === requested.category) &&
+                  categoryMatches(i.category, requested.category || "") &&
                   (!requested.query ||
                     fold(
                       i.name +
@@ -131,21 +143,33 @@ function MapView({
               )
               .map((i) => [
                 i.id,
-                { id: i.id, label: i.name + " · " + i.presentation },
+                { id: i.id, label: i.name + " · " + wagePresentationDisplay(i.name, i.presentation),
+                  searchText: i.name + " " + i.presentation },
               ]),
           ).values(),
         )
-      : (catalog.data?.products || []).filter((p: CatalogCard) => p.map_supported !== false).map((p) => ({
+      : (catalog.data?.products || []).filter((p: CatalogCard) =>
+          p.map_supported !== false && productCategoryPaths(p).some((path) => categoryMatches(path, requested.category || ""))).map((p) => ({
           id: p.id,
           label: p.name,
         }));
+  const categoryPaths = kind === "input"
+    ? (inputs.data || []).map((item) => item.category)
+    : (catalog.data?.products || []).flatMap(productCategoryPaths);
   useEffect(() => {
-    if (!selected && kind !== "market" && options.length) {
+    if (kind === "input" && selected) {
+      const canonical = resolveInputIdentity(selected).canonicalId;
+      if (canonical !== selected) {
+        setSelected(canonical);
+        return;
+      }
+    }
+    if (!selected && !search && !searchFocused.current && kind !== "market" && options.length) {
       const o = options.find((o) => o.id === "aguacate-hass") || options[0];
       setSelected(o.id);
-      setSearch(o.label);
-    } else if (selected && !search)
-      setSearch(options.find((o) => o.id === selected)?.label || "");
+      setSearch(current => current || o.label);
+    } else if (selected && !search && !searchFocused.current)
+      setSearch(current => current || options.find((o) => o.id === selected)?.label || "");
   }, [catalog.data, inputs.data, selected, kind]); // eslint-disable-line react-hooks/exhaustive-deps
   const data = useData<MapData>(
     "/api/explore/map?" +
@@ -205,6 +229,7 @@ function MapView({
       map.current = m;
       showPopup.current = (points, title, coords) => {
         bubble.current?.remove();
+        setPopupQuote("");
         const node = document.createElement("div");
         node.className = "map-price-popup";
         const next = new lib.Popup({
@@ -378,10 +403,22 @@ function MapView({
         panel = bubble.current;
       if (!m || !panel || !popup.node.isConnected) return;
       m.resize();
+      const mapHeight = m.getContainer().clientHeight;
+      // One scroll area keeps both the chooser and quote links reachable even
+      // when a long selected label uses most of a phone's available map height.
+      popup.node.style.maxHeight = `${Math.max(180, mapHeight - 60)}px`;
+      const chosen = popup.node.querySelector<HTMLElement>('[data-selected-quote="true"]');
+      // WebKit keeps a focused search input visible after its value changes,
+      // which can undo the popup scroll. Move focus to the explicitly chosen
+      // result, also dismissing the phone keyboard before exposing its source.
+      chosen?.focus({ preventScroll: true });
+      if (chosen) m.getContainer().scrollIntoView({ block: "nearest", inline: "nearest" });
+      popup.node.scrollTop = chosen
+        ? popup.node.scrollTop + chosen.getBoundingClientRect().top - popup.node.getBoundingClientRect().top - 8
+        : 0;
       const height =
         popup.node.parentElement?.getBoundingClientRect().height ||
         popup.node.offsetHeight;
-      const mapHeight = m.getContainer().clientHeight;
       m.easeTo({
         center: panel.getLngLat(),
         zoom: Math.max(6, m.getZoom()),
@@ -391,7 +428,7 @@ function MapView({
       panel.setLngLat(panel.getLngLat());
     });
     return () => cancelAnimationFrame(frame);
-  }, [popup]);
+  }, [popup, popupQuote]);
   useEffect(() => {
     const m = map.current;
     if (!ready || !m || !boundaries.current || !data.data) return;
@@ -441,14 +478,33 @@ function MapView({
             })),
     });
   }, [data.data, ready, mode, selected, kind]);
-  const regions = Array.from(
-    new Set(data.data?.points.map((p) => p.region) || []),
-  ).sort();
+  const regions = departmentLabels(data.data?.points.map((p) => p.region) || []);
+  const selectedInput = inputs.data?.find((input) => input.id === selected);
   const display = (p: MapPoint) =>
     p.unit.startsWith("COP") ? money(p.value) : number(p.value);
+  const displayUnit = (p: MapPoint) => kind === "input"
+      && wagePaymentBasis(selectedInput?.name || "", p.presentation || "")
+    ? wageRateUnitDisplay(selectedInput!.name, p.presentation || "") : p.unit;
+  const displayPresentation = (presentation: string) => kind === "input"
+      && wagePaymentBasis(selectedInput?.name || "", presentation)
+    ? wagePresentationDisplay(selectedInput!.name, presentation)
+    : normalizeLabel(presentation, "presentation");
+  const rankedPopupQuotes = [...(popup?.points || [])].sort((a, b) => b.value - a.value);
+  const quoteKey = (point: MapPoint) => point.quote_key || point.id;
+  const selectedPopupQuote = rankedPopupQuotes.find((p) => quoteKey(p) === popupQuote);
+  const visiblePopupQuotes = rankedPopupQuotes.slice(0, 6);
+  if (selectedPopupQuote && !visiblePopupQuotes.some((p) => quoteKey(p) === popupQuote))
+    visiblePopupQuotes.push(selectedPopupQuote);
   return (
     <div className="map-workspace">
-      <div className="map-controls">
+      <div className="map-controls"
+        onFocusCapture={(event) => {
+          searchFocused.current = (event.target as HTMLElement).getAttribute("aria-label") ===
+            (kind === "input" ? "Elegir insumo en el mapa" : "Elegir producto en el mapa");
+        }}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) searchFocused.current = false;
+        }}>
         <SearchBox
           label={
             kind === "input"
@@ -464,14 +520,43 @@ function MapView({
             if (!v && kind === "market") setSelected("");
           }}
           options={options}
+          loading={kind === "input" ? inputs.loading : catalog.loading}
+          error={Boolean(kind === "input" ? inputs.error : catalog.error)}
           onSelect={(o) => {
             bubble.current?.remove();
             setPopup(null);
             setSelected(o.id);
             setRegion("");
-            setRequested(kind === "input" ? requested : {});
+            if (kind !== "input" && o.id !== selected) {
+              setRequested((current) => ({ ...current, series: "", market: "", presentation: "", units: "" }));
+            }
           }}
         />
+        {categoryPaths.length > 0 && <HierarchicalCategorySelect
+          label="Categoría en mapa"
+          value={requested.category || ""}
+          paths={categoryPaths}
+          onChange={(value) => {
+            const compatible = !value || (kind === "input"
+              ? (inputs.data || []).some((item) =>
+                  resolveInputIdentity(item.id).canonicalId === selected &&
+                  categoryMatches(item.category, value))
+              : (catalog.data?.products || []).some((product) =>
+                  product.id === selected && productCategoryPaths(product)
+                    .some((path) => categoryMatches(path, value))));
+            if (compatible) {
+              changeFilter("category", value);
+            } else {
+              bubble.current?.remove();
+              setPopup(null);
+              setSelected("");
+              setSearch("");
+              setRequested((current) => ({
+                ...current, category: value, market: "", presentation: "", units: "",
+              }));
+            }
+          }}
+        />}
         {kind !== "input" && <DetailTabs mode={mode} onChange={setMode} />}
       </div>
       {mode === "price" && data.data?.options && (
@@ -490,30 +575,20 @@ function MapView({
               ))}
             </select>
           </label>
-          <label className="form-field">
-            Presentación
-            <select
-              aria-label="Presentación en mapa"
-              value={filters.presentation}
-              onChange={(e) => changeFilter("presentation", e.target.value)}
-            >
-              {data.data.options.presentations.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </label>
-          <label className="form-field">
-            Unidades
-            <select
-              aria-label="Unidades en mapa"
-              value={filters.units}
-              onChange={(e) => changeFilter("units", e.target.value)}
-            >
-              {data.data.options.units.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </label>
+          <SearchableSelect
+            label="Presentación en mapa"
+            value={filters.presentation || ""}
+            options={quotePresentationOptions(data.data.options.presentations)}
+            onChange={(value) => changeFilter("presentation", value)}
+            allowClear={false}
+          />
+          <SearchableSelect
+            label="Unidades en mapa"
+            value={filters.units || ""}
+            options={data.data.options.units.map((value) => ({ id: value, label: value }))}
+            onChange={(value) => changeFilter("units", value)}
+            allowClear={false}
+          />
         </div>
       )}
       <AppliedFilters
@@ -521,10 +596,11 @@ function MapView({
           {
             label: "Producto",
             value:
-              data.data?.selection_label ||
-              options.find((o) => o.id === selected)?.label ||
-              search ||
-              (selected ? "Referencia seleccionada" : "Todos"),
+              kind === "input" && selectedInput
+                ? `${selectedInput.name} · ${displayPresentation(selectedInput.presentation)}`
+                : data.data?.selection_label ||
+                  options.find((o) => o.id === selected)?.label ||
+                  (selected ? "Referencia seleccionada" : "Todos"),
           },
           {
             label: "Datos",
@@ -535,7 +611,9 @@ function MapView({
           },
           {
             label: "Presentación",
-            value: mode === "price" ? filters.presentation || "" : "",
+            value: mode !== "price" ? "" : kind === "input"
+              ? displayPresentation(filters.presentation || selectedInput?.presentation || "")
+              : normalizeLabel(filters.presentation || "", "presentation"),
           },
           {
             label: "Unidades",
@@ -549,15 +627,28 @@ function MapView({
                 : mode === "price"
                   ? data.data?.options?.markets.find(
                       (m) => m.id === filters.market,
-                    )?.name || "Todos"
+                    )?.name || (filters.market ? "Mercado seleccionado" : "Todos")
                   : "Todos",
           },
           { label: "Departamento", value: filters.region || "Colombia" },
-          { label: "Categoría", value: filters.category || "" },
+          { label: "Categoría", value: requested.category || "" },
           { label: "Búsqueda", value: filters.query || "" },
           {
+            label: "Mes reportado",
+            value: mode === "supply" && data.data?.period_start
+              ? new Date(data.data.period_start + "T12:00:00Z").toLocaleDateString("es-CO", {
+                month: "long", year: "numeric", timeZone: "America/Bogota",
+              }) : "",
+          },
+          {
+            label: "Historial",
+            value: mode === "price"
+              ? (filters.history || requested.history) === "all" ? "Todo el historial" : "Últimos 12 meses"
+              : "",
+          },
+          {
             label: "Municipio",
-            value: kind === "input" ? filters.municipality || "" : "",
+            value: kind === "input" ? normalizeLabel(filters.municipality || "", "place") : "",
           },
           {
             label: "Cobertura",
@@ -571,15 +662,15 @@ function MapView({
         ]}
       />
       <div className="map-summary">
-        <label className="form-field">
-          Abrir precios de un departamento
-          <select
-            value={region}
-            onChange={(e) => {
-              const value = e.target.value;
+        <SearchableSelect
+            label={mode === "supply" ? "Abrir abastecimiento de un departamento" : "Abrir precios de un departamento"}
+            value={departmentLabel(region)}
+            options={regions.map((value) => ({ id: value, label: value }))}
+            emptyLabel="Toca un punto o departamento"
+            onChange={(value) => {
               setRegion(value);
               const found =
-                data.data?.points.filter((p) => !value || p.region === value) ||
+                data.data?.points.filter((p) => !value || departmentKey(p.region) === departmentKey(value)) ||
                 [];
               if (found.length) {
                 const first = found[0];
@@ -589,13 +680,7 @@ function MapView({
                 ]);
               }
             }}
-          >
-            <option value="">Toca un punto o departamento</option>
-            {regions.map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </select>
-        </label>
+        />
         <p>{data.data?.basis}</p>
       </div>
       {data.loading ? (
@@ -604,12 +689,12 @@ function MapView({
         <ErrorState message={data.error} retry={data.retry} />
       ) : !data.data?.points.length ? (
         <p className="empty-state">
-          No hay precios con ubicación para estos filtros.
+          {mode === "supply" ? "No hay llegadas reportadas con ubicación para estos filtros." : "No hay precios con ubicación para estos filtros."}
         </p>
       ) : (
         <p className="map-hint">
-          {data.data.points.length} referencias · Toca un punto o departamento
-          para abrir sus precios.
+          {data.data.points.length} {data.data.points.length === 1 ? "referencia" : "referencias"} · Toca un punto o departamento
+          {" "}{mode === "supply" ? "para consultar su abastecimiento." : "para abrir sus precios."}
         </p>
       )}
       <div className="map-layout map-popup-layout">
@@ -660,29 +745,65 @@ function MapView({
         createPortal(
           <>
             <h3>{popup.title}</h3>
+            {popup.points.length > 6 && (
+              <>
+                <p>Se muestran seis referencias y la referencia elegida.</p>
+                <SearchableSelect
+                  label={mode === "supply" ? "Consultar abastecimiento en este lugar" : "Consultar precio en este lugar"}
+                  placeholder="Busca referencia o mercado"
+                  value={selectedPopupQuote ? popupQuote : ""}
+                  options={rankedPopupQuotes.map((p) => ({
+                    id: quoteKey(p), label: p.source_name || p.name,
+                    detail: [display(p), displayUnit(p), p.date && dateLabel(p.date),
+                      displayPresentation(p.presentation || ""), p.units].filter(Boolean).join(" · "),
+                  }))}
+                  onChange={setPopupQuote}
+                />
+              </>
+            )}
             <div className="map-popup-quotes">
               {popup.points.length ? (
-                popup.points
-                  .slice()
-                  .sort((a, b) => b.value - a.value)
-                  .map((p) => (
-                    <article key={p.id}>
+                visiblePopupQuotes.map((p) => (
+                    <article key={quoteKey(p)} tabIndex={quoteKey(p) === popupQuote ? -1 : undefined} data-selected-quote={quoteKey(p) === popupQuote ? "true" : undefined}>
                       <strong>{p.name}</strong>
                       <span className="map-popup-price">{display(p)}</span>
-                      <small>{p.unit}</small>
-                      <small>{p.date && dateLabel(p.date, true)}</small>
+                      {kind === "input" && p.source_name && <small>Nombre en la fuente: {p.source_name}</small>}
+                      <small>{displayUnit(p)}</small>
+                      {p.series === "city" && (
+                        <>
+                          <small>Punto medio calculado del rango</small>
+                          {p.min_price != null && p.max_price != null && (
+                            <small>Rango publicado: {money(p.min_price)}–{money(p.max_price)}</small>
+                          )}
+                        </>
+                      )}
+                      <small>{p.date && dateLabel(p.date)}</small>
                       {kind !== "input" && (
                         <a href={"/market/" + p.id}>Abrir mercado →</a>
                       )}
-                      <EvidenceLink
+                      {mode === "supply" ? <SupplyMapEvidence point={p}
+                        product={selected || undefined}
+                        productName={options.find((option) => option.id === selected)?.label}
+                      /> : <EvidenceLink
                         id={p.document_id}
                         page={p.source_page}
                         locator={p.source_locator}
-                        input={kind === "input" ? selected : undefined}
-                        department={kind === "input" ? p.region : undefined}
+                        input={kind === "input" ? p.source_input_id || selected : undefined}
+                        product={kind === "product" ? selected : undefined}
+                        productName={kind === "input"
+                          ? p.source_name || inputs.data?.find((input) => input.id === selected)?.name
+                          : options.find((option) => option.id === selected)?.label}
+                        market={kind !== "input" ? p.id : undefined}
+                        marketName={kind !== "input" ? p.name : undefined}
+                        department={p.region}
+                        municipality={p.municipality}
+                        presentation={p.presentation}
+                        units={p.units}
+                        currency={p.unit.startsWith("COP /") ? "COP" : undefined}
+                        month={p.date}
                       >
                         Consultar fuente
-                      </EvidenceLink>
+                      </EvidenceLink>}
                     </article>
                   ))
               ) : (

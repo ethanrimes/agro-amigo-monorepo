@@ -1,0 +1,944 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		  <title>01. SIPSA CONSULTA DET EXP</title><!-- cdf-bootstrap-script-includes -->		<script language="javascript" type="text/javascript" src="/pentaho/api/repos/pentaho-cdf/js/cdf-bootstrap-script-includes.js?v=af0c96d2a254e4cb4212525d8af0ce50"></script>
+<!-- cdf-bootstrap-ie8script-includes --><!--[if lte IE 8]>
+		<script language="javascript" type="text/javascript" src="/pentaho/api/repos/pentaho-cdf/js-legacy/lib/html5shiv/html5shiv.js?v=ee68da404bd6cbdab3adb3bf9219c207"></script>
+<![endif]-->
+<!-- cdf-bootstrap-style-includes -->		<link href="/pentaho/api/repos/pentaho-cdf/css/cdf-bootstrap-style-includes.css?v=4304c08c0db8f14b7092f926daadf620" rel="stylesheet" type="text/css" />
+<!-- bootstrap.css.map --><!-- cdf-bootstrap-ie8scriptAfterLink-includes --><!--[if lte IE 8]>
+		<script language="javascript" type="text/javascript" src="/pentaho/api/repos/pentaho-cdf/js-legacy/lib/respond/respond.js?v=c03b5dcc8955c34fa65e59e7e7daacf0"></script>
+<![endif]-->
+<!-- cdf-cdf-dashboard-script-includes -->
+		<script language="javascript" type="text/javascript" src="/pentaho/api/repos/pentaho-cdf/js-legacy/lib/sparkline/jquery.sparkline.js?v=c7638b825bc7deb1cf58c990825d35b2"></script>
+<!-- cdf-cdf-dashboard-style-includes -->  <script language="javascript" type="text/javascript" src="/pentaho/api/repos/pentaho-cdf-dd/js/CDF.js?v=428adb7cf8b0bf4028bd8abadb3f58b1"></script>
+  <link href="/pentaho/api/repos/pentaho-cdf-dd/css/CDF-CSS.css?v=70220aed25e4bd8a2e1261f0bbd179d4" rel="stylesheet" type="text/css" />
+
+<script language="javascript" type="text/javascript">
+Dashboards.context = {
+  "locale": "en_US",
+  "params": {},
+  "path": "/public/SIPSA/SIPSAV17.wcdf",
+  "queryData": {},
+  "roles": ["Anonymous"],
+  "serverLocalDate": 1790865597843,
+  "serverUTCDate": 1790883597843,
+  "sessionAttributes": {},
+  "sessionTimeout": 7200,
+  "user": "anonymousUser"
+}
+
+</script>
+
+	</head>
+	<body>
+		<script language="javascript">
+			// Init jQuery i18n plugin
+			loadMessageBundles = function(lang) {
+				jQuery.i18n.properties({
+					name:'messages',
+					path:'/pentaho/api/repos/pentaho-cdf-dd/tmp/.cache/public/SIPSA/',
+					mode:'both',
+					language:(lang == 'browser' ? jQuery.i18n.browserLang() : lang),
+					callback: function() {
+						
+					}
+				});
+				Dashboards.setI18nSupport('en-US', jQuery.i18n);
+			}
+
+			$(document).ready(function(){
+				// Initialize jquery.i18n plugin - load message files
+				var userLocale = 'en-US';
+				var formProvider = cdo.format.language(userLocale);
+				cdo.format.language(formProvider);
+				moment.locale(userLocale);
+				loadMessageBundles(userLocale);
+			});
+		</script>
+	
+		
+  <div class='container'>
+    <style>
+<!--
+
+.botonExp {
+    -moz-box-shadow: 0px 0px 0px 2px #9fb4f2;
+	-webkit-box-shadow: 0px 0px 0px 2px #9fb4f2;
+	box-shadow: 0px 0px 0px 2px #9fb4f2;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #7892c2), color-stop(1, #476e9e));
+	background:-moz-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background:-webkit-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background:-o-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background:-ms-linear-gradient(top, #7892c2 5%, #476e9e 100%);
+	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#7892c2', endColorstr='#476e9e',GradientType=0);
+	background-color:#6007e;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	border-radius:10px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:19px;
+	padding:1px 15px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+    width: 80px;
+    height: 30px;
+}
+
+.selBox
+{
+    width:80px; 
+    color:#ffffff;
+}
+
+titulo {
+    color: orange;
+    text-align: center;
+}
+
+
+boton {
+    color: orange;
+    text-align: center;
+} 
+ 
+-->
+</style>
+    
+    <script language="javascript" type="text/javascript">
+$(document).ready(function () {
+      $.ech.multiselect.prototype.options.selectedText = "# de # sel";
+       $.ech.multiselect.prototype.options.checkAllText = "Marcar Todos";
+       $.ech.multiselect.prototype.options.uncheckAllText = "Desmarcar Todos";
+       $.ech.multiselect.prototype.options.show = ['slide',200];
+       $.ech.multiselect.prototype.options.hide = ['slide',1000];
+       $.ech.multiselect.prototype.options.multiple=true;
+       $.ech.multiselect.prototype.options.selectedList =2;
+       $.ech.multiselect.prototype.options.width ="auto";
+       $.ech.multiselect.prototype.options.minWidth = 150;
+       $("#filPeriodo").css("width","20px");
+       $("#filPeriodo").css("width","20px");
+
+       //$("select").multiselect();
+       //$.ech.multiselect.prototype.options.autoOpen=true;
+          //$("select").multiselect();
+       //$("SelSede").multiselect();
+       //alert("inicio" + Dashboards.initEngine());
+     
+       
+       //$.ech.multiselect.prototype.options.show = 'bounce';
+       //$.ech.multiselect.prototype.options.hide = 'explode';
+       
+      
+       //$("#FilPeriodo").multiselect({checkAllText:"Marcar Todos xxx"}); Descofigura multiselect
+    
+
+       //$.ech.multiselect.prototype.options.selectedList = "1";
+       //$.ech.multiselect.prototype.options.show = "['slide']";
+       //$.ech.multiselect.prototype.options.multiple = "multiple";
+       //$.ech.multiselect.prototype.options.dblClick = "true";
+    
+       
+        
+      
+      
+          
+});
+ 
+</script>
+    
+    <div id='header'  class='cdfdd-round row clearfix '  style='height:7px;text-align:center;' >
+    </div>
+    <div id='logo' >
+      <image src='/pentaho/api/repos/%3Apublic%3APDI%3Aheader_dane.png/content'>
+      </image>
+    </div>
+    <div id='Titulo'  class='cdfdd-round row clearfix '  style='background-color:#66ccff;height:30px;text-align:center;' >
+      <span  style='font-size:12px;' ><div class="panel panel-info">
+  <div class="panel-heading">
+    <h2 class="panel-title"> <B>SIPSA - CONSULTA DE PRECIOS MAYORISTAS</B></h2>
+  </div> 
+      </span>
+    </div>
+    <div id='Nota'  class='cdfdd-round row clearfix '  style='height:15px;text-align:left;' >
+      <span  style='font-size:12px;' >
+
+<p class=MsoListParagraph style='margin-left:30.0pt;text-indent:-18.0pt;
+mso-list:l0 level1 lfo1'><![if !supportLists]><span style='mso-list:Ignore'></span><![endif]><span lang=ES style='color:#1F497D;mso-ansi-language:
+ES'>NOTA: Los precios reportados son $/kg, para los huevos y el bocadillo son $/unidad y los del aceite, el jugo y el vinagre $/litro.</p>
+</span> 
+    
+</p>
+ 
+      </span>
+    </div>
+    <div id='SeparadorInicial'  class='row clearfix '  style='height:15px;' >
+    </div>
+    <div id='TituloFilros01'  class='row clearfix ' >
+      <div class='col-xs-4'><div id='titFuente'  style='text-align:center;' >
+           <p><B>Fuente</B></p> 
+        
+      </div></div>
+      <div class='col-xs-3'><div id='titGrupo' >
+            <p><B>Grupo</B></p> 
+        
+      </div></div>
+      <div class='col-xs-3'><div id='titProducto' >
+            <p><B>Producto</B></p> 
+        
+      </div></div>
+      <div class='col-xs-2 last'><div id='titPromedio' >
+            <p><B>Periodicidad</B></p> 
+        
+      </div></div>
+    </div>
+    <div id='filtros01'  class='row clearfix ' >
+      <div class='col-xs-4'><div id='filFuente'  style='text-align:center;' >
+      </div></div>
+      <div class='col-xs-3'><div id='filGrupo'  style='text-align:center;' >
+      </div></div>
+      <div class='col-xs-3'><div id='filArticulo'  style='text-align:center;' >
+      </div></div>
+      <div class='col-xs-2 last'><div id='filPrecio'  style='text-align:center;' >
+      </div></div>
+    </div>
+    <div id='Separador01'  class='row clearfix '  style='height:10px;' >
+    </div>
+    <div id='filtros02'  class='row clearfix ' >
+      <div class='col-xs-1'><div id='titPeriodo'  style='text-align:right;' >
+            <p><B>Periodo</B></p> 
+        
+      </div></div>
+      <div class='col-xs-1'><div id='filPeriodoIni'  style='text-align:center;' >
+      </div></div>
+      <div class='col-xs-1'><div id='filPeriodoFin'  style='text-align:center;' >
+      </div></div>
+      <div class='col-xs-8'><div id='titRelleno' >
+      </div></div>
+      <div class='col-xs-1 last'><div id='lbtnexportar'  class='botonExp '  style='text-align:left;' >
+      </div></div>
+    </div>
+    <div id='ad902f04-237d-d7c7-e82c-b9399bc46b38'  class='row clearfix ' >
+    </div>
+    <div id='separador02'  class='row clearfix '  style='height:10px;' >
+    </div>
+    <div id='resultados'  class='row clearfix ' >
+      <div class='col-xs-12'><div id='grl01'  class='grafica ' >
+      </div></div>
+      <div class='col-xs-12 last'><div id='tbl01'  class='cdfdd-round '  style='text-align:center;' >
+      </div></div>
+    </div>
+    <div id='brochure' >
+      <p class=MsoListParagraph style='margin-left:54.0pt;text-indent:-18.0pt;
+mso-list:l0 level1 lfo1'><center><![if !supportLists]><span lang=ES style='font-family:
+Symbol;mso-fareast-font-family:Symbol;mso-bidi-font-family:Symbol;color:#1F497D;
+mso-ansi-language:ES'><span style='mso-list:Ignore'><span style='font:7.0pt "Times New 
+
+Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=ES style='color:#1F497D;mso-ansi-language:
+ES'>Guia a usuario:  
+<a href= "https://www.dane.gov.co/files/operaciones/SIPSA/brochure-SIPSA-2023.pdf" target="_blank" 
+
+download=</a>
+[en formato PDF]<o:p></o:p></span></center></p> 
+      
+    </div>
+    <div id='footer_dane' >
+      <image src='/pentaho/api/repos/%3Apublic%3APDI%3Afooter_dane.png/content'>
+      </image>
+    </div>
+  </div>
+<script language="javascript" type="text/javascript">
+wcdfSettings = {
+  "author": "",
+  "description": "Sipsa",
+  "rendererType": "bootstrap",
+  "require": false,
+  "style": "Clean",
+  "title": "01. SIPSA CONSULTA DET EXP",
+  "widget": false,
+  "widgetName": "",
+  "widgetParameters": []
+};
+
+Dashboards.addParameter("pardPeriodoIni", "2026-10-01");
+
+Dashboards.addParameter("pardPeriodoFin", "2026-10-01");
+
+Dashboards.addParameter("parsPrecio", "");
+Dashboards.setParameterViewMode("parsPrecio", "unused");
+
+Dashboards.addParameter("parcFuente", function() { return 
+}());
+
+Dashboards.addParameter("parcArticulo", function() { return 
+}());
+
+Dashboards.addParameter("parcGrupo", function() { return 
+}());
+
+Dashboards.addParameter("graficaActiva", "[0]");
+Dashboards.setParameterViewMode("graficaActiva", "unused");
+
+var render_seldPeriodoFin = {
+  type: "DateInput",
+  name: "render_seldPeriodoFin",
+  priority: 5,
+  htmlObject: "filPeriodoFin",
+  parameter: "pardPeriodoFin",
+  listeners: [],
+  executeAtStart: true
+};
+
+var render_seldPeriodoIni = {
+  type: "DateInput",
+  name: "render_seldPeriodoIni",
+  priority: 5,
+  htmlObject: "filPeriodoIni",
+  parameter: "pardPeriodoIni",
+  listeners: [],
+  executeAtStart: true
+};
+
+var render_mselFuente = {
+  type: "SelectMulti",
+  name: "render_mselFuente",
+  priority: 5,
+  parameter: "parcFuente",
+  htmlObject: "filFuente",
+  listeners: [],
+  parameters: [],
+  valuesArray: [],
+  valueAsId: true,
+  externalPlugin: "hynds",
+  executeAtStart: true,
+  postChange: function(){
+    var arr = [];
+        //for (var i = 0; i < parcFuente.length; i++) {
+       //         arr.push("'"+parcFuente[i] + "'");
+    //        }
+
+    //alert(arr);
+    //parsFuente=arr.toString();
+    parsFuente=parcFuente.toString();
+    //alert(parsFuente);
+    } ,
+  queryDefinition:  {
+    dataAccessId: "qryFuente",
+    path: "/public/SIPSA/SIPSAV17.cda"
+  }
+};
+
+var render_mselArticulo = {
+  type: "SelectMulti",
+  name: "render_mselArticulo",
+  priority: 6,
+  parameter: "parcArticulo",
+  htmlObject: "filArticulo",
+  listeners: ['parcGrupo'],
+  parameters: [["parcGrupo","parcGrupo"]],
+  valuesArray: [],
+  valueAsId: true,
+  externalPlugin: "hynds",
+  executeAtStart: true,
+  queryDefinition:  {
+    dataAccessId: "qryArticulo",
+    path: "/public/SIPSA/SIPSAV17.cda"
+  }
+};
+
+var render_mselGrupo = {
+  type: "SelectMulti",
+  name: "render_mselGrupo",
+  priority: 5,
+  parameter: "parcGrupo",
+  htmlObject: "filGrupo",
+  listeners: [],
+  parameters: [],
+  valuesArray: [],
+  valueAsId: true,
+  externalPlugin: "hynds",
+  executeAtStart: true,
+  queryDefinition:  {
+    dataAccessId: "qryGrupo",
+    path: "/public/SIPSA/SIPSAV17.cda"
+  }
+};
+
+var render_selPrecio = {
+  type: "Select",
+  name: "render_selPrecio",
+  priority: 5,
+  parameter: "parsPrecio",
+  htmlObject: "filPrecio",
+  listeners: [],
+  parameters: [],
+  valuesArray: [],
+  valueAsId: true,
+  externalPlugin: "hynds",
+  executeAtStart: true,
+  postChange: function ()
+{
+    var tmp01 = Dashboards.getComponentByName('render_gr01def');
+    var tmp02 = Dashboards.getComponentByName('render_gr02def');
+    var tmpbtn = Dashboards.getComponentByName('render_btnExportar');
+    var precio = Dashboards.getParameterValue('parsPrecio');
+    var grafica = Dashboards.getParameterValue('graficaActiva');
+    if (precio=='Diario' )   {
+        tmp02.htmlObject = null;
+        $("#" + tmp02.htmlObject).hide();
+        $("#" + tmp01.htmlObject).show();
+        tmp01.htmlObject = 'grl01';
+        tmpbtn.chartExportComponent = 'gr01def';
+    }
+    else 
+    {
+        tmp01.htmlObject = null;
+        $("#" + tmp01.htmlObject).hide();
+        $("#" + tmp02.htmlObject).show();
+        tmp02.htmlObject = 'grl01';
+        tmpbtn.chartExportComponent = 'gr02def';
+     
+    }
+    Dashboards.setParameter('graficaActiva', Dashboards.getParameterValue('parsPrecio'));
+    Dashboards.fireChange('graficaActiva'); //  Graficas y boton escuchan este parametro
+
+}
+
+  ,
+  extraOptions: [],
+  queryDefinition:  {
+    dataAccessId: "qryPrecios",
+    path: "/public/SIPSA/SIPSAV17.cda"
+  }
+};
+
+var render_btnExportar = {
+  type: "ExportPopupComponent",
+  name: "render_btnExportar",
+  priority: 1,
+  executeAtStart: false,
+  htmlObject: "lbtnexportar",
+  gravity: "E",
+  title: "Exportar",
+  chartExportType: "png",
+  chartExportLabel: "----",
+  dataExportComponent: "tb01",
+  dataExportType: "xls",
+  dataExportLabel: "Tabla",
+  dataExportAttachmentName: "sipsaexporta",
+  contentLinks: [],
+  preExecution: function() { return " "; },
+  listeners: ["graficaActiva"]
+};
+
+var render_tb01 = {
+  type: "Table",
+  name: "render_tb01",
+  priority: 5,
+  htmlObject: "tbl01",
+  listeners: ['pardPeriodoIni','pardPeriodoFin','parsArticulo','parsFuente','parsPrecio','parcFuente','parcArticulo'],
+  parameters: [["pardPeriodoIni","pardPeriodoIni"],["pardPeriodoFin","pardPeriodoFin"],["parcArticulo","parcArticulo"],["parsPrecio","parsPrecio"],["parcFuente","parcFuente"]],
+  executeAtStart: true,
+  extraOptions: [],
+  expandParameters: [],
+  expandOnClick: false,
+  chartDefinition:  {
+    dataAccessId: "qryTabla",
+    path: "/public/SIPSA/SIPSAV17.cda",
+    colHeaders: [],
+    colTypes: ["date","string","string","number","number","number"],
+    colFormats: ["%s","%s","%s","%.2f","%.2f","%.2f"],
+    colWidths: [],
+    colSortable: [],
+    colSearchable: [],
+    paginate: true,
+    paginateServerside: false,
+    paginationType: "simple_numbers",
+    filter: true,
+    info: true,
+    sort: true,
+    sortBy: [],
+    lengthChange: true,
+    tableStyle: "themeroller"
+  }
+};
+
+var render_gr01def = {
+  type: "cccLineChart",
+  name: "render_gr01def",
+  priority: 5,
+  parameters: [["pardPeriodoIni","pardPeriodoIni"],["pardPeriodoFin","pardPeriodoFin"],["parcArticulo","parcArticulo"],["parcFuente","parcFuente"],["parsPrecio","parsPrecio"],["graficaActiva","graficaActiva"]],
+  executeAtStart: true,
+  preExecution: function(){
+    if(parsPrecio!='Diario')
+       this.hide();
+       //alert(pardPeriodoIni)
+    } ,
+  listeners: ["pardPeriodoIni","pardPeriodoFin","parcFuente","parcArticulo","parcGrupo","graficaActiva"],
+  chartDefinition:  {
+    dataAccessId: "qryGraficaDiario",
+    path: "/public/SIPSA/SIPSAV17.cda",
+    width: 1200,
+    height: 500,
+    extensionPoints: [],
+    colors: [],
+    title: "VALOR PROMEDIO",
+    animate: true,
+    baseAxisDomainRoundMode: "tick",
+    baseAxisDomainScope: "global",
+    baseAxisGrid: false,
+    baseAxisMinorTicks: true,
+    baseAxisOffset: 0,
+    baseAxisOverlappedLabelsMode: "hide",
+    baseAxisTicks: true,
+    baseAxisTickUnitMax: "Infinity",
+    baseAxisTickUnitMin: "0",
+    baseAxisTitle: "FECHA",
+    baseAxisTitleFont: "12px sans-serif",
+    baseAxisTitleMargins: "0",
+    baseAxisTooltipAutoContent: "value",
+    baseAxisTooltipEnabled: true,
+    baseAxisVisible: true,
+    baseAxisZeroLine: true,
+    clearSelectionMode: "emptySpaceClick",
+    clickable: false,
+    color2AxisColors: [],
+    color2AxisLegendClickMode: "toggleVisible",
+    color2AxisLegendVisible: true,
+    compatVersion: 2,
+    contentMargins: "0",
+    contentPaddings: "0",
+    crosstabMode: false,
+    ctrlSelectMode: true,
+    dataIgnoreMetadataLabels: false,
+    dataSeparator: "~",
+    dotsVisible: true,
+    groupedLabelSep: " ~ ",
+    hoverable: false,
+    ignoreNulls: false,
+    isMultiValued: false,
+    leafContentOverflow: "auto",
+    legend: true,
+    legendClickMode: "toggleVisible",
+    legendFont: "10px sans-serif",
+    legendItemPadding: "2.5",
+    legendMargins: "0",
+    legendMarkerSize: 15,
+    legendPaddings: "5",
+    legendPosition: "bottom",
+    legendTextMargin: 6,
+    legendVisible: true,
+    margins: "3",
+    measuresIndexes: [],
+    multiChartColumnsMax: 3,
+    multiChartIndexes: [],
+    multiChartOverflow: "grow",
+    multiChartSingleColFillsHeight: true,
+    multiChartSingleRowFillsHeight: true,
+    nullInterpolationMode: "none",
+    orientation: "vertical",
+    ortho2AxisDomainRoundMode: "tick",
+    ortho2AxisDomainScope: "global",
+    ortho2AxisGrid: false,
+    ortho2AxisMinorTicks: true,
+    ortho2AxisOffset: 0,
+    ortho2AxisOverlappedLabelsMode: "hide",
+    ortho2AxisTicks: true,
+    ortho2AxisTickUnitMax: "Infinity",
+    ortho2AxisTickUnitMin: "0",
+    ortho2AxisTitleFont: "12px sans-serif",
+    ortho2AxisTitleMargins: "0",
+    ortho2AxisVisible: true,
+    ortho2AxisZeroLine: true,
+    orthoAxisDomainRoundMode: "tick",
+    orthoAxisDomainScope: "global",
+    orthoAxisGrid: false,
+    orthoAxisMinorTicks: true,
+    orthoAxisOffset: 0,
+    orthoAxisOverlappedLabelsMode: "hide",
+    orthoAxisTicks: true,
+    orthoAxisTickUnitMax: "Infinity",
+    orthoAxisTickUnitMin: "0",
+    orthoAxisTitle: "$/Kg",
+    orthoAxisTitleFont: "12px sans-serif",
+    orthoAxisTitleMargins: "0",
+    orthoAxisVisible: true,
+    orthoAxisZeroLine: true,
+    paddings: "0",
+    plot2: false,
+    plot2AreasVisible: false,
+    plot2ColorAxis: 2,
+    plot2DotsVisible: true,
+    plot2LinesVisible: true,
+    plot2NullInterpolationMode: "none",
+    plot2OrthoAxis: 1,
+    plot2Series: [],
+    plot2SeriesIndexes: -1,
+    plot2Stacked: false,
+    plot2ValuesFont: "10px sans-serif",
+    plot2ValuesMask: "{value}",
+    plot2ValuesVisible: false,
+    plotFrameVisible: true,
+    pointingMode: "near",
+    readers: [],
+    selectable: false,
+    seriesInRows: false,
+    smallContentMargins: "0",
+    smallContentPaddings: "0",
+    smallMargins: "2%",
+    smallPaddings: "0",
+    smallTitleFont: "14px sans-serif",
+    smallTitleMargins: "0",
+    smallTitlePaddings: "0",
+    smallTitlePosition: "top",
+    timeSeries: false,
+    timeSeriesFormat: "%Y-%m-%d",
+    titleFont: "14px sans-serif",
+    titleMargins: "0",
+    titlePaddings: "0",
+    titlePosition: "top",
+    tooltipEnabled: true,
+    tooltipFade: true,
+    tooltipFollowMouse: false,
+    tooltipHtml: true,
+    tooltipOpacity: 0.9,
+    trendAreasVisible: false,
+    trendColorAxis: 2,
+    trendDotsVisible: false,
+    trendLinesVisible: true,
+    trendOrthoAxis: 1,
+    trendStacked: false,
+    trendValuesAnchor: "right",
+    trendValuesFont: "10px sans-serif",
+    trendValuesVisible: false,
+    valuesFont: "10px sans-serif"
+  }
+};
+
+var render_gr02def = {
+  type: "cccDotChart",
+  name: "render_gr02def",
+  priority: 5,
+  parameters: [["parcArticulo","parcArticulo"],["parcFuente","parcFuente"],["pardPeriodoIni","pardPeriodoIni"],["pardPeriodoFin","pardPeriodoFin"],["parsPrecio","parsPrecio"],["graficaActiva","graficaActiva"]],
+  executeAtStart: true,
+  preExecution: function(){
+    if(parsPrecio=='Diario')
+       this.hide();
+    } ,
+  listeners: ["pardPeriodoIni","pardPeriodoFin","parcFuente","parcArticulo","parcGrupo","graficaActiva"],
+  chartDefinition:  {
+    dataAccessId: "qryGraficaSemMes",
+    path: "/public/SIPSA/SIPSAV17.cda",
+    width: 1200,
+    height: 500,
+    extensionPoints: [],
+    colors: [],
+    title: "VALOR PROMEDIO",
+    animate: true,
+    baseAxisDomainRoundMode: "tick",
+    baseAxisDomainScope: "global",
+    baseAxisGrid: false,
+    baseAxisMinorTicks: true,
+    baseAxisOffset: 0,
+    baseAxisOverlappedLabelsMode: "hide",
+    baseAxisTicks: true,
+    baseAxisTickUnitMax: "Infinity",
+    baseAxisTickUnitMin: "0",
+    baseAxisTitle: "FECHA",
+    baseAxisTitleFont: "12px sans-serif",
+    baseAxisTitleMargins: "0",
+    baseAxisTooltipAutoContent: "value",
+    baseAxisTooltipEnabled: true,
+    baseAxisVisible: true,
+    baseAxisZeroLine: true,
+    clearSelectionMode: "emptySpaceClick",
+    clickable: false,
+    color2AxisColors: [],
+    color2AxisLegendClickMode: "toggleVisible",
+    color2AxisLegendVisible: true,
+    compatVersion: 2,
+    contentMargins: "0",
+    contentPaddings: "0",
+    crosstabMode: false,
+    ctrlSelectMode: true,
+    dataIgnoreMetadataLabels: false,
+    dataSeparator: "~",
+    groupedLabelSep: " ~ ",
+    hoverable: false,
+    ignoreNulls: true,
+    isMultiValued: false,
+    leafContentOverflow: "auto",
+    legend: true,
+    legendClickMode: "toggleVisible",
+    legendFont: "10px sans-serif",
+    legendItemPadding: "2.5",
+    legendMargins: "0",
+    legendMarkerSize: 15,
+    legendPaddings: "5",
+    legendPosition: "bottom",
+    legendTextMargin: 6,
+    legendVisible: true,
+    linesVisible: true,
+    margins: "3",
+    measuresIndexes: [],
+    multiChartColumnsMax: 3,
+    multiChartIndexes: [],
+    multiChartOverflow: "grow",
+    multiChartSingleColFillsHeight: true,
+    multiChartSingleRowFillsHeight: true,
+    nullInterpolationMode: "none",
+    orientation: "vertical",
+    ortho2AxisDomainRoundMode: "tick",
+    ortho2AxisDomainScope: "global",
+    ortho2AxisGrid: false,
+    ortho2AxisMinorTicks: true,
+    ortho2AxisOffset: 0,
+    ortho2AxisOverlappedLabelsMode: "hide",
+    ortho2AxisTicks: true,
+    ortho2AxisTickUnitMax: "Infinity",
+    ortho2AxisTickUnitMin: "0",
+    ortho2AxisTitleFont: "12px sans-serif",
+    ortho2AxisTitleMargins: "0",
+    ortho2AxisVisible: true,
+    ortho2AxisZeroLine: true,
+    orthoAxisDomainRoundMode: "tick",
+    orthoAxisDomainScope: "global",
+    orthoAxisGrid: false,
+    orthoAxisMinorTicks: true,
+    orthoAxisOffset: 0,
+    orthoAxisOverlappedLabelsMode: "hide",
+    orthoAxisTicks: true,
+    orthoAxisTickUnitMax: "Infinity",
+    orthoAxisTickUnitMin: "0",
+    orthoAxisTitle: "$/Kg",
+    orthoAxisTitleFont: "12px sans-serif",
+    orthoAxisTitleMargins: "0",
+    orthoAxisVisible: true,
+    orthoAxisZeroLine: true,
+    paddings: "0",
+    plot2: false,
+    plot2AreasVisible: false,
+    plot2ColorAxis: 2,
+    plot2DotsVisible: true,
+    plot2LinesVisible: true,
+    plot2NullInterpolationMode: "none",
+    plot2OrthoAxis: 1,
+    plot2Series: [],
+    plot2SeriesIndexes: -1,
+    plot2Stacked: false,
+    plot2ValuesFont: "10px sans-serif",
+    plot2ValuesMask: "{value}",
+    plot2ValuesVisible: false,
+    plotFrameVisible: true,
+    pointingMode: "near",
+    readers: [],
+    selectable: false,
+    seriesInRows: false,
+    smallContentMargins: "0",
+    smallContentPaddings: "0",
+    smallMargins: "2%",
+    smallPaddings: "0",
+    smallTitleFont: "14px sans-serif",
+    smallTitleMargins: "0",
+    smallTitlePaddings: "0",
+    smallTitlePosition: "top",
+    timeSeries: false,
+    timeSeriesFormat: "%Y-%m-%d",
+    titleFont: "14px sans-serif",
+    titleMargins: "0",
+    titlePaddings: "0",
+    titlePosition: "top",
+    tooltipEnabled: true,
+    tooltipFade: true,
+    tooltipFollowMouse: false,
+    tooltipHtml: true,
+    tooltipOpacity: 0.9,
+    trendAreasVisible: false,
+    trendColorAxis: 2,
+    trendDotsVisible: false,
+    trendLinesVisible: true,
+    trendOrthoAxis: 1,
+    trendStacked: false,
+    trendValuesAnchor: "right",
+    trendValuesFont: "10px sans-serif",
+    trendValuesVisible: false,
+    valuesFont: "10px sans-serif"
+  }
+};
+
+var render_linea = {
+  type: "cccLineChart",
+  name: "render_linea",
+  priority: 5,
+  parameters: [],
+  executeAtStart: false,
+  htmlObject: "grl01",
+  listeners: [],
+  chartDefinition:  {
+    dataAccessId: "qrybarras",
+    path: "/public/SIPSA/SIPSAV17.cda",
+    width: 500,
+    height: 500,
+    extensionPoints: [],
+    colors: [],
+    animate: true,
+    baseAxisDomainRoundMode: "tick",
+    baseAxisDomainScope: "global",
+    baseAxisGrid: false,
+    baseAxisMinorTicks: true,
+    baseAxisOffset: 0,
+    baseAxisOverlappedLabelsMode: "hide",
+    baseAxisTicks: true,
+    baseAxisTickUnitMax: "Infinity",
+    baseAxisTickUnitMin: "0",
+    baseAxisTitleFont: "12px sans-serif",
+    baseAxisTitleMargins: "0",
+    baseAxisTooltipAutoContent: "value",
+    baseAxisTooltipEnabled: true,
+    baseAxisVisible: true,
+    baseAxisZeroLine: true,
+    clearSelectionMode: "emptySpaceClick",
+    clickable: false,
+    color2AxisColors: [],
+    color2AxisLegendClickMode: "toggleVisible",
+    color2AxisLegendVisible: true,
+    compatVersion: 2,
+    contentMargins: "0",
+    contentPaddings: "0",
+    crosstabMode: true,
+    ctrlSelectMode: true,
+    dataIgnoreMetadataLabels: false,
+    dataSeparator: "~",
+    dotsVisible: false,
+    groupedLabelSep: " ~ ",
+    hoverable: false,
+    ignoreNulls: true,
+    isMultiValued: false,
+    leafContentOverflow: "auto",
+    legend: true,
+    legendClickMode: "toggleVisible",
+    legendFont: "10px sans-serif",
+    legendItemPadding: "2.5",
+    legendMargins: "0",
+    legendMarkerSize: 15,
+    legendPaddings: "5",
+    legendPosition: "bottom",
+    legendTextMargin: 6,
+    legendVisible: true,
+    margins: "3",
+    measuresIndexes: [],
+    multiChartColumnsMax: 3,
+    multiChartIndexes: [],
+    multiChartOverflow: "grow",
+    multiChartSingleColFillsHeight: true,
+    multiChartSingleRowFillsHeight: true,
+    nullInterpolationMode: "none",
+    orientation: "vertical",
+    ortho2AxisDomainRoundMode: "tick",
+    ortho2AxisDomainScope: "global",
+    ortho2AxisGrid: false,
+    ortho2AxisMinorTicks: true,
+    ortho2AxisOffset: 0,
+    ortho2AxisOverlappedLabelsMode: "hide",
+    ortho2AxisTicks: true,
+    ortho2AxisTickUnitMax: "Infinity",
+    ortho2AxisTickUnitMin: "0",
+    ortho2AxisTitleFont: "12px sans-serif",
+    ortho2AxisTitleMargins: "0",
+    ortho2AxisVisible: true,
+    ortho2AxisZeroLine: true,
+    orthoAxisDomainRoundMode: "tick",
+    orthoAxisDomainScope: "global",
+    orthoAxisGrid: false,
+    orthoAxisMinorTicks: true,
+    orthoAxisOffset: 0,
+    orthoAxisOverlappedLabelsMode: "hide",
+    orthoAxisTicks: true,
+    orthoAxisTickUnitMax: "Infinity",
+    orthoAxisTickUnitMin: "0",
+    orthoAxisTitleFont: "12px sans-serif",
+    orthoAxisTitleMargins: "0",
+    orthoAxisVisible: true,
+    orthoAxisZeroLine: true,
+    paddings: "0",
+    plot2: false,
+    plot2AreasVisible: false,
+    plot2ColorAxis: 2,
+    plot2DotsVisible: true,
+    plot2LinesVisible: true,
+    plot2NullInterpolationMode: "none",
+    plot2OrthoAxis: 1,
+    plot2Series: [],
+    plot2SeriesIndexes: -1,
+    plot2Stacked: false,
+    plot2ValuesFont: "10px sans-serif",
+    plot2ValuesMask: "{value}",
+    plot2ValuesVisible: false,
+    plotFrameVisible: true,
+    pointingMode: "near",
+    readers: [],
+    selectable: false,
+    seriesInRows: false,
+    smallContentMargins: "0",
+    smallContentPaddings: "0",
+    smallMargins: "2%",
+    smallPaddings: "0",
+    smallTitleFont: "14px sans-serif",
+    smallTitleMargins: "0",
+    smallTitlePaddings: "0",
+    smallTitlePosition: "top",
+    timeSeries: false,
+    timeSeriesFormat: "%Y-%m-%d",
+    titleFont: "14px sans-serif",
+    titleMargins: "0",
+    titlePaddings: "0",
+    titlePosition: "top",
+    tooltipEnabled: true,
+    tooltipFade: true,
+    tooltipFollowMouse: false,
+    tooltipHtml: true,
+    tooltipOpacity: 0.9,
+    trendAreasVisible: false,
+    trendColorAxis: 2,
+    trendDotsVisible: false,
+    trendLinesVisible: true,
+    trendOrthoAxis: 1,
+    trendStacked: false,
+    trendValuesAnchor: "right",
+    trendValuesFont: "10px sans-serif",
+    trendValuesVisible: false,
+    valuesFont: "10px sans-serif"
+  }
+};
+
+Dashboards.addComponents([render_seldPeriodoFin, render_seldPeriodoIni, render_mselFuente, render_mselArticulo, render_mselGrupo, render_selPrecio, render_btnExportar, render_tb01, render_gr01def, render_gr02def, render_linea]);
+
+Dashboards.init();
+</script>
+
+		
+				<script type="text/javascript">
+		$( function(){
+				//$(".round").corner();
+				$(".cdfdd-round").corner();
+				$(".cdfdd-bevel").corner("bevel");
+				$(".cdfdd-notch").corner("notch");
+				$(".cdfdd-bite").corner("bite");
+				$(".cdfdd-bevel_top").corner("bevel top");
+				$(".cdfdd-dog_tr").corner("dog tr");
+			} ) ;
+		</script>
+		
+
+	</body>
+</html>
+
+

@@ -206,7 +206,7 @@ class DepartmentAnnexPeriods(unittest.TestCase):
         ):
             list(parse_inputs(b"native annex with inconsistent source dates"))
 
-    def test_actual_january_annex_keeps_conflicting_source_years_in_review(self):
+    def test_reviewed_january_2026_annex_resolves_two_stale_sheet_titles(self):
         path = Path(
             "artifacts/automation-audit-2026-09-26/dane/originals/anex-SIPSAinsumosdepartamento-ene2026.xlsx"
         )
@@ -217,10 +217,43 @@ class DepartmentAnnexPeriods(unittest.TestCase):
             sha256(data).hexdigest(),
             "34d5381162d54426489410cdfce83d7f08571b9443e3550082617b9907bb6678",
         )
-        with self.assertRaisesRegex(
-            SourceDateMismatch, "3.1, row 3; 2025-01-31 disagrees with 2026-01-31"
-        ):
-            list(parse_inputs(data))
+        parsed = list(parse_inputs(data))
+        self.assertEqual(len(parsed), 9294)
+        self.assertEqual({row[2] for row in parsed}, {date(2026, 1, 31)})
+        self.assertEqual(
+            Counter(row[-1]["sheet"] for row in parsed)["3.1"], 1195
+        )
+        self.assertEqual(
+            Counter(row[-1]["sheet"] for row in parsed)["3.2"], 104
+        )
+        book = openpyxl.load_workbook(path, read_only=True, data_only=True)
+        try:
+            expected = {}
+            for sheet in book:
+                price_column = None
+                for rownum, row in enumerate(sheet.iter_rows(values_only=True), 1):
+                    names = [clean(value) for value in row]
+                    if "Precio promedio departamento" in names:
+                        price_column = names.index("Precio promedio departamento")
+                        continue
+                    if price_column is None:
+                        continue
+                    price = row[price_column]
+                    if (
+                        isinstance(price, (int, float))
+                        and not isinstance(price, bool)
+                        and price > 0
+                    ):
+                        expected[f"{sheet.title}!row {rownum}"] = price
+        finally:
+            book.close()
+        self.assertEqual(
+            {
+                row[0].removesuffix("; full product identity"): row[6]
+                for row in parsed
+            },
+            expected,
+        )
 
     def test_archived_heading_variants_preserve_every_native_positive_price(self):
         folder = Path("artifacts/automation-audit-2026-09-26/dane/originals")

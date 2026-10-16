@@ -25,7 +25,9 @@ class WeeklyDatabase(Database):
         self.calls.append((sql, params))
         if sql.startswith("SELECT 1 FROM ingestion_checkpoint"):
             return Result(one=(1,) if params in self.checkpoints else None)
-        if sql.startswith("SELECT document_id,source_locator,image_id"):
+        if "FROM source_ocr_task t WHERE t.status" in sql:
+            if params[2]:
+                return Result()
             return Result(many=[("doc", "PDF page 2", "image", self.kind, 2)])
         if sql.startswith("SELECT content,source_url"):
             return Result(one=(b"%PDF-original", URL))
@@ -50,11 +52,12 @@ class WeeklyOCRRetirement(unittest.TestCase):
         self.assertEqual(events[0], "published")
         sql, params = events[1]
         self.assertIn("status='review'", sql)
-        self.assertIn("source_kind='dane-weekly-pdf'", sql)
+        self.assertIn("source_kind=%s", sql)
         self.assertIn("status IN ('pending','deferred')", sql)
         self.assertIn("Native extraction succeeded; no OCR needed", params[0])
         self.assertIn("prior readings retained", params[0])
         self.assertEqual(params[1], "doc")
+        self.assertEqual(params[2], KIND)
 
     def test_failed_or_partial_native_publication_does_not_retire_tasks(self):
         for failure in (ValueError("invalid quote"), WorkDeferred("resume batches")):
@@ -162,7 +165,44 @@ class WeeklyOCRRetirement(unittest.TestCase):
     def test_current_document_completion_skips_cache_images_and_provider(self):
         db = WeeklyDatabase(checkpoints=[("doc", worker.parser_version(KIND))])
         result, provider, publish = self.drain(db)
-        self.assertEqual(result, {"processed": 0, "review": 1, "deferred": 0})
+        self.assertEqual(
+            result,
+            {
+                "processed": 0,
+                "review": 1,
+                "deferred": 0,
+                "provider_quota": {
+                    "global_limit": 40,
+                    "global_used": 0,
+                    "city_reserved": 24,
+                    "city_used": 0,
+                    "other_limit": 16,
+                    "other_used": 0,
+                    "selected_city": 0,
+                    "selected_other": 1,
+                    "cached_only": False,
+                    "global_exhausted": False,
+                },
+                "typed_cached_retry": {
+                    "checked": 0,
+                    "requeued_documents": 0,
+                    "requeued_tasks": 0,
+                },
+                "daily_native_sweep": {
+                    "documents": 0,
+                    "retired": 0,
+                    "eligible": 0,
+                    "errors": 0,
+                },
+                "monthly_native_sweep": {
+                    "documents": 0,
+                    "retired": 0,
+                    "eligible": 0,
+                    "errors": 0,
+                    "requeued_assets": 0,
+                },
+            },
+        )
         provider.assert_not_called()
         publish.assert_not_called()
         self.assertFalse(any("source_ocr_result" in sql for sql, _ in db.calls))
@@ -206,6 +246,31 @@ class WeeklyOCRRetirement(unittest.TestCase):
         result, provider, _ = self.drain(db)
         self.assertEqual((result["processed"], provider.call_count), (1, 2))
         self.assertFalse(any("ingestion_checkpoint" in sql for sql, _ in db.calls))
+
+    def test_current_pork_and_corabastos_completion_skips_provider_requests(self):
+        for kind in ("colombia-corabastos-pdf", "colombia-pork-pdf"):
+            with self.subTest(kind=kind):
+                db = WeeklyDatabase(checkpoints=[("doc", worker.parser_version(kind))], kind=kind)
+                result, provider, publish = self.drain(db)
+                self.assertEqual((result["processed"], result["review"]), (0, 1))
+                provider.assert_not_called(); publish.assert_not_called()
+                self.assertFalse(any("INSERT INTO source_ocr_attempt" in query for query, _ in db.calls))
+                self.assertFalse(any("source_ocr_result" in query for query, _ in db.calls))
+
+    def test_old_pork_and_corabastos_checkpoint_does_not_retire_current_pending_work(self):
+        for kind in ("colombia-corabastos-pdf", "colombia-pork-pdf"):
+            with self.subTest(kind=kind):
+                db = WeeklyDatabase(checkpoints=[("doc", "old-parser")], kind=kind)
+                # This fixture has synthetic OCR tables, so isolate the
+                # source-bound typed gate while testing checkpoint retirement.
+                with patch.object(ocr, "compare_typed_task_readings", return_value=True) as typed:
+                    result, provider, publish = self.drain(db)
+                self.assertEqual((result["processed"], provider.call_count), (1, 2))
+                if kind == "colombia-pork-pdf":
+                    typed.assert_called_once_with(db, "doc", kind, 2, READING, READING)
+                else:
+                    typed.assert_not_called()
+                publish.assert_called_once()
 
 
 if __name__ == "__main__":

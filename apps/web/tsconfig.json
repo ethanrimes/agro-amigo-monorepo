@@ -32,6 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next-dev/types/**/*.ts",
+    ".next-qa-resume/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts"
   ],

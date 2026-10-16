@@ -22,10 +22,20 @@ test("city PDF spanning multiple verified days preserves its range", () => {
 });
 test("missing or invalid city dates never infer a date from filename or neighboring row", () => {
   for (const records of [[], [{}], [{ observed_on: "2026-02-30" }], [{ observed_on: "2026-09-25" }, {}]])
-    expect(evidencePeriod({ ...city, records })).toBe("Serie histórica completa");
+    expect(evidencePeriod({ ...city, records })).toBe("Período indicado en el documento");
 });
 test("a filtered historical workbook preview cannot narrow the whole source period", () => {
-  expect(evidencePeriod({ ...city, metadata: { ingestion_kind: "international-worldbank" }, media_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })).toBe("Serie histórica completa");
+  expect(evidencePeriod({ ...city, metadata: { ingestion_kind: "international-worldbank" }, media_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })).toBe("Período indicado en el documento");
+  expect(city.reference_period).toBe("Serie histórica completa");
+});
+test("an explicit archived source period survives incomplete or filtered previews", () => {
+  expect(evidencePeriod({ ...city, metadata: { ingestion_kind: "supply-annex" }, reference_period: "Diciembre de 2022 a enero de 2023", records: [] })).toBe("Diciembre de 2022 a enero de 2023");
+});
+test("a workbook with unknown period never claims a complete historical series in its heading", async ({ page }) => {
+  await page.route("**/api/evidence/**", (route) => route.fulfill({ json: { ...city, title: "anexo_abastecimiento_ene23.xlsx", metadata: { ingestion_kind: "supply-annex" }, media_type: "application/json" } }));
+  await page.goto("/evidence/" + city.id);
+  await expect(page.locator(".evidence-heading")).toContainText("DANE · Referencia: Período indicado en el documento");
+  await expect(page.locator(".evidence-heading")).not.toContainText("Serie histórica completa");
 });
 test("source heading presents the verified city day", async ({ page }) => {
   await page.route("**/api/evidence/**", (route) => route.fulfill({ json: { ...city, media_type: "application/json" } }));

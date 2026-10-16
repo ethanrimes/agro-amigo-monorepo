@@ -14,6 +14,12 @@ from hashlib import sha256
 
 VERSION = "source-link-recovery-v1"
 _FILES = "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/"
+_OPERATIONS = "https://www.dane.gov.co/files/operaciones/SIPSA/"
+_JULY_2024_ARCHIVE = (
+    "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/"
+    "sistema-de-informacion-de-precios-sipsa/"
+    "componente-precios-mayoristas-julio-de-2024"
+)
 _AUGUST_ARCHIVE = (
     "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/"
     "sistema-de-informacion-de-precios-sipsa/"
@@ -32,6 +38,15 @@ class VerifiedAlias:
 
 
 VERIFIED_ALIASES = {
+    _OPERATIONS + "anex-SIPSADiario-31jul2024.zip": VerifiedAlias(
+        _OPERATIONS + "anex-SIPSADiario-31jul2024.xlsx",
+        date(2024, 7, 31),
+        _JULY_2024_ARCHIVE,
+        "The official 31 July archive links a missing .zip; its same-stem "
+        "official .xlsx has the printed date and a complete native price matrix.",
+        "067657eb4da0ff75bedee1c7dddfc58f202de8b7132c93fddbc3a366c5ea7938",
+        307,
+    ),
     _FILES + "mayoristas_agosto_11_2014s.xls": VerifiedAlias(
         _FILES + "mayoristas_agosto_11_2014.xls",
         date(2014, 8, 11),

@@ -4,7 +4,13 @@ const fs = require('node:fs'), path = require('node:path');
 const ts = require('typescript');
 const { Client } = require('pg');
 const moduleOut = {};
-new Function('exports', ts.transpileModule(fs.readFileSync(path.join(__dirname, '../src/lib/server/source-document-sql.ts'), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(moduleOut);
+const subjects = {};
+new Function('exports', ts.transpileModule(fs.readFileSync(path.join(__dirname, '../src/lib/server/source-document-subjects.ts'), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(subjects);
+new Function('exports', 'require', ts.transpileModule(fs.readFileSync(path.join(__dirname, '../src/lib/server/source-document-sql.ts'), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(moduleOut, name => {
+  if (name === './source-document-scope') return require('./helpers/load-source-scope.cjs')();
+  if (name === './source-document-subjects') return subjects;
+  throw new Error('Unexpected evidence SQL dependency ' + name);
+});
 const SQL = moduleOut.SOURCE_DOCUMENT_EVIDENCE_SQL;
 const migration = fs.readFileSync(path.join(__dirname, '../../../pipelines/ingestion/migrations/20260928_021_source_document_annotations.sql'), 'utf8');
 const socket = process.env.AGRO_ANNOTATION_SQL_TEST_SOCKET;

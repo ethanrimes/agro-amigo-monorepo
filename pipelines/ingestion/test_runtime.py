@@ -31,6 +31,18 @@ class Runtime(unittest.TestCase):
         self.catalog = patch.object(worker, "refresh_catalog", return_value=0)
         self.catalog.start()
         self.addCleanup(self.catalog.stop)
+        # The city ZIP priority lane has separate query/queue tests. Runtime
+        # mocks below do not model its five-column never-checked SQL rows.
+        self.city_catchup = patch(
+            "pipelines.ingestion.queue_plan.city_catchup_candidates", return_value=[]
+        )
+        self.city_catchup.start()
+        self.addCleanup(self.city_catchup.stop)
+        self.current_dane = patch(
+            "pipelines.ingestion.queue_plan.current_dane_candidates", return_value=[]
+        )
+        self.current_dane.start()
+        self.addCleanup(self.current_dane.stop)
 
     def test_supply_resumes_validated_original_before_mutable_url(self):
         db = MagicMock()
@@ -152,11 +164,128 @@ class Runtime(unittest.TestCase):
                     )
                 )
 
+    def test_input_pointer_deferral_is_visible_until_final_refresh_catches_up(self):
+        stale = {"official": 0, "inputs": {"refreshed": [], "deferred": ["municipality"]}}
+        fresh = {"official": 0, "inputs": {"refreshed": ["municipality"], "deferred": []}}
+        for last, expected in ((stale, 1), (fresh, 0)):
+            with self.subTest(last=last):
+                db = MagicMock()
+                db.execute.return_value.fetchone.return_value = (True,)
+                with (patch.object(worker, "connect") as connect,
+                      patch.object(worker, "refresh_catalog", side_effect=[stale, last]),
+                      patch("pipelines.ingestion.ocr.drain", return_value={})):
+                    connect.return_value.__enter__.return_value = db
+                    result = worker.run("ocr", limit=0, time_budget=600)
+                self.assertEqual(len(result["deferred"]), expected)
+                if expected:
+                    self.assertEqual(result["deferred"][0]["source"], "input_latest_projection")
+                    self.assertEqual(result["deferred"][0]["scope"], "municipality")
+
+    def test_long_input_backfill_reserves_final_projection_window(self):
+        from .resumable_inputs import WorkDeferred
+
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        clock = [0.0]
+        seen_deadlines = []
+        catalog_deadlines = []
+
+        def catalog(_db):
+            catalog_deadlines.append(worker.RUN_DEADLINE.get())
+            return {"official": 0, "inputs": {"deferred": [], "refreshed": []}}
+
+        def asset(_db, url, kind, day):
+            seen_deadlines.append(worker.RUN_DEADLINE.get())
+            clock[0] = 1971.0
+            raise WorkDeferred("Validated workbook batches checkpointed")
+
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker.time, "monotonic", side_effect=lambda: clock[0]),
+            patch.object(worker, "refresh_catalog", side_effect=catalog),
+            patch("pipelines.ingestion.queue_plan.daily_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.repair_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.historical_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.recent_pending_daily_pdf_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.backfill_candidates", return_value=[
+                ("large-input", "inputs-municipal", None),
+                ("next-input", "inputs-municipal", None),
+            ]),
+            patch("pipelines.ingestion.queue_plan.supply_validation_retry", return_value=[]),
+            patch("pipelines.ingestion.city_product_backfill.drain", return_value={}),
+            patch.object(worker, "process_asset", side_effect=asset) as process,
+            patch("pipelines.ingestion.ocr.drain", return_value={}) as ocr,
+        ):
+            connect.return_value.__enter__.return_value = db
+            result = worker.run("backfill", limit=4, time_budget=2100)
+        self.assertEqual(seen_deadlines, [1970.0])
+        self.assertEqual(catalog_deadlines, [2100.0, 2100.0])
+        self.assertEqual(ocr.call_args.kwargs["deadline"], 1970.0)
+        self.assertEqual(process.call_count, 1)
+        self.assertTrue(result["time_budget_reached"])
+        self.assertEqual(result["deferred"][0]["url"], "large-input")
+
+    def test_short_targeted_input_check_keeps_full_budget(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        seen = []
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker, "refresh_catalog", return_value=0),
+            patch.object(worker, "process_asset", side_effect=lambda *_:
+                seen.append(worker.RUN_DEADLINE.get()) or 1),
+            patch("pipelines.ingestion.ocr.drain", return_value={}) as ocr,
+        ):
+            connect.return_value.__enter__.return_value = db
+            db.execute.return_value.fetchall.return_value = [
+                ("selected-input", "inputs-municipal", None)
+            ]
+            worker.run("backfill", asset_url="selected-input", time_budget=120,
+                       ocr_limit=0, ocr_scan_limit=0)
+        self.assertEqual(len(seen), 1)
+        self.assertGreater(seen[0], 0)
+        self.assertLessEqual(seen[0] - worker.time.monotonic(), 120)
+        self.assertEqual(ocr.call_args.kwargs["deadline"], seen[0])
+
+    def test_long_run_without_input_work_keeps_full_asset_budget(self):
+        db = MagicMock()
+        db.execute.return_value.fetchone.return_value = (True,)
+        seen = []
+        with (
+            patch.object(worker, "connect") as connect,
+            patch.object(worker, "refresh_catalog", return_value={
+                "inputs": {"deferred": []}, "official": 0,
+            }),
+            patch("pipelines.ingestion.queue_plan.daily_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.repair_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.historical_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.recent_pending_daily_pdf_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.backfill_candidates", return_value=[
+                ("other-source", "milk", None),
+            ]),
+            patch("pipelines.ingestion.queue_plan.supply_validation_retry", return_value=[]),
+            patch("pipelines.ingestion.city_product_backfill.drain", return_value={}),
+            patch.object(worker, "process_asset", side_effect=lambda *_:
+                seen.append(worker.RUN_DEADLINE.get()) or 1),
+            patch("pipelines.ingestion.retained_replays.drain", return_value={}),
+            patch("pipelines.ingestion.ocr.drain", return_value={}),
+        ):
+            connect.return_value.__enter__.return_value = db
+            worker.run("backfill", limit=1, time_budget=2100)
+        self.assertEqual(len(seen), 1)
+        self.assertLessEqual(seen[0] - worker.time.monotonic(), 2100)
+        self.assertGreater(seen[0] - worker.time.monotonic(), 2000)
+
     def test_operational_http_check_preserves_ocr_and_time_bounds(self):
         req = MagicMock(
             params={"asset_url": "https://www.dane.gov.co/retained-source.xlsx"}
         )
-        with patch.object(function_app, "run", return_value={}) as run:
+        with (
+            patch.object(function_app, "run", return_value={}) as run,
+            patch.object(function_app, "connect") as connect,
+        ):
+            db = connect.return_value.__enter__.return_value
+            db.execute.return_value.fetchone.return_value = (1,)
             response = function_app.run_check.build().get_user_function()(req)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -170,9 +299,29 @@ class Runtime(unittest.TestCase):
             },
         )
 
+    def test_operational_http_check_rejects_unregistered_url_without_running(self):
+        req = MagicMock(params={
+            "asset_url": "https://www.dane.gov.co/incorrect-directory.pdf",
+            "time_budget": "900",
+        })
+        with (
+            patch.object(function_app, "run") as run,
+            patch.object(function_app, "connect") as connect,
+        ):
+            db = connect.return_value.__enter__.return_value
+            db.execute.return_value.fetchone.return_value = None
+            response = function_app.run_check.build().get_user_function()(req)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.get_body(), b"Source URL is not registered")
+        run.assert_not_called()
+        db.execute.assert_any_call(
+            "SELECT 1 FROM ingestion_asset WHERE url=%s", (req.params["asset_url"],)
+        )
+
     def test_health_poll_never_aggregates_historical_prices(self):
         db = MagicMock()
         db.execute.return_value.fetchall.return_value = []
+        db.execute.return_value.fetchone.return_value = (0, 0, None)
         req = MagicMock(params={})
         with (
             patch.object(function_app, "connect") as connect,
@@ -214,6 +363,9 @@ class Runtime(unittest.TestCase):
         with (
             patch.object(worker, "connect") as connect,
             patch("pipelines.ingestion.queue_plan.daily_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.repair_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.historical_candidates", return_value=[]),
+            patch("pipelines.ingestion.queue_plan.recent_pending_daily_pdf_candidates", return_value=[]),
             patch(
                 "pipelines.ingestion.queue_plan.backfill_candidates", return_value=[]
             ),
@@ -315,7 +467,7 @@ class Runtime(unittest.TestCase):
         self.assertEqual(len(deferred), 1)
         self.assertIn("interval '6 hours'", deferred[0].args[0])
         self.assertEqual(
-            deferred[0].args[1], ("Committed batches will resume", source[0])
+            deferred[0].args[1], (False, "Committed batches will resume", source[0])
         )
         failures = [
             c

@@ -1,6 +1,7 @@
 """Full native public-query recovery, with exact identity/range/coverage guards."""
 
 import copy
+import hashlib
 import json
 import unittest
 from datetime import date
@@ -22,7 +23,7 @@ DAY = date(2013, 4, 18)
 BROKEN = next(url for url, day in MISSING_DAILY_URLS.items() if day == DAY)
 SOURCES = ["Bucaramanga, Centroabastos", "Cúcuta, Cenabastos"]
 PRODUCTS = ["Pimentón", "Huevo rojo A", "Aceite vegetal mezcla"]
-FIXTURES = Path(__file__).resolve().parents[2] / "artifacts/source-ambiguity-2026-09-27"
+FIXTURES = Path(__file__).resolve().parent / "testdata"
 COLUMNS = ("FECHA", "FUENTE", "ARTICULO", "PROMEDIO", "MINIMO", "MAXIMO")
 
 
@@ -149,33 +150,38 @@ class DailyQueryTests(unittest.TestCase):
             )
         fetcher.assert_not_called()
 
-    @unittest.skipUnless(
-        all(
-            (FIXTURES / "daily" / u.rsplit("/", 1)[1]).exists()
-            for u in VERIFIED_DATE_CONFLICTS
-        ),
-        "audited conflicting XLS originals unavailable",
-    )
-    def test_all_six_actual_conflict_originals_hash_gate_requested_day_only(self):
+    def test_all_actual_conflict_originals_hash_gate_requested_day_only(self):
+        self.assertEqual(len(VERIFIED_DATE_CONFLICTS), 7)
         for url, (day, digest) in VERIFIED_DATE_CONFLICTS.items():
-            body = (FIXTURES / "daily" / url.rsplit("/", 1)[1]).read_bytes()
-
-            def dated_fetch(target, params, day=day):
-                if params and params["dataAccessId"] == "qryTabla":
-                    self.assertEqual(params["parampardPeriodoIni"], day.isoformat())
-                    self.assertEqual(params["parampardPeriodoFin"], day.isoformat())
-                    rows = native_rows()
-                    for row in rows:
-                        row[0] = day.isoformat()
-                    return encoded(rows)
-                return fake_fetcher(target, params)
-
-            result = recover_daily(url, None, day, dated_fetch, original_data=body)
-            self.assertEqual(result.evidence["conflicting_original_sha256"], digest)
-            self.assertEqual(
-                result.evidence["recovery_reason"], "verified-date-conflict"
+            source_name = url.rsplit("/", 1)[1]
+            fixture_name = (
+                "daily-january2016-mislinked-2017.xls"
+                if source_name == "mayoristas_enero_18_2016.xls"
+                else source_name
             )
-            self.assertTrue(all(row[2] == day for row in result.rows))
+            fixture = FIXTURES / fixture_name
+            with self.subTest(source_url=url, fixture=fixture_name):
+                self.assertTrue(fixture.is_file(), f"Missing audited original: {fixture}")
+                body = fixture.read_bytes()
+                self.assertEqual(hashlib.sha256(body).hexdigest(), digest)
+
+                def dated_fetch(target, params):
+                    if params and params["dataAccessId"] == "qryTabla":
+                        self.assertEqual(params["parampardPeriodoIni"], day.isoformat())
+                        self.assertEqual(params["parampardPeriodoFin"], day.isoformat())
+                        rows = native_rows()
+                        for row in rows:
+                            row[0] = day.isoformat()
+                        return encoded(rows)
+                    return fake_fetcher(target, params)
+
+                result = recover_daily(url, None, day, dated_fetch, original_data=body)
+                self.assertEqual(result.evidence["original_url"], url)
+                self.assertEqual(result.evidence["conflicting_original_sha256"], digest)
+                self.assertEqual(
+                    result.evidence["recovery_reason"], "verified-date-conflict"
+                )
+                self.assertTrue(all(row[2] == day for row in result.rows))
 
     def test_published_mean_is_not_replaced_by_midpoint(self):
         row = parse_response(encoded(native_rows()), DAY, SOURCES, PRODUCTS)[0]
@@ -260,13 +266,6 @@ class DailyQueryTests(unittest.TestCase):
             recover_daily(BROKEN, 404, DAY, fetcher)
         self.assertEqual(fetcher.call_count, 2)
 
-    @unittest.skipUnless(
-        all(
-            (FIXTURES / f"pentaho-full-day-{day}.json").exists()
-            for day in ("2013-04-18", "2012-10-23")
-        ),
-        "actual official daily query fixtures unavailable",
-    )
     def test_actual_full_days_and_independent_printed_pdf_prices(self):
         sources = [
             r[0]
@@ -318,13 +317,6 @@ class DailyQueryTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "incomplete or paginated"):
                     parse_response(json.dumps(bad).encode(), day, sources, products)
 
-    @unittest.skipUnless(
-        all(
-            (FIXTURES / "daily/july-pentaho" / f"{day}.json").exists()
-            for day in ("2012-07-06", "2012-07-09")
-        ),
-        "independently retrieved official July fixtures unavailable",
-    )
     def test_actual_july_query_prices_remain_independent_of_ambiguous_workbooks(self):
         sources = [
             r[0]

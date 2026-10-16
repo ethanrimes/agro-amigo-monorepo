@@ -1,21 +1,44 @@
 import "server-only";
 import { database, WINDOW } from "./db";
 import type { Product } from "../market-types";
+import { departmentKey, departmentLabels } from "../filter-labels";
 
 export const RECENT_MONTHLY_QUOTES_SQL = `SELECT o.product_id,o.market_id,o.source_id,
   o.unit,o.price::text AS price,o.observed_on::text AS observed_on,m.region
   FROM published_price_observation o JOIN market m ON m.id=o.market_id
   WHERE ${WINDOW} AND o.source_id IN ('dane-sipsa','dane-milk-farm','dane-rice-mill')`;
+/** Return only the two observations used by aggregateMonthlyCatalog for each
+ * exact product/market/unit identity. Preserve the full read's scan order for
+ * equal-priority card variants. If either selected date has multiple source
+ * rows, the caller reads the original query in the same transaction instead
+ * of choosing a potentially different tied row.
+ */
+export const RECENT_MONTHLY_PAIRS_SQL = `WITH source_rows AS MATERIALIZED (
+  ${RECENT_MONTHLY_QUOTES_SQL}
+), numbered AS MATERIALIZED (
+  SELECT source_rows.*,row_number() OVER () AS source_order FROM source_rows
+), ranked AS (
+  SELECT numbered.*,
+    row_number() OVER (PARTITION BY product_id,market_id,unit ORDER BY observed_on DESC) AS pair_rank,
+    count(*) OVER (PARTITION BY product_id,market_id,unit,observed_on) AS same_date_count
+  FROM numbered
+)
+SELECT product_id,market_id,source_id,unit,price,observed_on,region,same_date_count
+FROM ranked WHERE pair_rank<=2 ORDER BY source_order`;
 export const CATALOG_MARKETS_SQL = `SELECT m.region,EXISTS(
-  SELECT 1 FROM regional_price r WHERE r.market_name=m.name
+  SELECT 1 FROM published_regional_price r WHERE r.market_name=m.name
     AND r.observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
-  ) AS has_city FROM market m WHERE m.region<>'' ORDER BY m.region`;
+  ) OR (m.id='sipsa-bogota-d-c-corabastos' AND m.municipality_id='11001' AND EXISTS(
+    SELECT 1 FROM published_regional_price r WHERE r.market_name='Bogotà, Corabastos'
+      AND r.observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
+  )) AS has_city FROM market m WHERE m.region<>'' ORDER BY m.region`;
 export const CATALOG_PRODUCTS_SQL = "SELECT * FROM product ORDER BY priority,name";
 
 export type MonthlyQuote = {
   product_id: string; market_id: string; source_id: string; unit: string;
   price: string; observed_on: string; region: string;
 };
+type RankedMonthlyQuote = MonthlyQuote & { same_date_count: number | string };
 export type CatalogProductMetadata = Pick<Product, "id" | "name" | "category" | "image_key"> & { priority: number };
 export type CatalogMarket = { region: string; has_city: boolean };
 export type MonthlyCatalogValues = { products: Map<string, Product[]>; regions: string[] };
@@ -69,7 +92,7 @@ export function aggregateMonthlyCatalog(
   const latest = new Map<string, LatestPair>();
   const reportedRegions = new Set<string>();
   for (const quote of quotes) {
-    reportedRegions.add(quote.region);
+    reportedRegions.add(departmentKey(quote.region));
     const key = JSON.stringify([quote.product_id, quote.market_id, quote.unit]);
     const pair = latest.get(key);
     if (!pair) latest.set(key, { current: quote });
@@ -80,7 +103,7 @@ export function aggregateMonthlyCatalog(
   }
   const productDays = new Map<string, Map<string, string>>();
   for (const { current } of latest.values()) {
-    for (const region of current.region ? ["", current.region] : [""]) {
+    for (const region of current.region ? ["", departmentKey(current.region)] : [""]) {
       let days = productDays.get(region);
       if (!days) productDays.set(region, days = new Map());
       if (current.observed_on > (days.get(current.product_id) || "")) days.set(current.product_id, current.observed_on);
@@ -91,7 +114,7 @@ export function aggregateMonthlyCatalog(
   for (const { current, previous } of latest.values()) {
     const price = cents(current.price);
     const previousPrice = previous?.observed_on === previousMonthEnd(current.observed_on) ? cents(previous.price) : null;
-    for (const region of current.region ? ["", current.region] : [""]) {
+    for (const region of current.region ? ["", departmentKey(current.region)] : [""]) {
       if (current.observed_on !== productDays.get(region)?.get(current.product_id)) continue;
       let groups = grouped.get(region);
       if (!groups) grouped.set(region, groups = new Map());
@@ -124,9 +147,12 @@ export function aggregateMonthlyCatalog(
     rows.sort((a, b) => ordering.get(a.id)! - ordering.get(b.id)!);
     products.set(region, rows);
   }
-  // Market metadata is ordered by the database's collation, just like the SQL
-  // UNION used previously; all historical city departments remain available.
-  const regions = [...new Set(markets.filter((m) => m.has_city || reportedRegions.has(m.region)).map((m) => m.region))];
+  // Resolve old links/preferences too; case variants point to one aggregate.
+  for (const { region } of markets) {
+    const rows = products.get(departmentKey(region));
+    if (rows) products.set(region, rows);
+  }
+  const regions = departmentLabels(markets.filter((m) => m.has_city || reportedRegions.has(departmentKey(m.region))).map((m) => m.region));
   return { products, regions };
 }
 
@@ -142,21 +168,29 @@ export async function monthlyCatalogSnapshot(): Promise<MonthlyCatalogSnapshot> 
   if (pending) return pending;
   pending = (async () => {
     const client = await database().connect();
+    let quotes: MonthlyQuote[];
+    let products: CatalogProductMetadata[];
+    let markets: CatalogMarket[];
     try {
       await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY");
-      const quotes = await client.query<MonthlyQuote>(RECENT_MONTHLY_QUOTES_SQL);
-      const products = await client.query<CatalogProductMetadata>(CATALOG_PRODUCTS_SQL);
-      const markets = await client.query<CatalogMarket>(CATALOG_MARKETS_SQL);
-      const value = aggregateMonthlyCatalog(quotes.rows, products.rows, markets.rows);
+      const pairs = await client.query<RankedMonthlyQuote>(RECENT_MONTHLY_PAIRS_SQL);
+      quotes = pairs.rows.some((row) => Number(row.same_date_count) !== 1)
+        ? (await client.query<MonthlyQuote>(RECENT_MONTHLY_QUOTES_SQL)).rows
+        : pairs.rows;
+      products = (await client.query<CatalogProductMetadata>(CATALOG_PRODUCTS_SQL)).rows;
+      markets = (await client.query<CatalogMarket>(CATALOG_MARKETS_SQL)).rows;
       await client.query("COMMIT");
-      snapshot = { ...value, expiresAt: Date.now() + 300_000 };
-      return snapshot;
     } catch (error) {
       await client.query("ROLLBACK").catch(() => undefined);
       throw error;
     } finally {
       client.release();
     }
+    // All source rows were copied in one read snapshot. Release the scarce DB
+    // client before CPU-only grouping so other catalog sources can progress.
+    const value = aggregateMonthlyCatalog(quotes, products, markets);
+    snapshot = { ...value, expiresAt: Date.now() + 300_000 };
+    return snapshot;
   })().finally(() => { pending = undefined; });
   return pending;
 }

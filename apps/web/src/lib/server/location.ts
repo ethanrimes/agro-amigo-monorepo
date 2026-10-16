@@ -109,7 +109,9 @@ export async function spatialPoint(
   // Six decimal places retain the explicitly selected point, without municipality snapping.
   const lat = latitude.toFixed(6),
     lon = longitude.toFixed(6),
-    key = `point:${layer.id}:${month}:${lat}:${lon}`;
+    // Static soil/erosion/annual layers have the same source query in every
+    // month. Reuse its retained exact-point response when a monthly map changes.
+    key = `point:${layer.id}:${layer.monthly ? month : 1}:${lat}:${lon}`;
   return single(key, async () => {
     let row = await cached(key, 24 * 30);
     if (!row) {

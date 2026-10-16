@@ -111,6 +111,8 @@ test("browser: credited crop and Colombian context photos load with source detai
   await page.goto("/credits");
   for (const key of ["apple", "blueberry", "farm-colombia", "produce-colombia", "coffee-parchment", "coffee-ground", "coffee-instant", "cocoa-powder", "peas-dried", "tuna-canned", "sardines-canned", "crackers-saltine", "cookies-sandwich", "parsley", "fava-green", "radish-red", "tangelo", "sunflower-oil-unbranded", "soybean-oil-unbranded", "aji-dulce", "squash-moschata", "chinese-chives", "mayonnaise-unbranded", "mustard-unbranded", "capaz-fish", "barley-groats", "bocadillo-colombiano", "fruit-juice-mix", "potato", "seeds-general", "seedlings-general", "cacao-pods", "sugarcane-colombia", "oil-palm-fruit", "palm-oil-unbranded", "rose-colombia", "rose-red-cut", "cattle-colombia", "coffee-green-beans", "bell-pepper-green"]) {
     const entry = imageLibrary[key];
+    await page.getByRole("combobox", { name: "Consultar los créditos de una imagen", exact: true }).fill(entry.title);
+    await page.getByRole("option").filter({ hasText: entry.title }).first().click();
     const article = page.locator(".credits-grid article").filter({ has: page.getByRole("heading", { name: entry.title, exact: true }) });
     await article.scrollIntoViewIfNeeded();
     await expect(article).toContainText(entry.author);

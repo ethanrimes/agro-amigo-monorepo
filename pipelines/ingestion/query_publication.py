@@ -67,9 +67,11 @@ def recover(
 
     def fetch(target, parameters):
         remaining = check_budget()
-        request = worker.SESSION.get if parameters is None else worker.SESSION.post
+        method = "GET" if parameters is None else "POST"
         kwargs = {} if parameters is None else {"data": parameters}
-        response = request(target, timeout=(10, min(60, remaining - 12)), **kwargs)
+        response = worker._request(
+            method, target, timeout=(10, min(60, remaining - 12)), **kwargs
+        )
         response.raise_for_status()
         body = response.content
         role = {

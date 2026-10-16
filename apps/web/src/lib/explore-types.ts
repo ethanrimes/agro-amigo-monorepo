@@ -20,8 +20,13 @@ export type MarketDetail = {
 export type InputDetail = {
   input: InputPrice;
   regions: InputPrice[];
+  current_quotes: InputPrice[];
   history: Point[];
 };
+export type InputAliasChoice = Pick<
+  InputPrice,
+  "id" | "name" | "presentation" | "product_line" | "brand" | "department" | "municipality" | "price" | "observed_on"
+>;
 export type SupplyRow = {
   market_id: string;
   market_name: string;
@@ -57,6 +62,16 @@ export type MapPoint = {
   source_locator?: string;
   presentation?: string;
   units?: string;
+  municipality?: string;
+  series?: string;
+  min_price?: number | null;
+  max_price?: number | null;
+  period_start?: string;
+  sources?: { document_id: string; title: string | null }[];
+  quote_key?: string;
+  input_id?: string;
+  source_input_id?: string;
+  source_name?: string;
 };
 export type MapFilters = {
   series?: string;
@@ -75,6 +90,7 @@ export type MapData = {
   points: MapPoint[];
   unit: string;
   date: string | null;
+  period_start?: string | null;
   basis: string;
   filters?: MapFilters;
   options?: {

@@ -5,6 +5,7 @@ folder; AGRO_INPUT_PDF_FIXTURES may point to a copy. No network or DB calls.
 """
 
 import io
+import hashlib
 import os
 import unittest
 from datetime import date
@@ -42,6 +43,36 @@ def parse(lines):
 
 
 class InputPDFRecovery(unittest.TestCase):
+    def test_irrigation_table_uses_printed_district_payment_basis_and_price(self):
+        buffer = io.BytesIO()
+        pdf = canvas.Canvas(buffer, pagesize=(612, 792))
+        for x, y, value, bold in [
+            (35, 740, "Cuadro 13. Precios del agua en los distritos de riego", True),
+            (35, 728, "2013 (octubre)", True),
+            (35, 705, "Productos y mercados", False),
+            (183, 705, "Precio medio", False),
+            (35, 680, "Fijo hectarea/semestre", True),
+            (35, 665, "Lerida (Tolima)", False),
+            (175, 665, "Asorrecio", False),
+            (245, 665, "40.788", False),
+            (35, 650, "Metro cubico/dia", True),
+            (35, 635, "Espinal (Tolima)", False),
+            (175, 635, "Usocoello", False),
+            (250, 635, "14", False),
+        ]:
+            pdf.setFont("Helvetica-Bold" if bold else "Helvetica", 8)
+            pdf.drawString(x, y, value)
+        pdf.save()
+        rows = list(parse_input_pdf(buffer.getvalue(), date(2013, 10, 31)))
+        self.assertEqual(
+            [(r[3], r[4], r[5], r[6], r[7]) for r in rows],
+            [
+                ("Asorrecio", "Lerida", "Fijo hectarea/semestre", 40788, None),
+                ("Usocoello", "Espinal", "Metro cubico/dia", 14, None),
+            ],
+        )
+        self.assertTrue(all(r[-1]["category"] == "Servicios agrícolas" for r in rows))
+
     def test_no_space_after_comma_keeps_capacity_with_product(self):
         rows = parse(
             [
@@ -172,6 +203,40 @@ FIXTURES = Path(
         / "artifacts/extraction-robustness-2026-09-27/inputs-pdf",
     )
 )
+
+OCT2013 = (
+    Path(__file__).resolve().parents[2]
+    / "artifacts/extraction-robustness-2026-09-28/inputs-pdf"
+    / "insumos_factores_de_produccion_oct_2013.pdf"
+)
+
+
+@unittest.skipUnless(OCT2013.exists(), "Retained October 2013 DANE original required")
+class ActualOctober2013Irrigation(unittest.TestCase):
+    def test_every_printed_irrigation_charge_survives_native_extraction(self):
+        data = OCT2013.read_bytes()
+        self.assertEqual(
+            hashlib.sha256(data).hexdigest(),
+            "73e73c6951273ff113cd37bb1121858ca990d2cfd836f6fcfc2b30bd0b3278fe",
+        )
+        rows = list(parse_input_pdf(data, date(2013, 10, 31)))
+        irrigation = [
+            r for r in rows if r[-1]["page"] == 54 and r[-1]["category"] == "Servicios agrícolas"
+        ]
+        self.assertEqual(len(irrigation), 39)
+        self.assertEqual(len(rows), 5657)
+        self.assertEqual(
+            [(r[3], r[4], r[5], r[6]) for r in irrigation[:2]],
+            [
+                ("Asorrecio", "Lérida", "Fijo hectárea/semestre", 40788),
+                ("Usosaldaña", "Saldaña", "Fijo hectárea/semestre", 51907),
+            ],
+        )
+        self.assertIn(
+            ("Usocoello", "Espinal", "Metro cúbico/día", 14),
+            [(r[3], r[4], r[5], r[6]) for r in irrigation],
+        )
+        self.assertTrue(all(r[7] is None and r[-1]["extraction_method"] == "native-pdf-word-geometry" for r in irrigation))
 
 # Independently transcribed from rendered original pages, not parser output.
 REAL_CASES = [

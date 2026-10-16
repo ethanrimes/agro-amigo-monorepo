@@ -53,10 +53,10 @@ const sources = [
   },
   {
     name: "DANE · SIPSA",
-    subtitle: "Precios mayoristas",
+    subtitle: "Precios, insumos y abastecimiento",
     status: "Integrado",
     description:
-      "Promedios mensuales, boletines diarios y PDFs de informes por ciudades. Cada precio conserva la presentación y su contenido en kg, litros o unidades; los rangos por empaque y los promedios se distinguen. Incluye leche en finca y arroz en molino.",
+      "Boletines diarios, semanales y mensuales, informes por ciudades, insumos y abastecimiento. Cada precio conserva la presentación y su contenido en kg, litros o unidades; los rangos por empaque y los promedios se distinguen. Incluye leche en finca y arroz en molino.",
     url: "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/mayoristas-boletin-mensual-1",
   },
   {
@@ -124,6 +124,7 @@ export default function Sources() {
           <span className="eyebrow">INFORMACIÓN QUE DA CONFIANZA</span>
           <h1>Conoce de dónde viene.</h1>
           <p>Fuentes públicas para tomar mejores decisiones en el campo.</p>
+          <a className="button secondary" href="#document-library">Buscar documentos originales ↓</a>
         </div>
       </div>
       <div className="source-grid">

@@ -9,6 +9,7 @@ export type OfficialPrice = {
   currency: string;
   unit: string;
   market: string;
+  department?: string;
   observed_on: string;
   period_start: string | null;
   price: number;
@@ -48,6 +49,7 @@ export const officialDetailLabels: Record<string, string> = {
   statistic: "Medida publicada",
   trend: "Tendencia publicada",
   methodology_change: "Fecha de cambio de método",
+  history_continuity_note: "Alcance del historial",
   grade: "Clasificación",
   mostly_min: "Precio habitual mínimo",
   mostly_max: "Precio habitual máximo",

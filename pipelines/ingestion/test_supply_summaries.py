@@ -264,7 +264,7 @@ class SupplySummaryPostgres(unittest.TestCase):
         )[1]
         self.assertEqual(
             self.db.execute(summary_sql.replace("$1", "%s"), ("first",)).fetchone(),
-            (1560, 1268, "2021-11-09", "2021-12-30", "Abastecimiento"),
+            (1560, 1268, "2021-11-09", "2021-12-30", "Abastecimiento", None),
         )
         locator = "Abastecimiento!row 12,col 53; " + adapter.VERSION
         sql = row_sql.replace("$1", "%s").replace("$2", "%s")
@@ -274,6 +274,35 @@ class SupplySummaryPostgres(unittest.TestCase):
             (rows[0][0], rows[0][5], rows[0][6], rows[0][7]),
             ("supply-daily-summary", "t", 394, "market_total"),
         )
+
+    def test_pdf_evidence_queries_preserve_literal_totals_pages_and_provisional_marks(self):
+        import re
+        from . import daily_pdf_supply
+
+        source = (Path(__file__).resolve().parents[2] / "apps/web/src/lib/server/planning.ts").read_text()
+        summary_sql = re.search(r"`(SELECT count\(\*\)::int cells,.*?)`", source, re.DOTALL)[1]
+        row_sql = re.search(r"`(SELECT kind,observed_on,name,category,source_locator,.*?)`", source, re.DOTALL)[1]
+        fixtures = [
+            ("25sep2026", date(2026, 9, 25), 220, "2026-09-17", "2026-09-24", 27004),
+            ("04sep2026", date(2026, 9, 4), 222, "2026-08-27", "2026-09-03", 26644),
+        ]
+        for name, publication, reported, first, last, tonnes in fixtures:
+            with self.subTest(source=name):
+                data = (Path(__file__).parent / f"testdata/bol-SIPSADiario-{name}.pdf").read_bytes()
+                parsed = daily_pdf_supply.parse(data, publication)
+                adapter.publish_rows(self.db, parsed, name)
+                self.assertEqual(
+                    self.db.execute(summary_sql.replace("$1", "%s"), (name,)).fetchone(),
+                    (264, reported, first, last, None, 4),
+                )
+                total = next(r for r in parsed if r["name"] == "Total" and str(r["observed_on"]) == last)
+                locator = total["source_locator"]
+                rows = self.db.execute(row_sql.replace("$1", "%s").replace("$2", "%s"),
+                                       (name, locator, locator)).fetchall()
+                self.assertEqual(len(rows), 1)
+                self.assertEqual((rows[0][5], rows[0][6]), ("t", tonnes))
+                self.assertEqual(rows[0][8]["source_page"], 5)
+                self.assertEqual(rows[0][8]["provisional_mark"], "p")
 
     def test_cell_publication_is_idempotent_preserves_documents_and_outer_rollback(
         self,

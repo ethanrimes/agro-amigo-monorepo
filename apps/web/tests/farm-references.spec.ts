@@ -266,7 +266,10 @@ test("old farm, crop and budget bytes survive informational navigation and reloa
   await expect(page.locator(".crop-references h2").first()).toHaveText(
     "Frijol seco",
   );
-  await page.getByLabel("Municipio de referencia").selectOption("41001");
+  await page.getByRole("combobox", { name: "Municipio de referencia" }).fill("Neiva");
+  await page.getByRole("option", { name: /Neiva, Huila/ }).click();
+  await expect(page.getByRole("group", { name: "Municipio de referencia" }))
+    .toContainText("Seleccionado: Neiva, Huila");
   await expect(page.locator(".crop-references .eyebrow").first()).toContainText(
     "Neiva",
   );

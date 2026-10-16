@@ -11,6 +11,9 @@ from . import test_official_catalog as fixtures
 MIGRATION = (
     Path(__file__).parent / "migrations/20260927_019_milk_bulletin_precedence.sql"
 )
+CURRENT_VIEW = (
+    Path(__file__).parent / "migrations/20260928_025_official_quote_supersession.sql"
+)
 
 
 def quote(day, price, locator, period=None, *, series="dane-milk-macroregion"):
@@ -41,6 +44,7 @@ class MilkBulletinPrecedence(unittest.TestCase):
             r"^GRANT .*;\n", "", MIGRATION.read_text(), flags=re.MULTILINE
         )
         self.db.execute(migration)
+        self.db.execute(re.sub(r"^GRANT .*;\n", "", CURRENT_VIEW.read_text(), flags=re.MULTILINE))
 
     def source(self, name, period, retrieved):
         did = self.original(name, retrieved)
@@ -197,7 +201,7 @@ class MilkBulletinPrecedence(unittest.TestCase):
             )
 
         schema = (Path(__file__).parent / "schema.sql").read_text()
-        self.assertEqual(view(schema), view(MIGRATION.read_text()))
+        self.assertEqual(view(schema), view(CURRENT_VIEW.read_text()))
         milk = self.source("Milk cache", "2026-06-30", "2026-09-01T00:00:00Z")
         other = self.source("Other cache", "", "2026-09-01T00:00:00Z")
         self.publish(milk, [quote("2026-05-31", 2000, "milk", "2026-06-30")])

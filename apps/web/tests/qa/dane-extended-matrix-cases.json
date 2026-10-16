@@ -88,20 +88,20 @@
   {
     "name": "DANE extended auxiliary wholesale",
     "route": "/data-references?kind=wholesale",
-    "ready": "document.querySelectorAll('.input-grid article').length===60&&document.querySelector('select')?.value===\"wholesale\"",
+    "ready": "document.querySelector('select')?.value==='wholesale' && document.querySelectorAll('select')[1]?.options.length>0",
     "steps": [
       {
         "checks": [
           {
             "id": "AUX-01",
             "condition": "document.querySelector('.results-label').textContent.includes('463')&&document.querySelectorAll('.input-grid article').length===60",
-            "expected": "wholesale: published count 463 and first page 60 rows",
+            "expected": "Audited August 2026 wholesale annex has 463 published rows; first page 60 after explicit month selection",
             "observed": "({heading:document.querySelector('h1').innerText,total:document.querySelector('.results-label').innerText})"
           },
           {
             "id": "AUX-04",
-            "condition": "(()=>{const wanted={\"document_id\": \"f5d71069f7e57759ed675ff9a003c37854eca7f13e17d68f7f39845ae36b3d02\", \"source_locator\": \"1!row 64,col 2; monthly-annex-v2\", \"observed_on\": \"2026-08-31\", \"name\": \"Aceite vegetal mezcla**\", \"category\": \"Productos mayoristas\", \"details\": {\"Ciudad\": \"Barranquilla\", \"Unidad\": \"litre\", \"Producto\": \"Aceite vegetal mezcla**\", \"Precio (COP)\": 10189, \"Variación (%)\": 0.45}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
-            "expected": "Exact native wholesale source row 1!row 64,col 2; monthly-annex-v2, including zero vs absent fields",
+            "condition": "(()=>{const wanted={\"document_id\": \"f5d71069f7e57759ed675ff9a003c37854eca7f13e17d68f7f39845ae36b3d02\", \"source_locator\": \"1!row 64,col 2; monthly-annex-v2\", \"observed_on\": \"2026-08-31\", \"name\": \"Aceite vegetal mezcla**\", \"category\": \"Productos mayoristas\", \"details\": {\"Ciudad\": \"Barranquilla\", \"Unidad\": \"litro\", \"Producto\": \"Aceite vegetal mezcla**\", \"Precio (COP)\": 10189, \"Variación (%)\": 0.45}};const a=[...document.querySelectorAll('.input-grid article')].find(x=>x.querySelector('h2').textContent===wanted.name&&new URL(x.querySelector('a.evidence-link').href).searchParams.get('locator')===wanted.source_locator);if(!a)return false;const d=Object.fromEntries([...a.querySelectorAll('dl > div')].map(x=>[x.querySelector('dt').textContent,x.querySelector('dd').textContent]));const fmt=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);return Object.entries(wanted.details).every(([k,v])=>v===null?!(k in d):d[k]===(typeof v==='number'?(k==='Año'?String(v):['Subsidio','Contribución'].includes(k)?fmt(v*100)+' %':fmt(v)):String(v)))})()",
+            "expected": "Exact native wholesale source row 1!row 64,col 2; monthly-annex-v2, including zero vs absent fields; source internal litre is localized as litro in the UI",
             "observed": "[...document.querySelectorAll('.input-grid article')].slice(0,6).map(x=>x.innerText)"
           },
           {
@@ -111,10 +111,12 @@
           },
           {
             "id": "AUX-04",
-            "condition": "document.querySelector('.input-grid article').innerText.includes('litre')&&document.querySelector('.input-grid article').innerText.includes('10.189')",
-            "expected": "Oil is COP/litre with printed 10189, not kg and not its0.45% variation"
+            "condition": "document.querySelector('.input-grid article').innerText.includes('litro')&&document.querySelector('.input-grid article').innerText.includes('10.189')",
+            "expected": "Oil displays COP por litro and printed 10,189, rather than a kg price or the 0.45% variation"
           }
-        ]
+        ],
+        "action": "{const e=document.querySelectorAll('select')[1];if(![...e.options].some(o=>o.value==='2026-08-31'))throw Error('Audited August 2026 monthly annex missing');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,'2026-08-31');e.dispatchEvent(new Event('change',{bubbles:true}));}",
+        "ready": "document.querySelectorAll('select')[1]?.value==='2026-08-31'&&document.querySelectorAll('.input-grid article').length===60"
       }
     ]
   },
@@ -175,33 +177,33 @@
         "checks": [
           {
             "id": "CTY-05",
-            "condition": "document.querySelector('.results-label').textContent.startsWith('53 rangos')&&document.querySelectorAll('.input-card').length===36",
-            "expected": "Barranquillita53 retained ranges, first36 visible"
+            "condition": "window.__qaBarranquillitaRows.length>36 && document.querySelector('.results-label').textContent.startsWith(window.__qaBarranquillitaRows.length+' rangos')&&document.querySelectorAll('.input-card').length===36",
+            "expected": "Latest same-source Barranquillita count matches DANE regional API; first 36 visible. Sep25 original oracle: 53 ranges."
           }
         ],
-        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Barranquilla, Barranquillita\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
-        "ready": "document.querySelector('.results-label')?.textContent.startsWith('53 rangos')"
+        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Barranquilla, Barranquillita\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}window.__qaRegionalRows=await fetch('/api/planning/regional').then(async r=>{if(!r.ok)throw Error('Regional HTTP '+r.status);return r.json()});window.__qaBarranquillitaRows=window.__qaRegionalRows.filter(r=>r.market_name==='Barranquilla, Barranquillita');",
+        "ready": "!!window.__qaBarranquillitaRows && document.querySelector('.results-label')?.textContent.startsWith(window.__qaBarranquillitaRows.length+' rangos')"
       },
       {
         "checks": [
           {
             "id": "CTY-05",
-            "condition": "document.querySelectorAll('.input-card').length===53&&!document.querySelector('.load-more button')",
-            "expected": "Load beyond36 reaches all53 ranges without leftover button"
+            "condition": "document.querySelectorAll('.input-card').length===Math.min(window.__qaBarranquillitaRows.length,72) && Boolean(document.querySelector('.load-more button'))===(window.__qaBarranquillitaRows.length>72)",
+            "expected": "One load-more action reveals the next 36 latest-source ranges; Sep25 original oracle: all 53 after one click."
           },
           {
             "id": "CTY-04",
-            "condition": "[...document.querySelectorAll('.input-card')].every(x=>x.innerText.includes('Ronda 1')&&!x.innerText.includes('Ronda 2')&&x.querySelector('.input-price').innerText!=='$ 0 – $ 0')",
-            "expected": "Native Sept25 original has only priced round1; zero round2 not sale quotes"
+            "condition": "window.__qaBarranquillitaRows.slice(0,72).every(r=>r.min_price>0&&r.max_price>0) && [...document.querySelectorAll('.input-card')].every(x=>x.querySelector('.input-price').innerText!=='$ 0 – $ 0')",
+            "expected": "Only priced rounds are rendered; zero-valued unpublished rounds are not quotes. Sep25 original PDF had priced round 1 and zero round 2."
           },
           {
             "id": "CTY-08",
-            "condition": "[...document.querySelectorAll('.input-card a.evidence-link')].every(a=>a.pathname==='/evidence/6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30'&&['1','2'].includes(new URL(a.href).searchParams.get('page')))",
-            "expected": "All53 source links retain correct2-page member, rather than national ZIP as PDF"
+            "condition": "[...document.querySelectorAll('.input-card a.evidence-link')].every((link,i)=>{const source=window.__qaBarranquillitaRows[i];return !!source&&link.pathname==='/evidence/'+source.document_id&&new URL(link.href).searchParams.get('page')===String(source.source_page)})",
+            "expected": "Every visible latest range links to its exact DANE city-member PDF and page; Sep25 original member SHA 6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30 remains in historical checks."
           }
         ],
         "action": "[...document.querySelectorAll('button')].find(x=>x.textContent.includes('Ver más rangos')).click();",
-        "ready": "document.querySelectorAll('.input-card').length===53"
+        "ready": "!!window.__qaBarranquillitaRows && document.querySelectorAll('.input-card').length===Math.min(window.__qaBarranquillitaRows.length,72)"
       }
     ]
   },
@@ -214,13 +216,13 @@
         "checks": [
           {
             "id": "CTY-04",
-            "condition": "(()=>{const expected=[{\"document_id\": \"197c11ba0726970df6140993ec4ce3b2266891f2e9d079b5e95bc3229cfb6345\", \"source_locator\": \"PDF page 3,table 1,row 17,round 1\", \"observed_on\": \"2026-09-26\", \"product_id\": \"acelga\", \"product_name\": \"Acelga\", \"market_name\": \"Bogotá, D.C., Corabastos\", \"category\": \"Verduras y hortalizas > Hortalizas\", \"presentation\": \"Atado/manojo\", \"quantity\": 15, \"source_unit\": \"Kilogramo\", \"round\": 1, \"round_label\": \"Ronda 1 * 03:00 - 04:00\", \"min_price\": 7000, \"max_price\": 8000, \"unit\": \"kg\", \"min_unit_price\": 466.6666666666667, \"max_unit_price\": 533.3333333333334, \"source_page\": 3, \"market_id\": \"sipsa-bogota-d-c-corabastos\", \"category_path\": [\"Verduras y hortalizas\", \"Hortalizas\"], \"rn\": 1}, {\"document_id\": \"197c11ba0726970df6140993ec4ce3b2266891f2e9d079b5e95bc3229cfb6345\", \"source_locator\": \"PDF page 3,table 1,row 17,round 2\", \"observed_on\": \"2026-09-26\", \"product_id\": \"acelga\", \"product_name\": \"Acelga\", \"market_name\": \"Bogotá, D.C., Corabastos\", \"category\": \"Verduras y hortalizas > Hortalizas\", \"presentation\": \"Atado/manojo\", \"quantity\": 15, \"source_unit\": \"Kilogramo\", \"round\": 2, \"round_label\": \"Ronda 2 04:00 - 05:00\", \"min_price\": 6000, \"max_price\": 7000, \"unit\": \"kg\", \"min_unit_price\": 400, \"max_unit_price\": 466.6666666666667, \"source_page\": 3, \"market_id\": \"sipsa-bogota-d-c-corabastos\", \"category_path\": [\"Verduras y hortalizas\", \"Hortalizas\"], \"rn\": 1}];const cards=[...document.querySelectorAll('.input-card')];return cards.length===expected.length&&expected.every(r=>cards.some(a=>a.innerText.includes(r.round_label)&&a.innerText.includes(new Intl.NumberFormat('es-CO').format(r.min_price))&&a.innerText.includes(new Intl.NumberFormat('es-CO').format(r.max_price))))})()",
-            "expected": "Bogotá Sept26 Acelga positive rounds retain separate min/max and printed time labels",
+            "condition": "(()=>{const rows=window.__qaAcelgaRows,cards=[...document.querySelectorAll('.input-card')];return rows.length>=2&&new Set(rows.map(r=>r.round)).size>=2&&cards.length===rows.length&&rows.every((r,i)=>{const card=cards[i],link=card.querySelector('a.evidence-link');return card.innerText.includes(r.round_label)&&card.innerText.includes(new Intl.NumberFormat('es-CO').format(r.min_price))&&card.innerText.includes(new Intl.NumberFormat('es-CO').format(r.max_price))&&card.innerText.includes(new Date(r.observed_on+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}))&&link?.pathname==='/evidence/'+r.document_id&&new URL(link.href).searchParams.get('page')===String(r.source_page)})})()",
+            "expected": "Latest Bogotá Acelga keeps each positive round, printed time, date, min/max and exact PDF page. Sep26 original oracle: round 1 COP 7000–8000, round 2 COP 6000–7000, source SHA 197c11ba0726970df6140993ec4ce3b2266891f2e9d079b5e95bc3229cfb6345.",
             "observed": "[...document.querySelectorAll('.input-card')].map(x=>x.innerText)"
           }
         ],
-        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Bogot\\u00e1, D.C., Corabastos\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}",
-        "ready": "[...document.querySelectorAll('.input-card')].every(x=>x.innerText.includes('Bogotá, D.C., Corabastos'))"
+        "action": "{const e=document.querySelector(\"select\");Object.getOwnPropertyDescriptor(e.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype,'value').set.call(e,\"Bogot\\u00e1, D.C., Corabastos\");e.dispatchEvent(new Event(e.tagName==='SELECT'?'change':'input',{bubbles:true}));}window.__qaRegionalRows=await fetch('/api/planning/regional').then(async r=>{if(!r.ok)throw Error('Regional HTTP '+r.status);return r.json()});window.__qaAcelgaRows=window.__qaRegionalRows.filter(r=>r.market_name==='Bogotá, D.C., Corabastos'&&(r.product_name+' '+r.presentation).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().includes('acelga'));",
+        "ready": "!!window.__qaAcelgaRows && [...document.querySelectorAll('.input-card')].every(x=>x.innerText.includes('Bogotá, D.C., Corabastos'))"
       }
     ]
   },
@@ -647,7 +649,7 @@
   {
     "name": "DANE extended daily filters and arrivals original",
     "route": "/daily",
-    "ready": "document.querySelectorAll('.input-card').length===431",
+    "ready": "!!document.querySelector('input[aria-label=\"Fecha del boletín\"]') && !!document.querySelector('select')",
     "steps": [
       {
         "checks": [
@@ -661,7 +663,9 @@
             "condition": "[...document.querySelectorAll('.input-card a.evidence-link')].every(a=>a.pathname==='/evidence/5fc9d3a1d7814c9393b8e8d719b7f338a528586b019d4cdb7374f60922c84a70')",
             "expected": "All431daily prices link exact retained native XLSX"
           }
-        ]
+        ],
+        "action": "{const e=document.querySelector('input[aria-label=\"Fecha del boletín\"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,'2026-09-25');e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}",
+        "ready": "document.querySelector('input[aria-label=\"Fecha del boletín\"]')?.value==='2026-09-25'&&document.querySelectorAll('.input-card').length===431"
       },
       {
         "checks": [

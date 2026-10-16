@@ -1,0 +1,572 @@
+[
+  [
+    2,
+    0,
+    {
+      "text": "Cuadro 1. Variación en el abastecimiento de alimentos según ciudad y mercado mayorista (primera quincena de mayo y la primera quincena de junio de 2020)",
+      "model": "gemini-3.5-flash",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 4320,
+        "promptTokenCount": 1394,
+        "thoughtsTokenCount": 2049,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 302
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1092
+          }
+        ],
+        "candidatesTokenCount": 877
+      },
+      "tables": [
+        [
+          [
+            "Ciudad",
+            "Central",
+            "Primera quincena de mayo (t)",
+            "Primera quincena de junio (t)",
+            "Variación\n(%)"
+          ],
+          [
+            "Armenia",
+            "Mercar",
+            "5.620",
+            "5.606",
+            "-0,26%"
+          ],
+          [
+            "Barranquilla",
+            "Barranquillita",
+            "12.174",
+            "10.246",
+            "-15,84%"
+          ],
+          [
+            "Barranquilla",
+            "Granabastos",
+            "4.311",
+            "3.971",
+            "-7,90%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Corabastos",
+            "78.930",
+            "75.999",
+            "-3,71%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Paloquemao",
+            "1.399",
+            "1.347",
+            "-3,71%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Las Flores",
+            "1.982",
+            "1.634",
+            "-17,57%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Saper Mendoza",
+            "888",
+            "936",
+            "5,49%"
+          ],
+          [
+            "Bucaramanga",
+            "Centroabastos",
+            "19.048",
+            "19.106",
+            "0,31%"
+          ],
+          [
+            "Cali",
+            "Cavasa",
+            "11.139",
+            "19.440",
+            "74,52%"
+          ],
+          [
+            "Cali",
+            "Santa Helena",
+            "9.576",
+            "1.910",
+            "-80,05%"
+          ],
+          [
+            "Cartagena",
+            "Bazurto",
+            "6.858",
+            "7.118",
+            "3,79%"
+          ],
+          [
+            "Cúcuta",
+            "Cenabastos",
+            "10.517",
+            "13.096",
+            "24,52%"
+          ],
+          [
+            "Cúcuta",
+            "La Nueva Sexta",
+            "1.171",
+            "1.489",
+            "27,11%"
+          ],
+          [
+            "Ibagué",
+            "Plaza La 21",
+            "1.970",
+            "1.864",
+            "-5,37%"
+          ],
+          [
+            "Ipiales",
+            "Centro de acopio",
+            "1.220",
+            "2.620",
+            "114,74%"
+          ]
+        ]
+      ],
+      "version": "gemini-image-ocr-v2",
+      "review_notes": [
+        "The name 'Plaza Saper Mendoza' is transcribed exactly as printed, although 'Samper' is the standard spelling."
+      ]
+    },
+    "review",
+    "Supply image page or reading is uncertain"
+  ],
+  [
+    2,
+    1,
+    {
+      "text": "Cuadro 1. Variación en el abastecimiento de alimentos según ciudad y mercado mayorista (primera quincena de mayo y la primera quincena de junio de 2020)",
+      "model": "gemini-3.5-flash",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 4261,
+        "promptTokenCount": 1409,
+        "thoughtsTokenCount": 2190,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 317
+          },
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1092
+          }
+        ],
+        "candidatesTokenCount": 662
+      },
+      "tables": [
+        [
+          [
+            "Ciudad",
+            "Central",
+            "Primera quincena de mayo (t)",
+            "Primera quincena de junio (t)",
+            "Variación (%)"
+          ],
+          [
+            "Armenia",
+            "Mercar",
+            "5.620",
+            "5.606",
+            "-0,26%"
+          ],
+          [
+            "Barranquilla",
+            "Barranquillita",
+            "12.174",
+            "10.246",
+            "-15,84%"
+          ],
+          [
+            "Barranquilla",
+            "Granabastos",
+            "4.311",
+            "3.971",
+            "-7,90%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Corabastos",
+            "78.930",
+            "75.999",
+            "-3,71%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Paloquemao",
+            "1.399",
+            "1.347",
+            "-3,71%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Las Flores",
+            "1.982",
+            "1.634",
+            "-17,57%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Saper Mendoza",
+            "888",
+            "936",
+            "5,49%"
+          ],
+          [
+            "Bucaramanga",
+            "Centroabastos",
+            "19.048",
+            "19.106",
+            "0,31%"
+          ],
+          [
+            "Cali",
+            "Cavasa",
+            "11.139",
+            "19.440",
+            "74,52%"
+          ],
+          [
+            "Cali",
+            "Santa Helena",
+            "9.576",
+            "1.910",
+            "-80,05%"
+          ],
+          [
+            "Cartagena",
+            "Bazurto",
+            "6.858",
+            "7.118",
+            "3,79%"
+          ],
+          [
+            "Cúcuta",
+            "Cenabastos",
+            "10.517",
+            "13.096",
+            "24,52%"
+          ],
+          [
+            "Cúcuta",
+            "La Nueva Sexta",
+            "1.171",
+            "1.489",
+            "27,11%"
+          ],
+          [
+            "Ibagué",
+            "Plaza La 21",
+            "1.970",
+            "1.864",
+            "-5,37%"
+          ],
+          [
+            "Ipiales",
+            "Centro de acopio",
+            "1.220",
+            "2.620",
+            "114,74%"
+          ]
+        ]
+      ],
+      "version": "gemini-image-ocr-v2",
+      "review_notes": [
+        "Plaza Saper Mendoza is transcribed exactly as printed, which may be a typo for Plaza Samper Mendoza."
+      ]
+    },
+    "review",
+    "Supply image page or reading is uncertain"
+  ],
+  [
+    3,
+    0,
+    {
+      "text": "Fuente: DANE-Sipsa",
+      "model": "gemini-3.5-flash",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 4133,
+        "promptTokenCount": 1380,
+        "thoughtsTokenCount": 2200,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1078
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 302
+          }
+        ],
+        "candidatesTokenCount": 553
+      },
+      "tables": [
+        [
+          [
+            "Manizales",
+            "Centro Galerías",
+            "3.714",
+            "3.340",
+            "-10,06%"
+          ],
+          [
+            "Medellín",
+            "Central Mayorista de Antioquia",
+            "31.887",
+            "29.258",
+            "-8,24%"
+          ],
+          [
+            "Medellín",
+            "Plaza Minorista \"José María Villa\"",
+            "5.117",
+            "6.787",
+            "32,65%"
+          ],
+          [
+            "Montería",
+            "Mercado del Sur",
+            "1.956",
+            "1.890",
+            "-3,37%"
+          ],
+          [
+            "Neiva",
+            "Surabastos",
+            "3.173",
+            "3.886",
+            "22,47%"
+          ],
+          [
+            "Pasto",
+            "El Potrerillo",
+            "3.365",
+            "5.093",
+            "51,34%"
+          ],
+          [
+            "Pereira",
+            "Mercasa",
+            "5.856",
+            "5.192",
+            "-11,34%"
+          ],
+          [
+            "Popayán",
+            "Plaza de mercado del barrio Bolívar",
+            "3.144",
+            "3.035",
+            "-3,47%"
+          ],
+          [
+            "Santa Marta",
+            "Santa Marta (Magdalena)",
+            "1.498",
+            "1.383",
+            "-7,72%"
+          ],
+          [
+            "Sincelejo",
+            "Nuevo Mercado",
+            "2.363",
+            "2.043",
+            "-13,53%"
+          ],
+          [
+            "Tunja",
+            "Complejo de Servicios del Sur",
+            "3.943",
+            "5.750",
+            "45,85%"
+          ],
+          [
+            "Valledupar",
+            "Mercabastos",
+            "1.749",
+            "1.757",
+            "0,42%"
+          ],
+          [
+            "Valledupar",
+            "Mercado Nuevo",
+            "1.067",
+            "993",
+            "-6,95%"
+          ],
+          [
+            "Villavicencio",
+            "CAV",
+            "3.109",
+            "4.258",
+            "36,97%"
+          ],
+          [
+            "TOTAL",
+            "",
+            "238.744",
+            "241.047",
+            "0,96%"
+          ]
+        ]
+      ],
+      "version": "gemini-image-ocr-v2",
+      "review_notes": []
+    },
+    "review",
+    "Supply image page or reading is uncertain"
+  ],
+  [
+    3,
+    1,
+    {
+      "text": "Fuente: DANE-Sipsa",
+      "model": "gemini-3.5-flash",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 4369,
+        "promptTokenCount": 1395,
+        "thoughtsTokenCount": 2421,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1078
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 317
+          }
+        ],
+        "candidatesTokenCount": 553
+      },
+      "tables": [
+        [
+          [
+            "Manizales",
+            "Centro Galerías",
+            "3.714",
+            "3.340",
+            "-10,06%"
+          ],
+          [
+            "Medellín",
+            "Central Mayorista de Antioquia",
+            "31.887",
+            "29.258",
+            "-8,24%"
+          ],
+          [
+            "Medellín",
+            "Plaza Minorista \"José María Villa\"",
+            "5.117",
+            "6.787",
+            "32,65%"
+          ],
+          [
+            "Montería",
+            "Mercado del Sur",
+            "1.956",
+            "1.890",
+            "-3,37%"
+          ],
+          [
+            "Neiva",
+            "Surabastos",
+            "3.173",
+            "3.886",
+            "22,47%"
+          ],
+          [
+            "Pasto",
+            "El Potrerillo",
+            "3.365",
+            "5.093",
+            "51,34%"
+          ],
+          [
+            "Pereira",
+            "Mercasa",
+            "5.856",
+            "5.192",
+            "-11,34%"
+          ],
+          [
+            "Popayán",
+            "Plaza de mercado del barrio Bolívar",
+            "3.144",
+            "3.035",
+            "-3,47%"
+          ],
+          [
+            "Santa Marta",
+            "Santa Marta (Magdalena)",
+            "1.498",
+            "1.383",
+            "-7,72%"
+          ],
+          [
+            "Sincelejo",
+            "Nuevo Mercado",
+            "2.363",
+            "2.043",
+            "-13,53%"
+          ],
+          [
+            "Tunja",
+            "Complejo de Servicios del Sur",
+            "3.943",
+            "5.750",
+            "45,85%"
+          ],
+          [
+            "Valledupar",
+            "Mercabastos",
+            "1.749",
+            "1.757",
+            "0,42%"
+          ],
+          [
+            "Valledupar",
+            "Mercado Nuevo",
+            "1.067",
+            "993",
+            "-6,95%"
+          ],
+          [
+            "Villavicencio",
+            "CAV",
+            "3.109",
+            "4.258",
+            "36,97%"
+          ],
+          [
+            "TOTAL",
+            "",
+            "238.744",
+            "241.047",
+            "0,96%"
+          ]
+        ]
+      ],
+      "version": "gemini-image-ocr-v2",
+      "review_notes": []
+    },
+    "review",
+    "Supply image page or reading is uncertain"
+  ]
+]

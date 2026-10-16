@@ -1,9 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_driver/flutter_driver.dart';
 import 'package:integration_test/integration_test_driver_extended.dart';
 
 Future<void> main() async {
   await integrationDriver(
+    // Flutter Driver otherwise writes every screenshot byte to a communication
+    // log under build/, which can grow far larger than the saved PNG evidence.
+    driver: await FlutterDriver.connect(
+      printCommunication: false,
+      logCommunicationToFile: false,
+    ),
     writeResponseOnFailure: true,
     responseDataCallback: (data) async {
       final directory =

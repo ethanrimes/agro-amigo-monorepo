@@ -9,7 +9,7 @@ from .resumable_inputs import WorkDeferred
 
 
 class SupplyRetryRuntimeTests(unittest.TestCase):
-    def execute_run(self, mode, retry, fresh, backlog, durations):
+    def execute_run(self, mode, retry, fresh, backlog, durations, repairs=()):
         db = MagicMock()
         db.execute.return_value.fetchone.return_value = (True,)
         clock = [0]
@@ -32,6 +32,11 @@ class SupplyRetryRuntimeTests(unittest.TestCase):
                 queue_plan, "supply_validation_retry", return_value=retry
             ) as retries,
             patch.object(queue_plan, "daily_candidates", return_value=fresh),
+            patch.object(queue_plan, "current_dane_candidates", return_value=[]),
+            patch.object(queue_plan, "repair_candidates", return_value=list(repairs)),
+            patch.object(queue_plan, "historical_candidates", return_value=[]),
+            patch.object(queue_plan, "city_catchup_candidates", return_value=[]),
+            patch.object(queue_plan, "recent_pending_daily_pdf_candidates", return_value=[]),
             patch.object(queue_plan, "backfill_candidates", return_value=backlog),
             patch.object(worker, "process_asset", side_effect=process),
             patch("pipelines.ingestion.retained_replays.drain", return_value={}),
@@ -40,6 +45,18 @@ class SupplyRetryRuntimeTests(unittest.TestCase):
             connect.return_value.__enter__.return_value = db
             result = worker.run(mode, limit=6, time_budget=100)
         return result, seen, retries.call_count
+
+    def test_bounded_repair_lane_precedes_fresh_and_keeps_total_asset_cap(self):
+        repairs = [("old-milk", "milk-pdf", None), ("old-input", "inputs-pdf", None)]
+        fresh = [(f"fresh-{i}", "daily", None) for i in range(6)]
+        backlog = [(f"backlog-{i}", "daily", None) for i in range(6)]
+        result, seen, _ = self.execute_run(
+            "backfill", [], fresh, backlog,
+            {row[0]: 1 for row in repairs + fresh + backlog}, repairs=repairs,
+        )
+        self.assertEqual(seen[:2], ["old-milk", "old-input"])
+        self.assertEqual(len(seen), 6)
+        self.assertEqual(result["assets"], 6)
 
     def test_supply_validation_finishes_before_fresh_work_can_consume_its_window(self):
         supply = ("supply", "supply", None)

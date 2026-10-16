@@ -1,0 +1,1711 @@
+{
+  "children": {
+    "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db": {
+      "entry": "Ibagué, La 21 25-1-2024.pdf",
+      "expected_row_count": 59,
+      "expected_rows_sha256": "ba5ba3d34614d74355960ac85550b4e29e7cc91c392e23c7582e6775b0d73445",
+      "pages": {
+        "1": "f46d66fea0a86e051d271b79c756b457f03bed6f549177b489048e5bb43dfcc2",
+        "2": "930335711d5a63ff83549422def58a131342e34a552ee706695c128e889b881a"
+      },
+      "target": true
+    },
+    "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c": {
+      "entry": "Santa Marta, 25-1-2024.pdf",
+      "expected_row_count": 67,
+      "expected_rows_sha256": "1d6c6408868adc1b2195a68b1b61568a9beb9b83dbae8e3ff9d74bd2360e8ee1",
+      "pages": {
+        "1": "be8e05599e5a96fb742e7b4a2c9402422b5db4be48876275462713ecc4760de0",
+        "2": "29cb210a56b03ce3d918af2e9f68179bf129434c878e0d2088e39de207d92526",
+        "3": "3b4ae763fd89c67785edf29ce814d669e5f9bbb6826a1e7f77dadec873790d72"
+      },
+      "target": true
+    },
+    "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0": {
+      "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+      "expected_row_count": 110,
+      "expected_rows_sha256": "14097e0d297eceaaa6578e24be4cf8a8f47c93aa7317cdabee8ce0dc4b59e4b3",
+      "pages": {
+        "1": "00ba4a27ecb9edcee7578190161a4db085a14c617d5070af177e60c1651e0738",
+        "2": "c452e688a9a9c87a416eb14b667cb8bb8be1fec4c7bef9a709ab1669ac8d1263",
+        "3": "f308f041d434756d6d758e7ee90f39119979fca7f70044a83c939eefb376c6c1",
+        "4": "a6a5dc4eea165dc8b399df1ca29e14af0be9568f09f95d209f4b3fa37dcc4ee4"
+      },
+      "target": true
+    },
+    "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d": {
+      "entry": "Rionegro, 25-1-2024.pdf",
+      "expected_row_count": 80,
+      "expected_rows_sha256": "aede1f22c95e6fe453157720071c1d12c3ff96ebdfcb97e69f1140d3402ae4da",
+      "pages": {
+        "1": "54bfc8715ceabdd1e6112290795c05ce751d4b0eb15abb041bd8b83dd0856911",
+        "2": "f679ebb3426f944b7673e8a187d9c0968e497041ae30dba41007aa5660dfd334"
+      },
+      "target": true
+    },
+    "48a623a57195deab8d0c5f8d37057794942089b2642af511e0c56ece4d19b079": {
+      "entry": "Santa barbara, 25-1-2024.pdf",
+      "expected_row_count": 13,
+      "expected_rows_sha256": "e1e6d4e73ccf331e4265fe90ecb4c18fe138721c0add65a5a65565ff4d1381c5",
+      "pages": {
+        "1": "81a2951e57d281d79b29f248000d5df57078a774a8e351005d7ef2689055c569"
+      },
+      "target": true
+    },
+    "6cdcd480ab4ccffe90fe67a0dba931e9f9ee3b2468267a02553ab0e2d28dc883": {
+      "entry": "Ipiales, Ipiales somos todos 25-1-2024.pdf",
+      "expected_row_count": 30,
+      "expected_rows_sha256": "c4054b3b0e9cab18d12611ed76fe903358d09b674e02d8583beb9d5d31ad93ec",
+      "pages": {
+        "1": "aed4c9cc8f58e4c3fe694fde9a6648f1ddcab5e44b99ab88a67fb5418d22816d"
+      },
+      "target": false
+    },
+    "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb": {
+      "entry": "Pasto, El Poterrillo 25-1-2024.pdf",
+      "expected_row_count": 46,
+      "expected_rows_sha256": "c9edb68b17bc31a88b971a7e956e50dfd0a774db515690ab19359375ce8956a0",
+      "pages": {
+        "1": "84d78c0643e25c0495507e2f3c36bbec60cc345c3757a4e7d960937b2772dfa3",
+        "2": "af81429247210d4b486c9921f749ba8494d96cff65829ff1a70fcaeee92f1100"
+      },
+      "target": true
+    },
+    "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378": {
+      "entry": "Tuluá, 25-1-2024.pdf",
+      "expected_row_count": 118,
+      "expected_rows_sha256": "c1385187548e7399097a7aa0b468a2be3beb02a8d4a12d44271b496d412d83c7",
+      "pages": {
+        "1": "ec5393eb3c79bc5bef8e13eb73fc144b1bd9f132f885f62fe35ef8b0f4a9ccf9",
+        "2": "bbbd3fba094f224afef800382d97045d5b56fc2760a7c95af112fb046aa03988",
+        "3": "f7bd8f50e77572a9bb417e2df6c11c68caab5bba873f903c171ebc482ebf9456",
+        "4": "e94742a84b58faeb943549930aac7ede79aeb29b6c0ada899c0ee6d6d3e66f11"
+      },
+      "target": true
+    },
+    "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87": {
+      "entry": "Peñol, 25-1-2024.pdf",
+      "expected_row_count": 10,
+      "expected_rows_sha256": "27277ad95452ed0dc7a5402d277877dd3e66b697732791f4846da1c95f89324e",
+      "pages": {
+        "1": "03c81e52b0b3c234c49548de93fa97d6d0ca08e8ba8109cd77a6bab4f5dfa252"
+      },
+      "target": true
+    },
+    "c7b0e5100729a042c54266568b8a95083f86fd669a3bf180a49b572505e66a21": {
+      "entry": "La Ceja, 25-1-2024.pdf",
+      "expected_row_count": 25,
+      "expected_rows_sha256": "b994f99d6054650ae709f034b5a0b7bd9ef6efbabf74eebfab8480312c30c1c8",
+      "pages": {
+        "1": "03eb6456102b74b2b1826392c80c773e7bdffc9686f3723ded341a0ca582f1b3"
+      },
+      "target": false
+    },
+    "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a": {
+      "entry": "Cali, Cavasa 25-1-2024.pdf",
+      "expected_row_count": 120,
+      "expected_rows_sha256": "07b63a2b773915926baa8703905452ea07abbde7a27a11413958a0136d435eca",
+      "pages": {
+        "1": "9182830e7c3c9226164983ebc14024f9bbfe41fc476d78faa35be89c57312f36",
+        "2": "f2437e294d6821742cb8530ac5743c69f8e10a0fd40b0575d401c7a2c1c7ce42"
+      },
+      "target": true
+    },
+    "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829": {
+      "entry": "Medellín, José María Villa 25-1-2024.pdf",
+      "expected_row_count": 160,
+      "expected_rows_sha256": "fb07086197b6a7dc9be8af61bc5f77aa2da08c0073b367d3e5e48b37fb19e131",
+      "pages": {
+        "1": "9b8530ee0529679828fd78f190483d37a6ac06beb52d277aca4effa46d0e56ec",
+        "2": "8120dc5a9eadd0c94735e92dfe33739cec21cb0ca5d17dd27ae6cbb22cabea96",
+        "3": "ec81d0cb8779b0e43524a7ade4569ab6d67c754d7928cd49f281058d028d744d",
+        "4": "72a304f0d57421b067ed445f73a205d419a70f9edf3a1b310613930cc494e582"
+      },
+      "target": false
+    },
+    "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb": {
+      "entry": "Pereira, La 41 25-1-2024.pdf",
+      "expected_row_count": 47,
+      "expected_rows_sha256": "08704920f05cbe1ccbbfd221b7290cee6c34f0f03d508df0c7ec4523ffc8aade",
+      "pages": {
+        "1": "1386ef17a76c7a904b0d5a6d6a1dee8b3ac3e754087a2b21aba09c34be52a262",
+        "2": "cab2cc2c05617dc5e9522016e70a01ee92e6f5e5738d2b2a2b4e35467ad47da6"
+      },
+      "target": true
+    },
+    "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412": {
+      "entry": "Armenia, Mercar 25-1-2024.pdf",
+      "expected_row_count": 59,
+      "expected_rows_sha256": "a013d107f896252924cb7d171259337f46cf751358226783aec7436a4fcf583d",
+      "pages": {
+        "1": "c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3",
+        "2": "b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b"
+      },
+      "target": false
+    },
+    "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5": {
+      "entry": "Pereira, Mercasa 25-1-2024.pdf",
+      "expected_row_count": 70,
+      "expected_rows_sha256": "21d710cddb39e6c594291204d4bb05a3478fff9979d44e39c0b163a2a3a34804",
+      "pages": {
+        "1": "7a2a12ce297e5e0adec170647009bdcf9c9bae6c4e3a5ed19c7905033b90cd14",
+        "2": "39b36ab8500b4a1e106af66c98e1fdc227f4c7ec33420043064d74c557008fbc"
+      },
+      "target": true
+    }
+  },
+  "date_mismatch_measurement_date": "2024-01-23",
+  "date_mismatch_member": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+  "date_mismatch_policy": "Publish only the exact printed Jan 23 measurement date; keep the Jan 25 archive parent in review with an explicit publication-vs-measurement annotation.",
+  "page_count": 33,
+  "pages": {
+    "00ba4a27ecb9edcee7578190161a4db085a14c617d5070af177e60c1651e0738": {
+      "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+      "image_id": "00ba4a27ecb9edcee7578190161a4db085a14c617d5070af177e60c1651e0738",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Manizales, Centro Galerías",
+        "page": 1,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "6ad9c1c0f36e80a10f819d16d69542aef3b6c6aec676771b27e0b4459c33dd19",
+        "1": "e38a080e6f083216e07782c43f7f8aff80e1656ed22ff344f9f16e8edb15d1e9"
+      },
+      "task_error": "City PDF pages [2, 3, 4] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "03c81e52b0b3c234c49548de93fa97d6d0ca08e8ba8109cd77a6bab4f5dfa252": {
+      "entry": "Peñol, 25-1-2024.pdf",
+      "image_id": "03c81e52b0b3c234c49548de93fa97d6d0ca08e8ba8109cd77a6bab4f5dfa252",
+      "locator_aliases": {
+        "0": [
+          "PDF page 1,table 1,row 6,round 1",
+          "PDF page 1,table 1,row 5,round 1"
+        ],
+        "1": [
+          "PDF page 1,table 1,row 8,round 1",
+          "PDF page 1,table 1,row 7,round 1"
+        ],
+        "2": [
+          "PDF page 1,table 1,row 9,round 1",
+          "PDF page 1,table 1,row 8,round 1"
+        ],
+        "3": [
+          "PDF page 1,table 1,row 12,round 1",
+          "PDF page 1,table 1,row 11,round 1"
+        ],
+        "4": [
+          "PDF page 1,table 1,row 14,round 1",
+          "PDF page 1,table 1,row 13,round 1"
+        ],
+        "5": [
+          "PDF page 1,table 1,row 15,round 1",
+          "PDF page 1,table 1,row 14,round 1"
+        ],
+        "6": [
+          "PDF page 1,table 1,row 18,round 1",
+          "PDF page 1,table 1,row 17,round 1"
+        ],
+        "7": [
+          "PDF page 1,table 1,row 20,round 1",
+          "PDF page 1,table 1,row 19,round 1"
+        ],
+        "8": [
+          "PDF page 1,table 1,row 21,round 1",
+          "PDF page 1,table 1,row 20,round 1"
+        ],
+        "9": [
+          "PDF page 1,table 1,row 23,round 1",
+          "PDF page 1,table 1,row 22,round 1"
+        ]
+      },
+      "locator_difference_count": 10,
+      "member_did": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {
+          "Frijol verde cargamanto": "Fríjol verde cargamanto",
+          "Fríjol verde cargamanto": "Fríjol verde cargamanto"
+        },
+        "round_label": {
+          "Ronda 1": "Ronda 1 15:30 - 17:30",
+          "Ronda 1 15:30 - 17:30": "Ronda 1 15:30 - 17:30"
+        }
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "23 de Enero de 2024"
+        ],
+        "market": "Peñol (Antioquia)",
+        "page": 1,
+        "page_count": 1
+      },
+      "raw_difference_count": 11,
+      "reading_sha256": {
+        "0": "a26ef9ecb7f07fc687e08e965cc467aa442ba92ff9372c90c3322d152bb1ac1a",
+        "1": "686e9f39351cb3414a1604081c3118d9f4093a9710e30152e6091417761fb43a"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "03eb6456102b74b2b1826392c80c773e7bdffc9686f3723ded341a0ca582f1b3": {
+      "entry": "La Ceja, 25-1-2024.pdf",
+      "image_id": "03eb6456102b74b2b1826392c80c773e7bdffc9686f3723ded341a0ca582f1b3",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "c7b0e5100729a042c54266568b8a95083f86fd669a3bf180a49b572505e66a21",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "La Ceja (Antioquia)",
+        "page": 1,
+        "page_count": 1
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "a21e0fa63ebfef1b593e202620fdf402e7d0e4a75bf00bc30e32e0c821c72c82",
+        "1": "dbf97f5c4b53a30aa0a6a6fe74521ecf400a9b066bc0013459236ca2bf4eda00"
+      },
+      "task_error": null,
+      "task_status": "published"
+    },
+    "1386ef17a76c7a904b0d5a6d6a1dee8b3ac3e754087a2b21aba09c34be52a262": {
+      "entry": "Pereira, La 41 25-1-2024.pdf",
+      "image_id": "1386ef17a76c7a904b0d5a6d6a1dee8b3ac3e754087a2b21aba09c34be52a262",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb",
+      "normalized_differences": {
+        "category": {
+          "Tuberculos, raices y platanos > Otros tuberculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tuberculos, raices y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raices y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tuberculos, raices y platanos > Yuca": "Tubérculos, raíces y plátanos > Yuca",
+          "Tubérculos, raices y platanos > Otros tubérculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tubérculos, raices y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tubérculos, raices y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tubérculos, raices y platanos > Yuca": "Tubérculos, raíces y plátanos > Yuca"
+        },
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Pereira, La 41",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 11,
+      "reading_sha256": {
+        "0": "13c07254345b580c9304b10fbd040e945eacb38356eeeae1fde0d0b10ef7bd94",
+        "1": "9e605ac41d09743ceafcd171b09f3c9af1447821b27643c4ab1017c2659431f8"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "29cb210a56b03ce3d918af2e9f68179bf129434c878e0d2088e39de207d92526": {
+      "entry": "Santa Marta, 25-1-2024.pdf",
+      "image_id": "29cb210a56b03ce3d918af2e9f68179bf129434c878e0d2088e39de207d92526",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Santa Marta (Magdalena)",
+        "page": 2,
+        "page_count": 3
+      },
+      "raw_difference_count": 17,
+      "reading_sha256": {
+        "0": "31ef38e58644813a803be31a12951bb9954ff80e324641f8caa77547bdbab5f9",
+        "1": "ad4d924c6961132a89cf5dce2490191fa59f3a73f87a2113f19e87bfa6d9b5af"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "39b36ab8500b4a1e106af66c98e1fdc227f4c7ec33420043064d74c557008fbc": {
+      "entry": "Pereira, Mercasa 25-1-2024.pdf",
+      "image_id": "39b36ab8500b4a1e106af66c98e1fdc227f4c7ec33420043064d74c557008fbc",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Pereira, Mercasa",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "2b45dca3719db8a77bd141e32024765a2322d1dbfef703012922724256765ce0",
+        "1": "3663accdf2386ef604a6469241e80bf74e16c9304d47d555ab73c568a49788b4"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "3b4ae763fd89c67785edf29ce814d669e5f9bbb6826a1e7f77dadec873790d72": {
+      "entry": "Santa Marta, 25-1-2024.pdf",
+      "image_id": "3b4ae763fd89c67785edf29ce814d669e5f9bbb6826a1e7f77dadec873790d72",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 3,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Santa Marta (Magdalena)",
+        "page": 3,
+        "page_count": 3
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "2b43a2fe00f9611e4fe41e340afe2dd44ccbc0402dbd989a5906442c1aa91d4a",
+        "1": "93b7d2e1b5ee0e1af318173a3c962bb5bd25ee03832d1a7a839dcda480858b4d"
+      },
+      "task_error": "City PDF pages [2] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "54bfc8715ceabdd1e6112290795c05ce751d4b0eb15abb041bd8b83dd0856911": {
+      "entry": "Rionegro, 25-1-2024.pdf",
+      "image_id": "54bfc8715ceabdd1e6112290795c05ce751d4b0eb15abb041bd8b83dd0856911",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {
+          "Frijol verde cargamanto": "Fríjol verde cargamanto",
+          "Fríjol verde cargamanto": "Fríjol verde cargamanto"
+        },
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Rionegro (Antioquia)",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 2,
+      "reading_sha256": {
+        "0": "c6416ee8faed62a91e3b0e566ee80168ee12fd1cb39aa82ca5f011cd098812ed",
+        "1": "a8c39b183a0d1937e581a7b57a2f8d929ed1d375c9fd99f9dae7f2b2c9d0a6ef"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "72a304f0d57421b067ed445f73a205d419a70f9edf3a1b310613930cc494e582": {
+      "entry": "Medellín, José María Villa 25-1-2024.pdf",
+      "image_id": "72a304f0d57421b067ed445f73a205d419a70f9edf3a1b310613930cc494e582",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 4,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Medellín, Plaza Minorista \"José María Villa\"",
+        "page": 4,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "43b58ae04fe5762e1c44b11bbd437aa7409e075bb488736bb4535a21d26ec045",
+        "1": "a7e6985b57af844dea138b3acb4a6c936cd0e8945b4a01d861ba16c82f84aa6a"
+      },
+      "task_error": null,
+      "task_status": "published"
+    },
+    "7a2a12ce297e5e0adec170647009bdcf9c9bae6c4e3a5ed19c7905033b90cd14": {
+      "entry": "Pereira, Mercasa 25-1-2024.pdf",
+      "image_id": "7a2a12ce297e5e0adec170647009bdcf9c9bae6c4e3a5ed19c7905033b90cd14",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Pereira, Mercasa",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "24b038783cf4bc4e57c308db4ba72f8d85446e1407f9e36f96db7e78e7438bc2",
+        "1": "bb169a79755181b3923c10dd7e6ff11c1f6ec677df3087a66cea64be2635f8a5"
+      },
+      "task_error": "City PDF pages [2] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "8120dc5a9eadd0c94735e92dfe33739cec21cb0ca5d17dd27ae6cbb22cabea96": {
+      "entry": "Medellín, José María Villa 25-1-2024.pdf",
+      "image_id": "8120dc5a9eadd0c94735e92dfe33739cec21cb0ca5d17dd27ae6cbb22cabea96",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Medellín, Plaza Minorista \"José María Villa\"",
+        "page": 2,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "efbd34e7dbf433f6646998df14b7338c65b50709c3c23a271be12340641dee82",
+        "1": "f76f9896b429a5b0cdee82d72f03d0854bf5e0620211d93ecaaa4b5a08fe2949"
+      },
+      "task_error": null,
+      "task_status": "published"
+    },
+    "81a2951e57d281d79b29f248000d5df57078a774a8e351005d7ef2689055c569": {
+      "entry": "Santa barbara, 25-1-2024.pdf",
+      "image_id": "81a2951e57d281d79b29f248000d5df57078a774a8e351005d7ef2689055c569",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "48a623a57195deab8d0c5f8d37057794942089b2642af511e0c56ece4d19b079",
+      "normalized_differences": {
+        "category": {
+          "Tuberculos, raices y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raices y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tuberculos, raíces y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raíces y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano"
+        },
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Santa Bárbara (Antioquia)",
+        "page": 1,
+        "page_count": 1
+      },
+      "raw_difference_count": 5,
+      "reading_sha256": {
+        "0": "8e9d7645fe659c4d2151d8a0839ff72a66365c30373f532bdb85feaf1a7336d7",
+        "1": "8aff538e4de288259b1bf775e78a580477cc0d8b5db644eedccb3c435047547a"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "84d78c0643e25c0495507e2f3c36bbec60cc345c3757a4e7d960937b2772dfa3": {
+      "entry": "Pasto, El Poterrillo 25-1-2024.pdf",
+      "image_id": "84d78c0643e25c0495507e2f3c36bbec60cc345c3757a4e7d960937b2772dfa3",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb",
+      "normalized_differences": {
+        "category": {
+          "Tuberculos, raíces y platanos > Otros tuberculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tuberculos, raíces y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raíces y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tuberculos, raíces y platanos > Yuca": "Tubérculos, raíces y plátanos > Yuca",
+          "Tubérculos, raíces y plátanos > Otros tubérculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tubérculos, raíces y plátanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tubérculos, raíces y plátanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tubérculos, raíces y plátanos > Yuca": "Tubérculos, raíces y plátanos > Yuca"
+        },
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Pasto, El Potrerillo",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 9,
+      "reading_sha256": {
+        "0": "1e068dad0d7fff9b2947c6d5025d76a9ddbfcf271a246569b0d21576890d8010",
+        "1": "9a3d9c2ab82c9d4e4d037a6cf249f021cda5d984f135d5db660bf3edeb18636b"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "9182830e7c3c9226164983ebc14024f9bbfe41fc476d78faa35be89c57312f36": {
+      "entry": "Cali, Cavasa 25-1-2024.pdf",
+      "image_id": "9182830e7c3c9226164983ebc14024f9bbfe41fc476d78faa35be89c57312f36",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Cali, Cavasa",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 14,
+      "reading_sha256": {
+        "0": "bf17052f62f9b423aee43078e4f01dd013bc4d5303903d81d7a86d8fb7f38beb",
+        "1": "e94070c7f919a1ae19f3f0db4ecebdcc8e63e44c52e6f47834fd01be84bdf31a"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "930335711d5a63ff83549422def58a131342e34a552ee706695c128e889b881a": {
+      "entry": "Ibagué, La 21 25-1-2024.pdf",
+      "image_id": "930335711d5a63ff83549422def58a131342e34a552ee706695c128e889b881a",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Ibagué, Plaza La 21",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "512658f4a4add7c51bb8f1cb22fdd8224968873e76c719d3331771c7cf0b8f28",
+        "1": "879581e06d0a3540167dfc1855ea5dfb42edd971d1030c341db36e1faf03dd3e"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "9b8530ee0529679828fd78f190483d37a6ac06beb52d277aca4effa46d0e56ec": {
+      "entry": "Medellín, José María Villa 25-1-2024.pdf",
+      "image_id": "9b8530ee0529679828fd78f190483d37a6ac06beb52d277aca4effa46d0e56ec",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Medellín, Plaza Minorista \"José María Villa\"",
+        "page": 1,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "fb3bcdef55b02cb9df16c8626072984fcc1e9eb5d27fb60f7953d37e8ac01efa",
+        "1": "5fef1b91208f359916aaedceb8a6d75ab9f8655fa1755588d5e7b7d692c94521"
+      },
+      "task_error": null,
+      "task_status": "published"
+    },
+    "a6a5dc4eea165dc8b399df1ca29e14af0be9568f09f95d209f4b3fa37dcc4ee4": {
+      "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+      "image_id": "a6a5dc4eea165dc8b399df1ca29e14af0be9568f09f95d209f4b3fa37dcc4ee4",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 4,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Manizales, Centro Galerías",
+        "page": 4,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "b61bba65a4ed92a5415262fe60b7d617d090572099aa5e8532a593fa32189629",
+        "1": "244d2b003f1c019f9d330f7daed7092fadc288b8ff2384e6377aeb564a63652f"
+      },
+      "task_error": "City PDF pages [2, 3] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "aed4c9cc8f58e4c3fe694fde9a6648f1ddcab5e44b99ab88a67fb5418d22816d": {
+      "entry": "Ipiales, Ipiales somos todos 25-1-2024.pdf",
+      "image_id": "aed4c9cc8f58e4c3fe694fde9a6648f1ddcab5e44b99ab88a67fb5418d22816d",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "6cdcd480ab4ccffe90fe67a0dba931e9f9ee3b2468267a02553ab0e2d28dc883",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Ipiales (Nariño), Ipiales somos todos",
+        "page": 1,
+        "page_count": 1
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "30ea0299e98e9be3ecc291693202f9018a6d1bf071dd6b7bff2ab7a988653b3e",
+        "1": "481f7a71fcb03aacd9e5cc688e7f8378b5f45ab052a034a0bff8bdee17d8841a"
+      },
+      "task_error": null,
+      "task_status": "published"
+    },
+    "af81429247210d4b486c9921f749ba8494d96cff65829ff1a70fcaeee92f1100": {
+      "entry": "Pasto, El Poterrillo 25-1-2024.pdf",
+      "image_id": "af81429247210d4b486c9921f749ba8494d96cff65829ff1a70fcaeee92f1100",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Pasto, El Potrerillo",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "50ae9a62239848788823b46f880d570d45e07f67fa48049d7de57168eb4b30a2",
+        "1": "1f04598e80f94940f51cef870ab159c68bb5a7eeb8db8b9dfd458f97a272296d"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b": {
+      "entry": "Armenia, Mercar 25-1-2024.pdf",
+      "image_id": "b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Armenia, Mercar",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "c2ba76fa321fa13ef9a62b850674759e40fe5602906073192e9ca6a8e8b93cf2",
+        "1": "7b59fed38741a9ad0e57cd4a58b0a8c27d97d83df12ced7b59ec38e9883a7dd6"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "bbbd3fba094f224afef800382d97045d5b56fc2760a7c95af112fb046aa03988": {
+      "entry": "Tuluá, 25-1-2024.pdf",
+      "image_id": "bbbd3fba094f224afef800382d97045d5b56fc2760a7c95af112fb046aa03988",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Tuluá (Valle del Cauca)",
+        "page": 2,
+        "page_count": 4
+      },
+      "raw_difference_count": 7,
+      "reading_sha256": {
+        "0": "e759d2168baad0fb0ed94af5bf103193eb583a063abee989cfc253bc6014dd58",
+        "1": "e2f23d359d9f5c28ddd45700351c51dc3905667c844b47b943e173fb2a2e13c6"
+      },
+      "task_error": "City PDF pages [3, 4] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "be8e05599e5a96fb742e7b4a2c9402422b5db4be48876275462713ecc4760de0": {
+      "entry": "Santa Marta, 25-1-2024.pdf",
+      "image_id": "be8e05599e5a96fb742e7b4a2c9402422b5db4be48876275462713ecc4760de0",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Santa Marta (Magdalena)",
+        "page": 1,
+        "page_count": 3
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "d3f5120d8da1f68452abb1be2467161cef14b42c3ea6c7e30bd1e0e0fbc2cf00",
+        "1": "fa8b242cc5c9367fbc6ca44cab507b3a6d20335c20d718bc4318222183486939"
+      },
+      "task_error": "City PDF pages [2, 3] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3": {
+      "entry": "Armenia, Mercar 25-1-2024.pdf",
+      "image_id": "c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412",
+      "normalized_differences": {
+        "category": {
+          "Tubérculos, raíces y plátanos > Piátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tubérculos, raíces y plátanos > Plátano": "Tubérculos, raíces y plátanos > Plátano"
+        },
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Armenia, Mercar",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 8,
+      "reading_sha256": {
+        "0": "f977deac859493b2cfd2000c8f5dce12725bf4ba8efddc39fd42eafccccfd424",
+        "1": "c4260cc1bb9bd968739bbc1f23049c4605674716d3fcf2d97cef597b046eb0cb"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "c452e688a9a9c87a416eb14b667cb8bb8be1fec4c7bef9a709ab1669ac8d1263": {
+      "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+      "image_id": "c452e688a9a9c87a416eb14b667cb8bb8be1fec4c7bef9a709ab1669ac8d1263",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {
+          "Frijol nima calima": "Fríjol nima calima",
+          "Fríjol nima calima": "Fríjol nima calima"
+        },
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Manizales, Centro Galerías",
+        "page": 2,
+        "page_count": 4
+      },
+      "raw_difference_count": 10,
+      "reading_sha256": {
+        "0": "811b5f1384563b3705070c81fb4c0db4f0eb9a26c8b5f0fc882c4405a8e82a74",
+        "1": "f02597941eee4404d62ce280b237a4dfcd26a292047cc7a9ed6e5388775abd9d"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "cab2cc2c05617dc5e9522016e70a01ee92e6f5e5738d2b2a2b4e35467ad47da6": {
+      "entry": "Pereira, La 41 25-1-2024.pdf",
+      "image_id": "cab2cc2c05617dc5e9522016e70a01ee92e6f5e5738d2b2a2b4e35467ad47da6",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Pereira, La 41",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "5b7636fa3fbb33a1b63f5ad846c16b81dddf681b99ac784fe99e6c0195a2a4bf",
+        "1": "7e11ce54dfb3379ff5e0ab6f6fe51769203bafd4b9e3c900010d17b68d81eeaf"
+      },
+      "task_error": "City PDF pages [1] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "e94742a84b58faeb943549930aac7ede79aeb29b6c0ada899c0ee6d6d3e66f11": {
+      "entry": "Tuluá, 25-1-2024.pdf",
+      "image_id": "e94742a84b58faeb943549930aac7ede79aeb29b6c0ada899c0ee6d6d3e66f11",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 4,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Tuluá (Valle del Cauca)",
+        "page": 4,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "4d5b93ab23c0cebf53d7991996a9303fa4b15326a8c34359a813d5e109754933",
+        "1": "0c9694fa45bf853aee2121baad0fe0b9db72bc43f12877212e276e1214d0c76b"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "ec5393eb3c79bc5bef8e13eb73fc144b1bd9f132f885f62fe35ef8b0f4a9ccf9": {
+      "entry": "Tuluá, 25-1-2024.pdf",
+      "image_id": "ec5393eb3c79bc5bef8e13eb73fc144b1bd9f132f885f62fe35ef8b0f4a9ccf9",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Tuluá (Valle del Cauca)",
+        "page": 1,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "c3fd2a3b26ce87607666b6c64dfa14ac3a70762ef3fd13d43e1d30b32f6c588f",
+        "1": "38cb777becdb5fe6b1c4b3cae02be7b601db20066f9f1f6bcd183cd0d0ce581a"
+      },
+      "task_error": "City PDF pages [2, 3, 4] await agreeing OCR readings",
+      "task_status": "review"
+    },
+    "ec81d0cb8779b0e43524a7ade4569ab6d67c754d7928cd49f281058d028d744d": {
+      "entry": "Medellín, José María Villa 25-1-2024.pdf",
+      "image_id": "ec81d0cb8779b0e43524a7ade4569ab6d67c754d7928cd49f281058d028d744d",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 3,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Medellín, Plaza Minorista \"José María Villa\"",
+        "page": 3,
+        "page_count": 4
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "5f719ed501133f10d4d6d035a1c809ebadad7697b4d27d2b0342008b9cf56640",
+        "1": "8d3a640bb91f1675a6f99673d8448e356e436b8f322cd38d8a4359e1377fc7d6"
+      },
+      "task_error": null,
+      "task_status": "published"
+    },
+    "f2437e294d6821742cb8530ac5743c69f8e10a0fd40b0575d401c7a2c1c7ce42": {
+      "entry": "Cali, Cavasa 25-1-2024.pdf",
+      "image_id": "f2437e294d6821742cb8530ac5743c69f8e10a0fd40b0575d401c7a2c1c7ce42",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Cali, Cavasa",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 0,
+      "reading_sha256": {
+        "0": "d9227ec81e7a0361cf8d1dc4c8bf30fe787a64e807fe8d688c29efb18be4a9c2",
+        "1": "d29af6bc5342046f290c55ce7008301a9d33fe7b93e7377a558040e6a13fec11"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "f308f041d434756d6d758e7ee90f39119979fca7f70044a83c939eefb376c6c1": {
+      "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+      "image_id": "f308f041d434756d6d758e7ee90f39119979fca7f70044a83c939eefb376c6c1",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+      "normalized_differences": {
+        "category": {
+          "Tuberculos, raices y platanos > Otros tuberculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tuberculos, raices y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raices y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tuberculos, raices y platanos > Yuca": "Tubérculos, raíces y plátanos > Yuca",
+          "Tubérculos, raíces y plátanos > Otros tubérculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tubérculos, raíces y plátanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tubérculos, raíces y plátanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tubérculos, raíces y plátanos > Yuca": "Tubérculos, raíces y plátanos > Yuca"
+        },
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 3,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Manizales, Centro Galerías",
+        "page": 3,
+        "page_count": 4
+      },
+      "raw_difference_count": 9,
+      "reading_sha256": {
+        "0": "ee39792291ac73b09393b92a614c5cc0fecf7c296dd46c4b0122eb6902c7cf4b",
+        "1": "f0b17bd05d63352001a0da69ea227e9fc0a047832996e307f76bf06fe77cb010"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "f46d66fea0a86e051d271b79c756b457f03bed6f549177b489048e5bb43dfcc2": {
+      "entry": "Ibagué, La 21 25-1-2024.pdf",
+      "image_id": "f46d66fea0a86e051d271b79c756b457f03bed6f549177b489048e5bb43dfcc2",
+      "locator_aliases": {
+        "0": [
+          "PDF page 1,table 1,row 5,round 1",
+          "PDF page 1,table 1,row 6,round 1"
+        ],
+        "1": [
+          "PDF page 1,table 1,row 6,round 1",
+          "PDF page 1,table 1,row 7,round 1"
+        ],
+        "10": [
+          "PDF page 1,table 1,row 16,round 1",
+          "PDF page 1,table 1,row 17,round 1"
+        ],
+        "11": [
+          "PDF page 1,table 1,row 17,round 1",
+          "PDF page 1,table 1,row 18,round 1"
+        ],
+        "12": [
+          "PDF page 1,table 1,row 18,round 1",
+          "PDF page 1,table 1,row 19,round 1"
+        ],
+        "13": [
+          "PDF page 1,table 1,row 19,round 1",
+          "PDF page 1,table 1,row 20,round 1"
+        ],
+        "14": [
+          "PDF page 1,table 1,row 20,round 1",
+          "PDF page 1,table 1,row 21,round 1"
+        ],
+        "15": [
+          "PDF page 1,table 1,row 21,round 1",
+          "PDF page 1,table 1,row 22,round 1"
+        ],
+        "16": [
+          "PDF page 1,table 1,row 22,round 1",
+          "PDF page 1,table 1,row 23,round 1"
+        ],
+        "17": [
+          "PDF page 1,table 1,row 23,round 1",
+          "PDF page 1,table 1,row 24,round 1"
+        ],
+        "18": [
+          "PDF page 1,table 1,row 24,round 1",
+          "PDF page 1,table 1,row 25,round 1"
+        ],
+        "19": [
+          "PDF page 1,table 1,row 25,round 1",
+          "PDF page 1,table 1,row 26,round 1"
+        ],
+        "2": [
+          "PDF page 1,table 1,row 7,round 1",
+          "PDF page 1,table 1,row 8,round 1"
+        ],
+        "20": [
+          "PDF page 1,table 1,row 26,round 1",
+          "PDF page 1,table 1,row 27,round 1"
+        ],
+        "21": [
+          "PDF page 1,table 1,row 27,round 1",
+          "PDF page 1,table 1,row 28,round 1"
+        ],
+        "22": [
+          "PDF page 1,table 1,row 28,round 1",
+          "PDF page 1,table 1,row 29,round 1"
+        ],
+        "23": [
+          "PDF page 1,table 1,row 31,round 1",
+          "PDF page 1,table 1,row 32,round 1"
+        ],
+        "24": [
+          "PDF page 1,table 1,row 33,round 1",
+          "PDF page 1,table 1,row 34,round 1"
+        ],
+        "25": [
+          "PDF page 1,table 1,row 34,round 1",
+          "PDF page 1,table 1,row 35,round 1"
+        ],
+        "26": [
+          "PDF page 1,table 1,row 35,round 1",
+          "PDF page 1,table 1,row 36,round 1"
+        ],
+        "27": [
+          "PDF page 1,table 1,row 36,round 1",
+          "PDF page 1,table 1,row 37,round 1"
+        ],
+        "28": [
+          "PDF page 1,table 1,row 38,round 1",
+          "PDF page 1,table 1,row 39,round 1"
+        ],
+        "29": [
+          "PDF page 1,table 1,row 39,round 1",
+          "PDF page 1,table 1,row 40,round 1"
+        ],
+        "3": [
+          "PDF page 1,table 1,row 9,round 1",
+          "PDF page 1,table 1,row 10,round 1"
+        ],
+        "30": [
+          "PDF page 1,table 1,row 40,round 1",
+          "PDF page 1,table 1,row 41,round 1"
+        ],
+        "31": [
+          "PDF page 1,table 1,row 42,round 1",
+          "PDF page 1,table 1,row 43,round 1"
+        ],
+        "32": [
+          "PDF page 1,table 1,row 45,round 1",
+          "PDF page 1,table 1,row 46,round 1"
+        ],
+        "33": [
+          "PDF page 1,table 1,row 46,round 1",
+          "PDF page 1,table 1,row 47,round 1"
+        ],
+        "34": [
+          "PDF page 1,table 1,row 47,round 1",
+          "PDF page 1,table 1,row 48,round 1"
+        ],
+        "35": [
+          "PDF page 1,table 1,row 48,round 1",
+          "PDF page 1,table 1,row 49,round 1"
+        ],
+        "36": [
+          "PDF page 1,table 1,row 50,round 1",
+          "PDF page 1,table 1,row 51,round 1"
+        ],
+        "37": [
+          "PDF page 1,table 1,row 51,round 1",
+          "PDF page 1,table 1,row 52,round 1"
+        ],
+        "38": [
+          "PDF page 1,table 1,row 52,round 1",
+          "PDF page 1,table 1,row 53,round 1"
+        ],
+        "4": [
+          "PDF page 1,table 1,row 10,round 1",
+          "PDF page 1,table 1,row 11,round 1"
+        ],
+        "5": [
+          "PDF page 1,table 1,row 11,round 1",
+          "PDF page 1,table 1,row 12,round 1"
+        ],
+        "6": [
+          "PDF page 1,table 1,row 12,round 1",
+          "PDF page 1,table 1,row 13,round 1"
+        ],
+        "7": [
+          "PDF page 1,table 1,row 13,round 1",
+          "PDF page 1,table 1,row 14,round 1"
+        ],
+        "8": [
+          "PDF page 1,table 1,row 14,round 1",
+          "PDF page 1,table 1,row 15,round 1"
+        ],
+        "9": [
+          "PDF page 1,table 1,row 15,round 1",
+          "PDF page 1,table 1,row 16,round 1"
+        ]
+      },
+      "locator_difference_count": 39,
+      "member_did": "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db",
+      "normalized_differences": {
+        "category": {
+          "Tuberculos, raices y platanos > Otros tuberculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tuberculos, raices y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raices y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tuberculos, raices y platanos > Yuca": "Tubérculos, raíces y plátanos > Yuca",
+          "Tubérculos, raíces y plátanos > Otros tubérculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tubérculos, raíces y plátanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tubérculos, raíces y plátanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tubérculos, raíces y plátanos > Yuca": "Tubérculos, raíces y plátanos > Yuca"
+        },
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {
+          "Frijol verde en vaina": "Fríjol verde en vaina",
+          "Fríjol verde en vaina": "Fríjol verde en vaina"
+        },
+        "round_label": {
+          "Ronda 1": "Ronda 1 05:00 - 07:00",
+          "Ronda 1 05:00 - 07:00": "Ronda 1 05:00 - 07:00"
+        }
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 1,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Ibagué, Plaza La 21",
+        "page": 1,
+        "page_count": 2
+      },
+      "raw_difference_count": 55,
+      "reading_sha256": {
+        "0": "6b3024bb67ff31b557e635e5c64827cb0c337898dede1af2cf025157012e984b",
+        "1": "3356acc81c47585e0edc57bb94cab030bc9c975804fcf0c080e8d34c7f70f848"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "f679ebb3426f944b7673e8a187d9c0968e497041ae30dba41007aa5660dfd334": {
+      "entry": "Rionegro, 25-1-2024.pdf",
+      "image_id": "f679ebb3426f944b7673e8a187d9c0968e497041ae30dba41007aa5660dfd334",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d",
+      "normalized_differences": {
+        "category": {},
+        "presentation": {
+          "Caja de cartÓn": "Caja de cartón",
+          "Caja de cartón": "Caja de cartón"
+        },
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 2,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Rionegro (Antioquia)",
+        "page": 2,
+        "page_count": 2
+      },
+      "raw_difference_count": 2,
+      "reading_sha256": {
+        "0": "7445421b3df41a1ed6746c2f55e21104f309a140b49fd9d113962405d64bc05e",
+        "1": "807b78b167da0973ba396a73b6c9a4cc7d29a0267d1b1a68d81050f228e6c51b"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    },
+    "f7bd8f50e77572a9bb417e2df6c11c68caab5bba873f903c171ebc482ebf9456": {
+      "entry": "Tuluá, 25-1-2024.pdf",
+      "image_id": "f7bd8f50e77572a9bb417e2df6c11c68caab5bba873f903c171ebc482ebf9456",
+      "locator_aliases": {},
+      "locator_difference_count": 0,
+      "member_did": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+      "normalized_differences": {
+        "category": {
+          "Tuberculos, raices y platanos > Otros tuberculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tuberculos, raices y platanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tuberculos, raices y platanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tuberculos, raices y platanos > Yuca": "Tubérculos, raíces y plátanos > Yuca",
+          "Tubérculos, raíces y plátanos > Otros tubérculos": "Tubérculos, raíces y plátanos > Otros tubérculos",
+          "Tubérculos, raíces y plátanos > Papa": "Tubérculos, raíces y plátanos > Papa",
+          "Tubérculos, raíces y plátanos > Plátano": "Tubérculos, raíces y plátanos > Plátano",
+          "Tubérculos, raíces y plátanos > Yuca": "Tubérculos, raíces y plátanos > Yuca"
+        },
+        "presentation": {},
+        "product": {},
+        "round_label": {}
+      },
+      "ocr_version": "gemini-image-ocr-v2",
+      "page": 3,
+      "printed_header": {
+        "dates": [
+          "25 de Enero de 2024"
+        ],
+        "market": "Tuluá (Valle del Cauca)",
+        "page": 3,
+        "page_count": 4
+      },
+      "raw_difference_count": 6,
+      "reading_sha256": {
+        "0": "d29a02169c724cdc7060fd9e6d6cd135080fd318f89b60db424d88490dc1548c",
+        "1": "bbee16dd3d09a6b997c281b95385404d68fd49c929b2c4fc808ffaae2282e2d1"
+      },
+      "task_error": "Independent OCR readings disagree or contain uncertainty; not published as prices",
+      "task_status": "review"
+    }
+  },
+  "parent_day": "2024-01-25",
+  "parent_did": "503a044d44069e1bbb39d18f5082c86cc1489ad697c823c1345920cda56b8a2b",
+  "parent_publication_date": "2024-01-25",
+  "parent_sha256": "503a044d44069e1bbb39d18f5082c86cc1489ad697c823c1345920cda56b8a2b",
+  "publish_member_ids": [
+    "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db",
+    "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c",
+    "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+    "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d",
+    "48a623a57195deab8d0c5f8d37057794942089b2642af511e0c56ece4d19b079",
+    "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb",
+    "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+    "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+    "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a",
+    "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb",
+    "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5"
+  ],
+  "reading_count": 66,
+  "source_roster_sha256": "caead03dd510cb3bf0c4565d8a8a804840f5a28a61eab07529ca7e398ca750fe",
+  "target_member_count": 11,
+  "target_member_rows_total": 740,
+  "url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-25ene2024.zip",
+  "zip_member_count": 30,
+  "zip_members": [
+    {
+      "crc32": 4182408703,
+      "entry": "Arauca (Arauca)-25-01-2024.pdf",
+      "member_did": "42c0ef95de345d88c55e3e4b334413aa63c480a4300f9c219e0ab07638e73021",
+      "offset": 0,
+      "sha256": "42c0ef95de345d88c55e3e4b334413aa63c480a4300f9c219e0ab07638e73021",
+      "size": 82846
+    },
+    {
+      "crc32": 4033156100,
+      "entry": "Armenia, Mercar 25-1-2024.pdf",
+      "member_did": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412",
+      "offset": 22977,
+      "sha256": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412",
+      "size": 461108
+    },
+    {
+      "crc32": 546025750,
+      "entry": "Bogotá, D.C., Corabastos-25-01-2024.pdf",
+      "member_did": "48e6600dc985d7bc4d69cfaaa5a696a30bb273f30e4227ddc97b31c5a07ecb1b",
+      "offset": 481337,
+      "sha256": "48e6600dc985d7bc4d69cfaaa5a696a30bb273f30e4227ddc97b31c5a07ecb1b",
+      "size": 147362
+    },
+    {
+      "crc32": 4005757557,
+      "entry": "Bogotá, D.C., Frigorífico Guadalupe-25-01-2024.pdf",
+      "member_did": "0f7d4c42410ea273319a4ca041e001d50f9d88b8be942f3d4156a6572855cfac",
+      "offset": 510353,
+      "sha256": "0f7d4c42410ea273319a4ca041e001d50f9d88b8be942f3d4156a6572855cfac",
+      "size": 66154
+    },
+    {
+      "crc32": 2768158621,
+      "entry": "Bucaramanga, Centroabastos-25-01-2024.pdf",
+      "member_did": "b332e3c4bfc8f2a5b99f4321ebcfc5820f395b880598c690c8314ac085cfdf79",
+      "offset": 531175,
+      "sha256": "b332e3c4bfc8f2a5b99f4321ebcfc5820f395b880598c690c8314ac085cfdf79",
+      "size": 120940
+    },
+    {
+      "crc32": 4171315438,
+      "entry": "Cali, Cavasa 25-1-2024.pdf",
+      "member_did": "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a",
+      "offset": 558026,
+      "sha256": "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a",
+      "size": 529064
+    },
+    {
+      "crc32": 3564797167,
+      "entry": "Cúcuta, Cenabastos-25-01-2024.pdf",
+      "member_did": "086a29a6bea94601e0472ab96b63d2962e80909ae57e92a5a0740c46a2cfef2d",
+      "offset": 1084241,
+      "sha256": "086a29a6bea94601e0472ab96b63d2962e80909ae57e92a5a0740c46a2cfef2d",
+      "size": 152871
+    },
+    {
+      "crc32": 96700876,
+      "entry": "Cúcuta, La Nueva Sexta-25-01-2024.pdf",
+      "member_did": "dfcddfbc084eec3e5215f862ccbafaadf5d62627304bff6e997f2ce79d47b88c",
+      "offset": 1114534,
+      "sha256": "dfcddfbc084eec3e5215f862ccbafaadf5d62627304bff6e997f2ce79d47b88c",
+      "size": 66642
+    },
+    {
+      "crc32": 2941038290,
+      "entry": "Florencia (Caquetá)-25-01-2024.pdf",
+      "member_did": "72022723b4563adb1c4af04c452ed2fa4b729992822fe2493d1243c18c77df4c",
+      "offset": 1135494,
+      "sha256": "72022723b4563adb1c4af04c452ed2fa4b729992822fe2493d1243c18c77df4c",
+      "size": 125970
+    },
+    {
+      "crc32": 3666763398,
+      "entry": "Ibagué, La 21 25-1-2024.pdf",
+      "member_did": "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db",
+      "offset": 1163787,
+      "sha256": "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db",
+      "size": 468488
+    },
+    {
+      "crc32": 1013770434,
+      "entry": "Ipiales, Ipiales somos todos 25-1-2024.pdf",
+      "member_did": "6cdcd480ab4ccffe90fe67a0dba931e9f9ee3b2468267a02553ab0e2d28dc883",
+      "offset": 1629505,
+      "sha256": "6cdcd480ab4ccffe90fe67a0dba931e9f9ee3b2468267a02553ab0e2d28dc883",
+      "size": 259804
+    },
+    {
+      "crc32": 2422351661,
+      "entry": "La Ceja, 25-1-2024.pdf",
+      "member_did": "c7b0e5100729a042c54266568b8a95083f86fd669a3bf180a49b572505e66a21",
+      "offset": 1887540,
+      "sha256": "c7b0e5100729a042c54266568b8a95083f86fd669a3bf180a49b572505e66a21",
+      "size": 209290
+    },
+    {
+      "crc32": 157286305,
+      "entry": "La Unión (Antioquia)-24-01-2024.pdf",
+      "member_did": "e8361774ec42ba59b085fcefe565496309c2bbad5d2750016c09f9f3c3ac99ac",
+      "offset": 2094695,
+      "sha256": "e8361774ec42ba59b085fcefe565496309c2bbad5d2750016c09f9f3c3ac99ac",
+      "size": 29664
+    },
+    {
+      "crc32": 90690190,
+      "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+      "member_did": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+      "offset": 2111051,
+      "sha256": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0",
+      "size": 932972
+    },
+    {
+      "crc32": 1664489118,
+      "entry": "Marinilla (Antioquia)-24-01-2024.pdf",
+      "member_did": "cf23ffebac69865186db5c0808ba9c623f93c9057b6eb051d6b49c36e84eb208",
+      "offset": 3038804,
+      "sha256": "cf23ffebac69865186db5c0808ba9c623f93c9057b6eb051d6b49c36e84eb208",
+      "size": 43161
+    },
+    {
+      "crc32": 760625203,
+      "entry": "Medellín, Central Mayorista de Antioquia-25-01-2024.pdf",
+      "member_did": "652e81f820a54dca4e74768fda28ad0d944e884e770f51b5b473ba70c5104533",
+      "offset": 3056832,
+      "sha256": "652e81f820a54dca4e74768fda28ad0d944e884e770f51b5b473ba70c5104533",
+      "size": 303726
+    },
+    {
+      "crc32": 4036983196,
+      "entry": "Medellín, José María Villa 25-1-2024.pdf",
+      "member_did": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829",
+      "offset": 3102890,
+      "sha256": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829",
+      "size": 966682
+    },
+    {
+      "crc32": 2053846858,
+      "entry": "Neiva, Surabastos-25-01-2024.pdf",
+      "member_did": "91ac1a4f6fa302e5d9fd0f8e1897f552e42143aa5714537d142cd955ac2495c2",
+      "offset": 4064706,
+      "sha256": "91ac1a4f6fa302e5d9fd0f8e1897f552e42143aa5714537d142cd955ac2495c2",
+      "size": 158824
+    },
+    {
+      "crc32": 653740294,
+      "entry": "Pamplona (Norte de Santander)-25-01-2024.pdf",
+      "member_did": "4b809eb76971a839b03022461d65fea71b6a34cc1918456ec6dcb19b1717b7ea",
+      "offset": 4096097,
+      "sha256": "4b809eb76971a839b03022461d65fea71b6a34cc1918456ec6dcb19b1717b7ea",
+      "size": 95776
+    },
+    {
+      "crc32": 2486047967,
+      "entry": "Pasto, El Poterrillo 25-1-2024.pdf",
+      "member_did": "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb",
+      "offset": 4120293,
+      "sha256": "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb",
+      "size": 395063
+    },
+    {
+      "crc32": 4066391049,
+      "entry": "Pereira, La 41 25-1-2024.pdf",
+      "member_did": "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb",
+      "offset": 4512870,
+      "sha256": "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb",
+      "size": 369945
+    },
+    {
+      "crc32": 2093872363,
+      "entry": "Pereira, Mercasa 25-1-2024.pdf",
+      "member_did": "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5",
+      "offset": 4879909,
+      "sha256": "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5",
+      "size": 513954
+    },
+    {
+      "crc32": 452715101,
+      "entry": "Peñol, 25-1-2024.pdf",
+      "member_did": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+      "offset": 5390430,
+      "sha256": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+      "size": 118524
+    },
+    {
+      "crc32": 2470360097,
+      "entry": "Rionegro, 25-1-2024.pdf",
+      "member_did": "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d",
+      "offset": 5507358,
+      "sha256": "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d",
+      "size": 367248
+    },
+    {
+      "crc32": 1521927304,
+      "entry": "Santa barbara, 25-1-2024.pdf",
+      "member_did": "48a623a57195deab8d0c5f8d37057794942089b2642af511e0c56ece4d19b079",
+      "offset": 5872025,
+      "sha256": "48a623a57195deab8d0c5f8d37057794942089b2642af511e0c56ece4d19b079",
+      "size": 124090
+    },
+    {
+      "crc32": 1166092835,
+      "entry": "Santa Marta, 25-1-2024.pdf",
+      "member_did": "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c",
+      "offset": 5994416,
+      "sha256": "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c",
+      "size": 654229
+    },
+    {
+      "crc32": 440580627,
+      "entry": "Socorro (Santander)-25-01-2024.pdf",
+      "member_did": "0b746141e26639bce60a389ff7f8463ec0f8e70cf2a120511a2eab8ef9a741c7",
+      "offset": 6645871,
+      "sha256": "0b746141e26639bce60a389ff7f8463ec0f8e70cf2a120511a2eab8ef9a741c7",
+      "size": 65328
+    },
+    {
+      "crc32": 153492501,
+      "entry": "Tibasosa (Boyacá), Coomproriente-25-01-2024.pdf",
+      "member_did": "e656fcdb86aa14510f5004f12dd51eed8c9eafc1e9b47f0287f9b6d652ae61d1",
+      "offset": 6666296,
+      "sha256": "e656fcdb86aa14510f5004f12dd51eed8c9eafc1e9b47f0287f9b6d652ae61d1",
+      "size": 107476
+    },
+    {
+      "crc32": 3562717326,
+      "entry": "Tuluá, 25-1-2024.pdf",
+      "member_did": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+      "offset": 6691789,
+      "sha256": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378",
+      "size": 1039940
+    },
+    {
+      "crc32": 1667164942,
+      "entry": "Tunja, Complejo de Servicios del Sur-25-01-2024.pdf",
+      "member_did": "cf0011a87c9650966297ffcf29f30bc16b8b3a9eecf4b954599c0f2af72c3a67",
+      "offset": 7726947,
+      "sha256": "cf0011a87c9650966297ffcf29f30bc16b8b3a9eecf4b954599c0f2af72c3a67",
+      "size": 122618
+    }
+  ]
+}

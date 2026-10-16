@@ -13,6 +13,7 @@ from PIL import Image
 from pipelines.ingestion.city_reports import parse_city_pages
 from pipelines.ingestion.ocr import (
     OCRDeferred,
+    compare_city_price_readings,
     compare_readings,
     needs_ocr,
     png_bytes,
@@ -43,6 +44,25 @@ READ = {
 
 
 class OCR(unittest.TestCase):
+    def test_city_typed_agreement_allows_prose_and_case_but_not_identity_or_price(self):
+        other = deepcopy(READ)
+        other["text"] = "DANE, fuente oficial.\n" + HEAD
+        other["tables"][0][0][3] = "Ronda 1\n03:30 - 05:30"
+        other["tables"][0][-1][1] = "BULTO"
+        self.assertTrue(compare_city_price_readings(READ, other))
+        changed = deepcopy(other)
+        changed["tables"][0][-1][1] = "Caja"
+        self.assertFalse(compare_city_price_readings(READ, changed))
+        changed = deepcopy(other)
+        changed["tables"][0][-1][3] = "86.000"
+        self.assertFalse(compare_city_price_readings(READ, changed))
+        changed = deepcopy(other)
+        changed["text"] = changed["text"].replace("07 de", "06 de")
+        self.assertFalse(compare_city_price_readings(READ, changed))
+        changed = deepcopy(other)
+        changed["tables"][0][-1][0] = "Limón común"
+        self.assertFalse(compare_city_price_readings(READ, changed))
+
     def test_agreement_ignores_logo_but_never_price_or_market_or_date(self):
         other = deepcopy(READ)
         other["text"] = "DANE\n" + HEAD

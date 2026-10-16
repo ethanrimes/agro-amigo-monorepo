@@ -4,8 +4,11 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useFarm } from "@/components/planning/FarmContext";
 import { CropReferences } from "@/components/planning/CropReferences";
+import { SoilSampleReference } from "@/components/planning/SoilSampleReference";
+import referenceStyles from "@/components/planning/CropReferences.module.css";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import type { FarmData, Municipality } from "@/lib/planning-types";
 
 function References() {
@@ -73,38 +76,36 @@ function References() {
           )}
           <section className="panel">
             <div className="form-grid">
-              <label className="form-field">
-                Municipio de referencia
-                <select
-                  value={municipality}
-                  onChange={(e) => {
-                    setMunicipality(e.target.value);
-                    setCrop("");
-                  }}
-                >
-                  <option value="">Elige un municipio</option>
-                  {places.data?.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}, {m.department}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <SearchableSelect
+                label="Municipio de referencia"
+                placeholder="Busca municipio o departamento…"
+                emptyLabel="Elige un municipio"
+                value={municipality}
+                options={(places.data || []).map((m) => ({
+                  id: m.id,
+                  label: `${m.name}, ${m.department}`,
+                }))}
+                loading={places.loading}
+                error={!!places.error}
+                onChange={(id) => {
+                  setMunicipality(id);
+                  setCrop("");
+                }}
+              />
               {info.data && (
-                <label className="form-field">
-                  Cultivo y sistema de referencia
-                  <select
-                    value={crop?.crop_code || ""}
-                    onChange={(e) => setCrop(e.target.value)}
-                  >
-                    <option value="">Elige un cultivo reportado</option>
-                    {info.data.crops.map((c) => (
-                      <option key={c.crop_code} value={c.crop_code}>
-                        {c.variety} · {c.physical_state}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <SearchableSelect
+                  key={municipality}
+                  label="Cultivo y sistema de referencia"
+                  allowClear={false}
+                  placeholder="Busca el cultivo o sistema…"
+                  emptyLabel="Elige un cultivo reportado"
+                  value={crop?.crop_code || ""}
+                  options={info.data.crops.map((c) => ({
+                    id: c.crop_code,
+                    label: `${c.variety} · ${c.physical_state}`,
+                  }))}
+                  onChange={setCrop}
+                />
               )}
             </div>
             <p className="privacy-note">
@@ -119,6 +120,11 @@ function References() {
             <p role="status">Consultando las fuentes del municipio…</p>
           )}
           {info.error && <ErrorState message={info.error} retry={info.retry} />}
+          {info.data && (
+            <div className={referenceStyles.references}>
+              <SoilSampleReference data={info.data} />
+            </div>
+          )}
           {info.data &&
             (crop ? (
               <CropReferences

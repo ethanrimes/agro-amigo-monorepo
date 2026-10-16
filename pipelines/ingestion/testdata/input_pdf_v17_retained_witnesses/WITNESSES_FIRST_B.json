@@ -1,0 +1,146 @@
+{
+  "at": "2026-10-08T20:18:45.867118+00:00",
+  "read_only": true,
+  "role": "agro_reader",
+  "statement_timeout_seconds": 15,
+  "first_3second_failure_preserved": "WITNESSES_FIRST_A.json",
+  "cases": [
+    {
+      "document_id": "cb2289b8dad52378bc04a9787c7560a93a1feccfd47c64a41e010a33a499f5ab",
+      "observed_on": "2016-02-29",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_feb_2016.pdf",
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_feb_2016.pdf",
+        "kind": "inputs-pdf",
+        "observed_on": "2016-02-29",
+        "document_id": "cb2289b8dad52378bc04a9787c7560a93a1feccfd47c64a41e010a33a499f5ab",
+        "status": "pending",
+        "processor_version": "inputs-pdf-v17",
+        "records": 8779,
+        "error": "PDF page checkpoint retained; extraction will resume within the next run budget",
+        "xmin": "1100442"
+      },
+      "source": {
+        "id": "cb2289b8dad52378bc04a9787c7560a93a1feccfd47c64a41e010a33a499f5ab",
+        "title": "DANE - Bol_Insumos_feb_2016.pdf",
+        "publisher": "DANE",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_feb_2016.pdf",
+        "media_type": "application/pdf",
+        "kind": "original",
+        "reference_period": "2016-02-29",
+        "page_count": 88,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "context-pdf",
+          "original_filename": "Bol_Insumos_feb_2016.pdf"
+        },
+        "bytes": 1636900,
+        "retrieved_at": "2026-09-08T16:44:57.818983+00:00",
+        "xmin": "56454"
+      },
+      "v14_rows": 8779,
+      "vector_file": "2016-02-29_V14_FULL_VECTOR_FIRST_B.json.gz",
+      "vector_sha256": "5bb786d5863484b776a72d950a0dfb2ef616b19ce08dbd7436d754ad7eefdc2f",
+      "original_file": "2016-02-29_original_FIRST_B.pdf",
+      "original_sha256": "cb2289b8dad52378bc04a9787c7560a93a1feccfd47c64a41e010a33a499f5ab",
+      "checkpoints": [
+        [
+          "inputs-pdf-v10",
+          "inputs-pdf:published",
+          8177,
+          "569123"
+        ],
+        [
+          "inputs-pdf-v12",
+          "inputs-pdf:published",
+          8177,
+          "651156"
+        ],
+        [
+          "inputs-pdf-v13",
+          "inputs-pdf:published",
+          8177,
+          "722356"
+        ],
+        [
+          "inputs-pdf-v14",
+          "inputs-pdf:published",
+          8177,
+          "849828"
+        ],
+        [
+          "inputs-pdf-v8",
+          "inputs-pdf:published",
+          8184,
+          "561074"
+        ]
+      ]
+    },
+    {
+      "document_id": "6cba3d6b39f171d2ae0f6e13b8afb7ab468e6dc4d2d807febc1f2a1c2731b2fc",
+      "observed_on": "2016-04-30",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_abr_2016.pdf",
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_abr_2016.pdf",
+        "kind": "inputs-pdf",
+        "observed_on": "2016-04-30",
+        "document_id": "6cba3d6b39f171d2ae0f6e13b8afb7ab468e6dc4d2d807febc1f2a1c2731b2fc",
+        "status": "failed",
+        "processor_version": "inputs-pdf-v17",
+        "records": 9179,
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "xmin": "1085356"
+      },
+      "source": {
+        "id": "6cba3d6b39f171d2ae0f6e13b8afb7ab468e6dc4d2d807febc1f2a1c2731b2fc",
+        "title": "DANE - Bol_Insumos_abr_2016.pdf",
+        "publisher": "DANE",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_abr_2016.pdf",
+        "media_type": "application/pdf",
+        "kind": "original",
+        "reference_period": "2016-04-30",
+        "page_count": 89,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "context-pdf",
+          "original_filename": "Bol_Insumos_abr_2016.pdf"
+        },
+        "bytes": 4545108,
+        "retrieved_at": "2026-09-08T17:24:32.273085+00:00",
+        "xmin": "57141"
+      },
+      "v14_rows": 9179,
+      "vector_file": "2016-04-30_V14_FULL_VECTOR_FIRST_B.json.gz",
+      "vector_sha256": "5400d906f83a7c6245e31fd8d71a6a344a419ef203bbafa78acf10d620e4b2d4",
+      "original_file": "2016-04-30_original_FIRST_B.pdf",
+      "original_sha256": "6cba3d6b39f171d2ae0f6e13b8afb7ab468e6dc4d2d807febc1f2a1c2731b2fc",
+      "checkpoints": [
+        [
+          "inputs-pdf-v10",
+          "inputs-pdf:published",
+          9179,
+          "577219"
+        ],
+        [
+          "inputs-pdf-v12",
+          "inputs-pdf:published",
+          9179,
+          "652414"
+        ],
+        [
+          "inputs-pdf-v13",
+          "inputs-pdf:published",
+          9179,
+          "724304"
+        ],
+        [
+          "inputs-pdf-v14",
+          "inputs-pdf:published",
+          9179,
+          "851520"
+        ]
+      ]
+    }
+  ],
+  "complete": true
+}

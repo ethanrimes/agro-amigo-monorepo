@@ -1,0 +1,698 @@
+{
+  "provenance": "Retained original DANE PDFs independently viewed on 2026-10-01; each document_id is SHA-256 of its exact original bytes; physical pages only",
+  "pages": [
+    {
+      "document_id": "053fcec706d3acc2e46440ae6e1b25df07000e1e278fdbb1f2859ce6052f5f3d",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/cp_mensual_may_2015.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "6ec6992cd83803f82cba81f72f6cf27a0d996f2aeadeca0e5d143c09e13d414c",
+        "8d00e4fd36ae4abb2f49bc06bff3dfb64a0884db26598390a3f0b060a4c61024",
+        "1bdee5d41950cc25797a4cc77c75c5cb044d2cfe011f197a79793d71e27de99a",
+        "a65718641b02f3b898a2d71d6b85ef4b32d609a163e581eb21a6b4bc7265d65e",
+        "19daa52cf0e46df1eb0b8beb6b9dec519cdb111029b21ae9bace2113142fe8a5"
+      ]
+    },
+    {
+      "document_id": "0ac6bc14a62054bb84a6afa8e0dce19810674583a46577008c790a041b2ff9cc",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_sep_2017.pdf",
+      "physical_page": 24,
+      "image_stream_sha256": [
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "353abd768419c8ab2590092b61c5885f42faf2f191b293f196d3909dd9d24219",
+        "6cf4ebd7d891abb7d2e46c464bc84a683ece55ce398a010894ed001b868f38d2",
+        "48c505cb503d7839591372e96d460c6af7fb94a183d6efd69fd68d4ce12f66d3"
+      ]
+    },
+    {
+      "document_id": "0cfc50ef16a3ce7aac4740338d5475654084d144e3eb4adbda3c8f23792bb3f0",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jun_2015.pdf",
+      "physical_page": 19,
+      "image_stream_sha256": [
+        "b3e8e1457f27720fb5d00fe64da6a87e924e9512ab29cab1456bb87f0376a210",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "0cfc50ef16a3ce7aac4740338d5475654084d144e3eb4adbda3c8f23792bb3f0",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jun_2015.pdf",
+      "physical_page": 48,
+      "image_stream_sha256": [
+        "b3e8e1457f27720fb5d00fe64da6a87e924e9512ab29cab1456bb87f0376a210",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "106c4cf3042050452b5718676bae26f6a1b05fe07a1bea748730b495e7b9b3d0",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_may_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c"
+      ]
+    },
+    {
+      "document_id": "112f6dfde46c1e83cd89d3a0d786ab3866ef5da49d75a9f9ba0068f996a4e9e0",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_sep_2014.pdf",
+      "physical_page": 46,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37",
+        "87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "1377dcc3e55fb3aa8514fc72fb1fce4bd1e8c6edeafc4d5373ad7d2b769bb40f",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_dic_2014.pdf",
+      "physical_page": 47,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "14e6965e0ad60dce001c00650bfe0a18c8899688afb875fd709014a083f5f167",
+        "9b5033886d4eb6917fc9109af632bee2f4933a5906a476360006d399515d1ef0",
+        "1c02886c7ba1ccfd803ceecd229b1fc6b9e5e9f2d740972fa6b90672c34e9077",
+        "fc4eeeb83f6d07126a75990b238d4f5c043abd332154a052755626455b0f5650",
+        "2b3574fdc0ccb3e3a1d0f89b8359b8bdd8aa48ad0fb36efce198c25491007f9d",
+        "c82d3dafb934427695c1a13c51ad1befb81dd3d699ef6fe806c6e9976ed7e63c"
+      ]
+    },
+    {
+      "document_id": "1a3622164cc5931b4f241670894a81b77b928403e9ddf58e95bf49720d58a1c1",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jul_2017.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b",
+        "049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759",
+        "4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572",
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b"
+      ]
+    },
+    {
+      "document_id": "1bd91c7c5480e9bc7840c6e00ff3d373ff98cca273d4b649b7fcb003edbf47b6",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/presentacion_mensual_abr_2014.pdf",
+      "physical_page": 47,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "1efdda8c2c97d9c34f5dd88fc225514e9b53f2afacaaddc3240978123f3a8d76",
+        "c9fc7632ac53b85609ad316526d5ce49fd52f4cc6b1452baa523136ce787989c",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "4daae72db4737f623324ae3e58d7d8af7b25a877fc467c3f5f1f773d51d06c67",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "1c02d6efc04408487c20dc2c20a7013e9ab1ac285666922225286de919de3b4e",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/presentacion_mensual_may_2014.pdf",
+      "physical_page": 47,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37",
+        "87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "2329f6f3f1f726cbc83c4a0cd6f423f0cab9bafe66cf6304d15762e5cdddd66a",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ene_2015.pdf",
+      "physical_page": 39,
+      "image_stream_sha256": [
+        "484eea7beab0ddf61977dbc84eb796655e384cbaf174860e103d563086043586",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "2613e691561bb9d907110db1de71a17fc1a0d384a5573db5a1c76fe7c8df072d",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_oct_2017.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "353abd768419c8ab2590092b61c5885f42faf2f191b293f196d3909dd9d24219",
+        "6cf4ebd7d891abb7d2e46c464bc84a683ece55ce398a010894ed001b868f38d2",
+        "48c505cb503d7839591372e96d460c6af7fb94a183d6efd69fd68d4ce12f66d3"
+      ]
+    },
+    {
+      "document_id": "28751327c533c063d62cc06d1d5b2363bf7a6128dee5f5bb3f38389df424d407",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jul_2014.pdf",
+      "physical_page": 49,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37",
+        "87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "287a2b0fdbec72932334bb000366c14768bb42d2e5f23e2bad4cd45cbb13128a",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ene_2016.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "287a2b0fdbec72932334bb000366c14768bb42d2e5f23e2bad4cd45cbb13128a",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ene_2016.pdf",
+      "physical_page": 39,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "287a2b0fdbec72932334bb000366c14768bb42d2e5f23e2bad4cd45cbb13128a",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ene_2016.pdf",
+      "physical_page": 48,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "30d23d4595a2421cb8918e86cf345373b155b754620443fc2df070c4836b3287",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_abr_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c"
+      ]
+    },
+    {
+      "document_id": "4da3bcb11f6d9e757e0b5de6b5f7de089ba079606ff2b63d12576da7acf8043d",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_abr_2016.pdf",
+      "physical_page": 16,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "4da3bcb11f6d9e757e0b5de6b5f7de089ba079606ff2b63d12576da7acf8043d",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_abr_2016.pdf",
+      "physical_page": 39,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "54bf24a936d2af48fb31add5ddb04c6fa4a3d570411cfa21d7d5d95748e0cf05",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jun_2017.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b",
+        "049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759",
+        "4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572",
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b"
+      ]
+    },
+    {
+      "document_id": "60de4bcf1ad30286b631e3d80d45e8ace5232c9704fbebc9eba03c8195667e03",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ene_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "a4d6588ae08c2e975994e6dfd831c256292ce37e80ff7f843dcc05dcc2a3a5e4",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "9503694fc73f7e99320d529388f6107b20eed692f843edf2f7d14dfc3a23c9e5"
+      ]
+    },
+    {
+      "document_id": "67dbdb816d4a2b5edddc341d765ac6fedc38f99d7400f2e20845b1157b8dcb86",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_mar_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c"
+      ]
+    },
+    {
+      "document_id": "6ef6d01b562c4bf1571f551fd29e07df116e818faec41ca1fde4f258b69eb8c4",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_feb_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c"
+      ]
+    },
+    {
+      "document_id": "71c52675a99dfb7d74e89ff050202d6f2c386713e1bb4388dd14591868659708",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jul_2018.pdf",
+      "physical_page": 24,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c"
+      ]
+    },
+    {
+      "document_id": "9274d8722d41496a542b038655b90d4ac299225d3e62cefaa0c67423bf58fbed",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_sep_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "bcaa6947f46be9049946018f8f4bf52fb612ced9d8c65a61575ba4727ed592eb"
+      ]
+    },
+    {
+      "document_id": "96198dfffb2ac060ca438de27ff5e158273c2e22bbd64063b67ff7fdd3c2ab0d",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_mar_2017.pdf",
+      "physical_page": 24,
+      "image_stream_sha256": [
+        "9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b",
+        "049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759",
+        "4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572",
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b"
+      ]
+    },
+    {
+      "document_id": "9c06be9cbfeef6365109a588649f1120f7bdaf6a4c2231a0ebe71bdab8c5ec61",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ago_2014.pdf",
+      "physical_page": 46,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37",
+        "87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "9cef6e05ec4f28c4d213da924e7f206e7e97170427b4a874f321049905f042f7",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_dic_2015.pdf",
+      "physical_page": 7,
+      "image_stream_sha256": [
+        "9035b91aee5493c2c2f2dcce273f46ad7328ffb13417db789be6b2b3f6980300",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "9cef6e05ec4f28c4d213da924e7f206e7e97170427b4a874f321049905f042f7",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_dic_2015.pdf",
+      "physical_page": 40,
+      "image_stream_sha256": [
+        "9035b91aee5493c2c2f2dcce273f46ad7328ffb13417db789be6b2b3f6980300",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "9cef6e05ec4f28c4d213da924e7f206e7e97170427b4a874f321049905f042f7",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_dic_2015.pdf",
+      "physical_page": 49,
+      "image_stream_sha256": [
+        "9035b91aee5493c2c2f2dcce273f46ad7328ffb13417db789be6b2b3f6980300",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "a1cfaa6bfe781b69586234d363813022245882ed55f355de4ca583e91d052623",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_abr_2017.pdf",
+      "physical_page": 24,
+      "image_stream_sha256": [
+        "9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b",
+        "049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759",
+        "4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572",
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b"
+      ]
+    },
+    {
+      "document_id": "a43303786f951fca17ebbed79a66ca998a3e2408eed16243a9b3b0d182340a60",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_oct_2018.pdf",
+      "physical_page": 26,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "bcaa6947f46be9049946018f8f4bf52fb612ced9d8c65a61575ba4727ed592eb"
+      ]
+    },
+    {
+      "document_id": "aa3232f5f8675334e14b581159673f6c0457a590d8665b5e20e026edb89382c8",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jun_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c"
+      ]
+    },
+    {
+      "document_id": "ae095b5adef81b5847e72812f7b44585c5b11e3ed57ed2a8ce005b73c6e32e3a",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ago_2015.pdf",
+      "physical_page": 3,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "b186034be54ed8c233b572dea466a30019072e3ceb7c65161bfe688736d096e4",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_jul_2015.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "37575ddf7fecc6e78e5949c79030d6a43f64943069e9d050baf2490fdfd4089a",
+        "3ee4cf01a37cb6f8fb6cce96d6c1dc2cb941e9e001c7cedc4ab29d8983a4df92"
+      ]
+    },
+    {
+      "document_id": "c02c649bd3841a48ab963be2902dcac932f1fd404c0a75632c7154550e8c31af",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_oct_2014.pdf",
+      "physical_page": 48,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37",
+        "87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "c493a592a08c6165e1ffda40f2439d14f20fc7238edcd94907c89eeec98057ae",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ago_2018.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "c21a62dc17f67ef6175a26a268401a99a5d358580e46286733588d1e6b027e36"
+      ]
+    },
+    {
+      "document_id": "c629fc0064261be74fa79e03cbd7e496fe27d50f147ed2530a823d2a0b979a75",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_mar_2016.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "c629fc0064261be74fa79e03cbd7e496fe27d50f147ed2530a823d2a0b979a75",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_mar_2016.pdf",
+      "physical_page": 49,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "d8a920a9af11b18a61e6ccbf819a06d31719d802414daa39bb6961ebc40ea59c",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_dic_2017.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "a4d6588ae08c2e975994e6dfd831c256292ce37e80ff7f843dcc05dcc2a3a5e4",
+        "61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f",
+        "3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0",
+        "85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8",
+        "9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4",
+        "1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d",
+        "8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323",
+        "69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10",
+        "eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2",
+        "4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6",
+        "9503694fc73f7e99320d529388f6107b20eed692f843edf2f7d14dfc3a23c9e5"
+      ]
+    },
+    {
+      "document_id": "db46089f6c7e08de5aad1b0e8376cadf9239f81c7ab2fc48075bdf65aabf52e3",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_feb_2016.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "db46089f6c7e08de5aad1b0e8376cadf9239f81c7ab2fc48075bdf65aabf52e3",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_feb_2016.pdf",
+      "physical_page": 48,
+      "image_stream_sha256": [
+        "4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645",
+        "0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7",
+        "930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37"
+      ]
+    },
+    {
+      "document_id": "dc5fe07c956386acfc244dfaa4ddc875cb4362f95d4b3d00150114966b3d59c7",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_may_2017.pdf",
+      "physical_page": 24,
+      "image_stream_sha256": [
+        "9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b",
+        "049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759",
+        "4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572",
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b"
+      ]
+    },
+    {
+      "document_id": "dffeb9e20d024c1b0805e55fa732f57670814117f52424570881bcfdb96a2709",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_nov_2015.pdf",
+      "physical_page": 5,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "37575ddf7fecc6e78e5949c79030d6a43f64943069e9d050baf2490fdfd4089a",
+        "3ee4cf01a37cb6f8fb6cce96d6c1dc2cb941e9e001c7cedc4ab29d8983a4df92"
+      ]
+    },
+    {
+      "document_id": "dffeb9e20d024c1b0805e55fa732f57670814117f52424570881bcfdb96a2709",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_nov_2015.pdf",
+      "physical_page": 49,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "37575ddf7fecc6e78e5949c79030d6a43f64943069e9d050baf2490fdfd4089a",
+        "3ee4cf01a37cb6f8fb6cce96d6c1dc2cb941e9e001c7cedc4ab29d8983a4df92"
+      ]
+    },
+    {
+      "document_id": "e28a7c0811e22c10de68779c94f8437ba6cd3e0a4e57555f98018d0d41e5be21",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_nov_2014.pdf",
+      "physical_page": 49,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "14e6965e0ad60dce001c00650bfe0a18c8899688afb875fd709014a083f5f167",
+        "9b5033886d4eb6917fc9109af632bee2f4933a5906a476360006d399515d1ef0",
+        "1c02886c7ba1ccfd803ceecd229b1fc6b9e5e9f2d740972fa6b90672c34e9077",
+        "fc4eeeb83f6d07126a75990b238d4f5c043abd332154a052755626455b0f5650",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "e4ecad06fa7cfb3874251c277ae06bfe4ec0c582dee569c7500df4f9ca37c002",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_oct_2015.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "37575ddf7fecc6e78e5949c79030d6a43f64943069e9d050baf2490fdfd4089a",
+        "3ee4cf01a37cb6f8fb6cce96d6c1dc2cb941e9e001c7cedc4ab29d8983a4df92"
+      ]
+    },
+    {
+      "document_id": "e4ecad06fa7cfb3874251c277ae06bfe4ec0c582dee569c7500df4f9ca37c002",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_oct_2015.pdf",
+      "physical_page": 48,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "37575ddf7fecc6e78e5949c79030d6a43f64943069e9d050baf2490fdfd4089a",
+        "3ee4cf01a37cb6f8fb6cce96d6c1dc2cb941e9e001c7cedc4ab29d8983a4df92"
+      ]
+    },
+    {
+      "document_id": "e54423fc627fbbbeede4000c0a501ffaa5b3d1dd202532f6b0821c9622588277",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/cp_mensual_dic_2014.pdf",
+      "physical_page": 4,
+      "image_stream_sha256": [
+        "6ec6992cd83803f82cba81f72f6cf27a0d996f2aeadeca0e5d143c09e13d414c",
+        "8d00e4fd36ae4abb2f49bc06bff3dfb64a0884db26598390a3f0b060a4c61024",
+        "1bdee5d41950cc25797a4cc77c75c5cb044d2cfe011f197a79793d71e27de99a",
+        "a65718641b02f3b898a2d71d6b85ef4b32d609a163e581eb21a6b4bc7265d65e",
+        "19daa52cf0e46df1eb0b8beb6b9dec519cdb111029b21ae9bace2113142fe8a5"
+      ]
+    },
+    {
+      "document_id": "e54423fc627fbbbeede4000c0a501ffaa5b3d1dd202532f6b0821c9622588277",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/cp_mensual_dic_2014.pdf",
+      "physical_page": 5,
+      "image_stream_sha256": [
+        "6ec6992cd83803f82cba81f72f6cf27a0d996f2aeadeca0e5d143c09e13d414c",
+        "8d00e4fd36ae4abb2f49bc06bff3dfb64a0884db26598390a3f0b060a4c61024",
+        "1bdee5d41950cc25797a4cc77c75c5cb044d2cfe011f197a79793d71e27de99a",
+        "a65718641b02f3b898a2d71d6b85ef4b32d609a163e581eb21a6b4bc7265d65e",
+        "19daa52cf0e46df1eb0b8beb6b9dec519cdb111029b21ae9bace2113142fe8a5"
+      ]
+    },
+    {
+      "document_id": "e5b30ccbc030c425a427c145720f3ac48bedbfb271553bd513924f5ceaae9504",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_ago_2017.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531",
+        "7292c3fbbc2f108ac823b9757efdb6b63a174895a00f1a4150315afc3b4419a1",
+        "049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759",
+        "4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572",
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "7292c3fbbc2f108ac823b9757efdb6b63a174895a00f1a4150315afc3b4419a1"
+      ]
+    },
+    {
+      "document_id": "f1096b995ddafafc226d0285753d90a94fe81f55212ac8549ae551dd76c6db28",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_sep_2015.pdf",
+      "physical_page": 6,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "f1096b995ddafafc226d0285753d90a94fe81f55212ac8549ae551dd76c6db28",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_sep_2015.pdf",
+      "physical_page": 52,
+      "image_stream_sha256": [
+        "d6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603",
+        "fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a",
+        "84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa"
+      ]
+    },
+    {
+      "document_id": "f2126ba117fccd56dc6b48ea8332fdae472f395652f892aa51d3dcfc04e0adee",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/presentacion_mensual_jun_2014.pdf",
+      "physical_page": 49,
+      "image_stream_sha256": [
+        "b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0",
+        "e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37",
+        "87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62",
+        "8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb",
+        "20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829",
+        "1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb"
+      ]
+    },
+    {
+      "document_id": "ffc792c4542429c45e17ebc3407bde19dacea6e3b488fc9be6d70462f9725605",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/pres_mensual_nov_2017.pdf",
+      "physical_page": 25,
+      "image_stream_sha256": [
+        "8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3",
+        "353abd768419c8ab2590092b61c5885f42faf2f191b293f196d3909dd9d24219",
+        "6cf4ebd7d891abb7d2e46c464bc84a683ece55ce398a010894ed001b868f38d2",
+        "48c505cb503d7839591372e96d460c6af7fb94a183d6efd69fd68d4ce12f66d3"
+      ]
+    }
+  ]
+}

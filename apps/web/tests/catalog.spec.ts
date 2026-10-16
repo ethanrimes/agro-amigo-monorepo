@@ -82,6 +82,53 @@ test("detail URLs retain exact selection and return to all catalog filters", () 
   expect(link.searchParams.get("returnTo")).toBe(back);
 });
 
+test("current market quotes remain reachable on the first search page with all old identities retained", () => {
+  const canonical = product({ name: "Sardinas en lata", date: "2026-09-30" });
+  const old = Array.from({ length: 30 }, (_, index) => product({
+    id: `reference:old-${index}`, identity: `reference:old-${index}`,
+    name: "Sardinas en lata", kind: "official-reference", date: "2015-12-18",
+    price: 7292, market: `Mercado histórico ${index}`,
+  }));
+  const current = product({
+    id: "reference:current", identity: "reference:current", name: "Sardinas en lata",
+    kind: "official-reference", date: "2026-10-09", price: 15181,
+    market: "Armenia, Mercar", search_terms: ["Armenia, Mercar"],
+  });
+  const source: UnifiedCatalog = {
+    products: [canonical, ...old, current], regions: [], latestDate: current.date,
+    filters: { region: "", reference_scope: "all", excluded_nonregional_count: 0,
+      excluded_nonregional_reason: null },
+  };
+  const unchanged = structuredClone(source);
+  const page = paginateCatalog(source, { q: "SARDINAS EN LATA", limit: 24 });
+  expect(page.products.slice(0, 2)).toEqual([canonical, current]);
+  expect(page.total).toBe(32);
+  const all = [
+    ...page.products,
+    ...paginateCatalog(source, { q: "SARDINAS EN LATA", offset: 24, limit: 24 }).products,
+  ];
+  expect(new Set(all.map((row) => row.identity)).size).toBe(32);
+  expect(all.filter((row) => row.identity.startsWith("reference:old-"))).toEqual(old);
+  expect(source).toEqual(unchanged);
+  expect(paginateCatalog(source, { q: "sardinas Armenia", limit: 24 }).products).toEqual([current]);
+});
+
+test("same-day search order and distinct price units remain stable without comparing amounts", () => {
+  const rows = [
+    product({ id: "reference:kg", identity: "reference:kg", name: "Sardinas", kind: "official-reference",
+      date: "2026-10-09", price: 20000, unit: "kg", currency: "COP" }),
+    product({ id: "reference:box", identity: "reference:box", name: "Sardinas", kind: "official-reference",
+      date: "2026-10-09", price: 3, unit: "caja", currency: "USD" }),
+  ];
+  const source: UnifiedCatalog = {
+    products: rows, regions: [], latestDate: "2026-10-09",
+    filters: { region: "", reference_scope: "all", excluded_nonregional_count: 0,
+      excluded_nonregional_reason: null },
+  };
+  expect(paginateCatalog(source, { q: "sardinas" }).products).toEqual(rows);
+  expect(paginateCatalog(source, { q: "" }).products).toEqual(rows);
+});
+
 test.describe("unified catalog browser coverage", () => {
   let catalog: UnifiedCatalog;
   test.beforeAll(async ({ request }) => {
@@ -195,8 +242,8 @@ test.describe("unified catalog browser coverage", () => {
       page.getByRole("combobox", { name: "Buscar producto" }),
     ).toHaveValue("Arábigo");
     await expect(
-      page.getByRole("combobox", { name: "Categoría", exact: true }),
-    ).toHaveValue("Café");
+      page.getByRole("group", { name: "Categoría", exact: true }),
+    ).toHaveAttribute("data-selected-value", "Café");
     await expect(
       page.getByRole("combobox", { name: "Moneda", exact: true }),
     ).toHaveValue("USD");
@@ -248,7 +295,7 @@ test.describe("unified catalog browser coverage", () => {
     await page.setViewportSize({ width: 320, height: 720 });
     await page.goto("/products");
     await expect(page.locator(".product-card")).toHaveCount(24);
-    await page.getByRole("button", { name: /Ver más productos/ }).click();
+    await page.getByRole("button", { name: /Ver más resultados/ }).click();
     await expect(page.locator(".product-card")).toHaveCount(48);
     await page.locator(".product-card").nth(20).scrollIntoViewIfNeeded();
     await expect(page.getByLabel("Filtros aplicados")).toBeVisible();

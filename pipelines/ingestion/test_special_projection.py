@@ -11,7 +11,9 @@ from psycopg.errors import CheckViolation
 from psycopg.pq import TransactionStatus
 from psycopg.types.json import Jsonb
 
-from . import special_prices, worker
+from . import worker
+
+from . import special_prices
 
 TABLES = (
     "source_document",
@@ -72,13 +74,37 @@ def rice(price=2750000, *, low=2500000, high=2800000):
     )
 
 
+def coded_milk(town, department, code, *, price=2100):
+    return worker.record(
+        "dane-milk-farm",
+        DAY,
+        "Leche cruda en finca",
+        town,
+        "litre",
+        price,
+        f"source!{department}!{town}!{code}",
+        details={
+            "department": department,
+            "municipality": town,
+            "municipality_code": code,
+            "price_basis": "farmgate",
+            "min_price": price - 100,
+            "max_price": price + 100,
+        },
+    )
+
+
 @unittest.skipUnless(
     os.environ.get("AGRO_SPECIAL_PROJECTION_POSTGRES_TEST") == "1",
     "Explicit opt-in for isolated PostgreSQL TEMP-table projection checks",
 )
 class SpecialProjectionPostgresTests(unittest.TestCase):
     def setUp(self):
-        self.db = worker.connect()
+        import psycopg
+
+        self.db = psycopg.connect(
+            os.environ["AGRO_SPECIAL_PROJECTION_TEST_DSN"], autocommit=True
+        )
         self.addCleanup(self.db.close)
         self.assertTrue(self.db.autocommit)
         self.db.execute("SET search_path=pg_temp")
@@ -104,7 +130,7 @@ class SpecialProjectionPostgresTests(unittest.TestCase):
             CREATE TRIGGER demo_window BEFORE INSERT OR UPDATE ON price_observation
               FOR EACH ROW EXECUTE FUNCTION public.enforce_demo_window();""")
         # Exercise the actual append-only revision function against TEMP records.
-        schema = (Path(__file__).parent / "schema.sql").read_text()
+        schema = (Path(__file__).resolve().parents[6] / "pipelines/ingestion/schema.sql").read_text()
         function = schema.split(
             "CREATE OR REPLACE FUNCTION preserve_record_version()", 1
         )[1].split("END $$;", 1)[0]
@@ -143,6 +169,127 @@ class SpecialProjectionPostgresTests(unittest.TestCase):
 
     def publish(self, original):
         return special_prices.project_special(self.db, *original)
+
+    def test_source_bound_municipality_mapping_is_unambiguous_and_replay_stable(self):
+        municipalities = [
+            ("54172", "Chinácota", "Norte de Santander", "54", 7.61, -72.60),
+            ("41551", "Pitalito", "Huila", "41", 1.85, -76.05),
+            ("85010", "Aguazul", "Casanare", "85", 5.17, -72.55),
+            ("85011", "Santo Domingo", "Casanare", "85", 5.10, -72.50),
+            ("85012", "Santo Domingo", "Casanare", "85", 5.11, -72.51),
+            ("23001", "Córdoba", "Córdoba", "23", 9.24, -75.88),
+        ]
+        with self.db.cursor() as cur:
+            cur.executemany(
+                "INSERT INTO municipality(id,name,department,department_id,latitude,longitude) VALUES(%s,%s,%s,%s,%s,%s)",
+                municipalities,
+            )
+        rows = [
+            coded_milk("Chinácota", "Norte de Santander", "54172", price=2100),
+            coded_milk("Pitalito", "Huila", "41551", price=2200),
+            coded_milk("Aguazul", "Casanare", "85010", price=2300),
+            coded_milk("Pitalito", "Cauca", "41551", price=2400),
+            coded_milk("Cali", "Huila", "41551", price=2500),
+            coded_milk("Garzón", "Huila", "85010", price=2600),
+            coded_milk("Santo Domingo", "Casanare", "", price=2700),
+            coded_milk("Cordoba", "Córdoba", "23001", price=2800),
+        ]
+        source = self.original("source-bound-municipality-codes", rows)
+        immutable_before_projection = {
+            table: self.db.execute(
+                f"SELECT xmin::text,to_jsonb(t) FROM {table} t WHERE "
+                + ("id=%s" if table == "source_document" else "document_id=%s")
+                + " ORDER BY 2",
+                (source[0],),
+            ).fetchall()
+            for table in ("source_document", "historical_price")
+        }
+        self.assertEqual(self.publish(source), 0)
+        for table in ("source_document", "historical_price"):
+            key = "id" if table == "source_document" else "document_id"
+            after_projection = self.db.execute(
+                f"SELECT xmin::text,to_jsonb(t) FROM {table} t WHERE {key}=%s ORDER BY 2",
+                (source[0],),
+            ).fetchall()
+            self.assertEqual(after_projection, immutable_before_projection[table], table)
+        markets = dict(
+            self.db.execute(
+                "SELECT id,municipality_id FROM market ORDER BY id"
+            ).fetchall()
+        )
+        self.assertEqual(
+            set(markets),
+            {
+                "finca-norte-de-santander-chinacota",
+                "finca-huila-pitalito",
+                "finca-casanare-aguazul",
+                "finca-cauca-pitalito",
+                "finca-huila-cali",
+                "finca-huila-garzon",
+                "finca-casanare-santo-domingo",
+                "finca-cordoba-cordoba",
+            },
+        )
+        self.assertEqual(markets["finca-norte-de-santander-chinacota"], "54172")
+        self.assertEqual(markets["finca-huila-pitalito"], "41551")
+        self.assertEqual(markets["finca-casanare-aguazul"], "85010")
+        for market_id in (
+            "finca-cauca-pitalito",
+            "finca-huila-cali",
+            "finca-huila-garzon",
+            "finca-casanare-santo-domingo",
+            "finca-cordoba-cordoba",
+        ):
+            self.assertIsNone(markets[market_id], market_id)
+        before = {}
+        for table, key in (
+            ("source_document", "id"),
+            ("historical_price", "source_locator"),
+            ("price_observation", "product_id,market_id,observed_on,period,unit"),
+            ("market", "id"),
+        ):
+            before[table] = self.db.execute(
+                f"SELECT {key},xmin::text,to_jsonb(t) FROM {table} t ORDER BY {key}"
+            ).fetchall()
+        self.assertEqual(self.count("historical_price"), len(rows))
+        self.assertEqual(self.count("price_observation"), len(rows))
+        self.assertEqual(self.publish(source), 0)
+        for table, key in (
+            ("source_document", "id"),
+            ("historical_price", "source_locator"),
+            ("price_observation", "product_id,market_id,observed_on,period,unit"),
+            ("market", "id"),
+        ):
+            after = self.db.execute(
+                f"SELECT {key},xmin::text,to_jsonb(t) FROM {table} t ORDER BY {key}"
+            ).fetchall()
+            self.assertEqual(after, before[table], table)
+
+    def test_existing_conflicting_municipality_link_is_not_overwritten(self):
+        with self.db.cursor() as cur:
+            cur.executemany(
+                "INSERT INTO municipality(id,name,department,department_id,latitude,longitude) VALUES(%s,%s,%s,%s,%s,%s)",
+                [
+                    ("41551", "Pitalito", "Huila", "41", 1.85, -76.05),
+                    ("41552", "Palestina", "Huila", "41", 1.74, -76.13),
+                ],
+            )
+        market_id = "finca-huila-pitalito"
+        self.db.execute(
+            "INSERT INTO market(id,name,city,region,municipality_id) VALUES(%s,%s,%s,%s,%s)",
+            (market_id, "Pitalito · leche en finca", "Pitalito", "Huila", "41552"),
+        )
+        source = self.original(
+            "existing-market-conflicting-link",
+            [coded_milk("Pitalito", "Huila", "41551")],
+        )
+        self.publish(source)
+        self.assertEqual(
+            self.db.execute(
+                "SELECT municipality_id FROM market WHERE id=%s", (market_id,)
+            ).fetchone()[0],
+            "41552",
+        )
 
     def prices(self):
         return self.db.execute(

@@ -1,0 +1,5999 @@
+{
+  "captured_at_utc": "2026-10-07T09:45:10.722400+00:00",
+  "rows": [
+    {
+      "document_id": "a5b8fb6350036611f718c43be0902cfb1a1d55d2de55bed285ed64f3fdc667b3",
+      "image_id": "186363ab7526a28fc882400aac69f26d4f4fb6868d37ec6dc6fbc42cee8e04e4",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [
+          "The word 'PLÁtano' has a capital Á in the subcategory row.",
+          "The word 'cartÓn' has a capital Ó in 'Caja de cartÓn' for 'Ajo importado' and 'Pepino de rellenar'.",
+          "The word 'Pagina' in 'Pagina 2 de 3' is written without an accent.",
+          "The word 'Tuberculos' in 'Tuberculos, raices y platanos' is written without an accent."
+        ],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n03:15 - 04:00",
+              "",
+              "Ronda 2\n04:15 - 05:00",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Uva importada",
+              "Caja de icopor",
+              "8 Kilogramo",
+              "120.000",
+              "125.000",
+              "120.000",
+              "120.000"
+            ],
+            [
+              "Uva red globe nacional",
+              "Caja de madera",
+              "10 Kilogramo",
+              "105.000",
+              "110.000",
+              "106.000",
+              "110.000"
+            ],
+            [
+              "Uva red globe nacional",
+              "Caja de icopor",
+              "9 Kilogramo",
+              "105.000",
+              "110.000",
+              "106.000",
+              "110.000"
+            ],
+            [
+              "Uva verde",
+              "Caja de icopor",
+              "9 Kilogramo",
+              "110.000",
+              "120.000",
+              "115.000",
+              "120.000"
+            ],
+            [
+              "Tuberculos, raices y platanos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Otros tuberculos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arracacha amarilla",
+              "Bulto",
+              "60 Kilogramo",
+              "320.000",
+              "330.000",
+              "300.000",
+              "320.000"
+            ],
+            [
+              "PLÁtano",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Plátano hartón maduro",
+              "Bolsa",
+              "20 Kilogramo",
+              "85.000",
+              "90.000",
+              "84.000",
+              "85.000"
+            ],
+            [
+              "Plátano hartón verde",
+              "Bolsa",
+              "20 Kilogramo",
+              "85.000",
+              "90.000",
+              "84.000",
+              "85.000"
+            ],
+            [
+              "Plátano hartón verde Llanero",
+              "Canastilla",
+              "20 Kilogramo",
+              "95.000",
+              "96.000",
+              "93.000",
+              "96.000"
+            ],
+            [
+              "Papa",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Papa r-12 negra",
+              "Bulto",
+              "50 Kilogramo",
+              "125.000",
+              "130.000",
+              "125.000",
+              "130.000"
+            ],
+            [
+              "Papa r-12 roja",
+              "Bulto",
+              "50 Kilogramo",
+              "110.000",
+              "110.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Papa criolla limpia",
+              "Bulto",
+              "45 Kilogramo",
+              "180.000",
+              "180.000",
+              "170.000",
+              "180.000"
+            ],
+            [
+              "Papa criolla sucia",
+              "Bulto",
+              "50 Kilogramo",
+              "160.000",
+              "160.000",
+              "150.000",
+              "160.000"
+            ],
+            [
+              "Papa parda pastusa",
+              "Bulto",
+              "50 Kilogramo",
+              "125.000",
+              "130.000",
+              "125.000",
+              "130.000"
+            ],
+            [
+              "Papa rubí",
+              "Bulto",
+              "50 Kilogramo",
+              "105.000",
+              "110.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Papa sabanera",
+              "Bulto",
+              "50 Kilogramo",
+              "220.000",
+              "225.000",
+              "220.000",
+              "220.000"
+            ],
+            [
+              "Papa superior",
+              "Bulto",
+              "50 Kilogramo",
+              "125.000",
+              "130.000",
+              "120.000",
+              "130.000"
+            ],
+            [
+              "Papa única",
+              "Bulto",
+              "50 Kilogramo",
+              "105.000",
+              "110.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Yuca",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Yuca llanera",
+              "Bolsa",
+              "30 Kilogramo",
+              "110.000",
+              "120.000",
+              "110.000",
+              "120.000"
+            ],
+            [
+              "Verduras y hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Leguminosas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arveja verde en vaina",
+              "Bulto",
+              "50 Kilogramo",
+              "290.000",
+              "300.000",
+              "290.000",
+              "300.000"
+            ],
+            [
+              "Arveja verde en vaina pastusa",
+              "Bulto",
+              "50 Kilogramo",
+              "280.000",
+              "280.000",
+              "270.000",
+              "280.000"
+            ],
+            [
+              "Fríjol verde cargamanto",
+              "Bulto",
+              "50 Kilogramo",
+              "240.000",
+              "250.000",
+              "260.000",
+              "260.000"
+            ],
+            [
+              "Habichuela",
+              "Bulto",
+              "60 Kilogramo",
+              "100.000",
+              "110.000",
+              "100.000",
+              "100.000"
+            ],
+            [
+              "Otras hortalizas y verduras",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Ahuyama",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.200",
+              "2.400",
+              "2.200",
+              "2.300"
+            ],
+            [
+              "Ahuyamín (sakata)",
+              "Bulto",
+              "50 Kilogramo",
+              "40.000",
+              "42.000",
+              "40.000",
+              "40.000"
+            ],
+            [
+              "Ajo",
+              "Atado/manojo",
+              "5 Kilogramo",
+              "60.000",
+              "65.000",
+              "60.000",
+              "65.000"
+            ],
+            [
+              "Ajo importado",
+              "Caja de cartÓn",
+              "10 Kilogramo",
+              "62.000",
+              "65.000",
+              "65.000",
+              "65.000"
+            ],
+            [
+              "Berenjena",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Calabaza",
+              "Docena",
+              "25 Kilogramo",
+              "10.000",
+              "10.000",
+              "10.000",
+              "10.000"
+            ],
+            [
+              "Chócolo mazorca",
+              "Bulto",
+              "50 Kilogramo",
+              "160.000",
+              "160.000",
+              "150.000",
+              "160.000"
+            ],
+            [
+              "Cidra",
+              "Kilogramo",
+              "1 Kilogramo",
+              "800",
+              "800",
+              "800",
+              "900"
+            ],
+            [
+              "Pepino cohombro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.000"
+            ],
+            [
+              "Pepino de rellenar",
+              "Caja de cartÓn",
+              "12 Kilogramo",
+              "28.000",
+              "30.000",
+              "28.000",
+              "30.000"
+            ],
+            [
+              "Pepino de rellenar",
+              "Canastilla",
+              "10 Kilogramo",
+              "26.000",
+              "28.000",
+              "26.000",
+              "28.000"
+            ],
+            [
+              "Remolacha",
+              "Bulto",
+              "60 Kilogramo",
+              "180.000",
+              "190.000",
+              "180.000",
+              "190.000"
+            ],
+            [
+              "Zanahorias",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Zanahoria",
+              "Bulto",
+              "60 Kilogramo",
+              "190.000",
+              "200.000",
+              "190.000",
+              "200.000"
+            ],
+            [
+              "Cebollas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cebolla cabezona blanca",
+              "Bulto",
+              "50 Kilogramo",
+              "230.000",
+              "240.000",
+              "235.000",
+              "240.000"
+            ],
+            [
+              "Cebolla cabezona roja",
+              "Bulto",
+              "50 Kilogramo",
+              "130.000",
+              "140.000",
+              "135.000",
+              "140.000"
+            ],
+            [
+              "Cebolla junca aquitania",
+              "Atado/manojo",
+              "30 Kilogramo",
+              "120.000",
+              "130.000",
+              "120.000",
+              "130.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nBogotá, D.C., Corabastos\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 2 de 3",
+        "usage": {
+          "candidatesTokenCount": 2586,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 5693,
+          "totalTokenCount": 9560
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 5043,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 2",
+      "source_page": 2,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "a5b8fb6350036611f718c43be0902cfb1a1d55d2de55bed285ed64f3fdc667b3",
+      "image_id": "186363ab7526a28fc882400aac69f26d4f4fb6868d37ec6dc6fbc42cee8e04e4",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n03:15 - 04:00",
+              "",
+              "Ronda 2\n04:15 - 05:00",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Uva importada",
+              "Caja de icopor",
+              "8 Kilogramo",
+              "120.000",
+              "125.000",
+              "120.000",
+              "120.000"
+            ],
+            [
+              "Uva red globe nacional",
+              "Caja de madera",
+              "10 Kilogramo",
+              "105.000",
+              "110.000",
+              "106.000",
+              "110.000"
+            ],
+            [
+              "Uva red globe nacional",
+              "Caja de icopor",
+              "9 Kilogramo",
+              "105.000",
+              "110.000",
+              "106.000",
+              "110.000"
+            ],
+            [
+              "Uva verde",
+              "Caja de icopor",
+              "9 Kilogramo",
+              "110.000",
+              "120.000",
+              "115.000",
+              "120.000"
+            ],
+            [
+              "Tubérculos, raíces y plátanos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Otros tubérculos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arracacha amarilla",
+              "Bulto",
+              "60 Kilogramo",
+              "320.000",
+              "330.000",
+              "300.000",
+              "320.000"
+            ],
+            [
+              "Plátano",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Plátano hartón maduro",
+              "Bolsa",
+              "20 Kilogramo",
+              "85.000",
+              "90.000",
+              "84.000",
+              "85.000"
+            ],
+            [
+              "Plátano hartón verde",
+              "Bolsa",
+              "20 Kilogramo",
+              "85.000",
+              "90.000",
+              "84.000",
+              "85.000"
+            ],
+            [
+              "Plátano hartón verde llanero",
+              "Canastilla",
+              "20 Kilogramo",
+              "95.000",
+              "96.000",
+              "93.000",
+              "96.000"
+            ],
+            [
+              "Papa",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Papa r-12 negra",
+              "Bulto",
+              "50 Kilogramo",
+              "125.000",
+              "130.000",
+              "125.000",
+              "130.000"
+            ],
+            [
+              "Papa r-12 roja",
+              "Bulto",
+              "50 Kilogramo",
+              "110.000",
+              "110.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Papa criolla limpia",
+              "Bulto",
+              "45 Kilogramo",
+              "180.000",
+              "180.000",
+              "170.000",
+              "180.000"
+            ],
+            [
+              "Papa criolla sucia",
+              "Bulto",
+              "50 Kilogramo",
+              "160.000",
+              "160.000",
+              "150.000",
+              "160.000"
+            ],
+            [
+              "Papa parda pastusa",
+              "Bulto",
+              "50 Kilogramo",
+              "125.000",
+              "130.000",
+              "125.000",
+              "130.000"
+            ],
+            [
+              "Papa rubí",
+              "Bulto",
+              "50 Kilogramo",
+              "105.000",
+              "110.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Papa sabanera",
+              "Bulto",
+              "50 Kilogramo",
+              "220.000",
+              "225.000",
+              "220.000",
+              "220.000"
+            ],
+            [
+              "Papa superior",
+              "Bulto",
+              "50 Kilogramo",
+              "125.000",
+              "130.000",
+              "120.000",
+              "130.000"
+            ],
+            [
+              "Papa única",
+              "Bulto",
+              "50 Kilogramo",
+              "105.000",
+              "110.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Yuca",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Yuca llanera",
+              "Bolsa",
+              "30 Kilogramo",
+              "110.000",
+              "120.000",
+              "110.000",
+              "120.000"
+            ],
+            [
+              "Verduras y hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Leguminosas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arveja verde en vaina",
+              "Bulto",
+              "50 Kilogramo",
+              "290.000",
+              "300.000",
+              "290.000",
+              "300.000"
+            ],
+            [
+              "Arveja verde en vaina pastusa",
+              "Bulto",
+              "50 Kilogramo",
+              "280.000",
+              "280.000",
+              "270.000",
+              "280.000"
+            ],
+            [
+              "Fríjol verde cargamanto",
+              "Bulto",
+              "50 Kilogramo",
+              "240.000",
+              "250.000",
+              "260.000",
+              "260.000"
+            ],
+            [
+              "Habichuela",
+              "Bulto",
+              "60 Kilogramo",
+              "100.000",
+              "110.000",
+              "100.000",
+              "100.000"
+            ],
+            [
+              "Otras hortalizas y verduras",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Ahuyama",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.200",
+              "2.400",
+              "2.200",
+              "2.300"
+            ],
+            [
+              "Ahuyamín (sakata)",
+              "Bulto",
+              "50 Kilogramo",
+              "40.000",
+              "42.000",
+              "40.000",
+              "40.000"
+            ],
+            [
+              "Ajo",
+              "Atado/manojo",
+              "5 Kilogramo",
+              "60.000",
+              "65.000",
+              "60.000",
+              "65.000"
+            ],
+            [
+              "Ajo importado",
+              "Caja de cartÓn",
+              "10 Kilogramo",
+              "62.000",
+              "65.000",
+              "65.000",
+              "65.000"
+            ],
+            [
+              "Berenjena",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Calabaza",
+              "Docena",
+              "25 Kilogramo",
+              "10.000",
+              "10.000",
+              "10.000",
+              "10.000"
+            ],
+            [
+              "Chócolo mazorca",
+              "Bulto",
+              "50 Kilogramo",
+              "160.000",
+              "160.000",
+              "150.000",
+              "160.000"
+            ],
+            [
+              "Cidra",
+              "Kilogramo",
+              "1 Kilogramo",
+              "800",
+              "800",
+              "800",
+              "900"
+            ],
+            [
+              "Pepino cohombro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.000"
+            ],
+            [
+              "Pepino de rellenar",
+              "Caja de cartón",
+              "12 Kilogramo",
+              "28.000",
+              "30.000",
+              "28.000",
+              "30.000"
+            ],
+            [
+              "Pepino de rellenar",
+              "Canastilla",
+              "10 Kilogramo",
+              "26.000",
+              "28.000",
+              "26.000",
+              "28.000"
+            ],
+            [
+              "Remolacha",
+              "Bulto",
+              "60 Kilogramo",
+              "180.000",
+              "190.000",
+              "180.000",
+              "190.000"
+            ],
+            [
+              "Zanahorias",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Zanahoria",
+              "Bulto",
+              "60 Kilogramo",
+              "190.000",
+              "200.000",
+              "190.000",
+              "200.000"
+            ],
+            [
+              "Cebollas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cebolla cabezona blanca",
+              "Bulto",
+              "50 Kilogramo",
+              "230.000",
+              "240.000",
+              "235.000",
+              "240.000"
+            ],
+            [
+              "Cebolla cabezona roja",
+              "Bulto",
+              "50 Kilogramo",
+              "130.000",
+              "140.000",
+              "135.000",
+              "140.000"
+            ],
+            [
+              "Cebolla junca aquitania",
+              "Atado/manojo",
+              "30 Kilogramo",
+              "120.000",
+              "130.000",
+              "120.000",
+              "130.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nBogotá, D.C., Corabastos\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 2 de 3",
+        "usage": {
+          "candidatesTokenCount": 2466,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 8810,
+          "totalTokenCount": 12573
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4720,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 2",
+      "source_page": 2,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+      "image_id": "2d3cba5675f140b978df36efd18091e4993cde07278e7c9bd77af82e4b764fbc",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [
+          "The word 'cartÓn' in 'Caja de cartÓn' has a capitalized 'Ó' with an accent mark in the original text."
+        ],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Cebolla junca",
+              "Atado/manojo",
+              "17 Kilogramo",
+              "63.000",
+              "64.000",
+              "63.000",
+              "64.000"
+            ],
+            [
+              "Cebolla junca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.200",
+              "4.000",
+              "4.200"
+            ],
+            [
+              "Cebolla puerro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.200",
+              "5.000",
+              "5.200"
+            ],
+            [
+              "Tomates",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Tomate chonto regional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "2.800",
+              "3.000"
+            ],
+            [
+              "Tomate larga vida",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "4.800",
+              "5.000"
+            ],
+            [
+              "Hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Acelga",
+              "Atado/manojo",
+              "1 Kilogramo",
+              "1.900",
+              "2.000",
+              "1.900",
+              "2.000"
+            ],
+            [
+              "Apio",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.700",
+              "1.800",
+              "1.700",
+              "1.800"
+            ],
+            [
+              "Brócoli",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Cilantro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.000",
+              "4.000",
+              "4.000"
+            ],
+            [
+              "Coles",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.500",
+              "1.600",
+              "1.500",
+              "1.600"
+            ],
+            [
+              "Coliflor",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Espinaca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Caja de cartÓn",
+              "14 Kilogramo",
+              "24.000",
+              "25.000",
+              "24.000",
+              "25.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Caja de cartÓn",
+              "16 Kilogramo",
+              "30.000",
+              "30.000",
+              "30.000",
+              "30.000"
+            ],
+            [
+              "Lechuga crespa verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Perejil",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.500",
+              "7.000",
+              "6.500",
+              "7.000"
+            ],
+            [
+              "Repollo blanco",
+              "Bulto",
+              "30 Kilogramo",
+              "15.000",
+              "16.000",
+              "15.000",
+              "16.000"
+            ],
+            [
+              "Repollo morado",
+              "Bulto",
+              "45 Kilogramo",
+              "35.000",
+              "35.000",
+              "35.000",
+              "35.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 3 de 3",
+        "usage": {
+          "candidatesTokenCount": 1161,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 2958,
+          "totalTokenCount": 5400
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 2518,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 3",
+      "source_page": 3,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+      "image_id": "2d3cba5675f140b978df36efd18091e4993cde07278e7c9bd77af82e4b764fbc",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Cebolla junca",
+              "Atado/manojo",
+              "17 Kilogramo",
+              "63.000",
+              "64.000",
+              "63.000",
+              "64.000"
+            ],
+            [
+              "Cebolla junca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.200",
+              "4.000",
+              "4.200"
+            ],
+            [
+              "Cebolla puerro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.200",
+              "5.000",
+              "5.200"
+            ],
+            [
+              "Tomates",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Tomate chonto regional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "2.800",
+              "3.000"
+            ],
+            [
+              "Tomate larga vida",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "4.800",
+              "5.000"
+            ],
+            [
+              "Hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Acelga",
+              "Atado/manojo",
+              "1 Kilogramo",
+              "1.900",
+              "2.000",
+              "1.900",
+              "2.000"
+            ],
+            [
+              "Apio",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.700",
+              "1.800",
+              "1.700",
+              "1.800"
+            ],
+            [
+              "Brócoli",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Cilantro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.000",
+              "4.000",
+              "4.000"
+            ],
+            [
+              "Coles",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.500",
+              "1.600",
+              "1.500",
+              "1.600"
+            ],
+            [
+              "Coliflor",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Espinaca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Lechuga batavia",
+              "Caja de cartón",
+              "14 Kilogramo",
+              "24.000",
+              "25.000",
+              "24.000",
+              "25.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Caja de cartón",
+              "16 Kilogramo",
+              "30.000",
+              "30.000",
+              "30.000",
+              "30.000"
+            ],
+            [
+              "Lechuga crespa verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Perejil",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.500",
+              "7.000",
+              "6.500",
+              "7.000"
+            ],
+            [
+              "Repollo blanco",
+              "Bulto",
+              "30 Kilogramo",
+              "15.000",
+              "16.000",
+              "15.000",
+              "16.000"
+            ],
+            [
+              "Repollo morado",
+              "Bulto",
+              "45 Kilogramo",
+              "35.000",
+              "35.000",
+              "35.000",
+              "35.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 3 de 3",
+        "usage": {
+          "candidatesTokenCount": 1122,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 1462,
+          "totalTokenCount": 3881
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 2414,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 3",
+      "source_page": 3,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "e67d216406f6dbafdeca9a143200b75740b443e9301db2d7c68cb34c39000b3c",
+      "image_id": "4547319bf205294813110da9eba6a679fc6dd522092aceb9635aa4244e1a53cf",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1 04:00 - 06:00",
+              "",
+              "Ronda 2 06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Lechuga crespa verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.500",
+              "2.500",
+              "2.500"
+            ],
+            [
+              "Repollo blanco",
+              "Bulto",
+              "30 Kilogramo",
+              "22.000",
+              "23.000",
+              "22.000",
+              "23.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n02 de Enero de 2023\nPagina 3 de 3",
+        "usage": {
+          "candidatesTokenCount": 318,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 1550,
+          "totalTokenCount": 3149
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 1003,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 3",
+      "source_page": 3,
+      "status": "review",
+      "task_error_class": "OTHER_TASK_ERROR",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "e67d216406f6dbafdeca9a143200b75740b443e9301db2d7c68cb34c39000b3c",
+      "image_id": "4547319bf205294813110da9eba6a679fc6dd522092aceb9635aa4244e1a53cf",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Lechuga crespa verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.500",
+              "2.500",
+              "2.500"
+            ],
+            [
+              "Repollo blanco",
+              "Bulto",
+              "30 Kilogramo",
+              "22.000",
+              "23.000",
+              "22.000",
+              "23.000"
+            ]
+          ]
+        ],
+        "text": "DANE\nINFORMACIÓN PARA TODOS\nBOLETÍN DIARIO\nPRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n02 de Enero de 2023\nPagina 3 de 3",
+        "usage": {
+          "candidatesTokenCount": 324,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 611,
+          "totalTokenCount": 2232
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 1006,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 3",
+      "source_page": 3,
+      "status": "review",
+      "task_error_class": "OTHER_TASK_ERROR",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "a5b8fb6350036611f718c43be0902cfb1a1d55d2de55bed285ed64f3fdc667b3",
+      "image_id": "526bb8dc65d073e15d36a2b3451613cd34125f65bb23d913b38808f6592c5513",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n03:15 - 04:00",
+              "",
+              "Ronda 2\n04:15 - 05:00",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Cebolla puerro",
+              "Atado/manojo",
+              "20 Kilogramo",
+              "60.000",
+              "70.000",
+              "60.000",
+              "70.000"
+            ],
+            [
+              "Tomates",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Tomate chonto",
+              "Canastilla",
+              "22 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Tomate larga vida",
+              "Canastilla",
+              "20 Kilogramo",
+              "95.000",
+              "100.000",
+              "95.000",
+              "100.000"
+            ],
+            [
+              "Hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Acelga",
+              "Atado/manojo",
+              "15 Kilogramo",
+              "18.000",
+              "20.000",
+              "18.000",
+              "18.000"
+            ],
+            [
+              "Apio",
+              "Atado/manojo",
+              "10 Kilogramo",
+              "14.000",
+              "15.000",
+              "14.000",
+              "14.000"
+            ],
+            [
+              "Brócoli",
+              "Docena",
+              "10 Kilogramo",
+              "40.000",
+              "50.000",
+              "40.000",
+              "50.000"
+            ],
+            [
+              "Cilantro",
+              "Atado/manojo",
+              "10 Kilogramo",
+              "18.000",
+              "20.000",
+              "18.000",
+              "20.000"
+            ],
+            [
+              "Coles",
+              "Atado/manojo",
+              "5 Kilogramo",
+              "10.000",
+              "12.000",
+              "10.000",
+              "10.000"
+            ],
+            [
+              "Coliflor",
+              "Docena",
+              "10 Kilogramo",
+              "28.000",
+              "30.000",
+              "28.000",
+              "30.000"
+            ],
+            [
+              "Espinaca",
+              "Atado/manojo",
+              "10 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Docena",
+              "10 Kilogramo",
+              "30.000",
+              "34.000",
+              "32.000",
+              "34.000"
+            ],
+            [
+              "Lechuga crespa verde",
+              "Bolsa",
+              "6 Kilogramo",
+              "15.000",
+              "16.000",
+              "15.000",
+              "16.000"
+            ],
+            [
+              "Perejil",
+              "Atado/manojo",
+              "3 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Repollo morado",
+              "Bulto",
+              "65 Kilogramo",
+              "70.000",
+              "70.000",
+              "80.000",
+              "80.000"
+            ],
+            [
+              "Repollo verde",
+              "Bulto",
+              "65 Kilogramo",
+              "100.000",
+              "100.000",
+              "100.000",
+              "110.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nBogotá, D.C., Corabastos\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 3 de 3",
+        "usage": {
+          "candidatesTokenCount": 1033,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 3479,
+          "totalTokenCount": 5793
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 2180,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 3",
+      "source_page": 3,
+      "status": "review",
+      "task_error_class": "OTHER_TASK_ERROR",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "a5b8fb6350036611f718c43be0902cfb1a1d55d2de55bed285ed64f3fdc667b3",
+      "image_id": "526bb8dc65d073e15d36a2b3451613cd34125f65bb23d913b38808f6592c5513",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n03:15 - 04:00",
+              "",
+              "Ronda 2\n04:15 - 05:00",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Cebolla puerro",
+              "Atado/manojo",
+              "20 Kilogramo",
+              "60.000",
+              "70.000",
+              "60.000",
+              "70.000"
+            ],
+            [
+              "Tomates",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Tomate chonto",
+              "Canastilla",
+              "22 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Tomate larga vida",
+              "Canastilla",
+              "20 Kilogramo",
+              "95.000",
+              "100.000",
+              "95.000",
+              "100.000"
+            ],
+            [
+              "Hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Acelga",
+              "Atado/manojo",
+              "15 Kilogramo",
+              "18.000",
+              "20.000",
+              "18.000",
+              "18.000"
+            ],
+            [
+              "Apio",
+              "Atado/manojo",
+              "10 Kilogramo",
+              "14.000",
+              "15.000",
+              "14.000",
+              "14.000"
+            ],
+            [
+              "Brócoli",
+              "Docena",
+              "10 Kilogramo",
+              "40.000",
+              "50.000",
+              "40.000",
+              "50.000"
+            ],
+            [
+              "Cilantro",
+              "Atado/manojo",
+              "10 Kilogramo",
+              "18.000",
+              "20.000",
+              "18.000",
+              "20.000"
+            ],
+            [
+              "Coles",
+              "Atado/manojo",
+              "5 Kilogramo",
+              "10.000",
+              "12.000",
+              "10.000",
+              "10.000"
+            ],
+            [
+              "Coliflor",
+              "Docena",
+              "10 Kilogramo",
+              "28.000",
+              "30.000",
+              "28.000",
+              "30.000"
+            ],
+            [
+              "Espinaca",
+              "Atado/manojo",
+              "10 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Docena",
+              "10 Kilogramo",
+              "30.000",
+              "34.000",
+              "32.000",
+              "34.000"
+            ],
+            [
+              "Lechuga crespa verde",
+              "Bolsa",
+              "6 Kilogramo",
+              "15.000",
+              "16.000",
+              "15.000",
+              "16.000"
+            ],
+            [
+              "Perejil",
+              "Atado/manojo",
+              "3 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Repollo morado",
+              "Bulto",
+              "65 Kilogramo",
+              "70.000",
+              "70.000",
+              "80.000",
+              "80.000"
+            ],
+            [
+              "Repollo verde",
+              "Bulto",
+              "65 Kilogramo",
+              "100.000",
+              "100.000",
+              "100.000",
+              "110.000"
+            ]
+          ]
+        ],
+        "text": "DANE\nINFORMACIÓN PARA TODOS\nBOLETÍN DIARIO\nPRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nBogotá, D.C., Corabastos\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 3 de 3",
+        "usage": {
+          "candidatesTokenCount": 1037,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 3923,
+          "totalTokenCount": 6257
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 2184,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 3",
+      "source_page": 3,
+      "status": "review",
+      "task_error_class": "OTHER_TASK_ERROR",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+      "image_id": "a4cc6933e154e81b0116cab7f7d344515b80c2205f61023d9523b75325625b32",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cítricos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Limón tahití",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "2.800",
+              "2.800",
+              "2.800"
+            ],
+            [
+              "Limón común",
+              "Bulto",
+              "70 Kilogramo",
+              "190.000",
+              "190.000",
+              "190.000",
+              "190.000"
+            ],
+            [
+              "Limón común",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "2.800",
+              "3.000"
+            ],
+            [
+              "Limón mandarino",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.600",
+              "3.600",
+              "3.600"
+            ],
+            [
+              "Mandarina oneco",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.500",
+              "3.500",
+              "3.600"
+            ],
+            [
+              "Naranja valencia",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Otras frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Aguacate hass",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.600",
+              "3.800",
+              "3.600",
+              "3.800"
+            ],
+            [
+              "Aguacate papelillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.800",
+              "7.900",
+              "7.800",
+              "7.900"
+            ],
+            [
+              "Banano bocadillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.400",
+              "1.500",
+              "1.400",
+              "1.500"
+            ],
+            [
+              "Banano criollo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.600",
+              "1.600",
+              "1.600",
+              "1.600"
+            ],
+            [
+              "Borojó",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.600",
+              "3.500",
+              "3.600"
+            ],
+            [
+              "Breva",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.200",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Ciruela importada",
+              "Caja de cartÓn",
+              "8 Kilogramo",
+              "80.000",
+              "80.000",
+              "80.000",
+              "80.000"
+            ],
+            [
+              "Ciruela roja",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.200",
+              "2.300",
+              "2.200",
+              "2.300"
+            ],
+            [
+              "Coco",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.800",
+              "6.800",
+              "6.800",
+              "6.800"
+            ],
+            [
+              "Coco",
+              "Bulto",
+              "52 Kilogramo",
+              "340.000",
+              "350.000",
+              "340.000",
+              "350.000"
+            ],
+            [
+              "Curuba",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "1.800",
+              "1.800",
+              "1.800"
+            ],
+            [
+              "Durazno nacional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Fresa",
+              "Kilogramo",
+              "1 Kilogramo",
+              "8.000",
+              "8.000",
+              "8.000",
+              "8.000"
+            ],
+            [
+              "Granadilla",
+              "Caja de cartÓn",
+              "13 Kilogramo",
+              "58.000",
+              "60.000",
+              "58.000",
+              "60.000"
+            ],
+            [
+              "Granadilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.000",
+              "7.000",
+              "7.000",
+              "7.000"
+            ],
+            [
+              "Guanábana",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "4.800",
+              "5.000"
+            ],
+            [
+              "Guayaba manzana",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.400",
+              "3.200",
+              "3.400"
+            ],
+            [
+              "Guayaba pera",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Guayaba pera valluna",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.300",
+              "3.500",
+              "3.300",
+              "3.500"
+            ],
+            [
+              "Gulupa",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.300",
+              "1.500",
+              "1.300",
+              "1.500"
+            ],
+            [
+              "Higo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.500",
+              "4.500",
+              "4.500",
+              "4.500"
+            ],
+            [
+              "Kiwi",
+              "Caja de cartÓn",
+              "10 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Lulo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.500",
+              "4.500",
+              "4.500",
+              "4.500"
+            ],
+            [
+              "Mango tommy",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.700",
+              "1.700",
+              "1.700",
+              "1.700"
+            ],
+            [
+              "Mango común",
+              "Canastilla",
+              "25 Kilogramo",
+              "42.000",
+              "45.000",
+              "42.000",
+              "45.000"
+            ],
+            [
+              "Manzana nacional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.000",
+              "4.000",
+              "4.000"
+            ],
+            [
+              "Manzana roja importada",
+              "Caja de cartÓn",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "160.000",
+              "170.000"
+            ],
+            [
+              "Manzana royal gala importada",
+              "Caja de cartÓn",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "160.000",
+              "170.000"
+            ],
+            [
+              "Manzana verde importada",
+              "Caja de cartÓn",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "160.000",
+              "170.000"
+            ],
+            [
+              "Maracuyá antioqueño",
+              "Bolsa",
+              "10 Kilogramo",
+              "25.000",
+              "27.000",
+              "25.000",
+              "27.000"
+            ],
+            [
+              "Melón cantalup",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.700",
+              "4.900",
+              "4.700",
+              "4.900"
+            ],
+            [
+              "Mora de castilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.600",
+              "2.800",
+              "2.600",
+              "2.800"
+            ],
+            [
+              "Papaya maradol",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.600",
+              "2.500",
+              "2.600"
+            ],
+            [
+              "Papaya tainung",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.300",
+              "2.400",
+              "2.300",
+              "2.400"
+            ],
+            [
+              "Patilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.100",
+              "1.000",
+              "1.100"
+            ],
+            [
+              "Patilla baby",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.600",
+              "2.500",
+              "2.600"
+            ],
+            [
+              "Pera importada",
+              "Caja de cartÓn",
+              "19 Kilogramo",
+              "170.000",
+              "180.000",
+              "170.000",
+              "180.000"
+            ],
+            [
+              "Pera nacional",
+              "Canastilla",
+              "24 Kilogramo",
+              "170.000",
+              "170.000",
+              "170.000",
+              "170.000"
+            ],
+            [
+              "Pitahaya",
+              "Kilogramo",
+              "1 Kilogramo",
+              "10.000",
+              "10.000",
+              "10.000",
+              "10.000"
+            ],
+            [
+              "Piña gold",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.300",
+              "2.300",
+              "2.300",
+              "2.300"
+            ],
+            [
+              "Tomate de árbol",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.200",
+              "2.200",
+              "2.200",
+              "2.200"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO\nPRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 1 de 3",
+        "usage": {
+          "candidatesTokenCount": 2563,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 13188,
+          "totalTokenCount": 17032
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4959,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 1",
+      "source_page": 1,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+      "image_id": "a4cc6933e154e81b0116cab7f7d344515b80c2205f61023d9523b75325625b32",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [
+          "Preserved the exact spelling of 'Caja de cartOn' and 'Caja de cartón' as they appear in the original document."
+        ],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1 04:00 - 06:00",
+              "",
+              "Ronda 2 06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cítricos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Limón tahití",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "2.800",
+              "2.800",
+              "2.800"
+            ],
+            [
+              "Limón común",
+              "Bulto",
+              "70 Kilogramo",
+              "190.000",
+              "190.000",
+              "190.000",
+              "190.000"
+            ],
+            [
+              "Limón común",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "2.800",
+              "3.000"
+            ],
+            [
+              "Limón mandarino",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.600",
+              "3.600",
+              "3.600"
+            ],
+            [
+              "Mandarina oneco",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.500",
+              "3.500",
+              "3.600"
+            ],
+            [
+              "Naranja valencia",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Otras frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Aguacate hass",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.600",
+              "3.800",
+              "3.600",
+              "3.800"
+            ],
+            [
+              "Aguacate papelillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.800",
+              "7.900",
+              "7.800",
+              "7.900"
+            ],
+            [
+              "Banano bocadillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.400",
+              "1.500",
+              "1.400",
+              "1.500"
+            ],
+            [
+              "Banano criollo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.600",
+              "1.600",
+              "1.600",
+              "1.600"
+            ],
+            [
+              "Borojó",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.600",
+              "3.500",
+              "3.600"
+            ],
+            [
+              "Breva",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.200",
+              "5.000",
+              "5.200"
+            ],
+            [
+              "Ciruela importada",
+              "Caja de cartOn",
+              "8 Kilogramo",
+              "80.000",
+              "80.000",
+              "80.000",
+              "80.000"
+            ],
+            [
+              "Ciruela roja",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.200",
+              "2.300",
+              "2.200",
+              "2.300"
+            ],
+            [
+              "Coco",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.800",
+              "6.800",
+              "6.800",
+              "6.800"
+            ],
+            [
+              "Coco",
+              "Bulto",
+              "52 Kilogramo",
+              "340.000",
+              "350.000",
+              "340.000",
+              "350.000"
+            ],
+            [
+              "Curuba",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "1.800",
+              "1.800",
+              "1.800"
+            ],
+            [
+              "Durazno nacional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Fresa",
+              "Kilogramo",
+              "1 Kilogramo",
+              "8.000",
+              "8.000",
+              "8.000",
+              "8.000"
+            ],
+            [
+              "Granadilla",
+              "Caja de cartOn",
+              "13 Kilogramo",
+              "58.000",
+              "60.000",
+              "58.000",
+              "60.000"
+            ],
+            [
+              "Granadilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.000",
+              "7.000",
+              "7.000",
+              "7.000"
+            ],
+            [
+              "Guanábana",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "4.800",
+              "5.000"
+            ],
+            [
+              "Guayaba manzana",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.400",
+              "3.200",
+              "3.400"
+            ],
+            [
+              "Guayaba pera",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Guayaba pera valluna",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.300",
+              "3.500",
+              "3.300",
+              "3.500"
+            ],
+            [
+              "Gulupa",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.300",
+              "1.500",
+              "1.300",
+              "1.500"
+            ],
+            [
+              "Higo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.500",
+              "4.500",
+              "4.500",
+              "4.500"
+            ],
+            [
+              "Kiwi",
+              "Caja de cartOn",
+              "10 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Lulo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.500",
+              "4.500",
+              "4.500",
+              "4.500"
+            ],
+            [
+              "Mango tommy",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.700",
+              "1.700",
+              "1.700",
+              "1.700"
+            ],
+            [
+              "Mango común",
+              "Canastilla",
+              "25 Kilogramo",
+              "42.000",
+              "45.000",
+              "42.000",
+              "45.000"
+            ],
+            [
+              "Manzana nacional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.000",
+              "4.000",
+              "4.000"
+            ],
+            [
+              "Manzana roja importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "160.000",
+              "170.000"
+            ],
+            [
+              "Manzana royal gala importada",
+              "Caja de cartOn",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "160.000",
+              "170.000"
+            ],
+            [
+              "Manzana verde importada",
+              "Caja de cartOn",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "160.000",
+              "170.000"
+            ],
+            [
+              "Maracuyá antioqueño",
+              "Bolsa",
+              "10 Kilogramo",
+              "25.000",
+              "27.000",
+              "25.000",
+              "27.000"
+            ],
+            [
+              "Melón cantalup",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.700",
+              "4.900",
+              "4.700",
+              "4.900"
+            ],
+            [
+              "Mora de castilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.600",
+              "2.800",
+              "2.600",
+              "2.800"
+            ],
+            [
+              "Papaya maradol",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.600",
+              "2.500",
+              "2.600"
+            ],
+            [
+              "Papaya tainung",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.300",
+              "2.400",
+              "2.300",
+              "2.400"
+            ],
+            [
+              "Patilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.100",
+              "1.000",
+              "1.100"
+            ],
+            [
+              "Patilla baby",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.600",
+              "2.500",
+              "2.600"
+            ],
+            [
+              "Pera importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "170.000",
+              "180.000",
+              "170.000",
+              "180.000"
+            ],
+            [
+              "Pera nacional",
+              "Canastilla",
+              "24 Kilogramo",
+              "170.000",
+              "170.000",
+              "170.000",
+              "170.000"
+            ],
+            [
+              "Pitahaya",
+              "Kilogramo",
+              "1 Kilogramo",
+              "10.000",
+              "10.000",
+              "10.000",
+              "10.000"
+            ],
+            [
+              "Piña gold",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.300",
+              "2.300",
+              "2.300",
+              "2.300"
+            ],
+            [
+              "Tomate de árbol",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.200",
+              "2.200",
+              "2.200",
+              "2.200"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS BOLETÍN DIARIO PRECIOS MAYORISTAS SISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA PRECIOS DE VENTA MAYORISTA Medellín, Central Mayorista de Antioquia PRODUCTOS PRIMERA CALIDAD - Boletín Gratuito 03 de Enero de 2023 Pagina 1 de 3",
+        "usage": {
+          "candidatesTokenCount": 2571,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 12677,
+          "totalTokenCount": 16545
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 5055,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 1",
+      "source_page": 1,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+      "image_id": "cedb02555eedf11a69c3765c2d3fec6af24717915d7d0c7f3aa5a8125fc1e369",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Uchuva con cáscara",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.300",
+              "3.200",
+              "3.300"
+            ],
+            [
+              "Uva isabela",
+              "Bandeja",
+              "500 Gramo",
+              "1.800",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Uva importada",
+              "Canastilla",
+              "8 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Uva red globe nacional",
+              "Caja de icopor",
+              "9 Kilogramo",
+              "90.000",
+              "95.000",
+              "90.000",
+              "95.000"
+            ],
+            [
+              "Tuberculos, raíces y platanos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Otros tuberculos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arracacha blanca",
+              "Bulto",
+              "40 Kilogramo",
+              "180.000",
+              "200.000",
+              "180.000",
+              "200.000"
+            ],
+            [
+              "PlÁtano",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Plátano comino",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano domínico verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano guineo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "1.800",
+              "2.000"
+            ],
+            [
+              "Plátano hartón maduro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde eje cafetero",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.700",
+              "3.800",
+              "3.700",
+              "3.800"
+            ],
+            [
+              "Papa",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Papa r-12 negra",
+              "Bulto",
+              "50 Kilogramo",
+              "145.000",
+              "150.000",
+              "145.000",
+              "150.000"
+            ],
+            [
+              "Papa capira",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.300",
+              "3.400",
+              "3.300",
+              "3.400"
+            ],
+            [
+              "Papa criolla limpia",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.400",
+              "3.200",
+              "3.400"
+            ],
+            [
+              "Papa nevada",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.400",
+              "3.200",
+              "3.400"
+            ],
+            [
+              "Yuca",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Yuca criolla",
+              "Bolsa",
+              "25 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Verduras y hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Leguminosas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arveja verde en vaina",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.300",
+              "5.500",
+              "5.300",
+              "5.500"
+            ],
+            [
+              "Arveja verde en vaina pastusa",
+              "Bulto",
+              "50 Kilogramo",
+              "280.000",
+              "300.000",
+              "280.000",
+              "300.000"
+            ],
+            [
+              "Fríjol verde cargamanto",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.200",
+              "5.000",
+              "5.200"
+            ],
+            [
+              "Habichuela",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Otras hortalizas y verduras",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Ahuyama",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.200",
+              "1.300",
+              "1.200",
+              "1.300"
+            ],
+            [
+              "Ajo",
+              "Atado/manojo",
+              "2 Kilogramo",
+              "20.000",
+              "22.000",
+              "20.000",
+              "22.000"
+            ],
+            [
+              "Ajo importado",
+              "Caja de cartÓn",
+              "10 Kilogramo",
+              "60.000",
+              "62.000",
+              "60.000",
+              "62.000"
+            ],
+            [
+              "Ají topito dulce",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.800",
+              "7.000",
+              "6.800",
+              "7.000"
+            ],
+            [
+              "Berenjena",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.000",
+              "3.000",
+              "3.000"
+            ],
+            [
+              "Calabacín",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Calabaza",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.000",
+              "1.000",
+              "1.000"
+            ],
+            [
+              "Chócolo mazorca",
+              "Bulto",
+              "40 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Cidra",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.100",
+              "1.000",
+              "1.100"
+            ],
+            [
+              "Pepino cohombro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "1.800",
+              "2.000"
+            ],
+            [
+              "Pepino de rellenar",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Pimentón",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.200",
+              "4.000",
+              "4.200"
+            ],
+            [
+              "Pimentón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.300",
+              "6.500",
+              "6.300",
+              "6.500"
+            ],
+            [
+              "Remolacha",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "2.800",
+              "3.000"
+            ],
+            [
+              "Rábano rojo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Zanahorias",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Zanahoria larga vida",
+              "Bulto",
+              "45 Kilogramo",
+              "70.000",
+              "75.000",
+              "70.000",
+              "75.000"
+            ],
+            [
+              "Cebollas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cebolla cabezona blanca",
+              "Bulto",
+              "48 Kilogramo",
+              "245.000",
+              "250.000",
+              "245.000",
+              "250.000"
+            ],
+            [
+              "Cebolla cabezona roja importada",
+              "Bulto",
+              "46 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 2 de 3",
+        "usage": {
+          "candidatesTokenCount": 2285,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 4545,
+          "totalTokenCount": 8111
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4595,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 2",
+      "source_page": 2,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+      "image_id": "cedb02555eedf11a69c3765c2d3fec6af24717915d7d0c7f3aa5a8125fc1e369",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [
+          "The word 'cartÓn' in 'Caja de cartÓn' has a capitalized 'Ó'.",
+          "The category headers are merged across all columns but represented as single-cell values with empty strings in the remaining columns."
+        ],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Uchuva con cáscara",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.300",
+              "3.200",
+              "3.300"
+            ],
+            [
+              "Uva isabela",
+              "Bandeja",
+              "500 Gramo",
+              "1.800",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Uva importada",
+              "Canastilla",
+              "8 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Uva red globe nacional",
+              "Caja de icopor",
+              "9 Kilogramo",
+              "90.000",
+              "95.000",
+              "90.000",
+              "95.000"
+            ],
+            [
+              "Tuberculos, raíces y platanos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Otros tuberculos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arracacha blanca",
+              "Bulto",
+              "40 Kilogramo",
+              "180.000",
+              "200.000",
+              "180.000",
+              "200.000"
+            ],
+            [
+              "PLÁTANO",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Plátano comino",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano dominico verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano guineo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "1.800",
+              "2.000"
+            ],
+            [
+              "Plátano hartón maduro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde eje cafetero",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.700",
+              "3.800",
+              "3.700",
+              "3.800"
+            ],
+            [
+              "Papa",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Papa r-12 negra",
+              "Bulto",
+              "50 Kilogramo",
+              "145.000",
+              "150.000",
+              "145.000",
+              "150.000"
+            ],
+            [
+              "Papa capira",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.300",
+              "3.400",
+              "3.300",
+              "3.400"
+            ],
+            [
+              "Papa criolla limpia",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.400",
+              "3.200",
+              "3.400"
+            ],
+            [
+              "Papa nevada",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.400",
+              "3.200",
+              "3.400"
+            ],
+            [
+              "Yuca",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Yuca criolla",
+              "Bolsa",
+              "25 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Verduras y hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Leguminosas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arveja verde en vaina",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.300",
+              "5.500",
+              "5.300",
+              "5.500"
+            ],
+            [
+              "Arveja verde en vaina pastusa",
+              "Bulto",
+              "50 Kilogramo",
+              "280.000",
+              "300.000",
+              "280.000",
+              "300.000"
+            ],
+            [
+              "Fríjol verde cargamanto",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.200",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Habichuela",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Otras hortalizas y verduras",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Ahuyama",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.200",
+              "1.300",
+              "1.200",
+              "1.300"
+            ],
+            [
+              "Ajo",
+              "Atado/manojo",
+              "2 Kilogramo",
+              "20.000",
+              "22.000",
+              "20.000",
+              "22.000"
+            ],
+            [
+              "Ajo importado",
+              "Caja de cartÓn",
+              "10 Kilogramo",
+              "60.000",
+              "62.000",
+              "60.000",
+              "62.000"
+            ],
+            [
+              "Ají topito dulce",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.800",
+              "7.000",
+              "6.800",
+              "7.000"
+            ],
+            [
+              "Berenjena",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.000",
+              "3.000",
+              "3.000"
+            ],
+            [
+              "Calabacín",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Calabaza",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.000",
+              "1.000",
+              "1.000"
+            ],
+            [
+              "Chócolo mazorca",
+              "Bulto",
+              "40 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Cidra",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.100",
+              "1.000",
+              "1.100"
+            ],
+            [
+              "Pepino cohombro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "1.800",
+              "2.000"
+            ],
+            [
+              "Pepino de rellenar",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Pimentón",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.200",
+              "4.000",
+              "4.200"
+            ],
+            [
+              "Pimentón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.300",
+              "6.500",
+              "6.300",
+              "6.500"
+            ],
+            [
+              "Remolacha",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.800",
+              "3.000",
+              "2.800",
+              "3.000"
+            ],
+            [
+              "Rábano rojo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Zanahorias",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Zanahoria larga vida",
+              "Bulto",
+              "45 Kilogramo",
+              "70.000",
+              "75.000",
+              "70.000",
+              "75.000"
+            ],
+            [
+              "Cebollas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cebolla cabezona blanca",
+              "Bulto",
+              "48 Kilogramo",
+              "245.000",
+              "250.000",
+              "245.000",
+              "250.000"
+            ],
+            [
+              "Cebolla cabezona roja importada",
+              "Bulto",
+              "46 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 2 de 3",
+        "usage": {
+          "candidatesTokenCount": 2339,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 5119,
+          "totalTokenCount": 8755
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4796,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 2",
+      "source_page": 2,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "a5b8fb6350036611f718c43be0902cfb1a1d55d2de55bed285ed64f3fdc667b3",
+      "image_id": "f00ff45703365818dccc4aa1de9aab310897c5fc6720bd2dcd200143119a3b25",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [
+          "Note the inconsistent capitalization of 'Caja de cartÓN' vs 'Caja de cartón' in the 'Presentación' column, transcribed exactly as shown in the image."
+        ],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n03:15 - 04:00",
+              "",
+              "Ronda 2\n04:15 - 05:00",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cítricos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Limón tahití",
+              "Bulto",
+              "70 Kilogramo",
+              "170.000",
+              "180.000",
+              "170.000",
+              "180.000"
+            ],
+            [
+              "Mandarina arrayana",
+              "Canastilla",
+              "22 Kilogramo",
+              "50.000",
+              "50.000",
+              "50.000",
+              "50.000"
+            ],
+            [
+              "Naranja sweet",
+              "Canastilla",
+              "20 Kilogramo",
+              "38.000",
+              "40.000",
+              "40.000",
+              "42.000"
+            ],
+            [
+              "Naranja valencia",
+              "Canastilla",
+              "20 Kilogramo",
+              "38.000",
+              "40.000",
+              "40.000",
+              "42.000"
+            ],
+            [
+              "Tangelo",
+              "Canastilla",
+              "25 Kilogramo",
+              "120.000",
+              "130.000",
+              "120.000",
+              "130.000"
+            ],
+            [
+              "Otras frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Aguacate hass",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.800",
+              "6.200",
+              "6.000",
+              "6.000"
+            ],
+            [
+              "Aguacate papelillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.800",
+              "8.200",
+              "8.000",
+              "8.000"
+            ],
+            [
+              "Banano urabá",
+              "Caja de cartÓN",
+              "20 Kilogramo",
+              "40.000",
+              "42.000",
+              "40.000",
+              "40.000"
+            ],
+            [
+              "Banano bocadillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.300",
+              "2.400"
+            ],
+            [
+              "Banano criollo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.100",
+              "2.200"
+            ],
+            [
+              "Borojó",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Ciruela importada",
+              "Caja de cartón",
+              "9 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "110.000"
+            ],
+            [
+              "Ciruela roja",
+              "Canastilla",
+              "25 Kilogramo",
+              "40.000",
+              "45.000",
+              "40.000",
+              "40.000"
+            ],
+            [
+              "Coco",
+              "Docena",
+              "12 Kilogramo",
+              "46.000",
+              "48.000",
+              "46.000",
+              "48.000"
+            ],
+            [
+              "Curuba",
+              "Canastilla",
+              "22 Kilogramo",
+              "33.000",
+              "35.000",
+              "30.000",
+              "35.000"
+            ],
+            [
+              "Durazno importado",
+              "Caja de cartón",
+              "9 Kilogramo",
+              "145.000",
+              "150.000",
+              "150.000",
+              "150.000"
+            ],
+            [
+              "Durazno nacional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.200",
+              "5.500",
+              "5.300",
+              "5.500"
+            ],
+            [
+              "Fresa",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.600",
+              "8.000",
+              "7.500",
+              "8.000"
+            ],
+            [
+              "Granadilla",
+              "Caja de cartón",
+              "15 Kilogramo",
+              "90.000",
+              "95.000",
+              "90.000",
+              "94.000"
+            ],
+            [
+              "Guanábana",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Guayaba pera",
+              "Canastilla",
+              "14 Kilogramo",
+              "25.000",
+              "28.000",
+              "25.000",
+              "27.000"
+            ],
+            [
+              "Gulupa",
+              "Canastilla",
+              "12 Kilogramo",
+              "25.000",
+              "26.000",
+              "24.000",
+              "25.000"
+            ],
+            [
+              "Kiwi",
+              "Canastilla",
+              "10 Kilogramo",
+              "105.000",
+              "110.000",
+              "108.000",
+              "110.000"
+            ],
+            [
+              "Lulo",
+              "Canastilla",
+              "25 Kilogramo",
+              "130.000",
+              "135.000",
+              "130.000",
+              "130.000"
+            ],
+            [
+              "Mango tommy",
+              "Canastilla",
+              "24 Kilogramo",
+              "60.000",
+              "65.000",
+              "60.000",
+              "60.000"
+            ],
+            [
+              "Mango común",
+              "Canastilla",
+              "24 Kilogramo",
+              "45.000",
+              "45.000",
+              "45.000",
+              "45.000"
+            ],
+            [
+              "Manzana nacional",
+              "Canastilla",
+              "20 Kilogramo",
+              "60.000",
+              "65.000",
+              "62.000",
+              "65.000"
+            ],
+            [
+              "Manzana roja importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "165.000",
+              "170.000",
+              "165.000",
+              "170.000"
+            ],
+            [
+              "Manzana royal gala importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "165.000",
+              "170.000"
+            ],
+            [
+              "Manzana verde importada",
+              "Caja de cartÓN",
+              "19 Kilogramo",
+              "170.000",
+              "180.000",
+              "175.000",
+              "180.000"
+            ],
+            [
+              "Maracuyá",
+              "Bolsa",
+              "10 Kilogramo",
+              "27.000",
+              "30.000",
+              "28.000",
+              "30.000"
+            ],
+            [
+              "Melón cantalup",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.800",
+              "2.600",
+              "2.800"
+            ],
+            [
+              "Mora de castilla",
+              "Caja de madera",
+              "6 Kilogramo",
+              "20.000",
+              "22.000",
+              "20.000",
+              "22.000"
+            ],
+            [
+              "Papaya paulina",
+              "Caja de madera",
+              "18 Kilogramo",
+              "38.000",
+              "40.000",
+              "38.000",
+              "40.000"
+            ],
+            [
+              "Papaya tainung",
+              "Caja de madera",
+              "10 Kilogramo",
+              "26.000",
+              "27.000",
+              "26.000",
+              "27.000"
+            ],
+            [
+              "Patilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.700",
+              "1.800",
+              "1.700",
+              "1.800"
+            ],
+            [
+              "Patilla baby",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Pera importada",
+              "Caja de cartón",
+              "20 Kilogramo",
+              "160.000",
+              "165.000",
+              "160.000",
+              "160.000"
+            ],
+            [
+              "Piña gold",
+              "Caja de cartón",
+              "11 Kilogramo",
+              "27.000",
+              "28.000",
+              "27.000",
+              "28.000"
+            ],
+            [
+              "Piña perolera",
+              "Caja de madera",
+              "30 Kilogramo",
+              "47.000",
+              "48.000",
+              "47.000",
+              "48.000"
+            ],
+            [
+              "Tomate de árbol",
+              "Canastilla",
+              "25 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Uchuva con cáscara",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.500",
+              "3.300",
+              "3.500"
+            ],
+            [
+              "Uva isabela",
+              "Caja de cartón",
+              "25 Unidad 450 GR",
+              "45.000",
+              "46.000",
+              "44.000",
+              "45.000"
+            ]
+          ]
+        ],
+        "text": "DANE\nINFORMACIÓN PARA TODOS\nBOLETÍN DIARIO\nPRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nBogotá, D.C., Corabastos\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 1 de 3",
+        "usage": {
+          "candidatesTokenCount": 2530,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            },
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 11833,
+          "totalTokenCount": 15644
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4934,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 1",
+      "source_page": 1,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "a5b8fb6350036611f718c43be0902cfb1a1d55d2de55bed285ed64f3fdc667b3",
+      "image_id": "f00ff45703365818dccc4aa1de9aab310897c5fc6720bd2dcd200143119a3b25",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n03:15 - 04:00",
+              "",
+              "Ronda 2\n04:15 - 05:00",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cítricos",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Limón tahití",
+              "Bulto",
+              "70 Kilogramo",
+              "170.000",
+              "180.000",
+              "170.000",
+              "180.000"
+            ],
+            [
+              "Mandarina arrayana",
+              "Canastilla",
+              "22 Kilogramo",
+              "50.000",
+              "50.000",
+              "50.000",
+              "50.000"
+            ],
+            [
+              "Naranja sweet",
+              "Canastilla",
+              "20 Kilogramo",
+              "38.000",
+              "40.000",
+              "40.000",
+              "42.000"
+            ],
+            [
+              "Naranja valencia",
+              "Canastilla",
+              "20 Kilogramo",
+              "38.000",
+              "40.000",
+              "40.000",
+              "42.000"
+            ],
+            [
+              "Tangelo",
+              "Canastilla",
+              "25 Kilogramo",
+              "120.000",
+              "130.000",
+              "120.000",
+              "130.000"
+            ],
+            [
+              "Otras frutas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Aguacate hass",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.800",
+              "6.200",
+              "6.000",
+              "6.000"
+            ],
+            [
+              "Aguacate papelillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.800",
+              "8.200",
+              "8.000",
+              "8.000"
+            ],
+            [
+              "Banano urabá",
+              "Caja de cartón",
+              "20 Kilogramo",
+              "40.000",
+              "42.000",
+              "40.000",
+              "40.000"
+            ],
+            [
+              "Banano bocadillo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.300",
+              "2.400"
+            ],
+            [
+              "Banano criollo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.100",
+              "2.200"
+            ],
+            [
+              "Borojó",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Ciruela importada",
+              "Caja de cartón",
+              "9 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "110.000"
+            ],
+            [
+              "Ciruela roja",
+              "Canastilla",
+              "25 Kilogramo",
+              "40.000",
+              "45.000",
+              "40.000",
+              "40.000"
+            ],
+            [
+              "Coco",
+              "Docena",
+              "12 Kilogramo",
+              "46.000",
+              "48.000",
+              "46.000",
+              "48.000"
+            ],
+            [
+              "Curuba",
+              "Canastilla",
+              "22 Kilogramo",
+              "33.000",
+              "35.000",
+              "30.000",
+              "35.000"
+            ],
+            [
+              "Durazno importado",
+              "Caja de cartón",
+              "9 Kilogramo",
+              "145.000",
+              "150.000",
+              "150.000",
+              "150.000"
+            ],
+            [
+              "Durazno nacional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.200",
+              "5.500",
+              "5.300",
+              "5.500"
+            ],
+            [
+              "Fresa",
+              "Kilogramo",
+              "1 Kilogramo",
+              "7.600",
+              "8.000",
+              "7.500",
+              "8.000"
+            ],
+            [
+              "Granadilla",
+              "Caja de cartón",
+              "15 Kilogramo",
+              "90.000",
+              "95.000",
+              "90.000",
+              "94.000"
+            ],
+            [
+              "Guanábana",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Guayaba pera",
+              "Canastilla",
+              "14 Kilogramo",
+              "25.000",
+              "28.000",
+              "25.000",
+              "27.000"
+            ],
+            [
+              "Gulupa",
+              "Canastilla",
+              "12 Kilogramo",
+              "25.000",
+              "26.000",
+              "24.000",
+              "25.000"
+            ],
+            [
+              "Kiwi",
+              "Canastilla",
+              "10 Kilogramo",
+              "105.000",
+              "110.000",
+              "108.000",
+              "110.000"
+            ],
+            [
+              "Lulo",
+              "Canastilla",
+              "25 Kilogramo",
+              "130.000",
+              "135.000",
+              "130.000",
+              "130.000"
+            ],
+            [
+              "Mango tommy",
+              "Canastilla",
+              "24 Kilogramo",
+              "60.000",
+              "65.000",
+              "60.000",
+              "60.000"
+            ],
+            [
+              "Mango común",
+              "Canastilla",
+              "24 Kilogramo",
+              "45.000",
+              "45.000",
+              "45.000",
+              "45.000"
+            ],
+            [
+              "Manzana nacional",
+              "Canastilla",
+              "20 Kilogramo",
+              "60.000",
+              "65.000",
+              "62.000",
+              "65.000"
+            ],
+            [
+              "Manzana roja importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "165.000",
+              "170.000",
+              "165.000",
+              "170.000"
+            ],
+            [
+              "Manzana royal gala importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "160.000",
+              "170.000",
+              "165.000",
+              "170.000"
+            ],
+            [
+              "Manzana verde importada",
+              "Caja de cartón",
+              "19 Kilogramo",
+              "170.000",
+              "180.000",
+              "175.000",
+              "180.000"
+            ],
+            [
+              "Maracuyá",
+              "Bolsa",
+              "10 Kilogramo",
+              "27.000",
+              "30.000",
+              "28.000",
+              "30.000"
+            ],
+            [
+              "Melón cantalup",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.500",
+              "2.800",
+              "2.600",
+              "2.800"
+            ],
+            [
+              "Mora de castilla",
+              "Caja de madera",
+              "6 Kilogramo",
+              "20.000",
+              "22.000",
+              "20.000",
+              "22.000"
+            ],
+            [
+              "Papaya paulina",
+              "Caja de madera",
+              "18 Kilogramo",
+              "38.000",
+              "40.000",
+              "38.000",
+              "40.000"
+            ],
+            [
+              "Papaya tainung",
+              "Caja de madera",
+              "10 Kilogramo",
+              "26.000",
+              "27.000",
+              "26.000",
+              "27.000"
+            ],
+            [
+              "Patilla",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.700",
+              "1.800",
+              "1.700",
+              "1.800"
+            ],
+            [
+              "Patilla baby",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Pera importada",
+              "Caja de cartón",
+              "20 Kilogramo",
+              "160.000",
+              "165.000",
+              "160.000",
+              "160.000"
+            ],
+            [
+              "Piña gold",
+              "Caja de cartón",
+              "11 Kilogramo",
+              "27.000",
+              "28.000",
+              "27.000",
+              "28.000"
+            ],
+            [
+              "Piña perolera",
+              "Caja de madera",
+              "30 Kilogramo",
+              "47.000",
+              "48.000",
+              "47.000",
+              "48.000"
+            ],
+            [
+              "Tomate de árbol",
+              "Canastilla",
+              "25 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Uchuva con cáscara",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.500",
+              "3.300",
+              "3.500"
+            ],
+            [
+              "Uva isabela",
+              "Caja de cartón",
+              "25 Unidad 450 GR",
+              "45.000",
+              "46.000",
+              "44.000",
+              "45.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO * SIPSA\nPRECIOS DE VENTA MAYORISTA\nBogotá, D.C., Corabastos\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n03 de Enero de 2023\nPagina 1 de 3",
+        "usage": {
+          "candidatesTokenCount": 2485,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 4656,
+          "totalTokenCount": 8438
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4774,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 1",
+      "source_page": 1,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "e67d216406f6dbafdeca9a143200b75740b443e9301db2d7c68cb34c39000b3c",
+      "image_id": "fa37a507917ce1bdf3f0a06feb4116f30b7a43986345c10496b68893f7c50350",
+      "reading": 0,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [
+          "Fríjol verde cargamanto is spelled with 'a' instead of 'e' (cargamanto vs cargamento) as visible in the image.",
+          "Line breaks in product names preserved as they appear in the table cells."
+        ],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Plátano comino",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano dominico verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano guineo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "1.800",
+              "2.000"
+            ],
+            [
+              "Plátano hartón maduro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde\neje cafetero",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.700",
+              "3.800",
+              "3.700",
+              "3.800"
+            ],
+            [
+              "Papa",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Papa r-12 negra",
+              "Bulto",
+              "50 Kilogramo",
+              "140.000",
+              "150.000",
+              "140.000",
+              "150.000"
+            ],
+            [
+              "Papa capira",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.300",
+              "3.400",
+              "3.300",
+              "3.400"
+            ],
+            [
+              "Papa criolla limpia",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.300",
+              "3.200",
+              "3.300"
+            ],
+            [
+              "Papa nevada",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.300",
+              "3.200",
+              "3.300"
+            ],
+            [
+              "Yuca",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Yuca criolla",
+              "Bolsa",
+              "25 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Verduras y hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Leguminosas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arveja verde en vaina",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.000",
+              "6.200",
+              "6.000",
+              "6.200"
+            ],
+            [
+              "Fríjol verde cargamanto",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.800",
+              "6.000",
+              "6.000",
+              "6.000"
+            ],
+            [
+              "Habichuela",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Otras hortalizas y verduras",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Ahuyama",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.200",
+              "1.300",
+              "1.200",
+              "1.300"
+            ],
+            [
+              "Ajo importado",
+              "Caja de cartón",
+              "10 Kilogramo",
+              "60.000",
+              "62.000",
+              "60.000",
+              "62.000"
+            ],
+            [
+              "Berenjena",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Calabacín",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Calabaza",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.000",
+              "1.000",
+              "1.000"
+            ],
+            [
+              "Cidra",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.000",
+              "1.000",
+              "1.000"
+            ],
+            [
+              "Pepino cohombro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Pimentón",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.000",
+              "6.200",
+              "6.000",
+              "6.200"
+            ],
+            [
+              "Pimentón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.800",
+              "7.000",
+              "6.800",
+              "7.000"
+            ],
+            [
+              "Remolacha",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Rábano rojo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Zanahorias",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Zanahoria larga vida",
+              "Bulto",
+              "45 Kilogramo",
+              "80.000",
+              "85.000",
+              "85.000",
+              "85.000"
+            ],
+            [
+              "Cebollas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cebolla cabezona\nblanca",
+              "Bulto",
+              "48 Kilogramo",
+              "250.000",
+              "250.000",
+              "250.000",
+              "250.000"
+            ],
+            [
+              "Cebolla cabezona roja\nimportada",
+              "Bulto",
+              "46 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Cebolla junca",
+              "Atado/manojo",
+              "17 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Cebolla junca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.700",
+              "3.500",
+              "3.700"
+            ],
+            [
+              "Cebolla puerro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Tomates",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Tomate chonto regional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.600",
+              "2.800",
+              "2.600",
+              "2.800"
+            ],
+            [
+              "Tomate larga vida",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "4.800",
+              "5.000"
+            ],
+            [
+              "Hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Apio",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Brócoli",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.000",
+              "3.000",
+              "3.000"
+            ],
+            [
+              "Cilantro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.000",
+              "4.000",
+              "4.000"
+            ],
+            [
+              "Coles",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.200",
+              "1.300",
+              "1.200",
+              "1.300"
+            ],
+            [
+              "Coliflor",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Espinaca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Caja de cartón",
+              "14 Kilogramo",
+              "24.000",
+              "27.000",
+              "24.000",
+              "27.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO PRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO • SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n02 de Enero de 2023\nPagina 2 de 3",
+        "usage": {
+          "candidatesTokenCount": 2373,
+          "promptTokenCount": 1281,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 189
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 6342,
+          "totalTokenCount": 9996
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4820,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 2",
+      "source_page": 2,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    },
+    {
+      "document_id": "e67d216406f6dbafdeca9a143200b75740b443e9301db2d7c68cb34c39000b3c",
+      "image_id": "fa37a507917ce1bdf3f0a06feb4116f30b7a43986345c10496b68893f7c50350",
+      "reading": 1,
+      "result": {
+        "model": "gemini-3.5-flash",
+        "review_notes": [],
+        "tables": [
+          [
+            [
+              "Producto",
+              "Presentación",
+              "Unidades",
+              "Ronda 1\n04:00 - 06:00",
+              "",
+              "Ronda 2\n06:30 - 08:30",
+              ""
+            ],
+            [
+              "",
+              "",
+              "",
+              "Mínimo",
+              "Máximo",
+              "Mínimo",
+              "Máximo"
+            ],
+            [
+              "Plátano comino",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano dominico verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Plátano guineo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "1.800",
+              "2.000"
+            ],
+            [
+              "Plátano hartón maduro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Plátano hartón verde eje cafetero",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.700",
+              "3.800",
+              "3.700",
+              "3.800"
+            ],
+            [
+              "Papa",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Papa r-12 negra",
+              "Bulto",
+              "50 Kilogramo",
+              "140.000",
+              "150.000",
+              "140.000",
+              "150.000"
+            ],
+            [
+              "Papa capira",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.300",
+              "3.400",
+              "3.300",
+              "3.400"
+            ],
+            [
+              "Papa criolla limpia",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.300",
+              "3.200",
+              "3.300"
+            ],
+            [
+              "Papa nevada",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.200",
+              "3.300",
+              "3.200",
+              "3.300"
+            ],
+            [
+              "Yuca",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Yuca criolla",
+              "Bolsa",
+              "25 Kilogramo",
+              "65.000",
+              "70.000",
+              "65.000",
+              "70.000"
+            ],
+            [
+              "Verduras y hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Leguminosas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Arveja verde en vaina",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.000",
+              "6.200",
+              "6.000",
+              "6.200"
+            ],
+            [
+              "Fríjol verde cargamento",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.800",
+              "6.000",
+              "6.000",
+              "6.000"
+            ],
+            [
+              "Habichuela",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Otras hortalizas y verduras",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Ahuyama",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.200",
+              "1.300",
+              "1.200",
+              "1.300"
+            ],
+            [
+              "Ajo importado",
+              "Caja de cartón",
+              "10 Kilogramo",
+              "60.000",
+              "62.000",
+              "60.000",
+              "62.000"
+            ],
+            [
+              "Berenjena",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.200",
+              "3.000",
+              "3.200"
+            ],
+            [
+              "Calabacín",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Calabaza",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.000",
+              "1.000",
+              "1.000"
+            ],
+            [
+              "Cidra",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.000",
+              "1.000",
+              "1.000",
+              "1.000"
+            ],
+            [
+              "Pepino cohombro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Pimentón",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.000",
+              "6.200",
+              "6.000",
+              "6.200"
+            ],
+            [
+              "Pimentón verde",
+              "Kilogramo",
+              "1 Kilogramo",
+              "6.800",
+              "7.000",
+              "6.800",
+              "7.000"
+            ],
+            [
+              "Remolacha",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Rábano rojo",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.400",
+              "2.500",
+              "2.400",
+              "2.500"
+            ],
+            [
+              "Zanahorias",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Zanahoria larga vida",
+              "Bulto",
+              "45 Kilogramo",
+              "80.000",
+              "85.000",
+              "85.000",
+              "85.000"
+            ],
+            [
+              "Cebollas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Cebolla cabezona blanca",
+              "Bulto",
+              "48 Kilogramo",
+              "250.000",
+              "250.000",
+              "250.000",
+              "250.000"
+            ],
+            [
+              "Cebolla cabezona roja importada",
+              "Bulto",
+              "46 Kilogramo",
+              "110.000",
+              "115.000",
+              "110.000",
+              "115.000"
+            ],
+            [
+              "Cebolla junca",
+              "Atado/manojo",
+              "17 Kilogramo",
+              "45.000",
+              "50.000",
+              "45.000",
+              "50.000"
+            ],
+            [
+              "Cebolla junca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.500",
+              "3.700",
+              "3.500",
+              "3.700"
+            ],
+            [
+              "Cebolla puerro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "5.000",
+              "5.000",
+              "5.000",
+              "5.000"
+            ],
+            [
+              "Tomates",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Tomate chonto regional",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.600",
+              "2.800",
+              "2.600",
+              "2.800"
+            ],
+            [
+              "Tomate larga vida",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.800",
+              "5.000",
+              "4.800",
+              "5.000"
+            ],
+            [
+              "Hortalizas",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "Apio",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.800",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Brócoli",
+              "Kilogramo",
+              "1 Kilogramo",
+              "3.000",
+              "3.000",
+              "3.000",
+              "3.000"
+            ],
+            [
+              "Cilantro",
+              "Kilogramo",
+              "1 Kilogramo",
+              "4.000",
+              "4.000",
+              "4.000",
+              "4.000"
+            ],
+            [
+              "Coles",
+              "Kilogramo",
+              "1 Kilogramo",
+              "1.200",
+              "1.300",
+              "1.200",
+              "1.300"
+            ],
+            [
+              "Coliflor",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.200",
+              "2.000",
+              "2.200"
+            ],
+            [
+              "Espinaca",
+              "Kilogramo",
+              "1 Kilogramo",
+              "2.000",
+              "2.000",
+              "2.000",
+              "2.000"
+            ],
+            [
+              "Lechuga batavia",
+              "Caja de cartón",
+              "14 Kilogramo",
+              "24.000",
+              "27.000",
+              "24.000",
+              "27.000"
+            ]
+          ]
+        ],
+        "text": "DANE INFORMACIÓN PARA TODOS\nBOLETÍN DIARIO\nPRECIOS MAYORISTAS\nSISTEMA DE INFORMACIÓN DE PRECIOS Y ABASTECIMIENTO DEL SECTOR AGROPECUARIO - SIPSA\nPRECIOS DE VENTA MAYORISTA\nMedellín, Central Mayorista de Antioquia\nPRODUCTOS PRIMERA CALIDAD - Boletín Gratuito\n02 de Enero de 2023\nPagina 2 de 3",
+        "usage": {
+          "candidatesTokenCount": 2311,
+          "promptTokenCount": 1297,
+          "promptTokensDetails": [
+            {
+              "modality": "IMAGE",
+              "tokenCount": 1092
+            },
+            {
+              "modality": "TEXT",
+              "tokenCount": 205
+            }
+          ],
+          "serviceTier": "standard",
+          "thoughtsTokenCount": 4757,
+          "totalTokenCount": 8365
+        },
+        "version": "gemini-image-ocr-v2"
+      },
+      "result_bytes": 4626,
+      "source_kind": "city-pdf",
+      "source_locator": "PDF page 2",
+      "source_page": 2,
+      "status": "review",
+      "task_error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "version": "gemini-image-ocr-v2"
+    }
+  ],
+  "scope": {
+    "images": [
+      "186363ab7526a28fc882400aac69f26d4f4fb6868d37ec6dc6fbc42cee8e04e4",
+      "2d3cba5675f140b978df36efd18091e4993cde07278e7c9bd77af82e4b764fbc",
+      "4547319bf205294813110da9eba6a679fc6dd522092aceb9635aa4244e1a53cf",
+      "526bb8dc65d073e15d36a2b3451613cd34125f65bb23d913b38808f6592c5513",
+      "a4cc6933e154e81b0116cab7f7d344515b80c2205f61023d9523b75325625b32",
+      "cedb02555eedf11a69c3765c2d3fec6af24717915d7d0c7f3aa5a8125fc1e369",
+      "f00ff45703365818dccc4aa1de9aab310897c5fc6720bd2dcd200143119a3b25",
+      "fa37a507917ce1bdf3f0a06feb4116f30b7a43986345c10496b68893f7c50350"
+    ],
+    "limits": {
+      "connect_seconds": 5,
+      "lock_ms": 2000,
+      "payload_bytes_each": 1000000,
+      "statement_ms": 5000,
+      "whole_seconds": 40
+    },
+    "production_writes": 0,
+    "provider_calls": 0,
+    "query_sha256": "e38793589e4b84b71db1f6a97e78c1d2f23ccda762d6b067773b7de25815e91d",
+    "scope": "one exact-eight image IDs/two cached readings each",
+    "script_sha256": "5a9f88b1272efedf83dbc2f524f674d833566e0f994bff890a1bf1d5d2fd445e"
+  },
+  "status": "sixteen_exact_cached_results"
+}

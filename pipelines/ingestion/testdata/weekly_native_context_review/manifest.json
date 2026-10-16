@@ -1,0 +1,41 @@
+{
+  "schema": "dane-weekly-native-context-review-fixtures-v1",
+  "source_workbooks": {
+    "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anexo_Bol_Semanal_nov01_2014.xls": {
+      "sha256": "dd18960746517e8dc133c93bc34c4a8902a344df61c8be89917988def9943531",
+      "bytes": 193988,
+      "native_rows": 4601,
+      "format": "ooxml-zip"
+    },
+    "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anexo_Bol_Semanal_nov08_2014.xls": {
+      "sha256": "b79b6ceca9da5a5c0e446337445569de1c40a932e297bf801d25e8df23a394a6",
+      "bytes": 444416,
+      "native_rows": 4600,
+      "format": "ole-biff"
+    }
+  },
+  "paired_printed_pdf_fixtures": {
+    "nov01.pdf": {
+      "sha256": "9138aff02914b42392eb8233279240a36277c0575a592c2797dce0657509d182",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_01nov_07nov_2014.pdf"
+    },
+    "nov08.pdf": {
+      "sha256": "ee0af42d6361ae3b07c2861bd6d047dc724e52deacfef8ba99245132e702d9ca",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_08nov_14nov_2014.pdf"
+    }
+  },
+  "purpose": "Independently pinned originals and PDF controls; workbook dates/units are not borrowed from paired PDFs.",
+  "april_2015_exact_native_review": {
+    "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anexo_13_17abr_2015.xls",
+    "filename": "Anexo_13_17abr_2015.xls",
+    "sha256": "e40c3580914f8dd1bac08e62483f2cf957ab999f3a103e392f2560082baa2553",
+    "bytes": 430592,
+    "fixture": "official-Anexo_13_17abr_2015.xls",
+    "native_layout": "Información Boletin; 4852 rows × 6 columns; row 1 Producto | Min(1) | Max(1) | P(1) | Tend | blank",
+    "native_numeric_rows_untyped": 4503,
+    "partial_rows": 0,
+    "period": "not established from workbook cells or URL",
+    "unit": "not established from workbook cells",
+    "note": "Retain as an exact-source untyped review; companion PDF is not used to type workbook rows."
+  }
+}

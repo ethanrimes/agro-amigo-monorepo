@@ -16,6 +16,8 @@ REVIEW = "retained:review"
 ATTEMPT_PREFIX = "retained:attempt:"
 COOLDOWN_SECONDS = 3600
 MAX_PER_RUN = 2
+USDA_SEMICOLON_REPLAY_DOCUMENT = "cb6f7b8970d5fd3cd17660b90644a7f4f37a0d25f6a334a63a4f8659e60e247c"
+USDA_SEMICOLON_REPLAY_SUFFIX = ":retained-cb6f-semicolon-v1"
 
 
 def leaf_versions():
@@ -51,9 +53,19 @@ def candidate_query(versions, limit, cooldown_seconds):
     interrupted source after its first durable batch.
     """
     values = ",".join("(%s,%s)" for _ in versions)
+    # This one retained original was previously reviewed under the ordinary
+    # Miami version. Revisit it once without replaying the whole USDA family.
+    # The recovery-specific checkpoint is terminal on success or deterministic
+    # review; source publication still uses the adapter's normal parser version.
+    selected_version = (
+        "CASE WHEN d.id='" + USDA_SEMICOLON_REPLAY_DOCUMENT + "' "
+        "AND a.kind='international-usda-miami-flowers' THEN "
+        "v.processor_version||'" + USDA_SEMICOLON_REPLAY_SUFFIX + "' "
+        "ELSE v.processor_version END"
+    )
     sql = f"""
         WITH versions(kind,processor_version) AS (VALUES {values})
-        SELECT d.id,d.source_url,a.kind,v.processor_version
+        SELECT d.id,d.source_url,a.kind,{selected_version}
         FROM ingestion_asset a
         JOIN versions v ON v.kind=a.kind
         JOIN source_document current ON current.id=a.document_id
@@ -62,7 +74,7 @@ def candidate_query(versions, limit, cooldown_seconds):
           AND d.kind='original' AND d.metadata->>'ingestion_kind'=a.kind
           AND NOT EXISTS (
               SELECT 1 FROM ingestion_checkpoint c
-              WHERE c.document_id=d.id AND c.processor_version=v.processor_version
+              WHERE c.document_id=d.id AND c.processor_version={selected_version}
                 AND (c.step IN (%s,%s,'official:complete') OR (
                     c.step LIKE %s
                     AND c.completed_at>now()-(%s * interval '1 second')

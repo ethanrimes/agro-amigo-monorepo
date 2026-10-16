@@ -5,13 +5,28 @@ export type WorkbookCell = {
 };
 
 // Both browser and server caches must change when preview semantics change.
-export const WORKBOOK_PREVIEW_VERSION = "native-formats-v2";
+export const WORKBOOK_PREVIEW_VERSION = "native-formats-v3";
+
+// Allow the server's bounded 45-second original-preview request to finish,
+// including the source authorization query and response transfer.
+export const WORKBOOK_REQUEST_TIMEOUT_MS = 60_000;
+
+/** Hide binary-formula tails only when a shorter decimal is within float noise. */
+function sourceDecimal(value: number): number {
+  if (!/\.\d*(?:0{5,}|9{5,})\d*$/.test(String(value))) return value;
+  const tolerance = Number.EPSILON * Math.abs(value) * 4;
+  for (let places = 0; places <= 12; places++) {
+    const rounded = Number(value.toFixed(places));
+    if (Math.abs(value - rounded) <= tolerance) return rounded;
+  }
+  return value;
+}
 
 /** Preserve raw source values; Excel's percent format changes only their display. */
 export function workbookCellText(cell: WorkbookCell): string {
   if (cell.value === null) return "";
   if (typeof cell.value !== "number") return String(cell.value);
-  const value = cell.value;
+  const value = sourceDecimal(cell.value);
   // Semicolons inside literals are not section boundaries. Negative and zero
   // sections can have different precision from positive cells.
   const sections = (cell.number_format || "General").match(/(?:"[^"]*"|\\.|[^;])+/g) || [];
@@ -22,9 +37,10 @@ export function workbookCellText(cell: WorkbookCell): string {
   if (!percentCount && !literalPercent)
     return value.toLocaleString("es-CO", {
       maximumFractionDigits: 12,
-      // DANE uses 0 for years and @ for numeric registration identifiers.
-      // Respect their ungrouped display without rounding raw price decimals.
-      useGrouping: tokens !== "0" && tokens !== "@",
+      // Group only when the source format requests grouping. General cells
+      // include years and identifiers; 2021 must not become 2.021.
+      // Explicit price formats still group without rounding the raw decimals.
+      useGrouping: tokens.includes(","),
     });
   const decimals = tokens.match(/[0#?]+\.([0#?]+)/)?.[1] || "";
   const places = Math.min(decimals.length, 12);

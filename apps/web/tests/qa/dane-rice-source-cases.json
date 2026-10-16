@@ -5,12 +5,12 @@
     "ready": "!!document.querySelector('.price-chart')&&!document.querySelector('[role=alert]')",
     "steps": [
       {
-        "action": "document.querySelector('.chart-data').open=true;",
+        "action": "document.querySelector('.chart-data').open=true;\nwindow.__qaRice=null;window.__qaRiceError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('rice '+r.status);return r.json()}).then(x=>window.__qaRice=x).catch(e=>window.__qaRiceError=String(e));",
         "checks": [
           {
             "id": "SRC-D-RICE",
-            "condition": "Number(document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,''))===Math.round(3616.0)",
-            "expected": "Current exact native tonne price normalized to COP/kg"
+            "condition": "(()=>{const q=window.__qaRice?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header'),m=window.__qaRice?.markets?.[0],link=document.querySelector('.detail-actions a.evidence-link');if(!q||!card||!head||!m||!link)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),u=new URL(link.href);return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaRice.filters.series==='mill'&&window.__qaRice.filters.units==='1 kg'&&u.pathname==='/evidence/'+m.document_id&&u.searchParams.get('locator')===m.source_locator;})()",
+            "expected": "Moving rice current card/date/normalized kg and exact source link match same-filter API; every archived literal date/price remains independently pinned below"
           },
           {
             "id": "SRC-D-RICE",
@@ -30,14 +30,15 @@
           {
             "id": "EVI-01",
             "condition": "[...document.querySelectorAll('a.evidence-link')].some(a=>new URL(a.href).pathname==='/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e'&&new URL(a.href).searchParams.get('locator').startsWith(\"precios de arroz en molino!row 738\"))",
-            "expected": "Exact current retained original and row"
+            "expected": "Pinned Aug2026 retained original workbook and row remain present in history after new observations append"
           },
           {
             "id": "NAV-04",
             "condition": "document.documentElement.scrollWidth<=innerWidth+1",
             "expected": "No horizontal page overflow"
           }
-        ]
+        ],
+        "ready": "!!window.__qaRice?.current||!!window.__qaRiceError"
       },
       {
         "action": "document.querySelector('.chart-panel').scrollIntoView({block:'start',behavior:'instant'});",
@@ -58,12 +59,12 @@
     "ready": "!!document.querySelector('.price-chart')&&!document.querySelector('[role=alert]')",
     "steps": [
       {
-        "action": "document.querySelector('.chart-data').open=true;",
+        "action": "document.querySelector('.chart-data').open=true;\nwindow.__qaRice=null;window.__qaRiceError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('rice '+r.status);return r.json()}).then(x=>window.__qaRice=x).catch(e=>window.__qaRiceError=String(e));",
         "checks": [
           {
             "id": "SRC-D-RICE",
-            "condition": "Number(document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,''))===Math.round(1350.0)",
-            "expected": "Current exact native tonne price normalized to COP/kg"
+            "condition": "(()=>{const q=window.__qaRice?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header'),m=window.__qaRice?.markets?.[0],link=document.querySelector('.detail-actions a.evidence-link');if(!q||!card||!head||!m||!link)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),u=new URL(link.href);return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaRice.filters.series==='mill'&&window.__qaRice.filters.units==='1 kg'&&u.pathname==='/evidence/'+m.document_id&&u.searchParams.get('locator')===m.source_locator;})()",
+            "expected": "Moving rice current card/date/normalized kg and exact source link match same-filter API; every archived literal date/price remains independently pinned below"
           },
           {
             "id": "SRC-D-RICE",
@@ -83,14 +84,15 @@
           {
             "id": "EVI-01",
             "condition": "[...document.querySelectorAll('a.evidence-link')].some(a=>new URL(a.href).pathname==='/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e'&&new URL(a.href).searchParams.get('locator').startsWith(\"precios de arroz en molino!row 803\"))",
-            "expected": "Exact current retained original and row"
+            "expected": "Pinned Aug2026 retained original workbook and row remain present in history after new observations append"
           },
           {
             "id": "NAV-04",
             "condition": "document.documentElement.scrollWidth<=innerWidth+1",
             "expected": "No horizontal page overflow"
           }
-        ]
+        ],
+        "ready": "!!window.__qaRice?.current||!!window.__qaRiceError"
       },
       {
         "action": "document.querySelector('.chart-panel').scrollIntoView({block:'start',behavior:'instant'});",
@@ -111,12 +113,12 @@
     "ready": "!!document.querySelector('.price-chart')&&!document.querySelector('[role=alert]')",
     "steps": [
       {
-        "action": "document.querySelector('.chart-data').open=true;",
+        "action": "document.querySelector('.chart-data').open=true;\nwindow.__qaRice=null;window.__qaRiceError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('rice '+r.status);return r.json()}).then(x=>window.__qaRice=x).catch(e=>window.__qaRiceError=String(e));",
         "checks": [
           {
             "id": "SRC-D-RICE",
-            "condition": "Number(document.querySelector('[data-testid=current-product-price]').innerText.replace(/[^0-9]/g,''))===Math.round(1200.0)",
-            "expected": "Current exact native tonne price normalized to COP/kg"
+            "condition": "(()=>{const q=window.__qaRice?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header'),m=window.__qaRice?.markets?.[0],link=document.querySelector('.detail-actions a.evidence-link');if(!q||!card||!head||!m||!link)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),u=new URL(link.href);return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaRice.filters.series==='mill'&&window.__qaRice.filters.units==='1 kg'&&u.pathname==='/evidence/'+m.document_id&&u.searchParams.get('locator')===m.source_locator;})()",
+            "expected": "Moving rice current card/date/normalized kg and exact source link match same-filter API; every archived literal date/price remains independently pinned below"
           },
           {
             "id": "SRC-D-RICE",
@@ -136,14 +138,15 @@
           {
             "id": "EVI-01",
             "condition": "[...document.querySelectorAll('a.evidence-link')].some(a=>new URL(a.href).pathname==='/evidence/3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e'&&new URL(a.href).searchParams.get('locator').startsWith(\"precios de arroz en molino!row 824\"))",
-            "expected": "Exact current retained original and row"
+            "expected": "Pinned Aug2026 retained original workbook and row remain present in history after new observations append"
           },
           {
             "id": "NAV-04",
             "condition": "document.documentElement.scrollWidth<=innerWidth+1",
             "expected": "No horizontal page overflow"
           }
-        ]
+        ],
+        "ready": "!!window.__qaRice?.current||!!window.__qaRiceError"
       },
       {
         "action": "document.querySelector('.chart-panel').scrollIntoView({block:'start',behavior:'instant'});",

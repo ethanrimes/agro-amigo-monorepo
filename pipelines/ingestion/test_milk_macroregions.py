@@ -198,7 +198,9 @@ class ChartDatabase(Database):
         self.readings, self.updates = readings, []
 
     def execute(self, sql, params=()):
-        if sql.startswith("SELECT document_id,source_locator,image_id"):
+        if "FROM source_ocr_task t WHERE t.status" in sql:
+            if params[2]:
+                return Result()
             return Result(many=[("doc", CHART.locator, "image", milk.KIND, 1)])
         if sql.startswith("SELECT result FROM source_ocr_result"):
             return Result(one=(self.readings[params[2]],))
@@ -301,7 +303,7 @@ class RealMilkMacroregionOriginals(unittest.TestCase):
                 milk._native_chart_reading(vector, chart)
 
     def test_existing_municipal_prices_remain_exactly_unchanged(self):
-        from .special_prices import parse_milk_pdf
+        from .special_prices import MILK_PDF_VERSION, parse_milk_pdf
 
         count = 0
         targets = json.loads((OLD / "replay-ready.json").read_text())
@@ -313,8 +315,16 @@ class RealMilkMacroregionOriginals(unittest.TestCase):
             current = list(
                 parse_milk_pdf(path.read_bytes(), date.fromisoformat(target["date"]))
             )
+            current = json.loads(json.dumps(current, default=str))
+            self.assertTrue(
+                all(row[0].endswith(f"; parser {MILK_PDF_VERSION}") for row in current)
+            )
+            for row in current:
+                row[0] = row[0].removesuffix(f"; parser {MILK_PDF_VERSION}")
+            for row in old:
+                row[0] = row[0].removesuffix("; parser milk-pdf-v7")
             self.assertEqual(
-                json.loads(json.dumps(current, default=str)), old, target["url"]
+                current, old, target["url"]
             )
             count += len(current)
         self.assertEqual(count, 3952)

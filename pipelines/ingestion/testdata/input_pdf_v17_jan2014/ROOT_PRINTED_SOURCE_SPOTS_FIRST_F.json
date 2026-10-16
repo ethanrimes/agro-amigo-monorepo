@@ -1,0 +1,178 @@
+{
+  "at": "2026-10-08T19:25:40.441683+00:00",
+  "kind": "Independent root physical original-PDF spots: printed cover month/year and page10/59 cells",
+  "original_sha256": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+  "monthly_anchor": "2014-01-31 is month-end anchor for printed Enero2014, not a literal printed31st date",
+  "spots": [
+    {
+      "source_locator": "PDF page 10,col 1,y 163.3; inputs-pdf-v14",
+      "series": "dane-inputs-pdf",
+      "observed_on": "2014-01-31",
+      "product_name": "Benzetacil LA",
+      "market_name": "Santa Rosa de Osos",
+      "unit": "6 M. U. I.",
+      "price": "14130.0",
+      "change_percent": "4.4",
+      "details": {
+        "ica": "",
+        "page": 10,
+        "brand": "",
+        "sheet": "pdf",
+        "category": "Antibióticos, antimicóticos y antiparasitarios",
+        "department": "Antioquia",
+        "municipality": "Santa Rosa de Osos",
+        "presentation": "6 M. U. I.",
+        "quality_issue": null,
+        "parser_version": "inputs-pdf-v14",
+        "printed_heading": "Benzetacil LA, 6 M. U. I.",
+        "printed_category": "Insumos pecuarios. Precios de antibióticos, antimicóticos y antiparasitarios (continuación)",
+        "extraction_method": "native-pdf-word-geometry",
+        "printed_heading_lines": [
+          "Benzetacil LA, 6 M. U. I."
+        ],
+        "printed_location_lines": [
+          "Santa Rosa de Osos (Antioquia)"
+        ]
+      },
+      "xmin": "926729"
+    },
+    {
+      "source_locator": "PDF page 10,col 1,y 187.3; inputs-pdf-v14",
+      "series": "dane-inputs-pdf",
+      "observed_on": "2014-01-31",
+      "product_name": "Benzetacil LA",
+      "market_name": "Cartago",
+      "unit": "9 M. U. I.",
+      "price": "21352.0",
+      "change_percent": "0.0",
+      "details": {
+        "ica": "",
+        "page": 10,
+        "brand": "",
+        "sheet": "pdf",
+        "category": "Antibióticos, antimicóticos y antiparasitarios",
+        "department": "Valle del Cauca",
+        "municipality": "Cartago",
+        "presentation": "9 M. U. I.",
+        "quality_issue": null,
+        "parser_version": "inputs-pdf-v14",
+        "printed_heading": "Benzetacil LA, 9 M. U. I.",
+        "printed_category": "Insumos pecuarios. Precios de antibióticos, antimicóticos y antiparasitarios (continuación)",
+        "extraction_method": "native-pdf-word-geometry",
+        "printed_heading_lines": [
+          "Benzetacil LA, 9 M. U. I."
+        ],
+        "printed_location_lines": [
+          "Cartago (Valle del Cauca)"
+        ]
+      },
+      "xmin": "926729"
+    },
+    {
+      "source_locator": "PDF page 59,col 1,y 163.3; inputs-pdf-v14",
+      "series": "dane-inputs-pdf",
+      "observed_on": "2014-01-31",
+      "product_name": "Nevera icopor poliestireno (19 litros)",
+      "market_name": "San Marcos",
+      "unit": "unidad",
+      "price": "8500.0",
+      "change_percent": "0.0",
+      "details": {
+        "ica": "",
+        "page": 59,
+        "brand": "",
+        "sheet": "pdf",
+        "category": "Empaques agropecuarios",
+        "department": "Sucre",
+        "municipality": "San Marcos",
+        "presentation": "unidad",
+        "quality_issue": null,
+        "parser_version": "inputs-pdf-v14",
+        "printed_heading": "Nevera icopor poliestireno (19 litros), unidad",
+        "printed_category": "Precios de empaques (conclusión)",
+        "extraction_method": "native-pdf-word-geometry",
+        "printed_heading_lines": [
+          "Nevera icopor poliestireno (19 litros),",
+          "unidad"
+        ],
+        "printed_location_lines": [
+          "San Marcos (Sucre)"
+        ]
+      },
+      "xmin": "926729"
+    },
+    {
+      "source_locator": "PDF page 59,col 1,y 171.3; inputs-pdf-v14",
+      "series": "dane-inputs-pdf",
+      "observed_on": "2014-01-31",
+      "product_name": "Nevera icopor poliestireno (19 litros)",
+      "market_name": "Sincelejo",
+      "unit": "unidad",
+      "price": "7167.0",
+      "change_percent": null,
+      "details": {
+        "ica": "",
+        "page": 59,
+        "brand": "",
+        "sheet": "pdf",
+        "category": "Empaques agropecuarios",
+        "department": "Sucre",
+        "municipality": "Sincelejo",
+        "presentation": "unidad",
+        "quality_issue": null,
+        "parser_version": "inputs-pdf-v14",
+        "printed_heading": "Nevera icopor poliestireno (19 litros), unidad",
+        "printed_category": "Precios de empaques (conclusión)",
+        "extraction_method": "native-pdf-word-geometry",
+        "printed_heading_lines": [
+          "Nevera icopor poliestireno (19 litros),",
+          "unidad"
+        ],
+        "printed_location_lines": [
+          "Sincelejo (Sucre)"
+        ]
+      },
+      "xmin": "926729"
+    },
+    {
+      "source_locator": "PDF page 59,col 1,y 211.3; inputs-pdf-v14",
+      "series": "dane-inputs-pdf",
+      "observed_on": "2014-01-31",
+      "product_name": "Nevera icopor poliestireno (25 litros)",
+      "market_name": "Magangué",
+      "unit": "unidad",
+      "price": "9750.0",
+      "change_percent": "0.0",
+      "details": {
+        "ica": "",
+        "page": 59,
+        "brand": "",
+        "sheet": "pdf",
+        "category": "Empaques agropecuarios",
+        "department": "Bolívar",
+        "municipality": "Magangué",
+        "presentation": "unidad",
+        "quality_issue": null,
+        "parser_version": "inputs-pdf-v14",
+        "printed_heading": "Nevera icopor poliestireno (25 litros), unidad",
+        "printed_category": "Precios de empaques (conclusión)",
+        "extraction_method": "native-pdf-word-geometry",
+        "printed_heading_lines": [
+          "Nevera icopor poliestireno (25 litros),",
+          "unidad"
+        ],
+        "printed_location_lines": [
+          "Magangué (Bolívar)"
+        ]
+      },
+      "xmin": "926729"
+    }
+  ],
+  "images": {
+    "rendered/page59.png": "2462240d141a277cc8fd36de199e8fc4b2ec872569cdd0bf053884f420e3ed77",
+    "rendered/page1.png": "39f62e688ddc49f334387c48538fa3d0103b78701ff7b92aa66a3c8023d8dcc8",
+    "rendered/page10.png": "e19795546054b12c8a7136fdead1d691d79e310f52e2933c6ac64e0c2770a0fa"
+  },
+  "source_ambiguity": "Page59 also literally prints metro for Nevera42litros; do not infer a per-container unit or silently correct raw evidence. Those rows are outside this five-spot acceptance.",
+  "limits": "Five printedsource spots plus full nativevector comparison are not an appUI or wholepipeline certificate."
+}

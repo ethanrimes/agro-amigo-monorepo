@@ -128,6 +128,69 @@ class FlowerIdentityTests(unittest.TestCase):
         with patch.object(src, "_pdf_parts", return_value=parts):
             return src.parse_miami_flowers(b"fixture")
 
+    def test_retained_september_8_original_semicolon_notice_preserves_prices(self):
+        body = (FIXTURES / "usda-miami-20260908-cb6f.pdf").read_bytes()
+        self.assertEqual(hashlib.sha256(body).hexdigest(),
+                         "cb6f7b8970d5fd3cd17660b90644a7f4f37a0d25f6a334a63a4f8659e60e247c")
+        rows = src.parse_miami_flowers(body)
+        self.assertEqual((len(rows),sum(row["price"] is not None for row in rows)), (67,67))
+        self.assertEqual({row["date"] for row in rows}, {date(2026,9,8)})
+        lavender = next(row for row in rows if row["source_locator"] ==
+                        "PDF page 1, col 2, text row 79-80, quote 1")
+        green = next(row for row in rows if row["source_locator"] ==
+                     "PDF page 1, col 2, text row 79-80, quote 3")
+        self.assertEqual((lavender["min"],lavender["max"]), (2.86,3.75))
+        self.assertEqual((green["min"],green["max"]), (2.86,3.75))
+        self.assertIn("Lavender 2.86-3.75",lavender["details"]["original_quote"])
+        self.assertFalse(any("Burgundy" in row["product_name"] for row in rows))
+
+    def test_semicolon_only_closes_exact_unpriced_notice(self):
+        rows = self.parse_lines([
+            "---CARNATIONS, MINIATURE:",
+            "Prices represent few spot market sales.",
+            "Assorted Colors",
+            "Burgundy supplies in too few hands to establish a market;",
+            "per stem Lavender 2.86-3.75",
+        ])
+        self.assertEqual(len(rows),1)
+        self.assertIn("Lavender",rows[0]["product_name"])
+        with self.assertRaisesRegex(ValueError,"no-quote notice continuation"):
+            self.parse_lines([
+                "---CARNATIONS, MINIATURE:",
+                "Prices represent few spot market sales.",
+                "Assorted Colors",
+                "Burgundy supplies in unverified hands market;",
+                "per stem Lavender 2.86-3.75",
+            ])
+
+    def test_august_18_verified_alternate_retains_three_decimal_review(self):
+        body = (FIXTURES / "usda-miami-20250818-d648.pdf").read_bytes()
+        self.assertEqual(hashlib.sha256(body).hexdigest(),src.MIAMI_AUG18_2025_ALT_SHA)
+        rows = src.parse_miami_flowers(body,src.USDA_MIAMI_AUG18_ALTERNATE)
+        self.assertEqual((len(rows),sum(row["price"] is not None for row in rows)), (59,58))
+        self.assertEqual({row["date"] for row in rows}, {date(2025,8,18)})
+        review = next(row for row in rows if row["price"] is None)
+        self.assertEqual(review["source_locator"],
+                         "PDF page 1, col 1, text row 38-39, quote 3")
+        self.assertEqual(review["details"]["literal_price_range"],"0.25-0.329")
+        self.assertIn("three-decimal",review["details"]["quality_issue"])
+        self.assertTrue(all(row["price"]>0 for row in rows if row is not review))
+
+    def test_august_18_alternate_changed_bytes_fail_before_any_price_publication(self):
+        body = (FIXTURES / "usda-miami-20250818-d648.pdf").read_bytes()
+        with self.assertRaisesRegex(ValueError, "alternate original bytes changed"):
+            src.parse(body + b"\nchanged-revision", src.USDA_MIAMI_AUG18_ALTERNATE,
+                      "international-usda-miami-flowers")
+
+    def test_august_18_alternate_registration_keeps_its_printed_date(self):
+        from . import official_sources
+
+        with patch("pipelines.ingestion.worker.queue") as queue:
+            official_sources._queue_source(None, src.USDA_MIAMI_AUG18_ALTERNATE,
+                                           "international-usda-miami-flowers")
+        queue.assert_called_once_with(None, src.USDA_MIAMI_AUG18_ALTERNATE,
+                                      "international-usda-miami-flowers", date(2025,8,18))
+
     def test_grade_size_inline_colors_and_page_continuation(self):
         rows = self.parse_lines(
             [
@@ -187,6 +250,83 @@ class FlowerIdentityTests(unittest.TestCase):
         self.assertEqual(rows[1]["details"]["variety"], "Assorted Colors; Lavender")
         self.assertIn("Burgundy", rows[1]["details"]["original_quote"])
         self.assertTrue(all("Burgundy" not in r["product_name"] for r in rows))
+
+    def test_live_miami_wrapped_unpriced_notices_preserve_neighbor_quotes(self):
+        # MH_FV221 on 28 Sep 2026 wraps LAST REPORT and several consecutive
+        # unpriced colors after a valid quote across physical text lines.
+        rows = self.parse_lines(
+            [
+                "---ANTIRRHINUM (SNAPDRAGON): DEMAND MODERATE.",
+                "Prices represent few spot market sales.",
+                "White",
+                "70 cm supplies insufficient and in too few hands to",
+                "establish a market. LAST REPORT.",
+                "Pink",
+                "per stem 0.28-0.32",
+            ]
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual((rows[0]["min"], rows[0]["max"]), (0.28, 0.32))
+        self.assertIn("Pink", rows[0]["product_name"])
+
+        lines = [
+            "---CHRYSANTHEMUM: DEMAND MODERATE.",
+            "Prices represent few spot market sales.",
+            "POMPOM - CUSHION TYPE Assorted Colors",
+            "per bunch 2.29-3.06 mostly 2.29-2.50 ; Yellow supplies in",
+            "too few hands to establish a market; Pink supplies in too few",
+            "hands to establish a market; Lavender supplies in too few",
+            "hands to establish a market",
+            "POMPOM - CUSHION TYPE White",
+            "per bunch 2.32-2.90",
+        ]
+        with patch.object(
+            src, "_pdf_parts",
+            return_value=(date(2026, 9, 28), [(line, 2, 1) for line in lines]),
+        ):
+            rows = src.parse_miami_flowers(b"fixture")
+        self.assertEqual(len(rows), 2)
+        self.assertEqual([(r["min"], r["max"]) for r in rows],
+                         [(2.29, 3.06), (2.32, 2.90)])
+        self.assertEqual((rows[0]["details"]["mostly_min"],
+                          rows[0]["details"]["mostly_max"]), (2.29, 2.50))
+        self.assertIn("Yellow supplies in\ntoo few hands", rows[0]["details"]["original_quote"])
+        self.assertEqual(rows[1]["details"]["variety"], "POMPOM - CUSHION TYPE White")
+
+        with self.assertRaisesRegex(ValueError, "quote qualifier continuation"):
+            self.parse_lines(
+                [
+                    "---CARNATIONS: DEMAND MODERATE.",
+                    "Prices represent few spot market sales.",
+                    "Assorted Colors",
+                    "per stem 0.28-0.32; Yellow supplies in",
+                    "per stem 0.40-0.50",
+                ]
+            )
+
+    def test_two_line_unpriced_color_stays_in_quote_evidence(self):
+        lines = [
+            "---CARNATIONS: DEMAND MODERATE.",
+            "Prices represent few spot market sales.",
+            "Assorted Colors",
+            "per stem 0.28-0.32; Yellow supplies in too few hands to",
+            "establish a market.",
+            "Orange",
+            "per stem 0.40-0.50",
+        ]
+        with patch.object(
+            src, "_pdf_parts",
+            return_value=(date(2026, 9, 28), [(line, 1, 1) for line in lines]),
+        ):
+            rows = src.parse_miami_flowers(b"fixture")
+        self.assertEqual(len(rows), 2)
+        self.assertEqual([(r["min"], r["max"]) for r in rows],
+                         [(0.28, 0.32), (0.40, 0.50)])
+        self.assertEqual(rows[0]["source_locator"],
+                         "PDF page 1, col 1, text row 4-5, quote 1")
+        self.assertIn("Yellow supplies in too few hands to\nestablish a market.",
+                      rows[0]["details"]["original_quote"])
+        self.assertEqual(rows[1]["details"]["variety"], "Orange")
 
     def test_explicit_unavailable_notices_and_first_report_are_not_prices(self):
         rows = self.parse_lines(

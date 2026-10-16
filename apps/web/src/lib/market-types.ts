@@ -2,6 +2,8 @@ export type Product = {
   id: string;
   name: string;
   category: string;
+  /** Explicit classifications of the selected city quote group, if present. */
+  category_paths?: string[][];
   image_key: string;
   price: number;
   previous_price: number | null;
@@ -33,8 +35,19 @@ export type MarketPrice = {
   units?: string;
   series?: string;
   source_page?: number;
+  source_units?: string | null;
 };
-export type Point = { date: string; price: number };
+export type HistorySource = {
+  source_input_id?: string;
+  source_name?: string;
+  document_id: string;
+  source_locator: string | null;
+  source_page: number | null;
+  market_id: string;
+  market_name: string;
+  source_units?: string | null;
+};
+export type Point = { observation_id?: string; date: string; price: number; sources?: HistorySource[] };
 export type Catalog = {
   products: Product[];
   regions: string[];
@@ -66,13 +79,20 @@ export const money = (value: number) =>
   }).format(value);
 export const number = (value: number) =>
   new Intl.NumberFormat("es-CO", { maximumFractionDigits: 1 }).format(value);
-export const dateLabel = (value: string, short = false) =>
+export const dateLabel = (value: string, short = false, includeYear = !short) =>
   new Date(value.slice(0, 10) + "T12:00:00Z").toLocaleDateString("es-CO", {
     day: "numeric",
     month: short ? "short" : "long",
-    year: short ? undefined : "numeric",
+    year: includeYear ? "numeric" : undefined,
     timeZone: "America/Bogota",
   });
+/** Search-only aliases; selection IDs and evidence dates stay in source ISO form. */
+export const dateSearchAliases = (value: string) => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(value);
+  if (!match) return `${value} ${dateLabel(value)}`;
+  const [, year, month, day] = match;
+  return `${value} ${dateLabel(value)} ${day}/${month}/${year} ${Number(day)}/${Number(month)}/${year}`;
+};
 export const change = (now: number, previous: number | null) =>
   previous && previous > 0 ? ((now - previous) / previous) * 100 : null;
 export const productImage = (key: string) =>

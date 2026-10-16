@@ -48,13 +48,8 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
   ).toHaveCount(0);
   const month = page.getByRole("combobox", { name: "Mes de consulta" });
   await expect(month).toBeEnabled();
-  const months = await month
-    .locator("option")
-    .evaluateAll((options) =>
-      options.map((option) => (option as HTMLOptionElement).value),
-    );
-  expect(months).toEqual(initial.history.map((entry) => entry.date).reverse());
-  await expect(month).toHaveValue(initial.selected_period!);
+  const months = initial.history.map((entry) => entry.date).reverse();
+  await expect(page.getByRole("group", { name: "Mes de consulta" })).toHaveAttribute("data-selected-value", initial.selected_period!);
   const historicalMonths = [2019, 2020].flatMap((year) =>
     Array.from(
       { length: 12 },
@@ -66,12 +61,13 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
 
   for (const selected of historicalMonths) {
     const response = supplyResponse(page, selected);
-    await month.selectOption(selected);
+    await month.fill(selected);
+    await page.getByRole("option", { name: new RegExp(selected) }).click();
     const body = await readSupply(await response);
     expect(body.selected_period).toBe(selected);
     expect(body.rows.length).toBeGreaterThan(0);
     await expect(month).toBeEnabled();
-    await expect(month).toHaveValue(selected);
+    await expect(page.getByRole("group", { name: "Mes de consulta" })).toHaveAttribute("data-selected-value", selected);
     await expect(page.locator(".supply-summary")).toBeVisible();
     const kg = body.rows.reduce((sum, row) => sum + row.quantity_kg, 0);
     expect(kg).toBeCloseTo(
@@ -89,7 +85,7 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
       page.locator('.supply-bars button[aria-pressed="true"]'),
     ).toHaveAccessibleName(`${monthLabel(selected)}: ${tonnes(kg)} toneladas`);
 
-    // Compare every displayed product row with the response to the UI's own request.
+    // Compare the bounded overview with the response to the UI's own request.
     const displayed = await page
       .locator(".supply-list > article")
       .evaluateAll((articles) =>
@@ -102,8 +98,9 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
           source: article.querySelector(".evidence-link")?.getAttribute("href"),
         })),
       );
-    expect(displayed).toHaveLength(body.rows.length);
-    for (const [index, row] of body.rows.entries()) {
+    const overview = [...body.rows].sort((a, b) => b.quantity_kg - a.quantity_kg).slice(0, 6);
+    expect(displayed).toHaveLength(overview.length);
+    for (const [index, row] of overview.entries()) {
       expect(row.period_start).toBe(selected);
       expect(displayed[index].name).toBe(row.food_name);
       expect(displayed[index].quantity).toBe(`${tonnes(row.quantity_kg)} t`);
@@ -123,7 +120,7 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
     const sourceResponse = await request.get(`/api${displayed[0].source}`);
     expect(sourceResponse.ok()).toBeTruthy();
     const source = await sourceResponse.json();
-    const row = body.rows[0];
+    const row = overview[0];
     expect(source.id).toBe(row.document_id);
     expect(Number(source.bytes)).toBeGreaterThan(0);
     expect(source.records).toHaveLength(1);
@@ -142,6 +139,20 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
     expect(Object.keys(source.records[0].source_rows).length).toBeGreaterThan(
       0,
     );
+
+    // A distant source outside the overview remains reachable in every selected month.
+    if (body.rows.length > 6) {
+      const selector = page.getByRole("group", { name: "Consultar llegada reportada", exact: true });
+      const distant = [...body.rows].sort((a, b) => b.quantity_kg - a.quantity_kg).at(-1)!;
+      await selector.getByRole("combobox").fill(`${distant.food_name} · ${distant.market_name}`);
+      await selector.getByRole("option", { name: new RegExp(distant.food_name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) }).click();
+      const extra = page.locator(".supply-list > article").filter({ hasText: distant.food_name });
+      await expect(extra).toContainText(`${tonnes(distant.quantity_kg)} t`);
+      await expect(extra.getByRole("link", { name: "Comprobar cantidad", exact: true })).toHaveAttribute("href", new RegExp(`/evidence/${distant.document_id}\\?`));
+      await expect(page.locator(".supply-list > article")).toHaveCount(7);
+      await selector.getByRole("button", { name: "Quitar selección", exact: true }).click();
+      await expect(page.locator(".supply-list > article")).toHaveCount(6);
+    }
     validated.push({
       month: selected,
       rows: body.rows.length,
@@ -160,7 +171,7 @@ test("one month selector reaches all retained 2019/2020 supply with matching tot
       const panel = element.closest("section")!;
       const style = getComputedStyle(panel);
       return {
-        field: element.getBoundingClientRect().width,
+        field: element.closest(".search-combo")!.getBoundingClientRect().width,
         available:
           panel.clientWidth -
           parseFloat(style.paddingLeft) -
@@ -191,10 +202,11 @@ test("supply retries a failed selected historical month without adding a history
   await page.route("**/api/explore/supply?**", (route) =>
     route.fulfill({ status: 503, json: { error: "Prueba de recuperación" } }),
   );
-  await month.selectOption(selected);
+  await month.fill(selected);
+    await page.getByRole("option", { name: new RegExp(selected) }).click();
   const error = page.locator("main [role=alert]");
   await expect(error).toContainText("Prueba de recuperación");
-  await expect(month).toHaveValue(selected);
+  await expect(page.getByRole("group", { name: "Mes de consulta" })).toHaveAttribute("data-selected-value", selected);
   await expect(
     page.getByRole("combobox", { name: "Historial de abastecimiento" }),
   ).toHaveCount(0);
@@ -206,5 +218,5 @@ test("supply retries a failed selected historical month without adding a history
   await expect(page.locator(".supply-summary h2")).toHaveText(
     `${tonnes(body.rows.reduce((sum, row) => sum + row.quantity_kg, 0))} toneladas`,
   );
-  await expect(month).toHaveValue(selected);
+  await expect(page.getByRole("group", { name: "Mes de consulta" })).toHaveAttribute("data-selected-value", selected);
 });

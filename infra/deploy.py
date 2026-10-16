@@ -1,6 +1,7 @@
 """Deploy the checked standalone build, exclude credentials and verify the new release."""
 
 import json
+import secrets
 import sys
 import time
 import urllib.request
@@ -56,7 +57,7 @@ def deploy():
     configure_app(
         "webapp",
         APP,
-        {"DATABASE_URL": connection, "SOURCE_STORAGE_ACCOUNT": "agroamigodata9a04", "SOURCE_WORKBOOK_API_URL": "https://agroamigo-data-9a04.azurewebsites.net"},
+        {"DATABASE_URL": connection, "SOURCE_STORAGE_ACCOUNT": "agroamigodata9a04", "SOURCE_WORKBOOK_API_URL": "https://agroamigo-data-9a04.azurewebsites.net", "BUG_REPORT_RATE_SECRET": secrets.token_urlsafe(48)},
         {
             "NODE_ENV": "production",
             "HOSTNAME": "0.0.0.0",

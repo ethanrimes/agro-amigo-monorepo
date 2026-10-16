@@ -2,13 +2,52 @@
 
 import io
 import re
+import time
+import unicodedata
 from hashlib import sha256
 
 import pdfplumber
 from psycopg.types.json import Jsonb
 
 VERSION = "pdf-text-tables-v1"
-INPUT_PDF_VERSION = "inputs-pdf-v11"
+
+
+def check_run_budget():
+    from .worker import RUN_DEADLINE
+    from .resumable_inputs import WorkDeferred
+    deadline = RUN_DEADLINE.get()
+    if deadline is not None and time.monotonic() >= deadline:
+        raise WorkDeferred("PDF page checkpoint retained; extraction will resume within the next run budget")
+INPUT_PDF_VERSION = "inputs-pdf-v14"
+GENERIC_DEPARTMENT_FOLD_VERSION = "inputs-pdf-v17"
+
+
+def _unique_known_input_department(label):
+    """A whole validated department after case/accent fold, never a guess."""
+    from .special_prices import DEPARTMENTS
+
+    def folded(text):
+        return "".join(
+            char for char in unicodedata.normalize("NFKD", text)
+            if not unicodedata.combining(char)
+        ).casefold()
+
+    canonical = {}
+    for name in DEPARTMENTS:
+        key = folded(name)
+        if key in canonical and canonical[key] != name:
+            raise ValueError("Validated input departments collide after case/accent fold")
+        canonical[key] = name
+    return canonical.get(folded(label))
+
+
+def _input_department_is_known(label, resolver=None):
+    """Always run an active resolver, including exact spellings, to catch collisions."""
+    if resolver is not None:
+        return resolver(label) is not None
+    from .special_prices import DEPARTMENTS
+
+    return label in DEPARTMENTS
 MIXED_FEB2018_INPUT_URL = (
     "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/"
     "Bol_Insumos_feb_2018.pdf"
@@ -23,7 +62,7 @@ MIXED_FEB2018_REVIEW_NOTE = (
 
 # A price mention elsewhere on a page is not evidence that a city matrix is
 # monetary: modern monthly bulletins contain almost identical percentage grids.
-PRICE_GRID_VERSIONS = {False: "daily-pdf-v5", True: "monthly-pdf-v4"}
+PRICE_GRID_VERSIONS = {False: "daily-pdf-v6", True: "monthly-pdf-v5"}
 _MONEY_KG = re.compile(
     r"precio(?:s)?\s*(?:\(\s*)?(?:\$|cop|pesos)\s*(?:/|por)\s*(?:kg|kilogramo(?:s)?)",
     re.IGNORECASE,
@@ -48,6 +87,34 @@ def price_grid_header(table, market_row):
     return header if _MONEY_KG.search(header) else None
 
 
+def daily_price_variation(table, market_row, row, col):
+    """Read only the literal Var% beside this headed daily monetary cell."""
+    from .worker import clean
+
+    if market_row + 1 >= len(table):
+        return None, {}
+    subheaders = table[market_row + 1]
+    if col + 1 >= len(subheaders) or col + 1 >= len(row):
+        return None, {}
+    if clean(subheaders[col]).lower() != "precio" or not re.fullmatch(
+        r"var(?:iaci[oó]n)?\s*%", clean(subheaders[col + 1]).lower()
+    ):
+        return None, {}
+    if col + 1 < len(table[market_row]) and clean(table[market_row][col + 1]):
+        return None, {}
+    literal = clean(row[col + 1])
+    details = {
+        "variation_basis": "printed-daily-var-percent",
+        "change_percent_literal": literal,
+    }
+    if literal.lower() in {"", "-", "n.d.", "n.d", "nd"}:
+        return None, details
+    if not re.fullmatch(r"[+-]?\d+(?:[.,]\d+)?\s*%?", literal):
+        details["change_percent_review"] = "Unrecognized printed daily Var% cell"
+        return None, details
+    return float(literal.rstrip("%").strip().replace(",", ".")), details
+
+
 def price_grid_evidence(page, table, table_no, market_row, day, monthly):
     """Verify unit and printed reference period before accepting numeric cells."""
     from .worker import MONTH_NUM, SourceDateMismatch, date_from_text
@@ -62,17 +129,15 @@ def price_grid_evidence(page, table, table_no, market_row, day, monthly):
         native = page.find_tables()
         if table_no <= len(native):
             bounds = native[table_no - 1].bbox
-            caption = (
-                page.crop(
-                    (
-                        bounds[0],
-                        max(page.bbox[1], bounds[1] - 130),
-                        bounds[2],
-                        bounds[1],
-                    )
-                ).extract_text()
-                or ""
-            )
+            # Some older DANE slides contain table geometry beyond the PDF
+            # canvas. Clip the caption to actual page coordinates instead of
+            # failing the entire retained document on pdfplumber's strict crop.
+            left = max(page.bbox[0], bounds[0])
+            top = max(page.bbox[1], bounds[1] - 130)
+            right = min(page.bbox[2], bounds[2])
+            bottom = min(page.bbox[3], bounds[1])
+            if left < right and top < bottom:
+                caption = page.crop((left, top, right, bottom)).extract_text() or ""
             # Keep only the nearest table caption when more than one is visible.
             headings = list(
                 re.finditer(r"(?:Cuadro|Anexo)\s+\d+", caption, re.IGNORECASE)
@@ -190,14 +255,20 @@ class VerifiedPDFPage:
 def verified_page(db, page, did, kind, number):
     """Use cached independent readings or queue this failed page, not its peers."""
     from .ocr import VERSION as OCR_VERSION
-    from .ocr import compare_readings, enqueue_image
+    from .ocr import compare_city_price_readings, compare_readings, enqueue_image
 
     readings = db.execute(
         """SELECT r.result FROM source_ocr_task t JOIN source_ocr_result r ON r.image_id=t.image_id
         WHERE t.document_id=%s AND t.source_page=%s AND r.version=%s ORDER BY r.reading""",
         (did, number, OCR_VERSION),
     ).fetchall()
-    if len(readings) == 2 and compare_readings(readings[0][0], readings[1][0]):
+    agreed = len(readings) == 2 and (
+        compare_city_price_readings(
+            readings[0][0], readings[1][0],
+            native_heading=page.pdf.pages[0].extract_text() or None,
+        ) if kind == "city-pdf" else compare_readings(readings[0][0], readings[1][0])
+    )
+    if agreed:
         return VerifiedPDFPage(readings[0][0])
     enqueue_image(
         db,
@@ -225,8 +296,11 @@ def _blank_repeated_stationery(page, text):
         return False
 
     def marginal(image):
-        return image["bottom"] - image["top"] <= page.height * 0.10 and (
-            image["bottom"] <= page.height * 0.10 or image["top"] >= page.height * 0.90
+        # The 2014-17 DANE daily stationery header extends to about 10.8%
+        # of a blank final leaf. Exact image bytes and placement must still
+        # match a nearby readable page before skipping it.
+        return image["bottom"] - image["top"] <= page.height * 0.12 and (
+            image["bottom"] <= page.height * 0.12 or image["top"] >= page.height * 0.90
         )
 
     if not all(marginal(image) for image in page.images):
@@ -251,10 +325,98 @@ def _blank_repeated_stationery(page, text):
     return bool(earlier) and all(signature(image) in earlier for image in page.images)
 
 
+# These exact image streams were independently rendered and checked in 43
+# official PDFs: DANE logos, campaign/social closing slides and section art.
+# A new image, monetary text, or a corrupt heading never receives this exemption.
+VERIFIED_DECORATIVE_IMAGE_SHA256 = frozenset({
+    # Rendered February 18, 2019 daily PDF pp4-5: exact fruit/tuber section
+    # artwork, no monetary grid. Unknown full-page scans still require OCR.
+    '5863f18041a7eed718cef551a819f2bf50ecdc08c69726681dea44ee896da3ce',
+    '8b10815133e6a3c2e1f46cd25e327fc2ec5e99afaa61e7bc92a2c8a8e2d2ef56',
+    '049bc80becd49f1adaefc45a2475ef64e3f33ef855083d19dbcbf4b7554fb759',
+    '0cd2f9e3d582b4436cf0608562c5e82d2999a68c7a37bec63dd161dd261823c7',
+    '14e6965e0ad60dce001c00650bfe0a18c8899688afb875fd709014a083f5f167',
+    '19daa52cf0e46df1eb0b8beb6b9dec519cdb111029b21ae9bace2113142fe8a5',
+    '1b9114c9a3052419c369df648174d5a387244bc63654dc69f4691892fdaafefb',
+    '1bdaca45d2c41cda94c8b10ef3b47870f5b9df609139c9638d502abc3073df7d',
+    '1bdee5d41950cc25797a4cc77c75c5cb044d2cfe011f197a79793d71e27de99a',
+    '1c02886c7ba1ccfd803ceecd229b1fc6b9e5e9f2d740972fa6b90672c34e9077',
+    '1efdda8c2c97d9c34f5dd88fc225514e9b53f2afacaaddc3240978123f3a8d76',
+    '20bcf952752099f268433255b781d771ce2b223ab62fc017efb1405fface0829',
+    '22c55af230fdb55cb9794ca85cf06724f617dc83604d48ab5ddfdd99d9054d1f',
+    '2b3574fdc0ccb3e3a1d0f89b8359b8bdd8aa48ad0fb36efce198c25491007f9d',
+    '353abd768419c8ab2590092b61c5885f42faf2f191b293f196d3909dd9d24219',
+    '37575ddf7fecc6e78e5949c79030d6a43f64943069e9d050baf2490fdfd4089a',
+    '3874b0af127ed81b62ed7f7337cb05e4911e7952f9e722c056852742673364f0',
+    '3ee4cf01a37cb6f8fb6cce96d6c1dc2cb941e9e001c7cedc4ab29d8983a4df92',
+    '484eea7beab0ddf61977dbc84eb796655e384cbaf174860e103d563086043586',
+    '48c505cb503d7839591372e96d460c6af7fb94a183d6efd69fd68d4ce12f66d3',
+    '4b6c0a17d50a43dfb7442188d6ae41cdedc960d1c369a37dc783ac52f81f2bc6',
+    '4d94a254798e5072aaa5cfc7d9d4e3f0ad467065d8f3d373a93338affc8bb22c',
+    '4daae72db4737f623324ae3e58d7d8af7b25a877fc467c3f5f1f773d51d06c67',
+    '4dd676bd9a8e90f1a50fe9bf968ce8ff19dd2667873da73d5691778b26951645',
+    '4e4bf8f0240d9f1cf7ba986c2269ad30e17eb9abf90d488ea6c899fc390b9572',
+    '61611bff011254ee8e0f218128555556acdc8ff30be73f60e7b2e11df823109f',
+    '69629dd004538f9c0f6103b9b91bc585d2f9b6655c20b73f660f7b45410c0d10',
+    '6cf4ebd7d891abb7d2e46c464bc84a683ece55ce398a010894ed001b868f38d2',
+    '6ec6992cd83803f82cba81f72f6cf27a0d996f2aeadeca0e5d143c09e13d414c',
+    '7292c3fbbc2f108ac823b9757efdb6b63a174895a00f1a4150315afc3b4419a1',
+    '84e65c4b940ff4b1d9c072151333dc3ed17dc267f5aa6e86c1ed40a293230faa',
+    '85d91f518e473b3acaf299357f04199c4e937b2f205209a3b41367b3140ea0a8',
+    '87ba6d12874c0373d79a8bca69893e67c91411ea3fc9e8cb89b18357e0d8bd62',
+    '8979a7f09461b1e013f462ca5a868ca5f9ca96fe37c9b46fb6fc958ab04fd1eb',
+    '8ba24eb1900e971dc0a0b619a54f7c74dec1931bf1868ad440f1560d7f04e8a3',
+    '8d00e4fd36ae4abb2f49bc06bff3dfb64a0884db26598390a3f0b060a4c61024',
+    '8f4ba18659cddf80f5008140606103a611fe3e90d7bf22985cd701e42f10d323',
+    '9035b91aee5493c2c2f2dcce273f46ad7328ffb13417db789be6b2b3f6980300',
+    '930f1828ea03cc740b9a635885c1e1d8f78dca50b1061d2a660e1095bed37a37',
+    '9463924c822f93719001bb2959f49ff029e67f6e59800698f8b66030718fd0b4',
+    '9503694fc73f7e99320d529388f6107b20eed692f843edf2f7d14dfc3a23c9e5',
+    '9b5033886d4eb6917fc9109af632bee2f4933a5906a476360006d399515d1ef0',
+    '9e94b18544af64181ad1200cdfdc073937f15758179cf5fd8eb83d1571fb2531',
+    'a4d6588ae08c2e975994e6dfd831c256292ce37e80ff7f843dcc05dcc2a3a5e4',
+    'a65718641b02f3b898a2d71d6b85ef4b32d609a163e581eb21a6b4bc7265d65e',
+    'b0aacc18ca3fa365e07e5a447f505ccbc7019ace8f0f76ea007275520760de4b',
+    'b364f66773dcc132e19f5a8db5445edf843bd9f6c8534ab4cefbb388c8d2f3e0',
+    'b3e8e1457f27720fb5d00fe64da6a87e924e9512ab29cab1456bb87f0376a210',
+    'bcaa6947f46be9049946018f8f4bf52fb612ced9d8c65a61575ba4727ed592eb',
+    'c21a62dc17f67ef6175a26a268401a99a5d358580e46286733588d1e6b027e36',
+    'c82d3dafb934427695c1a13c51ad1befb81dd3d699ef6fe806c6e9976ed7e63c',
+    'c9fc7632ac53b85609ad316526d5ce49fd52f4cc6b1452baa523136ce787989c',
+    'd6c4d00bf1ca38c04d790f5efb9ef4cef4505f39ad477a22b4fbb701f079b603',
+    'e878c00714aed67d43213b12f7e9941fcf213164aa7df941beed9b1dcbd02e37',
+    'eacbbb4174f4b3f42a8596e56f8391d5e87811530b651bbebad2f885193f32f2',
+    'fa8c20c5b7f69bd78ccb3f7e0e8462f3926dd793ba88454b11b544afa408b88a',
+    'fc4eeeb83f6d07126a75990b238d4f5c043abd332154a052755626455b0f5650',
+})
+_DECORATIVE_NATIVE_HEADINGS = frozenset({
+    "", "comunicado de prensa", "verduras y hortalizas",
+    "variación 12 meses", "comparación ipc", "comparación ipc e ipp",
+})
+
+
+def _verified_decorative_page(page, text):
+    """Recognize only verified artwork with a fully readable known heading."""
+    if " ".join(text.split()).casefold() not in _DECORATIVE_NATIVE_HEADINGS:
+        return False
+    if not page.images:
+        return False
+    try:
+        return all(
+            sha256(image["stream"].get_data()).hexdigest()
+            in VERIFIED_DECORATIVE_IMAGE_SHA256
+            for image in page.images
+        )
+    except (KeyError, TypeError, AttributeError, ValueError):
+        return False
+
+
 def native_price_page_failure(page, text, native_prices, previous_price_grid=False):
     """The shared native-first decision for parsing and old queued PDF pages."""
     from .ocr import needs_ocr
 
+    if _verified_decorative_page(page, text):
+        return False
     if _blank_repeated_stationery(page, text):
         return False
     # Some presentation dividers have fewer than 20 readable characters and
@@ -330,6 +492,7 @@ def parse_archived_price_pdf(db, data, did, day, kind):
         pending = []
         previous_price_grid = False
         for number, page in enumerate(pages, 1):
+            check_run_budget()
             text = page.extract_text() or ""
             native_prices = list(
                 parse_pdf_pages([page], day, monthly, allow_empty=True)
@@ -400,6 +563,7 @@ def extract_pages(db, data, did):
     count = 0
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for number, page in enumerate(pdf.pages, 1):
+            check_run_budget()
             if number not in cached_pages:
                 db.execute(
                     """INSERT INTO source_pdf_page(document_id,page,text_content,tables,extraction_version)
@@ -533,7 +697,8 @@ def _input_ruled_left(page, header_bottom, left, right, price_left):
     return candidates[0]
 
 
-def _input_wrapped_department(lines, index, price_left, numeric, percentage):
+def _input_wrapped_department(lines, index, price_left, numeric, percentage,
+                              *, department_resolver=None):
     """Bind only an adjacent explicit parenthesized department to its price row.
 
     Some tables put a municipality and its numeric cells on one line, then the
@@ -599,15 +764,83 @@ def _input_wrapped_department(lines, index, price_left, numeric, percentage):
         # The publisher twice omits the opening parenthesis on a separately
         # printed, otherwise literal department. Its full name is required.
         department = re.fullmatch(r"([^()]+)\)", suffix)
-        if department and department[1] in DEPARTMENTS:
+        if department and _input_department_is_known(department[1], department_resolver):
             combined = location + " (" + suffix
             match = re.fullmatch(r"(.+?)\s*\(([^)]+)\)", combined)
-    if not match or match[2] not in DEPARTMENTS:
+    if not match or not _input_department_is_known(match[2], department_resolver):
         return None
     return combined, price, variation, [location, suffix]
 
 
-def _input_location_prefix(previous, words, price_left):
+def _input_displaced_location(lines, index, price_left, percentage,
+                              *, department_resolver=None):
+    """Read a native municipality printed after the prior row's numeric cells.
+
+    Two 2015 originals place the next municipality after a touching price and
+    percentage. Require both complete native rows, an explicit department,
+    adjacent baselines and aligned price boxes; no OCR or inferred place text.
+    """
+    from .special_prices import DEPARTMENTS
+    from .worker import clean
+
+    if not percentage:
+        return None
+    for first in (index, index - 1):
+        if first < 0 or first + 1 >= len(lines):
+            continue
+        _, prior = lines[first]
+        _, current = lines[first + 1]
+        if not prior or not current or any(_input_heading_word(w) for w in prior + current):
+            continue
+        left = [w for w in prior if w["x0"] < price_left]
+        cells = [w for w in prior if w["x0"] >= price_left]
+        suffix = [w for w in current if w["x0"] < price_left]
+        next_cells = [w for w in current if w["x0"] >= price_left]
+        if not left or not suffix or len(cells) < 3 or len(next_cells) != 2:
+            continue
+        previous_place = clean(_input_line_text(left))
+        complete_place = re.fullmatch(r"(.+?)\s*\(([^)]+)\)", previous_place)
+        department_line = clean(_input_line_text(suffix))
+        department = re.fullmatch(r"\(([^)]+)\)", department_line)
+        name_words = cells[2:]
+        name = clean(_input_line_text(name_words))
+        price, variation = cells[:2]
+        if (
+            not complete_place or not _input_department_is_known(complete_place[2], department_resolver)
+            or not department or not _input_department_is_known(department[1], department_resolver)
+            or not re.fullmatch(r"[A-Za-zÀ-ÿ]+(?: [A-Za-zÀ-ÿ]+)*", name)
+            or max(w["x1"] for w in left + suffix) >= price_left
+            or abs(left[0]["x0"] - suffix[0]["x0"]) > 2
+            or not -1 <= current[0]["top"] - max(w["bottom"] for w in prior) <= 5
+            or abs(price["x1"] - next_cells[0]["x1"]) > 2
+            or not -0.1 <= variation["x0"] - price["x1"] <= 0.5
+            or not 0 <= name_words[0]["x0"] - variation["x1"] <= 5
+            or any(not re.fullmatch(r"\d{1,3}(?:\.\d{3})+", w["text"])
+                   for w in (price, next_cells[0]))
+            or any(not re.fullmatch(r"[-+]?\d+(?:,\d+)?", w["text"])
+                   for w in (variation, next_cells[1]))
+        ):
+            continue
+        first_row = index == first
+        location = previous_place if first_row else name + " " + department_line
+        numbers = cells[:2] if first_row else next_cells
+        return {
+            "line": location + " " + " ".join(w["text"] for w in numbers),
+            "location_lines": [previous_place] if first_row else [name, department_line],
+            "evidence": {
+                "method": "native-displaced-municipality",
+                "municipality": name,
+                "department": department[1],
+                "preceding_printed_line": clean(_input_line_text(prior)),
+                "following_printed_line": clean(_input_line_text(current)),
+                "municipality_bbox": [name_words[0]["x0"], name_words[0]["top"],
+                                      name_words[-1]["x1"], name_words[-1]["bottom"]],
+            },
+        }
+    return None
+
+
+def _input_location_prefix(previous, words, price_left, *, department_resolver=None):
     """Recover an adjacent, visibly wrapped municipality without guessing names.
 
     A grammatical connector or a complete parenthesized department permits
@@ -627,7 +860,9 @@ def _input_location_prefix(previous, words, price_left):
         r"\(([^)]+)\)\s*\*?",
         _input_line_text([w for w in words if w["x0"] < price_left]).strip(),
     )
-    explicit_department = bool(department and department[1] in DEPARTMENTS)
+    explicit_department = bool(
+        department and _input_department_is_known(department[1], department_resolver)
+    )
     if (
         len(prefix) > 80
         or not re.fullmatch(
@@ -676,7 +911,36 @@ def _input_continuation_review(current, previous):
     return previous.get("continuation_review")
 
 
-def parse_input_pdf(data, day, *, last_page=None):
+def _input_pdf_place(location, *, department_resolver=None):
+    """Bind a printed municipality to an actual named department.
+
+    The publisher may append the literal table marker `(continuación)` after
+    an already complete place. Remove only that terminal marker; retain the
+    printed line separately in `printed_location_lines`.
+    """
+    from .special_prices import DEPARTMENTS
+    from .worker import clean
+
+    original = clean(location)
+    suffix = re.fullmatch(r"(.+?\([^)]+\))\s*\(continuaci[oó]n\)\s*\*?", original, re.IGNORECASE)
+    candidate = suffix[1] if suffix else original
+    place = re.fullmatch(r"(.*?)\s*\(([^)]+)\)\s*\*?", candidate)
+    if place:
+        municipality, department = map(clean, place.groups())
+        if department_resolver is not None:
+            canonical = department_resolver(department)
+            if canonical is not None:
+                return municipality, canonical, bool(suffix)
+            return None
+        if department in DEPARTMENTS:
+            return municipality, department, bool(suffix)
+        return None
+    if re.fullmatch(r"Bogot[aá],?\s*D\.?\s*C\.?\s*\*?", candidate):
+        return "Bogotá, D.C.", "Bogotá, D.C.", False
+    return None
+
+
+def parse_input_pdf(data, day, *, last_page=None, parser_version=None):
     """Read each dated two-column table, including layouts without variation.
 
     Table-local titles/date stamps avoid borrowing the date of an unrelated chart
@@ -684,9 +948,32 @@ def parse_input_pdf(data, day, *, last_page=None):
     """
     from .worker import MONTH_NUM, SourceDateMismatch, clean, record
 
+    version = parser_version or INPUT_PDF_VERSION
+    if not re.fullmatch(r"inputs-pdf-v[0-9]+", version):
+        raise ValueError("Unsupported input PDF parser version")
+    department_resolver = None
+    if int(version.rsplit("v", 1)[1]) > 14:
+        from .reviewed_wuxal_apr2015 import DAY as APR_DAY, SHA256 as APR_SHA, VERSION as APR_VERSION
+        from .reviewed_quindio_sep2014 import (
+            DAY as SEP_DAY, SHA256 as SEP_SHA, VERSION as SEP_VERSION,
+            canonical_department,
+        )
+
+        digest = sha256(data).hexdigest()
+        if version == APR_VERSION and day == APR_DAY and digest == APR_SHA:
+            pass
+        elif version == SEP_VERSION and day == SEP_DAY and digest == SEP_SHA:
+            department_resolver = canonical_department
+        elif version == GENERIC_DEPARTMENT_FOLD_VERSION:
+            department_resolver = _unique_known_input_department
+        else:
+            raise ValueError("Input PDF revision requires the exact reviewed original and date")
+
     last_row_heading = None
+    exact_wuxal_continuation = sha256(data).hexdigest() == "cb2289b8dad52378bc04a9787c7560a93a1feccfd47c64a41e010a33a499f5ab"
     with pdfplumber.open(io.BytesIO(data)) as pdf:
         for page_no, page in enumerate(pdf.pages, 1):
+            check_run_budget()
             if last_page is not None and page_no > last_page:
                 break
             text = page.extract_text() or ""
@@ -802,6 +1089,15 @@ def parse_input_pdf(data, day, *, last_page=None):
                         r"(?:Cuadro|Tabla)\s+\d+\.\s+", prefix[: stamp.start()]
                     )[-1]
                     category = input_category(title)
+                    irrigation = bool(
+                        re.search(
+                            r"Precios del agua en los distritos de riego",
+                            title,
+                            re.IGNORECASE,
+                        )
+                    )
+                    if irrigation:
+                        category = "Servicios agrícolas"
                     table_numbers = re.findall(r"(?:Cuadro|Tabla)\s+(\d+)\.", prefix)
                     table_key = (
                         table_numbers[-1] if table_numbers else None,
@@ -843,9 +1139,74 @@ def parse_input_pdf(data, day, *, last_page=None):
                     for line_no, (top, ws) in enumerate(lines, 1):
                         ws.sort(key=lambda w: w["x0"])
                         line = clean(_input_line_text(ws))
+                        if irrigation:
+                            # This table prints the irrigation district between
+                            # the municipality and price. The apparent variation
+                            # header has no variation cells in its body.
+                            if all(_input_heading_word(w) for w in ws):
+                                heading = line
+                                heading_lines = [line]
+                                continue
+                            water = re.fullmatch(
+                                r"(.+?\([^)]+\))\s+(.+?)\s+(\d[\d.,]*)",
+                                line,
+                            )
+                            if water:
+                                place = re.fullmatch(r"(.+?)\s*\(([^)]+)\)", water[1])
+                                if not place or not heading or not water[2].strip():
+                                    raise ValueError(
+                                        f"Input PDF irrigation row lacks printed identity: page {page_no}, col {col}, line {line_no}"
+                                    )
+                                municipality, department = map(clean, place.groups())
+                                value = float(water[3].replace(".", "").replace(",", "."))
+                                if value <= 0:
+                                    raise ValueError(
+                                        f"Input PDF irrigation price is not positive: page {page_no}, col {col}, line {line_no}"
+                                    )
+                                table_rows += 1
+                                yield record(
+                                    "dane-inputs-pdf",
+                                    day,
+                                    clean(water[2]),
+                                    municipality,
+                                    heading,
+                                    value,
+                                    f"PDF page {page_no},col {col},y {top:.1f}; {version}",
+                                    None,
+                                    {
+                                        "sheet": "pdf",
+                                        "parser_version": version,
+                                        "extraction_method": "native-pdf-word-geometry",
+                                        "printed_category": clean(title),
+                                        "category": category,
+                                        "presentation": heading,
+                                        "brand": "",
+                                        "ica": "",
+                                        "department": department,
+                                        "municipality": municipality,
+                                        "page": page_no,
+                                        "printed_heading": heading,
+                                        "printed_heading_lines": heading_lines.copy(),
+                                        "printed_irrigation_district": clean(water[2]),
+                                        "quality_issue": None,
+                                    },
+                                )
+                                continue
+                            if re.match(r"^.+?\([^)]+\)\s+", line):
+                                raise ValueError(
+                                    f"Input PDF irrigation row cannot be verified: page {page_no}, col {col}, line {line_no}"
+                                )
+                            continue
+                        displaced = _input_displaced_location(
+                            lines, line_no - 1, price_left, bool(percentage_headers),
+                            department_resolver=department_resolver,
+                        )
+                        if displaced:
+                            line = displaced["line"]
                         preceding_line = last_line
                         location_prefix = _input_location_prefix(
-                            preceding_line, ws, price_left
+                            preceding_line, ws, price_left,
+                            department_resolver=department_resolver,
                         )
                         location_lines = (
                             preceding_line[2] + [line] if location_prefix else [line]
@@ -883,6 +1244,7 @@ def parse_input_pdf(data, day, *, last_page=None):
                             price_left,
                             numeric,
                             bool(percentage_headers),
+                            department_resolver=department_resolver,
                         )
                         if wrapped:
                             location, price, variation, wrapped_location_lines = wrapped
@@ -901,21 +1263,19 @@ def parse_input_pdf(data, day, *, last_page=None):
                         ):
                             location, price = numeric.group(1, 2)
                             printed_location_lines = (
-                                wrapped_location_lines if wrapped else [location]
+                                wrapped_location_lines if wrapped else
+                                displaced["location_lines"] if displaced else [location]
                             )
                             if location_prefix and not wrapped:
                                 printed_location_lines = preceding_line[2] + [location]
                                 location = location_prefix + " " + location
                             variation = numeric[3] if percentage_headers else "n.d."
-                            place = re.match(r"^(.*?)\s*\(([^)]+)\)\s*\*?$", location)
-                            if place:
-                                municipality, department = map(clean, place.groups())
-                            elif re.fullmatch(
-                                r"Bogot[aá],?\s*D\.?\s*C\.?\s*\*?", location
-                            ):
-                                municipality = department = "Bogotá, D.C."
-                            else:
+                            place = _input_pdf_place(
+                                location, department_resolver=department_resolver
+                            )
+                            if place is None:
                                 continue
+                            municipality, department, location_suffix = place
                             if not heading and not unresolved:
                                 raise ValueError(
                                     f"Input PDF price without product/presentation: page {page_no}, col {col}, line {line_no}"
@@ -1001,11 +1361,11 @@ def parse_input_pdf(data, day, *, last_page=None):
                                 municipality,
                                 presentation,
                                 value,
-                                f"PDF page {page_no},col {col},y {top:.1f}; {INPUT_PDF_VERSION}",
+                                f"PDF page {page_no},col {col},y {top:.1f}; {version}",
                                 change,
                                 {
                                     "sheet": "pdf",
-                                    "parser_version": INPUT_PDF_VERSION,
+                                    "parser_version": version,
                                     "extraction_method": "native-pdf-word-geometry",
                                     "printed_category": clean(title),
                                     "category": category,
@@ -1015,9 +1375,16 @@ def parse_input_pdf(data, day, *, last_page=None):
                                     "department": department,
                                     "municipality": municipality,
                                     "printed_location_lines": printed_location_lines,
+                                    **({"printed_location_suffix": "(continuación)"} if location_suffix else {}),
+                                    **({"location_recovery": displaced["evidence"]} if displaced else {}),
                                     "page": page_no,
                                     "printed_heading": heading,
                                     "printed_heading_lines": heading_lines.copy(),
+                                    **({"printed_heading_suffix": "(continaución)",
+                                        "source_heading_literal": "Wuxal Tapa Negra, 1 litro (continaución)"}
+                                       if exact_wuxal_continuation and page_no == 20 and col == 1
+                                       and abs(top - 158.3) < 0.6 and name == "Wuxal Tapa Negra"
+                                       and presentation == "1 litro" else {}),
                                     **(
                                         {
                                             "printed_table_caption": stamp[0],
@@ -1082,7 +1449,7 @@ def parse_input_pdf(data, day, *, last_page=None):
                                     line,
                                     re.IGNORECASE,
                                 )
-                            )
+                            ) or (exact_wuxal_continuation and line.strip() == "(continaución)")
                             literal_heading_lines = (
                                 literal_heading_lines + [line]
                                 if previous_heading
@@ -1101,6 +1468,8 @@ def parse_input_pdf(data, day, *, last_page=None):
                                 line,
                                 flags=re.IGNORECASE,
                             ).strip()
+                            if exact_wuxal_continuation and line == "(continaución)":
+                                line = ""
                             if line:
                                 heading_lines = (
                                     heading_lines + [line]

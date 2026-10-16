@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 from psycopg.types.json import Jsonb
 
-from . import official_sources, worker
+from . import international_sources, official_sources, worker
 from . import retained_replays as replay
 
 KIND = "international-usda-boston-flowers"
@@ -52,11 +52,17 @@ class RetainedReplayTests(unittest.TestCase):
         self.assertNotIn("historical_price", sql)
         self.assertIn("d.source_url=a.url", sql)
         self.assertIn("d.retrieved_at<current.retrieved_at", sql)
-        self.assertIn("c.processor_version=v.processor_version", sql)
+        self.assertIn("ELSE v.processor_version END", sql)
         self.assertIn("'official:complete'", sql)
         self.assertNotIn("FROM official_price_quote", sql)
         self.assertIn("LIMIT %s", sql)
         self.assertEqual(params[-1], 2)
+
+    def test_only_exact_september_usda_original_escapes_old_review_version(self):
+        sql, _ = replay.candidate_query([("international-usda-miami-flowers", "v11")], 2, 3600)
+        self.assertEqual(sql.count(replay.USDA_SEMICOLON_REPLAY_DOCUMENT), 2)
+        self.assertEqual(sql.count(replay.USDA_SEMICOLON_REPLAY_SUFFIX), 2)
+        self.assertIn("a.kind='international-usda-miami-flowers'", sql)
 
     def test_zero_budget_or_disabled_drain_does_no_database_work(self):
         db = MagicMock()
@@ -160,6 +166,8 @@ class RetainedReplayPostgresTests(unittest.TestCase):
             "ingestion_asset",
             "official_price_quote",
             "official_source_review",
+            "official_catalog_current",
+            "retained_record",
         ):
             self.db.execute(
                 f"CREATE TEMP TABLE {table} (LIKE public.{table} INCLUDING ALL)"
@@ -303,6 +311,67 @@ class RetainedReplayPostgresTests(unittest.TestCase):
         self.assertTrue(
             any(row[:3] == (did, self.version, replay.COMPLETE) for row in self.steps())
         )
+
+    def test_exact_usda_semicolon_review_replays_once_without_family_upgrade(self):
+        kind = "international-usda-miami-flowers"
+        url = international_sources.USDA_MIAMI
+        current = self.add_document(b"new mutable pointer", "2026-09-28", kind, url)
+        old = self.add_document(
+            (FIXTURES / "usda-miami-20260908-cb6f.pdf").read_bytes(),
+            "2026-09-08", kind, url,
+        )
+        self.assertEqual(old, replay.USDA_SEMICOLON_REPLAY_DOCUMENT)
+        self.db.execute(
+            "INSERT INTO ingestion_asset(url,kind,document_id,status) VALUES(%s,%s,%s,'complete')",
+            (url, kind, current),
+        )
+        prior = worker.parser_version(kind)
+        self.db.execute(
+            "INSERT INTO ingestion_checkpoint(document_id,processor_version,step) VALUES(%s,%s,%s)",
+            (old, prior, replay.REVIEW),
+        )
+        result = replay.drain(self.db)
+        self.assertEqual((result["completed"], result["rows"], result["errors"]), (1, 67, []))
+        self.assertEqual(replay.drain(self.db)["selected"], 0)
+        self.assertEqual(
+            self.db.execute("SELECT count(*) FROM official_price_quote WHERE document_id=%s", (old,)).fetchone()[0],
+            67,
+        )
+        self.assertEqual(
+            self.db.execute("SELECT document_id FROM ingestion_asset WHERE url=%s", (url,)).fetchone()[0],
+            current,
+        )
+        self.assertIn(
+            (old, prior + replay.USDA_SEMICOLON_REPLAY_SUFFIX, replay.COMPLETE, 67),
+            self.steps(),
+        )
+
+    def test_aug18_old_404_retires_only_after_exact_new_original_is_complete(self):
+        kind = "international-usda-miami-flowers"
+        old_url = international_sources.USDA_MIAMI_AUG18_BROKEN
+        new_url = international_sources.USDA_MIAMI_AUG18_ALTERNATE
+        self.db.execute(
+            "INSERT INTO ingestion_asset(url,kind,status,records,error) VALUES(%s,%s,'failed',0,'HTTPError: 404 original link')",
+            (old_url, kind),
+        )
+        self.assertFalse(international_sources.retire_verified_aug18_404(self.db))
+        body = (FIXTURES / "usda-miami-20250818-d648.pdf").read_bytes()
+        did = self.add_document(body, "2025-08-18", kind, new_url)
+        self.assertEqual(did, international_sources.MIAMI_AUG18_2025_ALT_SHA)
+        self.assertEqual(official_sources.process(self.db, body, did, new_url, kind), 58)
+        self.db.execute(
+            "INSERT INTO ingestion_asset(url,kind,document_id,status,observed_on,records) "
+            "VALUES(%s,%s,%s,'complete',DATE '2025-08-18',58)",
+            (new_url, kind, did),
+        )
+        self.assertTrue(international_sources.retire_verified_aug18_404(self.db))
+        self.assertFalse(international_sources.retire_verified_aug18_404(self.db))
+        self.assertEqual(
+            self.db.execute("SELECT status,document_id,records,error FROM ingestion_asset WHERE url=%s", (old_url,)).fetchone()[:3],
+            ("review", None, 0),
+        )
+        self.assertEqual(self.db.execute("SELECT count(*) FROM official_price_quote WHERE document_id=%s", (did,)).fetchone()[0],58)
+        self.assertEqual(self.db.execute("SELECT count(*) FROM retained_record WHERE table_name='usda_verified_broken_link'").fetchone()[0],1)
 
 
 if __name__ == "__main__":

@@ -116,7 +116,7 @@ export default function Home() {
       </div>
       <div className="home-sections">
         {sections.map(({ href, label, detail, photo, icon: Icon }) => (
-          <Link key={href} href={href} className="home-section">
+          <Link key={href} href={href} className="home-section" prefetch={false}>
             <SectionPhoto src={photo} icon={Icon} />
             <div>
               <Icon />
@@ -129,7 +129,7 @@ export default function Home() {
           </Link>
         ))}
       </div>
-      <Link href="/farm" className="farm-invitation">
+      <Link href="/farm" className="farm-invitation" prefetch={false}>
         <span className="farm-invitation-icon">
           <IoLeafOutline />
         </span>
@@ -145,6 +145,7 @@ export default function Home() {
         title="Productos para consultar"
         href="/products"
         link="Ver todos"
+        prefetch={false}
       />
       {catalog.loading ? (
         <LoadingCards />
@@ -153,7 +154,7 @@ export default function Home() {
       ) : (
         <div className="product-grid">
           {catalog.data?.products.slice(0, 4).map((p) => (
-            <ProductCard key={catalogIdentity(p)} product={p} />
+            <ProductCard key={catalogIdentity(p)} product={p} prefetch={false} />
           ))}
         </div>
       )}

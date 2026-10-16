@@ -1,6 +1,18 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type { PDFDocumentProxy, RenderTask } from "pdfjs-dist";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { pdfCanvasBackingRatio } from "./pdf-canvas-sizing";
+type PageIdentity = {
+  id: string; initialPage: number; pdf: PDFDocumentProxy;
+  page: number; zoom: number; width: number; revision: number;
+};
+type ReadyPage = PageIdentity & { text: string };
+function samePage(a: PageIdentity | null, b: PageIdentity | null): boolean {
+  return Boolean(a && b && a.id === b.id && a.initialPage === b.initialPage &&
+    a.pdf === b.pdf && a.page === b.page && a.zoom === b.zoom &&
+    a.width === b.width && a.revision === b.revision);
+}
 export function PdfViewer({
   id,
   initialPage = 1,
@@ -11,15 +23,37 @@ export function PdfViewer({
   const host = useRef<HTMLDivElement>(null),
     canvas = useRef<HTMLCanvasElement>(null),
     render = useRef<RenderTask | null>(null);
-  const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null),
-    [page, setPage] = useState(initialPage),
-    [zoom, setZoom] = useState(1),
-    [width, setWidth] = useState(600),
-    [loading, setLoading] = useState(true),
-    [error, setError] = useState(""),
-    [text, setText] = useState("");
+  const [loaded, setLoaded] = useState<{ id: string; initialPage: number; pdf: PDFDocumentProxy } | null>(null),
+    [view, setView] = useState({ page: initialPage, zoom: 1, width: 600, revision: 0 }),
+    [ready, setReady] = useState<ReadyPage | null>(null),
+    [pageFailure, setPageFailure] = useState<(PageIdentity & { message: string }) | null>(null),
+    [documentFailure, setDocumentFailure] = useState<{ id: string; initialPage: number; message: string } | null>(null);
+  const { page, zoom, width, revision } = view;
+  const setPage = (next: number | ((page: number) => number)) => setView((previous) => {
+    const page = typeof next === "function" ? next(previous.page) : next;
+    return page === previous.page ? previous : { ...previous, page, revision: previous.revision + 1 };
+  });
+  const setZoom = (zoom: number) => setView((previous) =>
+    zoom === previous.zoom ? previous : { ...previous, zoom, revision: previous.revision + 1 });
+  const setWidth = (width: number) => setView((previous) =>
+    width === previous.width ? previous : { ...previous, width, revision: previous.revision + 1 });
+  const pdf = loaded?.id === id && loaded.initialPage === initialPage ? loaded.pdf : null;
+  const selectedPage = pdf ? page : initialPage;
+  const selected: PageIdentity | null = pdf ? { id, initialPage, pdf, page: selectedPage, zoom, width, revision } : null;
+  // State from the preceding page or document must never certify the selected
+  // canvas during the commit before its new render effect starts.
+  const rendered = samePage(ready, selected);
+  const error = samePage(pageFailure, selected) ? pageFailure!.message :
+    documentFailure?.id === id && documentFailure.initialPage === initialPage
+      ? documentFailure.message : "";
+  const loading = !rendered && !error;
+  const text = rendered ? ready!.text : "";
   useEffect(() => {
     let live = true;
+    setLoaded(null);
+    setReady(null);
+    setPageFailure(null);
+    setDocumentFailure(null);
     let task: ReturnType<
       typeof import("pdfjs-dist/legacy/build/pdf.mjs").getDocument
     > | null = null;
@@ -38,16 +72,15 @@ export function PdfViewer({
       })
       .then((value) => {
         if (value && live) {
-          setPdf(value);
+          setLoaded({ id, initialPage, pdf: value });
           setPage(Math.max(1, Math.min(initialPage, value.numPages)));
+          setDocumentFailure(null);
         }
       })
       .catch(() => {
         if (live) {
-          setError(
-            "No pudimos mostrar el PDF. Puedes descargar el documento original.",
-          );
-          setLoading(false);
+          setDocumentFailure({ id, initialPage,
+            message: "No pudimos mostrar el PDF. Puedes descargar el documento original." });
         }
       });
     return () => {
@@ -67,18 +100,21 @@ export function PdfViewer({
   useEffect(() => {
     if (!pdf) return;
     let active = true;
-    setLoading(true);
-    setText("");
+    const identity: PageIdentity = { id, initialPage, pdf, page: selectedPage, zoom, width, revision };
     const old = render.current;
     old?.cancel();
     (async () => {
       await old?.promise.catch(() => {});
-      const p = await pdf.getPage(page);
+      const p = await pdf.getPage(selectedPage);
       if (!active || !canvas.current) return;
       const base = p.getViewport({ scale: 1 }),
         scale = (Math.min(width, 1000) / base.width) * zoom,
         viewport = p.getViewport({ scale }),
-        ratio = Math.min(window.devicePixelRatio || 1, 2);
+        ratio = pdfCanvasBackingRatio({
+          width: viewport.width, height: viewport.height,
+          devicePixelRatio: window.devicePixelRatio,
+          userAgent: window.navigator.userAgent,
+        });
       const el = canvas.current;
       el.width = Math.floor(viewport.width * ratio);
       el.height = Math.floor(viewport.height * ratio);
@@ -108,52 +144,46 @@ export function PdfViewer({
         reader.releaseLock();
       }
       if (active) {
-        setText(items.map((item) => ("str" in item ? item.str : "")).join(" "));
-        setLoading(false);
-        setError("");
+        setReady({ ...identity, text: items.map((item) => ("str" in item ? item.str : "")).join(" ") });
+        setPageFailure(null);
       }
     })().catch((e) => {
       if (active && e.name !== "RenderingCancelledException") {
         console.error("PDF page rendering failed", e);
-        setError(
-          "No pudimos mostrar esta página. Descarga el PDF para consultarlo.",
-        );
-        setLoading(false);
+        setPageFailure({ ...identity,
+          message: "No pudimos mostrar esta página. Descarga el PDF para consultarlo." });
       }
     });
     return () => {
       active = false;
       render.current?.cancel();
     };
-  }, [pdf, page, zoom, width]);
+  }, [id, initialPage, pdf, selectedPage, zoom, width, revision]);
   return (
     <section className="pdf-viewer" aria-label="Visor del documento original">
       <div className="pdf-toolbar">
         <button
           className="button secondary"
-          disabled={!pdf || page <= 1}
+          disabled={!pdf || selectedPage <= 1}
           onClick={() => setPage((p) => p - 1)}
         >
           ← Anterior
         </button>
-        <label>
-          Página{" "}
-          <select
-            aria-label="Página del documento"
-            value={page}
-            onChange={(e) => setPage(+e.target.value)}
-          >
-            {Array.from({ length: pdf?.numPages || 1 }, (_, i) => (
-              <option key={i} value={i + 1}>
-                {i + 1}
-              </option>
-            ))}
-          </select>{" "}
-          de {pdf?.numPages || "…"}
-        </label>
+        <SearchableSelect
+          label="Página del documento"
+          value={String(selectedPage)}
+          options={Array.from({ length: pdf?.numPages || 0 }, (_, i) => ({
+            id: String(i + 1), label: String(i + 1), detail: `de ${pdf?.numPages}`, searchText: String(i + 1),
+          }))}
+          onChange={(value) => { if (value) setPage(Number(value)); }}
+          selectedLabel={`${selectedPage} de ${pdf?.numPages || "…"}`}
+          placeholder="Busca el número de página"
+          loading={!pdf}
+          allowClear={false}
+        />
         <button
           className="button secondary"
-          disabled={!pdf || page >= pdf.numPages}
+          disabled={!pdf || selectedPage >= pdf.numPages}
           onClick={() => setPage((p) => p + 1)}
         >
           Siguiente →
@@ -173,7 +203,7 @@ export function PdfViewer({
       </div>
       {loading && !error && (
         <p role="status" className="pdf-status">
-          Cargando página del documento…
+          Cargando página {selectedPage} del documento…
         </p>
       )}
       {error && (
@@ -186,14 +216,14 @@ export function PdfViewer({
           <nav className="pdf-pages" aria-label="Miniaturas de páginas">
             {Array.from(
               { length: Math.min(5, pdf.numPages) },
-              (_, i) => Math.max(1, Math.min(page - 2, pdf.numPages - 4)) + i,
+              (_, i) => Math.max(1, Math.min(selectedPage - 2, pdf.numPages - 4)) + i,
             ).map((n) => (
               <button
                 type="button"
                 key={n}
-                className={page === n ? "selected" : ""}
+                className={selectedPage === n ? "selected" : ""}
                 aria-label={"Ir a página " + n}
-                aria-current={page === n ? "page" : undefined}
+                aria-current={selectedPage === n ? "page" : undefined}
                 onClick={() => setPage(n)}
               >
                 <PdfThumbnail pdf={pdf} page={n} />
@@ -205,8 +235,10 @@ export function PdfViewer({
         <div className="pdf-paper" ref={host}>
           <canvas
             ref={canvas}
-            aria-label={"Página " + page + " del PDF"}
-            data-rendered={!loading && !error ? "true" : "false"}
+            aria-label={"Página " + selectedPage + " del PDF"}
+            aria-busy={loading}
+            data-rendered={rendered && !error ? "true" : "false"}
+            style={{ visibility: rendered && !error ? "visible" : "hidden" }}
           />
         </div>
       </div>

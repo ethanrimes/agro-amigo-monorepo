@@ -44,6 +44,11 @@ MISSING_DAILY_URLS = {
 }
 VERIFIED_DATE_CONFLICTS = {
     "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/"
+    "mayoristas_enero_18_2016.xls": (
+        date(2016, 1, 18),
+        "fe66e1d1a39637d81bde11325ba60f8ef8c12a96fdf779f5c6ab7f3586d83e2c",
+    ),
+    "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/"
     "mayoristas_julio_06_2012.xls": (
         date(2012, 7, 6),
         "e4ef45aa4c396d3aab17db715a07f7e5cb1b16afaf825539e4031b8b5c45d221",

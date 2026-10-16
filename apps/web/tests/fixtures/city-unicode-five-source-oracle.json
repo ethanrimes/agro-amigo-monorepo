@@ -1,0 +1,45 @@
+{
+  "source_review_sha256": "4dbc5ea63a10d948fdb0ae0d76cb32da2c4d6b5eef9f5643ad6e326a5fb018b9",
+  "documents": [
+    {
+      "id": "b2e3895cbd78b10c12ea922ef7b70a3511bd88cbd656e552d5b9c66bd1f61c10",
+      "parent_sha256": "313261d5fe9d15b554c2bd758c1b7f45bf448c2b60656e37c39d23664c536f22",
+      "parent_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-19-12-2020.zip",
+      "raw_entry": "Ibague∩, Plaza La 21-19-12-2020 (1).pdf",
+      "display_filename": "Ibagué, Plaza La 21-19-12-2020 (1).pdf",
+      "published_rows": 59
+    },
+    {
+      "id": "4dc73a1d7464f11b707b4ca78127d6f5ac6c3e42f419afbae7af4765e056f270",
+      "parent_sha256": "41407c2d09fe4334ff96fa141422f17a31daa3e82bba1da842570635060c6098",
+      "parent_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-20-06-2020.zip",
+      "raw_entry": "Bogota∩, D.C., Corabastos-20-06-2020.pdf",
+      "display_filename": "Bogotá, D.C., Corabastos-20-06-2020.pdf",
+      "published_rows": 164
+    },
+    {
+      "id": "a9100de6e7d72a3aadc13c2331faa1ce49f19ee9f61bd181fb23d3ae97860ad7",
+      "parent_sha256": "62213d654ea536b9ded3ea999ec3c8e38d798d7a1a03ff630d4c0fa829a6b725",
+      "parent_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-01-05-2020.zip",
+      "raw_entry": "Bogota∩, D.C., Corabastos-01-05-2020.pdf",
+      "display_filename": "Bogotá, D.C., Corabastos-01-05-2020.pdf",
+      "published_rows": 216
+    },
+    {
+      "id": "4aa6ff456c539f9bac8695dee8c575a20f07db5cd7f51bfe682f69c524dcd12b",
+      "parent_sha256": "62213d654ea536b9ded3ea999ec3c8e38d798d7a1a03ff630d4c0fa829a6b725",
+      "parent_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-01-05-2020.zip",
+      "raw_entry": "Cu∩cuta, Cenabastos-01-05-2020.pdf",
+      "display_filename": "Cúcuta, Cenabastos-01-05-2020.pdf",
+      "published_rows": 136
+    },
+    {
+      "id": "7024d5b0a8572a852cedd41efbe596de6dc99fa430697559945c09babfdddd60",
+      "parent_sha256": "62213d654ea536b9ded3ea999ec3c8e38d798d7a1a03ff630d4c0fa829a6b725",
+      "parent_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-01-05-2020.zip",
+      "raw_entry": "Monteri∩a, Mercado del Sur-01-05-2020.pdf",
+      "display_filename": "Montería, Mercado del Sur-01-05-2020.pdf",
+      "published_rows": 49
+    }
+  ]
+}

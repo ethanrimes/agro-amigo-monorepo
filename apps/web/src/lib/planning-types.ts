@@ -182,6 +182,17 @@ export type InputPrice = {
   observed_on: string;
   document_id: string;
   source_locator: string;
+  source_input_id?: string;
+  source_name?: string;
+  identity_conflict?: boolean;
+  identity_conflict_quotes?: {
+    price?: number;
+    observed_on?: string;
+    document_id?: string;
+    source_locator?: string;
+    source_input_id?: string;
+    source_name?: string;
+  }[];
 };
 export type Evidence = {
   id: string;
@@ -198,6 +209,12 @@ export type Evidence = {
   parents: { id: string; title: string }[];
   text?: string;
   records?: Record<string, unknown>[];
+};
+export type VariationDisagreementSource = {
+  label: string;
+  document_id: string;
+  page: number;
+  locator: string;
 };
 export type Offer = {
   id: string;

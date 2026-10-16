@@ -38,7 +38,7 @@ class VerifiedDailyFilenameTests(unittest.TestCase):
                 for n, _, d in SOURCES
             ],
         )
-        self.assertEqual(worker.parser_version("daily-index"), "source-v5")
+        self.assertEqual(worker.parser_version("daily-index"), "source-v6")
 
     def test_no_general_typo_guess_or_external_url(self):
         for url in [

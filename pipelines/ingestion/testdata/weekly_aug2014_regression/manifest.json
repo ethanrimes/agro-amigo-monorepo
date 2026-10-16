@@ -1,0 +1,54 @@
+{
+  "description": "Independent full-row vectors captured from the pre-change v24 parser; four adjacent retained source originals.",
+  "parser_version": "dane-weekly-v24",
+  "cases": [
+    {
+      "source_sha256": "a79ad2236b4d867ea1d9a440b094876a2366f3df2fb4d1c5746dcda4d7cae2a8",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_12jul_18jul_2014.pdf",
+      "row_count": 4511,
+      "priced_rows": 4267,
+      "review_rows": 244,
+      "period": {
+        "2014-07-18": 4511
+      },
+      "fixture": "a79ad2236b4d867ea1d9a440b094876a2366f3df2fb4d1c5746dcda4d7cae2a8.jsonl.gz",
+      "fixture_sha256": "4268b885e50a3945ec69653a36cde560f34f2ff63425f657886ae1b3a9bb1b5a"
+    },
+    {
+      "source_sha256": "a4936e0fd62f5a85b7b4ed836d0595b4676f163d94592d749e1af29b63ac0cea",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_19jul_25jul_2014.pdf",
+      "row_count": 4508,
+      "priced_rows": 4262,
+      "review_rows": 246,
+      "period": {
+        "2014-07-25": 4508
+      },
+      "fixture": "a4936e0fd62f5a85b7b4ed836d0595b4676f163d94592d749e1af29b63ac0cea.jsonl.gz",
+      "fixture_sha256": "ce05c83594453f5e8caba1fae45300149d1973f881c649e17ca7dd9ce65b1b28"
+    },
+    {
+      "source_sha256": "64edb766cfee3c040dc1f8b7f389e9c0c1cb553cad4b71c9fad9ee9ff6812697",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_26jul_1ago_2014.pdf",
+      "row_count": 4541,
+      "priced_rows": 4349,
+      "review_rows": 192,
+      "period": {
+        "2014-08-01": 4541
+      },
+      "fixture": "64edb766cfee3c040dc1f8b7f389e9c0c1cb553cad4b71c9fad9ee9ff6812697.jsonl.gz",
+      "fixture_sha256": "9f2c0c496039450a3e65ebf68bfd5b87e1e51163d7159e338417454b2d0e2746"
+    },
+    {
+      "source_sha256": "6a3f8f62b67a3a3d1d294760859fbeb084c2af9630e2f5d3ac2a898efd7d8d2b",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_2ago_8ago_2014.pdf",
+      "row_count": 4511,
+      "priced_rows": 4265,
+      "review_rows": 246,
+      "period": {
+        "2014-08-08": 4511
+      },
+      "fixture": "6a3f8f62b67a3a3d1d294760859fbeb084c2af9630e2f5d3ac2a898efd7d8d2b.jsonl.gz",
+      "fixture_sha256": "186dbcfab9d16579ea5572b3468e87119b9c7cd9051b917dc164d118e5c3718a"
+    }
+  ]
+}

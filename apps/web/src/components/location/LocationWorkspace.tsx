@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   IoMapOutline,
   IoLocateOutline,
@@ -8,6 +8,7 @@ import {
 import { useFarm } from "@/components/planning/FarmContext";
 import { useData } from "@/components/marketplace/useData";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { CropOptions } from "@/components/planning/CropOptions";
 import type { Municipality, FarmData } from "@/lib/planning-types";
@@ -39,7 +40,9 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
     [query, setQuery] = useState(""),
     [message, setMessage] = useState(""),
     [gps, setGps] = useState(false),
-    [crops, setCrops] = useState(false);
+    [crops, setCrops] = useState(false),
+    [manualLatitude, setManualLatitude] = useState(""),
+    [manualLongitude, setManualLongitude] = useState("");
   const live = useRef(true);
   useEffect(() => {
     live.current = true;
@@ -47,6 +50,11 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
       live.current = false;
     };
   }, []);
+  useEffect(() => {
+    if (!location.point) return;
+    setManualLatitude(location.point.latitude.toFixed(6));
+    setManualLongitude(location.point.longitude.toFixed(6));
+  }, [location.point?.latitude, location.point?.longitude]);
   const save = (next: SavedLocation) => {
     let selectedId = next.farmId || farmId || context.activeFarm?.id || "";
     const existing = context.farms.find((f) => f.id === selectedId);
@@ -156,10 +164,33 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
     }
     setQuery("");
     save({ ...location, point, name, method, accuracy });
+    if (method === "manual") {
+      setManualLatitude(point.latitude.toFixed(6));
+      setManualLongitude(point.longitude.toFixed(6));
+    }
     setFocus({ ...point });
     setMessage(
       "Ubicación exacta guardada en tu finca. El municipio solo aporta referencias agrícolas; mover el mapa o cambiar esa referencia no mueve tu pin.",
     );
+  };
+  const saveManualPin = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const decimal = /^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)$/;
+    const latitudeText = manualLatitude.trim();
+    const longitudeText = manualLongitude.trim();
+    if (!decimal.test(latitudeText) || !decimal.test(longitudeText)) {
+      setMessage("Ingresa una latitud y una longitud numéricas.");
+      return;
+    }
+    const point = {
+      latitude: Number(latitudeText.replace(",", ".")),
+      longitude: Number(longitudeText.replace(",", ".")),
+    };
+    if (!Number.isFinite(point.latitude) || !Number.isFinite(point.longitude)) {
+      setMessage("Ingresa una latitud y una longitud válidas.");
+      return;
+    }
+    setPin(point, "manual");
   };
   const locate = () => {
     if (!navigator.geolocation) {
@@ -293,6 +324,42 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           municipio o un lugar en el mapa, acercarte y tocar el punto de tu
           finca.
         </p>
+        <details className="location-manual-coordinates">
+          <summary>Ingresar coordenadas exactas</summary>
+          <form onSubmit={saveManualPin}>
+            <label>
+              Latitud
+              <input
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                value={manualLatitude}
+                onChange={(event) => setManualLatitude(event.target.value)}
+                placeholder="1.912345"
+                aria-label="Latitud de mi finca"
+              />
+            </label>
+            <label>
+              Longitud
+              <input
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                value={manualLongitude}
+                onChange={(event) => setManualLongitude(event.target.value)}
+                placeholder="-76.123456"
+                aria-label="Longitud de mi finca"
+              />
+            </label>
+            <button className="button secondary" type="submit">
+              Guardar coordenadas
+            </button>
+          </form>
+          <small>
+            Usa grados decimales dentro de Colombia. El pin guardado se muestra
+            con seis decimales y las capas del mapa se consultan en ese punto.
+          </small>
+        </details>
         <div className="location-search">
           <label>
             {location.point
@@ -336,12 +403,25 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
           )}
         </div>
         {context.farms.length > 0 && (
-          <label className="legacy-locations">
-            Finca guardada
-            <select
+          <div className="legacy-locations">
+            <SearchableSelect
+              label="Finca guardada"
               value={location.farmId || ""}
-              onChange={(e) => {
-                const f = context.farms.find((f) => f.id === e.target.value);
+              selectedLabel={location.name}
+              options={context.farms.map((f) => {
+                const municipality = places.data?.find(
+                  (place) => place.id === f.profile.municipalityId,
+                );
+                return {
+                  id: f.id,
+                  label: f.profile.name,
+                  detail: municipality
+                    ? `${municipality.name}, ${municipality.department}`
+                    : f.profile.municipalityId || "",
+                };
+              })}
+              onChange={(farmId) => {
+                const f = context.farms.find((f) => f.id === farmId);
                 if (!f) return;
                 const point = hasPin(f.profile)
                   ? {
@@ -365,15 +445,10 @@ export function LocationWorkspace({ farmId }: { farmId?: string }) {
                   "Ubicación anterior cargada. Tus registros de cultivos y presupuestos previos siguen conservados en este dispositivo.",
                 );
               }}
-            >
-              <option value="">Elige una ubicación guardada</option>
-              {context.farms.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.profile.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              emptyLabel="Elige una ubicación guardada"
+              allowClear={false}
+            />
+          </div>
         )}
       </section>
       {context.storageError && (
