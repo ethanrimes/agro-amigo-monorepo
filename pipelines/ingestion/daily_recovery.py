@@ -612,6 +612,21 @@ VERIFIED_DATE_RECOVERIES = {
             {'product':'Arveja verde en vaina','market':'Cali, Cavasa','price_cell':'H7','variation_cell':'I7','price_cop_per_kg':2683,'variation_percent':30.89,'pdf_page':1},
             {'product':'Pimentón','market':'Manizales','price_cell':'L15','variation_cell':'M15','price_cop_per_kg':1350,'variation_percent':-36.47,'pdf_page':1},
         ]},
+    'c8d59b0c713dcf74d256f9d2ea49c1f73170fbf9f9770138cf3a335a64e2b9a6': {
+        'archive_date': '2020-02-03', 'observation_date': '2020-02-03',
+        'printed_heading': 'Lunes 3 de febrero de 2019', 'basis': 'native_year_typo',
+        'source_url_required': 'https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_febrero_03_2020.xlsx',
+        'archive_url': 'https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/sistema-de-informacion-de-precios-sipsa/componente-precios-mayoristas-febrero-de-2020',
+        'archive_label': '03 de febrero de 2020',
+        'corroborating_url': 'https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_febrero_03_2020.pdf',
+        'corroborating_sha256': '22063f57fe4146f6c7685cd496a9d5a0663d0b6d4c290ff4623b40bb5c991be4',
+        'corroborating_locator': 'Official February archive links this exact workbook on 03 February 2020. Companion PDF page 1 visibly prints 3 de febrero de 2020 and VERDURAS Y HORTALIZAS; three Habichuela price and variation witnesses match the native workbook.',
+        'corroborating_cells': [
+            {'product':'Habichuela','market':'Pereira, Mercasa','price_cell':'T12','variation_cell':'U12','price_cop_per_kg':3900,'variation_percent':98.98,'pdf_page':1},
+            {'product':'Habichuela','market':'Barranquilla','price_cell':'D12','variation_cell':'E12','price_cop_per_kg':2925,'variation_percent':71.43,'pdf_page':1},
+            {'product':'Habichuela','market':'Armenia, Mercar','price_cell':'B12','variation_cell':'C12','price_cop_per_kg':2453,'variation_percent':37.31,'pdf_page':1},
+        ],
+    },
 }
 
 

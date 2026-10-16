@@ -241,6 +241,8 @@ PRIORITY_SOURCE_REPAIRS = (
     ('https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_enero_14_2020.xlsx', 'daily', '872320bb98111d27365140203675f28bfbaf8856d437d977aee87de53ddfd5fb'),
     ('https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_enero_15_2020.xlsx', 'daily', 'd0eea326eb44186c3ac0be8796da460897d9b78cee3f5f885784cc42d2353219'),
     ('https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_enero_16_2020.xlsx', 'daily', '83885449eb25388a124efeed3fa7e642ce487cbd68a11051e6daba3ee460f787'),
+    # Exact Feb 3, 2020 daily annex with an independently corroborated native year typo.
+    ('https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_febrero_03_2020.xlsx', 'daily', 'c8d59b0c713dcf74d256f9d2ea49c1f73170fbf9f9770138cf3a335a64e2b9a6'),
 )
 
 
