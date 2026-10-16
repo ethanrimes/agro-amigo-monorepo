@@ -1,0 +1,215 @@
+{
+  "cases": [
+    {
+      "body_bytes": 1869002,
+      "document_id": "ed5bae6ad895a69e3c6d12b5d38d38413f7d9c499b77df7363736d0194a7b8ce",
+      "expected_history_sha256": "c15810e3806a0f54ba61c8979ea514cbc4f510b50fc643c8ba5cec71cebaed2e",
+      "expected_input_sha256": "9b5acb533c61a09416bfce75f21d4098fb0bcaf17727017e7c3c239b772e9439",
+      "expected_public_sha256": "aa30b9677e94983996f1b25f389fec4e7ce7a906d1f6c6b5de2fccbe18d646a6",
+      "expected_revision_sha256": "be20be8ee5737d2fedf4c713eba8a63d1c33074287fd98a44aa4b49c17461685",
+      "fixture_prefix": "2014-04-30_",
+      "fixture_sha256": {
+        "2014-04-30_V14_FULL_VECTOR_FIRST_A.json.gz": "e352e5cdecbe970f2bbc774ef1e8773082afe1172dca37c59a7f159f8968d7de",
+        "2014-04-30_checkpoints_FIRST_D.json.gz": "6f67a9fd834bb4d8f27f098a67b7ecac62228385c49a88bd7157dba0f74c96b0",
+        "2014-04-30_exact_historical_witnesses_FIRST_D.json.gz": "c15810e3806a0f54ba61c8979ea514cbc4f510b50fc643c8ba5cec71cebaed2e",
+        "2014-04-30_input_municipal_price_FIRST_D.json.gz": "9b5acb533c61a09416bfce75f21d4098fb0bcaf17727017e7c3c239b772e9439",
+        "2014-04-30_input_revision_FIRST_D.json.gz": "be20be8ee5737d2fedf4c713eba8a63d1c33074287fd98a44aa4b49c17461685",
+        "2014-04-30_original_FIRST_A.pdf": "ed5bae6ad895a69e3c6d12b5d38d38413f7d9c499b77df7363736d0194a7b8ce",
+        "2014-04-30_published_input_municipal_price_FIRST_D.json.gz": "aa30b9677e94983996f1b25f389fec4e7ce7a906d1f6c6b5de2fccbe18d646a6",
+        "2014-04-30_source_document_metadata_FIRST_D.json.gz": "152a498e044737adb68bf8afbbaca1240dc8ba2772e567d747e9080ba1b2554d"
+      },
+      "metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_abr_2014.pdf",
+        "retention": "permanent"
+      },
+      "month": "04",
+      "observed_on": "2014-04-30",
+      "old_checkpoint": 4643,
+      "page_count": 52,
+      "publisher": "DANE",
+      "raw_rows": 4643,
+      "source_retrieved_at": "2026-09-08T11:45:46.978346+00:00",
+      "title": "DANE - insumos_factores_de_produccion_abr_2014.pdf",
+      "typed_rows": 4643,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_abr_2014.pdf",
+      "v14_canonical_sha256": "bfe28a89983dc6b44c6f45ae1227d2b0a842220c33fa3e015778853d9acbd10f"
+    },
+    {
+      "body_bytes": 1811676,
+      "document_id": "0ae777f1c4311211c0b8a89dd914c3f73392b7cfd07144e9b01d6a133539b0c5",
+      "expected_history_sha256": "0563d36ad8e5d34e811d26ecfded3359c8ec141b12471dfefa6fec1af5fc239f",
+      "expected_input_sha256": "5dedc00302bdf6ea7e258d485062c12cd6ea8e950a7cee4a7e370af08938b2b2",
+      "expected_public_sha256": "c1b4b77c00fe6f7c9122a34bfa60b120f8a977d3d595ec4f9d51a6be1513e8d0",
+      "expected_revision_sha256": "e2a3173cb74ba8e46071241740d40bfc94aec3463697300ef0da731a35667cae",
+      "fixture_prefix": "2014-06-30_",
+      "fixture_sha256": {
+        "2014-06-30_V14_FULL_VECTOR_FIRST_A.json.gz": "65205eed134c067179c551a9f522578604c783060e5d9e0be7a3816e8b1fd0b7",
+        "2014-06-30_checkpoints_FIRST_D.json.gz": "a2f0ea85a589531cd3d5eabba1a6d5042bed466f453e361b878348430df73aeb",
+        "2014-06-30_exact_historical_witnesses_FIRST_D.json.gz": "0563d36ad8e5d34e811d26ecfded3359c8ec141b12471dfefa6fec1af5fc239f",
+        "2014-06-30_input_municipal_price_FIRST_D.json.gz": "5dedc00302bdf6ea7e258d485062c12cd6ea8e950a7cee4a7e370af08938b2b2",
+        "2014-06-30_input_revision_FIRST_D.json.gz": "e2a3173cb74ba8e46071241740d40bfc94aec3463697300ef0da731a35667cae",
+        "2014-06-30_original_FIRST_A.pdf": "0ae777f1c4311211c0b8a89dd914c3f73392b7cfd07144e9b01d6a133539b0c5",
+        "2014-06-30_published_input_municipal_price_FIRST_D.json.gz": "c1b4b77c00fe6f7c9122a34bfa60b120f8a977d3d595ec4f9d51a6be1513e8d0",
+        "2014-06-30_source_document_metadata_FIRST_D.json.gz": "510dfeee743d9a9ea3bec56977dd476d1d7536399b4f47e0f9878a15899a31fc"
+      },
+      "metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_jun_2014.pdf",
+        "retention": "permanent"
+      },
+      "month": "06",
+      "observed_on": "2014-06-30",
+      "old_checkpoint": 5442,
+      "page_count": 60,
+      "publisher": "DANE",
+      "raw_rows": 5442,
+      "source_retrieved_at": "2026-09-08T12:25:25.645466+00:00",
+      "title": "DANE - insumos_factores_de_produccion_jun_2014.pdf",
+      "typed_rows": 5442,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_jun_2014.pdf",
+      "v14_canonical_sha256": "0639f0d385c61b79a64d955effc88410887a59dfe2175c7012cd87cbd146668e"
+    },
+    {
+      "body_bytes": 1970699,
+      "document_id": "1c93da61ed301f9ef5f2108b6469e91f9f9705e0bd1a4439f6c40383e4e56665",
+      "expected_history_sha256": "207a1c93d76ea4351fc87037fd27690be92cf45696343e27ee186bdffa6e5374",
+      "expected_input_sha256": "6036a665e69f83450e1a6789b8b2c0fb8b9510abba6dc6302eff1851f9ddd791",
+      "expected_public_sha256": "eed612b84310b39ba53ebfa495b1ff89da640f955c52a490f461b36c91bed55e",
+      "expected_revision_sha256": "6e3dc20a7d9ca77231d04545c26e8a9a27cbfa5ef26d1884444f74f1a1429045",
+      "fixture_prefix": "2014-07-31_",
+      "fixture_sha256": {
+        "2014-07-31_V14_FULL_VECTOR_FIRST_A.json.gz": "4aa67d2f7f250326c2595854f52f979edd5c2f9954fa44bb2e344a924480e2b9",
+        "2014-07-31_checkpoints_FIRST_D.json.gz": "e3d6b7f32fdbb55bfadf4baf1aa82d577c6ce801d64bf8b66ebc619221f3e36c",
+        "2014-07-31_exact_historical_witnesses_FIRST_D.json.gz": "207a1c93d76ea4351fc87037fd27690be92cf45696343e27ee186bdffa6e5374",
+        "2014-07-31_input_municipal_price_FIRST_D.json.gz": "6036a665e69f83450e1a6789b8b2c0fb8b9510abba6dc6302eff1851f9ddd791",
+        "2014-07-31_input_revision_FIRST_D.json.gz": "6e3dc20a7d9ca77231d04545c26e8a9a27cbfa5ef26d1884444f74f1a1429045",
+        "2014-07-31_original_FIRST_A.pdf": "1c93da61ed301f9ef5f2108b6469e91f9f9705e0bd1a4439f6c40383e4e56665",
+        "2014-07-31_published_input_municipal_price_FIRST_D.json.gz": "eed612b84310b39ba53ebfa495b1ff89da640f955c52a490f461b36c91bed55e",
+        "2014-07-31_source_document_metadata_FIRST_D.json.gz": "f5d6d4a2bf904fbdb2dbc4429acf1be7e52640e4c9eb4ada3a2a4f122dec44a5"
+      },
+      "metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_jul_2014.pdf",
+        "retention": "permanent"
+      },
+      "month": "07",
+      "observed_on": "2014-07-31",
+      "old_checkpoint": 6048,
+      "page_count": 64,
+      "publisher": "DANE",
+      "raw_rows": 6048,
+      "source_retrieved_at": "2026-09-08T12:34:17.647036+00:00",
+      "title": "DANE - insumos_factores_de_produccion_jul_2014.pdf",
+      "typed_rows": 6048,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_jul_2014.pdf",
+      "v14_canonical_sha256": "d8f3864140ea85d5d7ad5b2b372d96cff5c9a91927e73023c14434ed7a1a7b2a"
+    },
+    {
+      "body_bytes": 1889235,
+      "document_id": "846ef9a0a0197f809942e0834b0230626b0aaeaa015c645cb70651f31d0ccb75",
+      "expected_history_sha256": "ecb53614baaa2b468c46741a452d50c4b05025c842aa21970795eb2937f6da57",
+      "expected_input_sha256": "5664356abfef6457114b1b1382a39f2fe0393e7380826bb3a1ac1f58d729ebd5",
+      "expected_public_sha256": "a616e206bf3f73508f8f0c3df79c602061bfdb503e7d51bc67dabe31a7df3195",
+      "expected_revision_sha256": "00d8c337e8a94b1869f0e90fe53ef4b3335f10e8eabf28c02cf9875cdd1a704a",
+      "fixture_prefix": "2014-08-31_",
+      "fixture_sha256": {
+        "2014-08-31_V14_FULL_VECTOR_FIRST_A.json.gz": "f02467ea3d883328fceab15a8fd6504908b81e0fddd501e0b06fa903ec74cc13",
+        "2014-08-31_V17_NATIVE_VECTOR_FIRST_A.json.gz": "8defb0b09c44824e49f1f7bde7a8b262a555ad6c3930f79a45484abd4e179bf0",
+        "2014-08-31_checkpoints_FIRST_D.json.gz": "6cf69d3923ba221c22dfaefaed3e8030e16cab0ef0155f5f088fa02347705f37",
+        "2014-08-31_exact_historical_witnesses_FIRST_D.json.gz": "ecb53614baaa2b468c46741a452d50c4b05025c842aa21970795eb2937f6da57",
+        "2014-08-31_input_municipal_price_FIRST_D.json.gz": "5664356abfef6457114b1b1382a39f2fe0393e7380826bb3a1ac1f58d729ebd5",
+        "2014-08-31_input_revision_FIRST_D.json.gz": "00d8c337e8a94b1869f0e90fe53ef4b3335f10e8eabf28c02cf9875cdd1a704a",
+        "2014-08-31_original_FIRST_A.pdf": "846ef9a0a0197f809942e0834b0230626b0aaeaa015c645cb70651f31d0ccb75",
+        "2014-08-31_published_input_municipal_price_FIRST_D.json.gz": "a616e206bf3f73508f8f0c3df79c602061bfdb503e7d51bc67dabe31a7df3195",
+        "2014-08-31_source_document_metadata_FIRST_D.json.gz": "0ac691cecd3beb58f7f9613ab4389d78cbd5f691f4917bca7ab9318c3758fcf5"
+      },
+      "metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_ago_2014.pdf",
+        "retention": "permanent"
+      },
+      "month": "08",
+      "observed_on": "2014-08-31",
+      "old_checkpoint": 5990,
+      "page_count": 60,
+      "publisher": "DANE",
+      "raw_rows": 5990,
+      "source_retrieved_at": "2026-09-08T12:49:01.215010+00:00",
+      "title": "DANE - insumos_factores_de_produccion_ago_2014.pdf",
+      "typed_rows": 5990,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_ago_2014.pdf",
+      "v14_canonical_sha256": "9966b7e928a0a17fdf5192fcaebf043437f66c5684dca38717d61134426f6a1b",
+      "v17_canonical_sha256": "661ca2942e89c135cd5e4d2b71610e701aedaf43c59d49d6db6080ec396d4cdb",
+      "v17_fixture": true,
+      "v17_raw_rows": 5992,
+      "v17_typed_rows": 5992,
+      "v17_unresolved_rows": 0
+    }
+  ],
+  "consolidated_source": {
+    "bytes": 54065498,
+    "document_id": "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5",
+    "path": "../input_pdf_v17_jan2014/2013-2020_consolidated.xlsx",
+    "provenance": "Exact original-body fixture from January 2014 durable source packet; also appears as the immutable winner source in all four captured 2014 date snapshots.",
+    "sha256": "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5"
+  },
+  "independent_august_v17_source_proof": {
+    "approved_additions": [
+      {
+        "category": "Antisépticos, desinfectantes e higiene",
+        "change_percent": "-3.3",
+        "market": "Quimbaya, Quindío",
+        "presentation": "120 centímetros cúbicos",
+        "price": "3933",
+        "product_name": "Específico Coopers",
+        "source_locator": "PDF page 55,col 1,y 363.3; inputs-pdf-v17"
+      },
+      {
+        "category": "Arrendamiento de tierras",
+        "change_percent": "0.0",
+        "market": "Armenia, Quindío",
+        "presentation": "terreno quebrado sin agua",
+        "price": "70000",
+        "product_name": "Hectárea mensual para maíz",
+        "source_locator": "PDF page 60,col 2,y 203.3; inputs-pdf-v17"
+      }
+    ],
+    "fixture": "2014-08-31_V17_NATIVE_VECTOR_FIRST_A.json.gz",
+    "fixture_sha256": "8defb0b09c44824e49f1f7bde7a8b262a555ad6c3930f79a45484abd4e179bf0",
+    "old_to_native_v17_vector_comparison": {
+      "path": "artifacts/qa-resumed-20261001/input-pdf-v17-context-general-private-20261008-p/AUG2014_SQL_V14_TO_NATIVE_V17_DIFF_P.json",
+      "sha256": "410a320ad72f5ca50833c1f51d7463ca34ced8689aa6283d34cc40b508043c3c"
+    },
+    "old_v14_rows_preserved": 5990,
+    "physical_review_receipt": {
+      "path": "artifacts/qa-resumed-20261001/root-evidence-review-20261008-j/ROOT_AUG2014_TWO_ADDITIONS_FIRST_P.json",
+      "sha256": "6dfa6503fb6de026e4a1367474bf0645d3d55f692aabc50b595c1cf5d74b3b80"
+    },
+    "rows": 5992,
+    "typed_rows": 5992,
+    "unresolved_rows": 0,
+    "vector_sha256": "661ca2942e89c135cd5e4d2b71610e701aedaf43c59d49d6db6080ec396d4cdb"
+  },
+  "metadata_gate_audit_receipt": {
+    "path": "artifacts/qa-resumed-20261001/root-input2014-more-context-witnesses-20261008-a/METADATA_GATE_AUDIT_FIRST_F.json",
+    "sha256": "612be9d21eefdbb545b4bb5b192e4e8c31bbad0b8b51946ab1db7b832a2f3c86"
+  },
+  "metadata_inventory_receipt": {
+    "path": "artifacts/qa-resumed-20261001/root-input2014-more-context-witnesses-20261008-a/ALL_65_CONTEXT_SOURCE_METADATA_FIRST_E.json",
+    "sha256": "ba772cde3114ecc03177059a06a75e4d9598fd054b0943f0f7ac36f7ad9561a6"
+  },
+  "public_receipt": {
+    "path": "artifacts/qa-resumed-20261001/root-input2014-more-context-witnesses-20261008-a/PUBLIC_WINNERS_FIRST_D.json",
+    "sha256": "f5be8a42a6c113282d8a3f22caa9e05324834e12816cd05e60fcff84d81ad9d7"
+  },
+  "purpose": "Private source-bound DANE 2014 context-PDF recovery tests with the independently verified August 2014 v17 superset.",
+  "witness_receipt": {
+    "path": "artifacts/qa-resumed-20261001/root-input2014-more-context-witnesses-20261008-a/WITNESSES_FIRST_A.json",
+    "sha256": "d4e09e2f43c7f42d9063e46074b1bd6bf04af24edea13ab71640087a2b74ba3c"
+  }
+}

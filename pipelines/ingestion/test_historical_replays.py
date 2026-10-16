@@ -1,6 +1,7 @@
 """Historical COPY replays: production table constraints, TEMP-only SQL writes."""
 
 import os
+import time
 import unittest
 from datetime import date
 
@@ -67,6 +68,20 @@ class HistoricalReplayPostgresTests(unittest.TestCase):
         return self.db.execute(
             "SELECT (SELECT count(*) FROM historical_price),(SELECT count(*) FROM historical_insert_attempt)"
         ).fetchone()
+
+    def test_slow_extraction_does_not_consume_the_copy_statement_deadline(self):
+        self.db.execute("SET statement_timeout='150ms'")
+
+        def slow_source():
+            for row in source_rows(5):
+                time.sleep(0.07)
+                yield row
+
+        # The old streaming COPY times out before this original is fully
+        # parsed. Its actual database transfer comfortably fits the deadline.
+        self.assertEqual(self.save(slow_source()), 5)
+        self.assertEqual(self.counts(), (5, 5))
+        self.assertEqual(self.db.info.transaction_status, TransactionStatus.IDLE)
 
     def test_full_replay_never_attempts_existing_inserts(self):
         self.assertEqual(self.save(source_rows(20000)), 20000)

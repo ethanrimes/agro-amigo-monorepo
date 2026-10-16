@@ -143,9 +143,14 @@ class InputRoundingPriority(unittest.TestCase):
     def test_completed_xls_requeues_and_new_version_resumes_durable_groups(self):
         self.db.execute("""ALTER TABLE ingestion_asset ADD COLUMN url text,
           ADD COLUMN observed_on date,ADD COLUMN checked_at timestamptz,
-          ADD COLUMN discovered_at timestamptz DEFAULT now();
+          ADD COLUMN discovered_at timestamptz DEFAULT now(),ADD COLUMN error text;
           CREATE TEMP TABLE source_ocr_task(document_id text,source_kind text,
-          status text,checked_at timestamptz,error text)""")
+          status text,checked_at timestamptz,error text);
+          CREATE TEMP TABLE official_source_review(
+          document_id text,source_locator text,parser_version text,
+          record jsonb NOT NULL,reason text NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          PRIMARY KEY(document_id,source_locator,parser_version))""")
         kind = "inputs-municipal"
         old_version = worker.PARSER_VERSIONS[kind]
         current = worker.parser_version(kind)
@@ -289,7 +294,7 @@ class InputPublicationVersion(unittest.TestCase):
                 worker.PARSER_VERSIONS[kind] + ":" + inputs.PUBLICATION_VERSION,
             )
         self.assertEqual(
-            worker.parser_version("inputs-pdf"), pdf_sources.INPUT_PDF_VERSION
+            worker.parser_version("inputs-pdf"), "inputs-pdf-v17"
         )
 
 

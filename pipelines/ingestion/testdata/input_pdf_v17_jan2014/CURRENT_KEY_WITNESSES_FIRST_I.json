@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-08T19:41:05.771187+00:00",
+  "scope": "Exactly source-backed business identity keys for5639January2014oldPDFrows;13field currentprojection and exact current originals/history/checkpoint witnesses only;readonlyTLSreader15sec statement bound after preserved3sec timeout",
+  "keys": 5639,
+  "cases": [
+    {
+      "name": "CURRENT_KEYS_input_municipal_price",
+      "count": 5639,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/CURRENT_KEYS_input_municipal_price_FIRST_I.json.gz",
+      "sha256": "574be2e7e1ccb9421d468801bc94bb90b82eb0f3986ca438c81f95e7a33af27a"
+    },
+    {
+      "name": "CURRENT_KEYS_published_input_municipal_price",
+      "count": 5639,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/CURRENT_KEYS_published_input_municipal_price_FIRST_I.json.gz",
+      "sha256": "e42ea0f01cdcb211ec1f32ce92e9541d8c2871cada7efb2665856ee6cd87a51d"
+    },
+    {
+      "name": "CURRENT_KEYS_source_document_metadata",
+      "count": 2,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/CURRENT_KEYS_source_document_metadata_FIRST_I.json.gz",
+      "sha256": "71c0355324aff76dd1987bd7f6e7213242bf8cd8c00947a1c432872d1cd07b4d"
+    },
+    {
+      "name": "CURRENT_KEYS_exact_historical_witnesses",
+      "count": 5639,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/CURRENT_KEYS_exact_historical_witnesses_FIRST_I.json.gz",
+      "sha256": "d5ad02876635a548107da11d826a7c1949f6f55ccf2c70353983ef4ef8edcc63"
+    },
+    {
+      "name": "CURRENT_KEYS_checkpoints",
+      "count": 17393,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/CURRENT_KEYS_checkpoints_FIRST_I.json.gz",
+      "sha256": "2bfa475fc08915804a45e11923c88411d94a126e5680fcc945c6b0755c82395a"
+    }
+  ],
+  "complete": true,
+  "document_ids": [
+    "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+    "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5"
+  ],
+  "historical_pointer_coverage": {
+    "physical_rows": 5639,
+    "unique_pointers": 5639,
+    "found": 5639
+  }
+}

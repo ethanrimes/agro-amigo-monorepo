@@ -1,0 +1,34 @@
+{
+  "source_witness_sha256": "aef5e1b3dde931a484d3091dc25dabf45db7e0e2f357b8ac517226ac7ebf1b5f",
+  "source": {
+    "document_id": "758e774879ddbf3b7242a4cf18e39ad31c128c055f73bdefe54387c668799ae6",
+    "title": "DANE - insumos_factores_de_produccion_septiembre_2012.pdf",
+    "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_septiembre_2012.pdf",
+    "date": "2012-09-30",
+    "page": 67,
+    "raw_presentation": "Jornal"
+  },
+  "examples": [
+    {
+      "name": "Mensual agrícola sin alimentación",
+      "market": "Duitama",
+      "department": "Boyacá",
+      "price_cop": "566700.0",
+      "source_locator": "PDF page 67,col 2,y 468.8; inputs-pdf-v14"
+    },
+    {
+      "name": "Semanal agrícola con alimentación",
+      "market": "Manizales",
+      "department": "Caldas",
+      "price_cop": "127500.0",
+      "source_locator": "PDF page 67,col 2,y 528.0; inputs-pdf-v14"
+    },
+    {
+      "name": "Semanal agrícola sin alimentación",
+      "market": "Manizales",
+      "department": "Caldas",
+      "price_cop": "161000.0",
+      "source_locator": "PDF page 67,col 2,y 561.8; inputs-pdf-v14"
+    }
+  ]
+}

@@ -204,7 +204,7 @@ class ContinuationPublication(unittest.TestCase):
             worker.save_rows(self.db, "new", structured)
             inputs.project_inputs(self.db, "new")
         with (
-            patch.object(pdf_sources, "INPUT_PDF_VERSION", "inputs-pdf-v9"),
+            publication_tests.synthetic_pdf_publication_version("inputs-pdf-v9"),
             self.db.transaction(),
         ):
             worker.save_rows(self.db, "old", old)
@@ -224,7 +224,7 @@ class ContinuationPublication(unittest.TestCase):
         self.assertEqual(len(xls), 25)
         with (
             self.assertRaisesRegex(RuntimeError, "rollback"),
-            patch.object(pdf_sources, "INPUT_PDF_VERSION", "inputs-pdf-v10"),
+            publication_tests.synthetic_pdf_publication_version("inputs-pdf-v10"),
             self.db.transaction(),
         ):
             worker.save_rows(self.db, "old", new)
@@ -238,7 +238,7 @@ class ContinuationPublication(unittest.TestCase):
         )
         for _ in range(2):
             with (
-                patch.object(pdf_sources, "INPUT_PDF_VERSION", "inputs-pdf-v10"),
+                publication_tests.synthetic_pdf_publication_version("inputs-pdf-v10"),
                 self.db.transaction(),
             ):
                 worker.save_rows(self.db, "old", new)
@@ -249,7 +249,7 @@ class ContinuationPublication(unittest.TestCase):
             "INSERT INTO ingestion_asset VALUES('old','inputs-pdf','inputs-pdf-v9','complete'),('old','context-pdf','source-v1','processed')"
         )
         with (
-            patch.object(pdf_sources, "INPUT_PDF_VERSION", "inputs-pdf-v9"),
+            publication_tests.synthetic_pdf_publication_version("inputs-pdf-v9"),
             self.db.transaction(),
         ):
             worker.save_rows(self.db, "old", old)

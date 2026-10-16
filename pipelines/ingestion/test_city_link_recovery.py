@@ -45,6 +45,47 @@ def valid_member(body, filename, archive_day):
 
 
 class CityLinkRecovery(unittest.TestCase):
+    def test_exact_audited_san_gil_bytes_keep_printed_date_and_conflict_evidence(self):
+        body = Path(__file__).with_name("testdata").joinpath(
+            "city_san_gil_filename_conflict_2024_01_20.pdf"
+        ).read_bytes()
+        result = _validate_member(body, "San Gil, 22-1-2024.pdf", date(2024, 1, 22))
+        self.assertEqual(result["sha256"], "6baed1add3c3cf7ebe49db037fc2e14eaa6a62d45a829e4f374b5c09201eaa73")
+        self.assertEqual(result["observed_on"], "2024-01-20")
+        self.assertEqual(result["records"], 2)
+        self.assertFalse(result["filename_date_verified"])
+        self.assertIn("exact bytes", result["filename_date_issue"])
+        for data, name in (
+            (body + b"\n% publisher revision", "San Gil, 22-1-2024.pdf"),
+            (body, "San Gil, 21-1-2024.pdf"),
+        ):
+            with self.subTest(filename=name), self.assertRaisesRegex(ValueError, "filename conflicts"):
+                _validate_member(data, name, date(2024, 1, 22))
+
+    def test_new_aliases_retain_actual_archive_dates_and_unknown_original_roster(self):
+        for stamp, day, canonical, count in (
+            ("30dic2025", date(2025, 12, 30), "31dic2025", 4),
+            ("04jul2025", date(2025, 7, 4), "07jul2025", 1),
+            ("20ene2024", date(2024, 1, 20), "22ene2024", 25),
+        ):
+            url = URL.replace("22jul2023", stamp)
+            alias = ALIASES[url]
+            self.assertTrue(alias.canonical_url.endswith(canonical + ".zip"))
+            buf = io.BytesIO()
+            with zipfile.ZipFile(buf, "w") as archive:
+                for index in range(count):
+                    archive.writestr(f"market{index}.pdf", b"%PDF-mock")
+            with self.subTest(url=url), patch(
+                "pipelines.ingestion.city_link_recovery._validate_member",
+                return_value={"observed_on": str(day), "records": 1},
+            ) as validator:
+                result = recover_link(url, 404, day, lambda _: buf.getvalue())
+                self.assertEqual(validator.call_count, count)
+                self.assertTrue(all(call.args[2] == alias.archive_day for call in validator.call_args_list))
+                self.assertEqual(result.evidence["requested_day_price_members"], count)
+                self.assertEqual(result.evidence["archive_url"], alias.archive_url)
+                self.assertIn("full roster is unknown", result.evidence["coverage_note"])
+
     def test_worker_keeps_recovered_rows_but_marks_unknown_roster_for_review(self):
         alias = ALIASES[FEB_URL]
         buf = io.BytesIO()

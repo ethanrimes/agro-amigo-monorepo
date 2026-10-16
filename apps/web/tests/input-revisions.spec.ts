@@ -16,9 +16,11 @@ test('only a proven newer source-cell commercial identity suppresses a legacy ca
 });
 
 test('live grouped input catalog keeps corrected variants and retained legacy details',async({request})=>{
- test.skip(process.env.RUN_PRICE_AUDIT !== "1", "Opt-in Sep27 retained source-revision audit");
+ test.skip(process.env.RUN_PRICE_AUDIT !== "1", "Opt-in retained source-revision audit");
  test.setTimeout(60000);
- const response=await request.get('/api/planning/inputs?grouped=true&department=Antioquia&scope=department');
+ // The Sep2025 literal is outside today's strict twelve-month window. This
+ // audit intentionally checks retained history rather than recent visibility.
+ const response=await request.get('/api/planning/inputs?grouped=true&department=Antioquia&scope=department&history=all');
  expect(response.ok()).toBe(true);
  const rows=await response.json();
  expect(rows.some((r:{id:string})=>r.id===corrected.id)).toBe(true);

@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { number, dateLabel } from "@/lib/market-types";
 import type { SupplyData } from "@/lib/explore-types";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 const monthLabel = (d: string) =>
   new Date(d + "T12:00:00Z").toLocaleDateString("es-CO", {
     month: "long",
@@ -24,6 +25,7 @@ export function SupplyPanel({
   name?: string;
 }) {
   const [month, setMonth] = useState("");
+  const [chosenReport, setChosenReport] = useState("");
   const [periods, setPeriods] = useState<SupplyData["history"]>([]);
   const { data, loading, error, retry } = useData<SupplyData>(
     "/api/explore/supply?product=" +
@@ -43,23 +45,17 @@ export function SupplyPanel({
         className="panel price-filter-grid supply-filter-grid"
         aria-label="Filtros de abastecimiento"
       >
-        <label className="form-field">
-          Mes de consulta
-          <select
-            value={month || data?.selected_period || ""}
-            disabled={loading || !periods.length}
-            onChange={(e) => setMonth(e.target.value)}
-          >
-            {!periods.length && (
-              <option value="">Último reporte disponible</option>
-            )}
-            {[...periods].reverse().map((h) => (
-              <option value={h.date} key={h.date}>
-                {monthLabel(h.date)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <SearchableSelect
+          label="Mes de consulta"
+          allowClear={false}
+          value={month || data?.selected_period || ""}
+          options={[...periods].reverse().map((period) => ({ id: period.date, label: monthLabel(period.date), detail: period.date }))}
+          onChange={setMonth}
+          emptyLabel="Último reporte disponible"
+          placeholder="Busca mes o año"
+          loading={loading && !periods.length}
+          error={Boolean(error) && !periods.length}
+        />
       </section>
       <AppliedFilters
         items={[
@@ -126,6 +122,16 @@ export function SupplyPanel({
     );
   const total = data.rows.reduce((s, r) => s + r.quantity_kg, 0),
     max = Math.max(...data.history.map((h) => h.quantity_kg), 1);
+  const selectedPeriod = data.history.find((h) => h.date === data.selected_period);
+  const visiblePeriods = data.history.slice(-12);
+  if (selectedPeriod && !visiblePeriods.some((h) => h.date === selectedPeriod.date))
+    visiblePeriods.unshift(selectedPeriod);
+  const reportId = (r: SupplyData["rows"][number]) => JSON.stringify([r.market_id, r.food_id]);
+  const rankedReports = [...data.rows].sort((a, b) => b.quantity_kg - a.quantity_kg);
+  const selectedReport = rankedReports.find((r) => reportId(r) === chosenReport);
+  const visibleReports = rankedReports.slice(0, 6);
+  if (selectedReport && !visibleReports.some((r) => reportId(r) === chosenReport))
+    visibleReports.push(selectedReport);
   return (
     <div className="supply-content">
       {controls}
@@ -150,13 +156,13 @@ export function SupplyPanel({
         <h2>Así cambia el abastecimiento</h2>
         <p className="field-help">
           Toneladas reportadas por mes. Toca una barra para consultar el
-          detalle.
+          detalle. Se muestran los últimos doce meses y el mes elegido; usa el buscador de mes para consultar todo el historial.
         </p>
         <div
           className="supply-bars"
           aria-label="Abastecimiento mensual en toneladas"
         >
-          {data.history.map((h) => (
+          {visiblePeriods.map((h) => (
             <button
               className={h.date === data.selected_period ? "selected" : ""}
               key={h.date}
@@ -188,8 +194,24 @@ export function SupplyPanel({
       </section>
       <section className="panel">
         <h2>{market ? "Productos que llegaron" : "Llegadas por mercado"}</h2>
+        {data.rows.length > 6 && (
+          <>
+            <p>Se muestran los seis reportes con mayor volumen y el reporte elegido.</p>
+            <SearchableSelect
+              label="Consultar llegada reportada"
+              placeholder="Busca producto o mercado"
+              value={selectedReport ? chosenReport : ""}
+              options={rankedReports.map((r) => ({
+                id: reportId(r),
+                label: `${r.food_name} · ${r.market_name}`,
+                detail: `${number(r.quantity_kg / 1000)} t · ${monthLabel(r.period_start)}`,
+              }))}
+              onChange={setChosenReport}
+            />
+          </>
+        )}
         <div className="supply-list">
-          {data.rows.map((r) => (
+          {visibleReports.map((r) => (
             <article key={r.market_id + r.food_id}>
               <div>
                 {market ? (
@@ -203,7 +225,7 @@ export function SupplyPanel({
                 )}
                 <small>
                   {dateLabel(r.first_reported_on, true)} –{" "}
-                  {dateLabel(r.observed_on, true)} · {r.reporting_days} días con
+                  {dateLabel(r.observed_on, true)} · {r.reporting_days} {r.reporting_days === 1 ? "día" : "días"} con
                   reporte
                 </small>
               </div>
@@ -212,7 +234,10 @@ export function SupplyPanel({
                 <EvidenceLink
                   id={r.document_id}
                   product={r.product_id || undefined}
+                  productName={r.food_name}
                   market={r.market_id}
+                  marketName={r.market_name}
+                  department={r.region}
                   food={r.food_id}
                   month={r.period_start}
                 >

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-08T19:50:32.917181+00:00",
+  "scope": "Exact5639January2014native-PDFbusinesskeys only: actual freshness-watermark timestamps and xmins;15second bound after preserved3second timeout verified-reader read-onlyTLS",
+  "keys": 5639,
+  "complete": true,
+  "rows": 5639,
+  "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/CURRENT_KEYS_input_revision_FIRST_K.json.gz",
+  "sha256": "48477c672da4ffb6fcd8638c928cecb0289f3ecb848abffc44e86e969abfc606"
+}

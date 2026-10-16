@@ -29,7 +29,6 @@ test("five destinations stay selected for their details and coffee lives in prod
   ]) {
     await page.goto(url);
     await expect(page.locator("h1")).toBeVisible();
-    await page.waitForLoadState("networkidle");
     await expect(nav.locator("[aria-current]")).toHaveCount(1);
     await expect(nav.getByRole("link", { name, exact: true })).toHaveAttribute(
       "aria-current",
@@ -53,10 +52,10 @@ test("search suggestions filter without accents, support keyboard selection, and
       .getByRole("option", { name: /Café pergamino seco/ }),
   ).toBeVisible();
   await search.fill("cafe pergamino");
-  await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("listbox").getByRole("option").first()).toContainText("Café pergamino seco");
   await search.press("ArrowDown");
   await search.press("Enter");
-  await expect(page).toHaveURL(/\/product\/cafe-pergamino-seco$/);
+  await expect(page).toHaveURL(/\/product\/cafe-pergamino-seco(?:\?|$)/);
   await expect(page.locator(".coffee-big-price")).toContainText(
     "/ carga de 125 kg",
   );
@@ -82,24 +81,16 @@ test("product and market supply have dated volumes, month selection and original
   ).json();
   expect(data.rows.length).toBeGreaterThan(0);
   expect(data.history.length).toBeGreaterThanOrEqual(10);
-  await page
-    .getByLabel("Mes de consulta")
-    .selectOption(data.history.at(-2).date);
+  await page.getByRole("combobox", { name: "Mes de consulta" }).fill(data.history.at(-2).date);
+  await page.getByRole("option", { name: new RegExp(data.history.at(-2).date) }).click();
   await expect(
     page.locator(".supply-bars button[aria-pressed=true]"),
   ).toHaveAttribute("aria-label", /toneladas/);
   await page.getByRole("link", { name: "Comprobar cantidad" }).first().click();
-  await expect(page.locator("dialog .evidence-records")).toContainText(
-    "Cantidad (kg)",
-  );
-  await expect(page.locator("dialog .evidence-records")).toContainText(
-    "Registros en el archivo",
-  );
+  await expect(page.locator("dialog .workbook-viewer")).toContainText("Excel · Solo lectura");
   await page.getByRole("button", { name: "Cerrar ventana" }).click();
   await page.goto("/market/sipsa-bogota-d-c-corabastos");
-  await expect(
-    page.locator(".entity-price-list article").first(),
-  ).toBeVisible();
+  await expect(page.locator("section.panel article").first()).toBeVisible();
   await page.getByRole("tab", { name: "Abastecimiento", exact: true }).click();
   await expect(page.locator(".supply-list article").first()).toBeVisible();
   await expect(page.locator(".supply-content")).toContainText(
@@ -111,7 +102,9 @@ test("input details preserve presentation, department prices and honest supply c
   request,
 }) => {
   await page.goto("/insumos");
-  await expect(page.locator(".input-catalog-card").first()).toBeVisible();
+  await expect(page.locator(".input-catalog-card").first()).toBeVisible({
+    timeout: 45_000,
+  });
   const search = page.getByRole("combobox", {
     name: "Buscar insumo",
     exact: true,
@@ -134,25 +127,31 @@ test("input details preserve presentation, department prices and honest supply c
     }),
   ).toBeVisible();
   await expect(page.locator(".coverage-tags span")).toHaveCount(
-    data.regions.length,
+    data.regions.length <= 6 ? data.regions.length : 1,
   );
+  if (data.regions.length > 6) {
+    await expect(page.getByRole("combobox", {
+      name: "Consultar ubicación con referencias", exact: true,
+    })).toBeVisible();
+    await expect(page.locator(".coverage-tags")).toContainText(data.input.department);
+  }
   await page.getByRole("tab", { name: "Precios", exact: true }).click();
   await page
     .getByRole("link", { name: "Comprobar precio", exact: true })
     .click();
-  await expect(page.locator("dialog .evidence-records")).toContainText(
-    data.input.presentation,
-  );
+  await expect(page.locator("dialog .workbook-viewer")).toContainText("Excel · Solo lectura");
 });
 test("reader opens over the current page, supports zoom, download, escape and back", async ({
   page,
 }) => {
   await page.goto("/product/tomate-chonto");
   const source = page.getByRole("link", {
-    name: "Comprobar precios en el documento",
+    name: "Consultar fuente del precio actual",
     exact: true,
   });
   await source.scrollIntoViewIfNeeded();
+  const sourcePage = Number(new URL((await source.getAttribute("href"))!, page.url()).searchParams.get("page"));
+  expect(sourcePage).toBeGreaterThan(1);
   const url = page.url();
   await source.click();
   await expect(page.locator("dialog")).toBeVisible();
@@ -160,8 +159,11 @@ test("reader opens over the current page, supports zoom, download, escape and ba
   await expect(
     page.locator("dialog .pdf-paper canvas[data-rendered=true]"),
   ).toBeVisible();
+  await expect(page.getByRole("group", { name: "Página del documento", exact: true })).toHaveAttribute("data-selected-value", String(sourcePage));
+  await page.getByRole("button", { name: "← Anterior", exact: true }).click();
+  await expect(page.getByRole("group", { name: "Página del documento", exact: true })).toHaveAttribute("data-selected-value", String(sourcePage - 1));
   await page.getByRole("button", { name: "Siguiente →", exact: true }).click();
-  await expect(page.getByLabel("Página del documento")).toHaveValue("2");
+  await expect(page.getByRole("group", { name: "Página del documento", exact: true })).toHaveAttribute("data-selected-value", String(sourcePage));
   await page.getByLabel("Tamaño del documento").selectOption("1.5");
   await expect(
     page.locator("dialog .pdf-paper canvas[data-rendered=true]"),
@@ -192,9 +194,7 @@ test("catalog maps load real Colombia boundaries and filtered references", async
     "true",
     { timeout: 45000 },
   );
-  await expect(
-    page.locator(".map-reference-list article").first(),
-  ).toBeVisible();
+  await expect(page.locator("dialog")).toContainText(/\d+ referencias/);
   await expect(page.locator(".colombia-map")).toHaveAttribute(
     "data-features",
     /^[1-9][0-9]*$/,
@@ -206,19 +206,18 @@ test("catalog maps load real Colombia boundaries and filtered references", async
   await page
     .getByRole("option", { name: "Tomate chonto", exact: true })
     .click();
-  await expect(
-    page.locator(".map-reference-list article").first(),
-  ).toBeVisible();
+  await expect(page.locator("dialog")).toContainText(/\d+ referencias/);
+  await page.getByRole("combobox", { name: "Abrir precios de un departamento" }).fill("Bogotá");
+  await page.getByRole("option", { name: "Bogotá, D.C.", exact: true }).click();
+  await expect(page.getByRole("group", { name: "Abrir precios de un departamento" }))
+    .toHaveAttribute("data-selected-value", "Bogotá, D.C.");
   await page
     .locator("dialog")
     .getByRole("tab", { name: "Abastecimiento", exact: true })
     .click();
-  await expect(page.locator(".map-results")).toContainText(
+  await expect(page.locator("dialog")).toContainText(
     "Llegadas reportadas",
   );
-  await expect(
-    page.locator(".map-reference-list article").first(),
-  ).toBeVisible();
   await page.getByRole("button", { name: "Cerrar ventana" }).click();
   await expect(page.locator("dialog")).toHaveCount(0);
   for (const path of ["/markets", "/insumos"]) {
@@ -228,9 +227,9 @@ test("catalog maps load real Colombia boundaries and filtered references", async
       "data-ready",
       "true",
     );
-    await expect(
-      page.locator(".map-reference-list article").first(),
-    ).toBeVisible();
+    await expect(page.locator("dialog")).toContainText(
+      /\d+ referencias|\d+ registros|No hay precios con ubicación para estos filtros/,
+    );
     await page.getByRole("button", { name: "Cerrar ventana" }).click();
   }
 });

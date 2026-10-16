@@ -1,0 +1,189 @@
+{
+  "cases": [
+    {
+      "body_bytes": 4430044,
+      "document_id": "f37ddee1c655810d1e6a6ea7746bd1a429337fd22deda2b3db8c52762780a2fb",
+      "fixture_prefix": "2018-09-30_",
+      "fixture_sha256": {
+        "2018-09-30_V14_FULL_VECTOR_FIRST_D.json.gz": "2ec853b2e6f384c0126efb3ea0b12fb506c2bf1e887afb159a2a8bbd15e379d4",
+        "2018-09-30_checkpoints_FIRST_D.json.gz": "9c719fe263d72e75d36f3ec8664dca14c2e140ab0270a1b5d245f4c87bb60af4",
+        "2018-09-30_exact_historical_witnesses_FIRST_D.json.gz": "9ffbc50e652c19785e71699aa166e099aacb6f4167847133e8cb93d3569d4d80",
+        "2018-09-30_input_municipal_price_FIRST_D.json.gz": "a747b2fb36dd14fc000f6c3fe27e269362018f239afd7c0ec10ae5ef68de1a10",
+        "2018-09-30_input_revision_FIRST_D.json.gz": "c64567a3fd527267425c24601d9349fd25f7948265d04032b43f9f49a8dd1669",
+        "2018-09-30_original_FIRST_A.pdf": "f37ddee1c655810d1e6a6ea7746bd1a429337fd22deda2b3db8c52762780a2fb",
+        "2018-09-30_published_input_municipal_price_FIRST_D.json.gz": "928eb84c90c4fe865052fb1ad053124889ed1d830405aa37cffdf56e1e14d495",
+        "2018-09-30_source_document_metadata_FIRST_D.json.gz": "e3a054653f2bbae3aa755080ca8476719c9d9c29d551000c73b833c07f5d9e53"
+      },
+      "initial_error": "ValueError: Retained input PDF page count mismatch",
+      "initial_status": "failed",
+      "initial_version": "inputs-pdf-v17",
+      "metadata": {
+        "ingestion_kind": "inputs-pdf",
+        "original_filename": "Bol_Insumos_sep_2018.pdf",
+        "retention": "permanent"
+      },
+      "observed_on": "2018-09-30",
+      "page_count": 201,
+      "publisher": "DANE",
+      "raw_rows": 15344,
+      "reference_period": "2018-09-30",
+      "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_sep_2018.pdf",
+      "title": "DANE - Bol_Insumos_sep_2018.pdf",
+      "typed_rows": 15339,
+      "unresolved_rows": 5,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_sep_2018.pdf",
+      "v14_canonical_sha256": "2038a1c87e4bfcfb5480ffb3ac313b2eceafbeadd4911d72e3a458687ca1d07a"
+    },
+    {
+      "body_bytes": 3681233,
+      "document_id": "849ab2d0128c957fc74102367c9b4604600b027c50f419fb901d7d0cb87c08cb",
+      "fixture_prefix": "2019-01-31_",
+      "fixture_sha256": {
+        "2019-01-31_V14_FULL_VECTOR_FIRST_D.json.gz": "0e99bc2ff8e0581bec6e297d398fd7efa3c9d246eeb9480bf8152afce1d1fdfe",
+        "2019-01-31_checkpoints_FIRST_D.json.gz": "8379316e740db95bcb21c2809d297fd06017edac3264184ac2466b79e47e1470",
+        "2019-01-31_exact_historical_witnesses_FIRST_D.json.gz": "53823f7a45557208b1296486611176fd111a6737bf8ec4524cf81cdb32a63db5",
+        "2019-01-31_input_municipal_price_FIRST_D.json.gz": "e02226de4338f4023f0c25bcdbdf4bdfa22d3a6a9364d3a9b9251d06808931ed",
+        "2019-01-31_input_revision_FIRST_D.json.gz": "a5eadaccd7bd1b91f2f4c0da75b25a6dbda601e9b1b65f5fa5666973b6a9d3f1",
+        "2019-01-31_original_FIRST_A.pdf": "849ab2d0128c957fc74102367c9b4604600b027c50f419fb901d7d0cb87c08cb",
+        "2019-01-31_published_input_municipal_price_FIRST_D.json.gz": "3feb408f7c0e527cc66586ca1d4267e67db09095b5a3ef588824e3ffd5315501",
+        "2019-01-31_source_document_metadata_FIRST_D.json.gz": "9b16c777a7bc06e0e946ce665c06117dd85826d5118e87669014f4022d20bc52"
+      },
+      "initial_error": null,
+      "initial_status": "complete",
+      "initial_version": "inputs-pdf-v14",
+      "metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "Bol_%20Insumos_ene_2019.pdf",
+        "retention": "permanent"
+      },
+      "native_v17_vector_sha256": "5f20551b874de7bff325aae83dbe86d2b7e20d371f747d244f17c4ba92c25484",
+      "observed_on": "2019-01-31",
+      "page_count": 206,
+      "publisher": "DANE",
+      "raw_rows": 14458,
+      "reference_period": "Serie histórica completa",
+      "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_%20Insumos_ene_2019.pdf",
+      "title": "DANE - Bol_%20Insumos_ene_2019.pdf",
+      "typed_rows": 14443,
+      "unresolved_rows": 15,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_%20Insumos_ene_2019.pdf",
+      "v14_canonical_sha256": "dceb3a49cfcffb9e3b71fc40b455e5eae9b3faac719494b86f5e641539fc0b71"
+    },
+    {
+      "body_bytes": 3976584,
+      "document_id": "8c5e95de023a6fafd71484dc476c40083aa886d05ca00f90ada498cac05043f7",
+      "fixture_prefix": "2019-02-28_",
+      "fixture_sha256": {
+        "2019-02-28_V14_FULL_VECTOR_FIRST_D.json.gz": "80fa318d487cad4f6d302d2b75e619014b246ed22351ca1bb449edb34a3dfa90",
+        "2019-02-28_checkpoints_FIRST_D.json.gz": "86902466dedd6c98d0c5b9ac3c479e9885969fdf0a18e9fafcc6563c95065c65",
+        "2019-02-28_exact_historical_witnesses_FIRST_D.json.gz": "e73bc9d1db9d632307f753a36dfa042f96b163754d03359d1b9ece1a18bd7888",
+        "2019-02-28_input_municipal_price_FIRST_D.json.gz": "865a31b7fde36abc1a0342b0689f64b85c86ff17c6887e5a2e1f2c0f2ff5bcec",
+        "2019-02-28_input_revision_FIRST_D.json.gz": "e3de4bd4d02ad10042744e3738ee8ad6911816b673c19178f02c610a153be1ca",
+        "2019-02-28_original_FIRST_A.pdf": "8c5e95de023a6fafd71484dc476c40083aa886d05ca00f90ada498cac05043f7",
+        "2019-02-28_published_input_municipal_price_FIRST_D.json.gz": "4bca8f454c527a2648ca47179e65c19c05c2ee8d0e22cbf487d6f8c5a4961e10",
+        "2019-02-28_source_document_metadata_FIRST_D.json.gz": "b1a6841b5048a141da568f4a482ba606bb4dbd839e3e7bab9ff47ed878c4a2e8"
+      },
+      "initial_error": null,
+      "initial_status": "complete",
+      "initial_version": "inputs-pdf-v14",
+      "metadata": {
+        "ingestion_kind": "inputs-pdf",
+        "original_filename": "Bol_Insumos_feb_2019.pdf",
+        "retention": "permanent"
+      },
+      "observed_on": "2019-02-28",
+      "page_count": 209,
+      "publisher": "DANE",
+      "raw_rows": 14366,
+      "reference_period": "2019-02-28",
+      "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_feb_2019.pdf",
+      "title": "DANE - Bol_Insumos_feb_2019.pdf",
+      "typed_rows": 14363,
+      "unresolved_rows": 3,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_feb_2019.pdf",
+      "v14_canonical_sha256": "c4493ebc31c03509b22b875e99475d56bce44721498bdf5a563c7e36759c7cae"
+    },
+    {
+      "body_bytes": 2806034,
+      "document_id": "79b2dadcad9c2387648b64620d92a896b5ef5d8f9a2d366e522021ff62d7cbb3",
+      "fixture_prefix": "2018-11-30_",
+      "fixture_sha256": {
+        "2018-11-30_V14_FULL_VECTOR_FIRST_D.json.gz": "970658e93cd0eac24e587ae6d12410ed24fd6b62b2b4e4822774f1c583cbd2f9",
+        "2018-11-30_checkpoints_FIRST_D.json.gz": "7441c3e9b1f161f4062b5fd29b0e0012626ec02f2d1f2ef0adb6ea52af791459",
+        "2018-11-30_exact_historical_witnesses_FIRST_D.json.gz": "40d531b33d64f2e5e769d12682843c9db5cca67a86d13307e1777a65ba0c4630",
+        "2018-11-30_input_municipal_price_FIRST_D.json.gz": "f608ba521b75048301ec425af4114d42664bc2f3d5ff5e4a4ed33f95bb8a1fe8",
+        "2018-11-30_input_revision_FIRST_D.json.gz": "26443422ef9dff214d9f64f995aebe383e378de2f72db3eafd2eba93b4091298",
+        "2018-11-30_native_v17_oracle_reconciliation.json": "efb04703c487a51cf7179ac7dc3351719d6ff750a4fe9446fedf0dbba244908d",
+        "2018-11-30_original_FIRST_A.pdf": "79b2dadcad9c2387648b64620d92a896b5ef5d8f9a2d366e522021ff62d7cbb3",
+        "2018-11-30_published_input_municipal_price_FIRST_D.json.gz": "c5ae2536796e7554ed6cc7241957bd60c786538649ad8c45a2b2724770f82bba",
+        "2018-11-30_source_document_metadata_FIRST_D.json.gz": "cf107a47cbf61d35b83fbb73673c99269591b89ba40848e511281f6b8ea76429"
+      },
+      "initial_error": "ValueError: Retained input old publication checkpoint changed",
+      "initial_status": "failed",
+      "initial_version": "inputs-pdf-v17",
+      "metadata": {
+        "ingestion_kind": "inputs-pdf",
+        "original_filename": "Bol_Insumos_nov_2018.pdf",
+        "retention": "permanent"
+      },
+      "native_v17_vector_sha256": "f4091a0233146c619e0b0789ffa031945692b0ed7c9c0f3075b2148fc0bf3125",
+      "observed_on": "2018-11-30",
+      "page_count": 195,
+      "publisher": "DANE",
+      "raw_rows": 15241,
+      "reference_period": "2018-11-30",
+      "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_nov_2018.pdf",
+      "title": "DANE - Bol_Insumos_nov_2018.pdf",
+      "typed_rows": 15215,
+      "unresolved_rows": 26,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_nov_2018.pdf",
+      "v14_canonical_sha256": "d72f5489dabb9530fa058a8409aeb7e6caa70641fdb6a99357e12d2c7e1ae059"
+    },
+    {
+      "body_bytes": 2627644,
+      "document_id": "7b33370ff3eb28f8567fb36528dc8c2c619aad1629c1aaf761f7448269ceb293",
+      "fixture_prefix": "2018-12-31_",
+      "fixture_sha256": {
+        "2018-12-31_V14_FULL_VECTOR_FIRST_D.json.gz": "5a6e6c6fabfec6236b18bbce92f625cba9920d4a08999977f66a5c4c0592ae8a",
+        "2018-12-31_V17_NATIVE_VECTOR_FIRST_D.json.gz": "10b39606c4184dfd2d5fd470ef6a3214f0c214321c2852aed7fa0cb18226fa93",
+        "2018-12-31_checkpoints_FIRST_D.json.gz": "b80d95e96b8fda2d1dae9219fadcb32efbce23e5e922b8c19552c2635bf37815",
+        "2018-12-31_exact_historical_witnesses_FIRST_D.json.gz": "6588ee6a50bd474e39d1b3653d8434d4f35607628b1e55505f4dca7e90ec7b01",
+        "2018-12-31_input_municipal_price_FIRST_D.json.gz": "af349b54a5811cfc24115820be7c3d815b7c4124d26f9c589476dcf9c0aae919",
+        "2018-12-31_input_revision_FIRST_D.json.gz": "3903c0180a39ec31fb06fa789187a25376a40db6128f4da725e7d71c69ba78ee",
+        "2018-12-31_original_FIRST_A.pdf": "7b33370ff3eb28f8567fb36528dc8c2c619aad1629c1aaf761f7448269ceb293",
+        "2018-12-31_published_input_municipal_price_FIRST_D.json.gz": "0c254bfeb460a532869748be5a92105db688dc9712aff89cf10510abe6533b21",
+        "2018-12-31_source_document_metadata_FIRST_D.json.gz": "8821ac6b5bf89f69fa6703cb51881b3814c61b4b8ea689b5cfff78b5859245ca"
+      },
+      "initial_error": "ValueError: Retained input old publication checkpoint changed",
+      "initial_status": "failed",
+      "initial_version": "inputs-pdf-v17",
+      "metadata": {
+        "ingestion_kind": "inputs-pdf",
+        "original_filename": "Bol_Insumos_dic_2018.pdf",
+        "retention": "permanent"
+      },
+      "native_v17_vector_sha256": "5052dbf4dde522ec05e4f382e874f654d39b0e1cf78ccaff338307a0d285759d",
+      "observed_on": "2018-12-31",
+      "page_count": 180,
+      "publisher": "DANE",
+      "raw_rows": 13906,
+      "reference_period": "2018-12-31",
+      "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_dic_2018.pdf",
+      "title": "DANE - Bol_Insumos_dic_2018.pdf",
+      "typed_rows": 13888,
+      "unresolved_rows": 18,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_dic_2018.pdf",
+      "v14_canonical_sha256": "a4a23f80303ce72c1d4d3dee8b9467d945f07709985cb8c8833520757e20bfdf",
+      "v17_canonical_sha256": "5052dbf4dde522ec05e4f382e874f654d39b0e1cf78ccaff338307a0d285759d",
+      "v17_fixture": true,
+      "v17_raw_rows": 13906,
+      "v17_typed_rows": 13888,
+      "v17_unresolved_rows": 18
+    }
+  ],
+  "consolidated_source": {
+    "bytes": 54065498,
+    "path": "../../../../../pipelines/ingestion/testdata/input_pdf_v17_jan2014/2013-2020_consolidated.xlsx",
+    "sha256": "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5"
+  }
+}

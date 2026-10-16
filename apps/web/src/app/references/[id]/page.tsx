@@ -5,10 +5,11 @@ import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
-import { dateLabel } from "@/lib/market-types";
+import { dateLabel, dateSearchAliases, unitLabel } from "@/lib/market-types";
 import { CropPicture } from "@/components/marketplace/CropPicture";
 import { usePreferences } from "@/components/marketplace/Preferences";
 import { CatalogBackLink } from "@/components/marketplace/CatalogBackLink";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import {
   officialMoney,
   officialDetailLabels,
@@ -23,6 +24,7 @@ export default function Reference({
   const { id } = use(params),
     [order, setOrder] = useState("price"),
     [history, setHistory] = useState("recent");
+  const [tableChoice, setTableChoice] = useState("");
   const { saved, toggleSaved } = usePreferences();
   const savedKey = "reference:" + id;
   const { data, loading, error, retry } = useData<{
@@ -50,6 +52,13 @@ export default function Reference({
         `${i ? "L" : "M"} ${10 + (i / Math.max(1, rows.length - 1)) * 700} ${180 - ((Number(x.price) - low) / span) * 160}`,
     )
     .join(" ");
+  const rowId = (x: OfficialPrice) => JSON.stringify([x.observed_on, x.document_id, x.source_locator]);
+  const rankedRows = [...rows].sort((a, b) => order === "price"
+    ? b.price - a.price || b.observed_on.localeCompare(a.observed_on)
+    : b.observed_on.localeCompare(a.observed_on));
+  const selectedRow = rankedRows.find((x) => rowId(x) === tableChoice);
+  const tableRows = rows.length > 24 ? rankedRows.slice(0, 12) : rankedRows;
+  if (selectedRow && !tableRows.some((x) => rowId(x) === tableChoice)) tableRows.push(selectedRow);
   return (
     <>
       <CatalogBackLink />
@@ -84,7 +93,7 @@ export default function Reference({
             {officialMoney(r.price, r.currency)}
           </strong>
           <p>
-            Por {r.unit} · {dateLabel(r.observed_on)}
+            Por {unitLabel(r.unit)} · {dateLabel(r.observed_on)}
           </p>
           {typeof r.details.period_end === "string" && (
             <p>
@@ -106,6 +115,12 @@ export default function Reference({
           id={r.document_id}
           page={r.source_page}
           locator={r.source_locator}
+          department={r.department}
+          productName={r.product_name}
+          marketName={r.market}
+          units={r.unit}
+          currency={r.currency}
+          month={r.observed_on}
         >
           Consultar fuente
         </EvidenceLink>
@@ -114,8 +129,9 @@ export default function Reference({
         items={[
           { label: "Entidad", value: r.publisher },
           { label: "Mercado", value: r.market },
+          { label: "Departamento", value: r.department || "" },
           { label: "Moneda", value: r.currency },
-          { label: "Unidad", value: r.unit },
+          { label: "Unidad", value: unitLabel(r.unit) },
           { label: "Serie", value: r.basis },
           { label: "Historial", value: history === "all" ? "Completo" : "Últimos 12 meses publicados" },
         ]}
@@ -130,14 +146,14 @@ export default function Reference({
           </select>
         </label>
         <p>
-          {rows.length} observaciones · {dateLabel(rows[0].observed_on)} a{" "}
+          {rows.length} {rows.length === 1 ? "observación" : "observaciones"} · {dateLabel(rows[0].observed_on)} a{" "}
           {dateLabel(rows.at(-1)!.observed_on)}
         </p>
         <svg
           viewBox="0 0 720 205"
           className="price-chart"
           role="img"
-          aria-label={`Historial de ${r.product_name} en ${r.currency} por ${r.unit}`}
+          aria-label={`Historial de ${r.product_name} en ${r.currency} por ${unitLabel(r.unit)}`}
         >
           <path d={path} fill="none" stroke="#22643f" strokeWidth="3" />
           {rows.map((x, i) => (
@@ -164,26 +180,50 @@ export default function Reference({
               <option value="date">Fecha más reciente</option>
             </select>
           </label>
+          {rows.length > 24 && (
+            <>
+              <p>La tabla muestra doce registros según el orden elegido y el registro seleccionado. Busca cualquier fecha del historial consultado.</p>
+              <SearchableSelect
+                label="Consultar un registro de esta tabla"
+                placeholder="Busca fecha, año o precio"
+                value={selectedRow ? tableChoice : ""}
+                options={rankedRows.map((x) => ({
+                  id: rowId(x), label: dateLabel(x.observed_on),
+                  detail: `${officialMoney(x.price, x.currency)} · ${x.currency} / ${unitLabel(x.unit)} · ${x.market}`,
+                  searchText: [dateSearchAliases(x.observed_on), String(x.price), x.market].join(" "),
+                }))}
+                onChange={setTableChoice}
+                selectionActions={selectedRow && (
+                  <EvidenceLink
+                    id={selectedRow.document_id}
+                    page={selectedRow.source_page}
+                    locator={selectedRow.source_locator}
+                    productName={selectedRow.product_name}
+                    marketName={selectedRow.market}
+                    department={selectedRow.department}
+                    units={selectedRow.unit}
+                    currency={selectedRow.currency}
+                    month={selectedRow.observed_on}
+                  >
+                    Consultar fuente del registro seleccionado
+                  </EvidenceLink>
+                )}
+              />
+            </>
+          )}
           <div className="table-scroll">
-            <table>
+            <table className="reference-history-table">
               <thead>
                 <tr>
                   <th>Fecha</th>
                   <th>
-                    {r.currency} / {r.unit}
+                    {r.currency} / {unitLabel(r.unit)}
                   </th>
                   <th>Fuente</th>
                 </tr>
               </thead>
               <tbody>
-                {[...rows]
-                  .sort((a, b) =>
-                    order === "price"
-                      ? b.price - a.price ||
-                        b.observed_on.localeCompare(a.observed_on)
-                      : b.observed_on.localeCompare(a.observed_on),
-                  )
-                  .map((x) => (
+                {tableRows.map((x) => (
                     <tr key={x.observed_on}>
                       <td>{dateLabel(x.observed_on)}</td>
                       <td>{officialMoney(x.price, x.currency)}</td>
@@ -192,6 +232,12 @@ export default function Reference({
                           id={x.document_id}
                           page={x.source_page}
                           locator={x.source_locator}
+                          productName={x.product_name}
+                          marketName={x.market}
+                          department={x.department}
+                          units={x.unit}
+                          currency={x.currency}
+                          month={x.observed_on}
                         >
                           Consultar
                         </EvidenceLink>
@@ -209,7 +255,7 @@ export default function Reference({
           <div><dt>Entidad</dt><dd>{r.publisher}</dd></div>
           <div><dt>Tipo de precio</dt><dd>{r.basis}</dd></div>
           <div><dt>Mercado</dt><dd>{r.market}</dd></div>
-          <div><dt>Moneda y unidad</dt><dd>{r.currency} / {r.unit}</dd></div>
+          <div><dt>Moneda y unidad</dt><dd>{r.currency} / {unitLabel(r.unit)}</dd></div>
           {Object.entries(r.details)
             .filter(
               ([k, v]) =>

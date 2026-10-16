@@ -54,9 +54,13 @@ class Database:
         self.sql.append(sql)
         if sql.startswith("SELECT id,content"):
             return Result()
+        if sql.startswith("SELECT count(*) FROM source_ocr_attempt a"):
+            return Result(one=(0,))
         if sql.startswith("SELECT count(*) FROM source_ocr_attempt"):
             return Result(one=(0,))
-        if sql.startswith("SELECT document_id,source_locator,image_id"):
+        if "FROM source_ocr_task t WHERE t.status" in sql:
+            if params[2] != (self.kind == "city-pdf"):
+                return Result()
             return Result(many=[("doc", "PDF page 1", "image", self.kind, self.page)])
         if sql.startswith("SELECT d.content,d.reference_period"):
             return Result(one=(self.body, "2015-04-30", self.day))

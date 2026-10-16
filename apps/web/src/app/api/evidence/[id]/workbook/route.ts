@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { database } from "@/lib/server/db";
 import { WORKBOOK_PREVIEW_VERSION } from "@/lib/workbook-cell";
+import { sourceDocumentInApp } from "@/lib/server/source-document-scope";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const id = (await params).id;
-  if (!/^[a-f0-9]{64}$/.test(id)) return NextResponse.json({ error: "Archivo no encontrado." }, { status: 404 });
+  if (!/^[a-f0-9]{64}$/.test(id) || !sourceDocumentInApp(id)) return NextResponse.json({ error: "Archivo no encontrado." }, { status: 404 });
   try {
     const found = await database().query("SELECT 1 FROM source_document WHERE id=$1 AND (publisher IN ('DANE','FNC') OR metadata->>'ingestion_kind'='dane-weekly-xlsx' OR metadata->>'ingestion_kind' LIKE 'international-%' OR metadata->>'ingestion_kind' LIKE 'colombia-%') AND media_type IN ('application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')", [id]);
     if (!found.rowCount) return NextResponse.json({ error: "Archivo no encontrado." }, { status: 404 });

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { database } from "@/lib/server/db";
+import { DAILY_DATES_SQL, DAILY_SUPPLY_SOURCE_SQL } from "@/lib/server/daily-quotes";
 import { latestRegionalPrices } from "@/lib/server/regional-prices";
+import { SOURCE_LIBRARY_SQL } from "@/lib/server/source-library";
+import { normalizeInputLabels, normalizeLabel } from "@/lib/label-normalization";
 import {
   farmData,
   inputs,
@@ -26,7 +29,8 @@ export async function GET(
         (q.get("market") || "").slice(0, 200),
       );
     else if (resource === "inputs")
-      result = await inputs((q.get("department") || "").slice(0, 100), q.get("scope") || "department", q.get("history") === "all", "", q.get("grouped") === "true");
+      result = (await inputs((q.get("department") || "").slice(0, 100), q.get("scope") || "department", q.get("history") === "all", "", q.get("grouped") === "true"))
+        .map(normalizeInputLabels);
     else if (resource === "weather") {
       if (!q.has("lat") || !q.has("lon"))
         return NextResponse.json(
@@ -49,22 +53,54 @@ export async function GET(
         );
       result = await weatherFor(lat, lon);
     } else if (resource === "regional")
-      result = await latestRegionalPrices();
-    else if (resource === "daily")
+      result = (await latestRegionalPrices()).map((row) => ({ ...row,
+        product_name: typeof row.product_name === "string"
+          ? normalizeLabel(row.product_name, "product") : row.product_name,
+        market_name: typeof row.market_name === "string"
+          ? normalizeLabel(row.market_name, "place") : row.market_name,
+        display_market_name: typeof row.display_market_name === "string"
+          ? normalizeLabel(row.display_market_name, "place") : row.display_market_name,
+        category_path: Array.isArray(row.category_path)
+          ? row.category_path.map((part) => typeof part === "string"
+            ? normalizeLabel(part, "category") : part) : row.category_path,
+      }));
+    else if (resource === "daily-dates")
       result = (
         await database().query(
-          "SELECT * FROM daily_price WHERE observed_on=(SELECT max(observed_on) FROM daily_price WHERE observed_on>((CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date-interval '12 months') AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date) ORDER BY product_name,market_name",
+          DAILY_DATES_SQL,
         )
       ).rows;
+    else if (resource === "daily" || resource === "daily-supply-source") {
+      const requestedDate = q.get("date") || "";
+      if (requestedDate && (
+        !/^\d{4}-\d{2}-\d{2}$/.test(requestedDate) ||
+        !Number.isFinite(Date.parse(`${requestedDate}T00:00:00Z`)) ||
+        new Date(`${requestedDate}T00:00:00Z`).toISOString().slice(0, 10) !== requestedDate
+      ))
+        return NextResponse.json({ error: "Fecha de boletín no válida." }, { status: 400 });
+      if (resource === "daily-supply-source") {
+        if (!requestedDate) return NextResponse.json(null);
+        result = (await database().query(DAILY_SUPPLY_SOURCE_SQL, [requestedDate])).rows[0] || null;
+        return NextResponse.json(result, { headers: { "Cache-Control": "public, max-age=300" } });
+      }
+      result = (
+        await database().query(
+          `SELECT * FROM daily_price WHERE observed_on=CASE WHEN $1::text<>'' THEN $1::date ELSE
+            (SELECT max(observed_on) FROM daily_price WHERE observed_on>((CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date-interval '12 months')
+              AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date) END
+            AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
+            ORDER BY product_name,market_name`,
+          [requestedDate],
+        )
+      ).rows.map((row) => ({ ...row,
+        product_name: normalizeLabel(row.product_name, "product"),
+        market_name: normalizeLabel(row.market_name, "place"),
+      }));
+    }
     else if (resource === "library")
       result = (
         await database().query(
-          `SELECT a.alias,d.id,d.title,d.publisher,d.reference_period,d.kind,d.media_type
-          FROM document_alias a JOIN source_document d ON d.id=a.document_id
-          WHERE a.alias NOT LIKE 'price-%' AND NOT EXISTS (
-            SELECT 1 FROM ingestion_asset i WHERE i.document_id=d.id AND i.status='review'
-              AND i.kind='daily' AND a.alias='daily-' || i.observed_on::text || '-workbook'
-          ) ORDER BY d.publisher,d.title`,
+          SOURCE_LIBRARY_SQL,
         )
       ).rows;
     else

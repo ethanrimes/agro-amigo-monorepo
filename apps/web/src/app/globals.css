@@ -1112,9 +1112,71 @@ html {
   cursor: pointer;
   padding: 5px;
 }
+.chart-data table {
+  table-layout: fixed;
+}
+.chart-data th,
+.chart-data td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.history-row-source {
+  margin-top: 3px;
+  white-space: normal;
+}
+.history-row-source .evidence-link {
+  margin: 2px 0;
+  font-size: 11px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.history-row-source ul {
+  margin: 3px 0 0;
+  padding-left: 16px;
+}
+.history-row-source li {
+  white-space: normal;
+}
 .table-scroll {
   overflow: auto;
   max-height: 350px;
+}
+@media (max-width: 600px) {
+  .reference-history-table,
+  .reference-history-table tbody,
+  .reference-history-table tr {
+    display: block;
+  }
+  .reference-history-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .reference-history-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .reference-history-table td {
+    min-width: 0;
+    padding: 4px 0;
+    border: 0;
+    white-space: normal;
+  }
+  .reference-history-table td:nth-child(2) {
+    text-align: right;
+  }
+  .reference-history-table td:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .reference-history-table .evidence-link {
+    margin: 2px 0;
+  }
 }
 table {
   border-collapse: collapse;

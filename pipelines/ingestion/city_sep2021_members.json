@@ -1,0 +1,86 @@
+{
+  "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-01-09-2021.zip",
+  "parent_document_id": "cbd378bc2d1863439c9e0a806dcdaa5026ebdd9e920fbd9c63dc1473de589edf",
+  "parent_byte_count": 1087989,
+  "parent_sha256_verified": true,
+  "zip_crc_all_verified": true,
+  "children": [
+    {
+      "entry_name": "BOGOTA 1 sep 21.pdf",
+      "document_id": "f5d39758d2921991b120381bafbfa2f3dd3cdd07cbbdfc8611f60d51c3a5dd93",
+      "byte_count": 165532,
+      "zip_crc32": "cb888876",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Barranquilla, Granabastos 01092021.pdf",
+      "document_id": "f74ba57880a0a199d6926b8fb5652b652926d7d6ec7bfd17efea320186de1b2c",
+      "byte_count": 67345,
+      "zip_crc32": "baabc914",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Cartagena, Bazurto,, 1-sep-21.pdf",
+      "document_id": "16381c4b870066c7f3f4aab8c0d732dc36187d3b088c68bb308a46ec6c33b463",
+      "byte_count": 126221,
+      "zip_crc32": "6846740c",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "MONTERIA 1 sep 21.pdf",
+      "document_id": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "byte_count": 156755,
+      "zip_crc32": "6dd6a80f",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Medellín, Central Mayorista de Antioquia 01092021.pdf",
+      "document_id": "36058d3e2ab35b83737c3379870dfc94cfc8f93798f6873101beb296f2bd68ad",
+      "byte_count": 119594,
+      "zip_crc32": "649352d7",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Pereira, Mercasa,, 1-sep-21.pdf",
+      "document_id": "eaaafa06421b7ffba4828df57827e90987d9e889bbd854d5174b88831a32148f",
+      "byte_count": 133054,
+      "zip_crc32": "6408edfd",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Popayán, 1-sep-21.pdf",
+      "document_id": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "byte_count": 147140,
+      "zip_crc32": "5beec70a",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Santa Marta (Magdalena) 01092021.pdf",
+      "document_id": "cc58e5ce38fa751138de088436ece59fb35610fc14eca39d1811f76d2009bd78",
+      "byte_count": 66294,
+      "zip_crc32": "084f336e",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Sincelejo, Nuevo Mercado 01092021.pdf",
+      "document_id": "32c73fee19652051a882222b51178105fd36e65098c9004992bfb971ead116fc",
+      "byte_count": 83215,
+      "zip_crc32": "42691bf8",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "VILLAVICENCIO 1 sep 21.pdf",
+      "document_id": "479bb6418ba84694e41bdf3b6249761127dd88fa1227b5e2dd3e3975430d5aa6",
+      "byte_count": 172264,
+      "zip_crc32": "dbf231b5",
+      "sha256_verified": true
+    },
+    {
+      "entry_name": "Valledupar, Mercabastos,, 1-sep-21.pdf",
+      "document_id": "80009b21f92c47bac30d7a8d181605682fa3404c43a96610d93305b4cfbf1058",
+      "byte_count": 114596,
+      "zip_crc32": "09d35334",
+      "sha256_verified": true
+    }
+  ]
+}

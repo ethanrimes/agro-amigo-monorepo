@@ -3,6 +3,8 @@ import { database, WINDOW } from "./db";
 import { CITY_CATALOG_SQL } from "./catalog-sql";
 import { cityCatalogNames } from "./city-catalog-names";
 import { monthlyCatalogSnapshot } from "./monthly-catalog";
+import { departmentKey } from "../filter-labels";
+import { normalizeLabel } from "../label-normalization";
 import type {
   Catalog,
   Coffee,
@@ -19,11 +21,11 @@ export async function catalog(region = ""): Promise<Catalog & { cacheExpiresAt: 
       FROM coffee_reference WHERE ${WINDOW} ORDER BY observed_on DESC LIMIT 1`),
     cityCatalogNames(),
   ]);
-  const products = monthly.products.get(region) || [];
+  const products = monthly.products.get(departmentKey(region)) || [];
   const existing = new Set(products.map((row) => row.id));
   const dates = new Map<string, string>();
   for (const row of names) {
-    if (!existing.has(row.product_id) && row.latest_date && row.latest_date > (dates.get(row.product_id) || "")) {
+    if (row.latest_date && row.latest_date > (dates.get(row.product_id) || "")) {
       dates.set(row.product_id, row.latest_date);
     }
   }
@@ -31,11 +33,21 @@ export async function catalog(region = ""): Promise<Catalog & { cacheExpiresAt: 
   const cityRows = candidates.length
     ? await db.query<Product>(CITY_CATALOG_SQL, [region, JSON.stringify(candidates)])
     : { rows: [] as Product[] };
+  // Native city classifications also belong to canonical IDs with a monthly
+  // card. Keep that card's price, basis and link; use only its current source
+  // paths for hierarchy matching in this region.
+  const cityPaths = new Map(cityRows.rows.map((row) => [row.id, row.category_paths]));
+  const selected = [
+    ...products.map((row) => cityPaths.get(row.id)?.length
+      ? { ...row, category_paths: cityPaths.get(row.id) }
+      : row),
+    ...cityRows.rows.filter((row) => !existing.has(row.id)),
+  ];
   return {
     cacheExpiresAt: monthly.expiresAt,
-    products: [...coffeeRows.rows, ...products, ...cityRows.rows],
+    products: [...coffeeRows.rows, ...selected],
     regions: monthly.regions,
-    latestDate: [...products,...cityRows.rows].reduce<string | null>(
+    latestDate: selected.reduce<string | null>(
       (d, p) => (!d || p.date > d ? p.date : d),
       null,
     ),
@@ -63,7 +75,10 @@ export async function coffee(): Promise<Coffee | null> {
     ...latest,
     previous_price: reference.rows.at(-2)?.price ?? null,
     history: reference.rows,
-    markets: markets.rows,
+    markets: markets.rows.map((market) => ({ ...market,
+      name: normalizeLabel(market.name, "place"),
+      region: normalizeLabel(market.region, "place"),
+    })),
     factors: factors.rows,
     exchange: exchange.rows[0] ?? null,
   };

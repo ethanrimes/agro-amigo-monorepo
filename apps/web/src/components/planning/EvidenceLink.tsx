@@ -1,6 +1,8 @@
 "use client";
 import { useEvidence } from "./EvidenceProvider";
 import { IoDocumentTextOutline } from "react-icons/io5";
+import { workbookLocation } from "@/lib/workbook-locator";
+import { pdfLocationPage } from "@/lib/pdf-locator";
 export function EvidenceLink({
   id,
   children = "Ver de dónde sale este dato",
@@ -9,7 +11,14 @@ export function EvidenceLink({
   department,
   input,
   product,
+  productName,
   market,
+  marketName,
+  providerName,
+  stratum,
+  presentation,
+  units,
+  currency,
   food,
   month,
   locator,
@@ -23,7 +32,14 @@ export function EvidenceLink({
   department?: string;
   input?: string;
   product?: string;
+  productName?: string;
   market?: string;
+  marketName?: string;
+  providerName?: string;
+  stratum?: string;
+  presentation?: string;
+  units?: string;
+  currency?: string;
   food?: string;
   month?: string;
   locator?: string;
@@ -34,14 +50,16 @@ export function EvidenceLink({
   if (!id) return <span className="muted">Documento no disponible</span>;
   const q = new URLSearchParams();
   if(locator) q.set("locator",locator);
-  const cell = locator?.match(/^(.*?)!(?:row\s+|[A-Z]+)?(\d+)/);
-  if (sheet || cell?.[1]) q.set("sheet", sheet || cell![1]);
-  if (row || cell?.[2]) q.set("row", String(row || cell![2]));
-  if (page) q.set("page", String(page));
+  const cell = workbookLocation(locator);
+  if (sheet || cell?.sheet) q.set("sheet", sheet || cell!.sheet);
+  if (row || cell?.row) q.set("row", String(row || cell!.row));
+  if (cell?.column) q.set("col", String(cell.column));
+  const sourcePage = page || pdfLocationPage(locator);
+  if (sourcePage) q.set("page", String(sourcePage));
   if (municipality) q.set("municipality", municipality);
   if (department) q.set("department", department);
   if (input) q.set("input", input);
-  for (const [key, value] of Object.entries({ product, market, food, month }))
+  for (const [key, value] of Object.entries({ product, productName, market, marketName, providerName, stratum, presentation, units, currency, food, month }))
     if (value) q.set(key, value);
   return (
     <a

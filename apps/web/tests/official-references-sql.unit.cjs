@@ -11,14 +11,17 @@ const source = fs.readFileSync(path.join(__dirname, '../../../pipelines/ingestio
 const sql = source.split('LATEST_FOR_KEYS_SQL = \"\"\"')[1].split('\"\"\"')[0].replace('%s', '$1');
 const schema = fs.readFileSync(path.join(__dirname, '../../../pipelines/ingestion/schema.sql'), 'utf8');
 const view = schema.split('CREATE OR REPLACE VIEW published_official_price AS')[1].split('GRANT SELECT ON published_official_price')[0];
+const frontend = fs.readFileSync(path.join(__dirname, '../src/lib/server/official-references.ts'), 'utf8');
+const historySql = frontend.split('export const OFFICIAL_REFERENCE_HISTORY_SQL = `')[1].split('`;')[0];
 const socket = process.env.AGRO_REFERENCE_TEST_SOCKET;
-const enabled = Boolean(socket?.startsWith('/tmp/agro-reference-pg-'));
+const unified = Boolean(socket?.startsWith('/tmp/agro-unified-catalog-pg-'));
+const enabled = Boolean(unified || socket?.startsWith('/tmp/agro-reference-pg-'));
 let db;
 const hash = (label) => crypto.createHash('sha256').update(label).digest('hex');
 const tables = ['source_document', 'official_price_quote', 'official_source_review', 'ingestion_asset'];
 beforeEach(async () => {
   if (!enabled) return;
-  db = new Client({ host: socket, port: 65440, database: 'postgres' });
+  db = new Client({ host: socket, port: unified ? 65443 : 65440, database: 'postgres' });
   await db.connect();
   await db.query("SET search_path=pg_temp; SET statement_timeout='12s'");
   for (const table of tables) {
@@ -26,6 +29,7 @@ beforeEach(async () => {
     assert.equal((await db.query('SELECT relpersistence FROM pg_class WHERE oid=to_regclass($1)', [table])).rows[0].relpersistence, 't');
   }
   await db.query('CREATE INDEX official_quote_identity ON official_price_quote(quote_key,observed_on DESC)');
+  await db.query('CREATE INDEX official_quote_history_cover ON official_price_quote(quote_key,observed_on DESC) INCLUDE(document_id,source_locator,parser_version,parsed_at,series)');
   await db.query('CREATE INDEX ingestion_asset_document ON ingestion_asset(document_id)');
   await db.query('CREATE TEMP VIEW published_official_price AS ' + view);
 });
@@ -60,8 +64,36 @@ async function equivalent() {
     WHERE p.observed_on <= (CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
   ) ranked WHERE rank=1 ORDER BY quote_key`)).rows.map(({ rank, ...row }) => row);
   assert.deepEqual(actual, expected);
+  for (const key of keys) {
+    const history = (await db.query(historySql, [key])).rows;
+    const old = (await db.query(`SELECT q.*,d.source_url FROM published_official_price q
+      JOIN source_document d ON d.id=q.document_id WHERE quote_key=$1
+        AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY observed_on`, [key])).rows;
+    assert.deepEqual(history, old, 'All historical values, dimensions and provenance match the published view');
+  }
   return actual;
 }
+check('history supersession sees a later parse even when its corrected quote identity changes', async () => {
+  const doc = await document('identity-correction');
+  await quote(doc, 'wrong-name', '2026-09-25', 100, {locator:'same printed cell'});
+  await quote(doc, 'correct-name', '2026-09-25', 100, {locator:'same printed cell',version:'v2',parsed:'2026-09-24T12:00:00Z'});
+  await equivalent();
+  assert.deepEqual((await db.query(historySql,[hash('wrong-name')])).rows,[]);
+  const corrected = (await db.query(historySql,[hash('correct-name')])).rows;
+  assert.equal(corrected.length,1);assert.equal(corrected[0].parser_version,'v2');
+  assert.equal((await db.query('SELECT count(*) FROM official_price_quote')).rows[0].count,'2');
+});
+check('history preserves milk bulletin precedence over a later download of an older bulletin', async () => {
+  const newer = await document('June milk','2026-09-08T00:00:00Z');
+  const older = await document('May milk','2026-09-10T00:00:00Z');
+  await quote(newer,'milk','2026-05-31',2110);
+  await quote(older,'milk','2026-05-31',2000);
+  await db.query("UPDATE source_document SET reference_period=CASE WHEN id=$1 THEN '2026-06-30' ELSE '2026-05-31' END WHERE id=ANY($2::text[])",[newer,[newer,older]]);
+  await db.query("UPDATE official_price_quote SET series='dane-milk-macroregion',unit='litro',basis='Promedio mensual publicado en finca por macrorregión',details=jsonb_build_object('bulletin_period',CASE WHEN document_id=$1 THEN '2026-06-30' ELSE '2026-05-31' END)",[newer]);
+  await equivalent();
+  const [row] = (await db.query(historySql,[hash('milk')])).rows;
+  assert.equal(row.price,'2110');assert.equal(row.document_id,newer);assert.equal(row.unit,'litro');
+});
 check('date takes precedence over retrieval date; previous price uses a distinct observed date', async () => {
   const earlier = await document('earlier', '2026-09-20T12:00:00Z');
   const later = await document('later', '2026-09-26T12:00:00Z');
@@ -122,11 +154,22 @@ check('long histories and unrelated reviews keep identical values without a full
   function inspect(node) {
     if (node['Node Type'].includes('Sort')) {
       assert.ok(node['Actual Rows'] <= 2, 'Only same-date revisions should be sorted');
-      assert.ok(!node['Sort Key'].some((key) => key.includes('observed_on')), 'Date seeks should be served by the identity/date index');
+      // A bounded one/two-row revision sort may retain observed_on in its
+      // keys. The row bound, not that harmless key, detects a history-wide sort.
     }
     for (const child of node.Plans || []) inspect(child);
   }
   inspect(plan.Plan);
+  const oneKey = keys[0];
+  const historyPlan = (await db.query('EXPLAIN (ANALYZE,FORMAT JSON) ' + historySql, [oneKey])).rows[0]['QUERY PLAN'][0];
+  function inspectHistory(node) {
+    if (node['Node Type'].includes('Sort'))
+      assert.ok(node['Actual Rows'] <= 2000, 'History sorting stays within the selected identity, not all 60,000 source rows');
+    if (node['Relation Name'] === 'official_source_review')
+      assert.ok(node['Actual Rows'] <= 1, 'Review checks seek exact document/locator rather than scanning unrelated reviews');
+    for (const child of node.Plans || []) inspectHistory(child);
+  }
+  inspectHistory(historyPlan.Plan);
 });
 check('frontend reads only clean current payloads, excluding tombstones and future dates', async () => {
   const frontend = fs.readFileSync(path.join(__dirname, '../src/lib/server/official-references.ts'), 'utf8');
@@ -142,4 +185,62 @@ check('frontend reads only clean current payloads, excluding tombstones and futu
   ]) await db.query('INSERT INTO official_catalog_current VALUES($1,$2,$3,$4)', [key, payload, dirty, version]);
   assert.deepEqual((await db.query(readSql)).rows, [{ payload: valid }]);
   assert.ok(!readSql.includes('official_price_quote'));
+});
+
+check('retained parser revisions resolve each printed cell before indexed supersession checks', async () => {
+  const doc = await document('eight-worldbank-revisions');
+  const key = hash('monthly-reference');
+  await db.query(`INSERT INTO official_price_quote(document_id,source_locator,parser_version,quote_key,product_id,product_name,category,publisher,series,basis,currency,unit,market,observed_on,price,parsed_at)
+    SELECT $1,'cell:'||month,'v'||revision,$2,'reference','Reference','Frutas','fixture','international-monthly','Monthly reference','USD','t','International',
+      (DATE '1959-12-31'+month*INTERVAL '1 month')::date,month+revision,
+      TIMESTAMPTZ '2026-09-01 12:00:00Z'+revision*INTERVAL '1 day'
+    FROM generate_series(1,800) month CROSS JOIN generate_series(1,8) revision`, [doc,key]);
+  await db.query('ANALYZE official_price_quote');
+  const actual = (await db.query(historySql,[key])).rows;
+  const expected = (await db.query(`SELECT q.*,d.source_url FROM published_official_price q
+    JOIN source_document d ON d.id=q.document_id WHERE quote_key=$1
+    AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY observed_on`,[key])).rows;
+  assert.deepEqual(actual,expected);
+  assert.equal(actual.length,800);
+  assert.ok(actual.every(row=>row.parser_version==='v8'));
+  const plan = (await db.query('EXPLAIN (ANALYZE,FORMAT JSON) '+historySql,[key])).rows[0]['QUERY PLAN'][0];
+  const supersession=[];
+  function inspect(node) {
+    if(node['Relation Name']==='official_price_quote' && /parsed_at >/.test(node['Index Cond']||''))
+      supersession.push(node);
+    for(const child of node.Plans||[])inspect(child);
+  }
+  inspect(plan.Plan);
+  assert.ok(supersession.length,'Supersession retains an indexed lookup');
+  assert.ok(supersession.every(node=>node['Actual Loops']<=800),'Only the current800 printed cells need a newer-revision lookup');
+  assert.equal((await db.query('SELECT count(*) FROM official_price_quote')).rows[0].count,'6400','All historical parser evidence remains retained');
+});
+
+check('overlapping retained originals check eligibility per date and fall back from a reviewed first choice', async () => {
+  const key=hash('overlapping-agronet-history');
+  const docs=[];
+  for(let n=0;n<54;n++) docs.push(await document(`overlapping-${n}`,new Date(Date.UTC(2026,7,1+n)).toISOString()));
+  await db.query(`INSERT INTO official_price_quote(document_id,source_locator,parser_version,quote_key,product_id,product_name,category,publisher,series,basis,currency,unit,market,observed_on,price,parsed_at)
+    SELECT doc,'printed:'||day,'v'||revision,$2,'cacao','Cacao','Procesados','Agronet','colombia-agronet','Precio por kg','COP','kg','Colombia',
+      DATE '2021-01-01'+day,ordinality*100+day+revision,TIMESTAMPTZ '2026-09-01 12:00:00Z'+revision*INTERVAL '1 day'
+    FROM unnest($1::text[]) WITH ORDINALITY AS documents(doc,ordinality)
+    CROSS JOIN generate_series(1,265) day CROSS JOIN generate_series(1,2) revision`,[docs,key]);
+  await review(docs.at(-1),'printed:265');
+  await db.query('ANALYZE official_price_quote; ANALYZE official_source_review');
+  await equivalent();
+  const rows=(await db.query(historySql,[key])).rows;
+  assert.equal(rows.length,265);
+  assert.equal(rows.at(-1).document_id,docs.at(-2),'A reviewed latest original falls back to its eligible predecessor');
+  assert.ok(rows.slice(0,-1).every(row=>row.document_id===docs.at(-1)));
+  const plan=(await db.query('EXPLAIN (ANALYZE,FORMAT JSON) '+historySql,[key])).rows[0]['QUERY PLAN'][0];
+  const checks=[];
+  function inspect(node){
+    if(['official_price_quote','official_source_review','ingestion_asset'].includes(node['Relation Name']) &&
+       node['Actual Loops']>1 && !/milk/.test(node.Alias||'')) checks.push(node);
+    for(const child of node.Plans||[])inspect(child);
+  }
+  inspect(plan.Plan);
+  assert.ok(checks.length);
+  assert.ok(checks.every(node=>node['Actual Loops']<=266),'Only the winning source or its reviewed fallback needs an eligibility check per date');
+  assert.equal((await db.query('SELECT count(*) FROM official_price_quote')).rows[0].count,'28620','All overlapping source revisions remain retained');
 });

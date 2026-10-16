@@ -5,18 +5,30 @@ import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
-import { dateLabel, number } from "@/lib/market-types";
+import { dateLabel, number, unitLabel } from "@/lib/market-types";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
+import { normalizeLabel } from "@/lib/label-normalization";
 const titles: Record<string, string> = {
   summary: "Resumen de insumos",
   electricity: "Energía eléctrica",
   wholesale: "Resumen mayorista mensual",
 };
+// Published tariffs and percentages retain decimals omitted by the compact
+// one-decimal summary formatter.
+const sourceDecimal = new Intl.NumberFormat("es-CO", {
+  maximumFractionDigits: 4,
+});
+const supportPercentage = (key: string) => /^(subsidio|subsidios|contribucion|contribuciones)$/.test(
+  key.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase(),
+);
 type Data = {
   rows: {
     name: string;
     category: string;
     document_id: string;
     source_locator: string;
+    observed_on: string;
     details: Record<string, unknown>;
   }[];
   total: number;
@@ -25,12 +37,22 @@ type Data = {
   date: string | null;
   kind: string;
 };
+type ReferenceRow = Data["rows"][number];
+const recordId = (row: ReferenceRow) => row.document_id + ":" + row.source_locator;
+const recordLabel = (row: ReferenceRow) => [
+  row.name,
+  row.details.Estrato !== undefined ? `Estrato ${row.details.Estrato}` : "",
+  row.details.Ciudad,
+  row.details.Presentación,
+  row.details.Unidad,
+].filter(Boolean).join(" · ");
 export default function DataReferences() {
   const [kind, setKind] = useState("summary"),
     [query, setQuery] = useState(""),
     [category, setCategory] = useState(""),
     [date, setDate] = useState(""),
-    [page, setPage] = useState(0);
+    [page, setPage] = useState(0),
+    [selectedRecord, setSelectedRecord] = useState("");
   useEffect(() => {
     const k = new URLSearchParams(window.location.search).get("kind");
     if (k && titles[k]) setKind(k);
@@ -50,6 +72,10 @@ export default function DataReferences() {
     if (data) setPrevious(data);
   }, [data]);
   const meta = data || previous;
+  useEffect(() => { setSelectedRecord(""); }, [kind, query, category, date, page, data?.date]);
+  const chosen = data?.rows.find((row) => recordId(row) === selectedRecord);
+  const visibleRows = data?.rows.slice(0, 6) || [];
+  if (chosen && !visibleRows.some((row) => recordId(row) === selectedRecord)) visibleRows.push(chosen);
   return (
     <>
       <Link
@@ -90,37 +116,22 @@ export default function DataReferences() {
             ))}
           </select>
         </label>
-        <label className="form-field">
-          Mes
-          <select
-            value={data?.date || date}
-            onChange={(e) => {
-              setDate(e.target.value);
-              setPage(0);
-            }}
-          >
-            {meta?.dates.map((d) => (
-              <option key={d} value={d}>
-                {dateLabel(d)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="form-field">
-          Categoría
-          <select
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setPage(0);
-            }}
-          >
-            <option value="">Todas</option>
-            {meta?.categories.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-        </label>
+        <SearchableSelect
+          label="Mes"
+          allowClear={false}
+          value={date || data?.date || ""}
+          options={(meta?.dates || []).map((value) => ({ id: value, label: dateLabel(value), detail: value }))}
+          onChange={(value) => { setDate(value); setPage(0); }}
+          placeholder="Busca mes o año"
+          emptyLabel="Último mes disponible"
+          loading={loading && !meta}
+          error={Boolean(error) && !meta}
+        />
+        <HierarchicalCategorySelect
+          value={category}
+          paths={meta?.categories || []}
+          onChange={(value) => { setCategory(value); setPage(0); }}
+        />
         <label className="form-field">
           Buscar
           <input
@@ -136,7 +147,7 @@ export default function DataReferences() {
         items={[
           { label: "Datos", value: titles[kind] },
           { label: "Mes", value: data?.date ? dateLabel(data.date) : date },
-          { label: "Categoría", value: category || "Todas" },
+          { label: "Categoría", value: category ? normalizeLabel(category, "category") : "Todas" },
           { label: "Búsqueda", value: query },
         ]}
       />
@@ -148,13 +159,29 @@ export default function DataReferences() {
         data && (
           <>
             <p className="results-label">{data.total} registros</p>
+            {data.total > 0 && <p className="help-text">
+              Página {page + 1} de {Math.ceil(data.total / 60)} · registros {page * 60 + 1}–{page * 60 + data.rows.length} de {data.total}.
+              {data.rows.length > 6 && " Se muestran seis registros y el registro elegido. Busca en esta página o cambia de página para consultar los demás."}
+            </p>}
+            {data.rows.length > 6 && <SearchableSelect
+              label="Consultar un registro de esta página"
+              value={selectedRecord}
+              options={data.rows.map((row) => ({
+                id: recordId(row),
+                label: recordLabel(row),
+                detail: dateLabel(row.observed_on) + " · " + normalizeLabel(row.category, "category"),
+              }))}
+              onChange={setSelectedRecord}
+              placeholder="Busca producto, proveedor, estrato o ciudad"
+              emptyLabel="Elige un registro para verlo junto a los seis primeros"
+            />}
             <div className="input-grid">
-              {data.rows.map((r) => (
+              {visibleRows.map((r) => (
                 <article
                   className="panel"
                   key={r.document_id + r.source_locator}
                 >
-                  <span className="eyebrow">{r.category}</span>
+                  <span className="eyebrow">{normalizeLabel(r.category, "category")}</span>
                   <h2>{r.name}</h2>
                   <dl className="reference-metadata">
                     {Object.entries(r.details)
@@ -166,16 +193,31 @@ export default function DataReferences() {
                             {typeof v === "number"
                               ? key === "Año"
                                 ? String(v)
-                                : key === "Subsidio" || key === "Contribución"
+                                : supportPercentage(key)
                                 ? number(v * 100) + " %"
+                                : kind === "electricity" && /^Tarifa\b/i.test(key)
+                                ? sourceDecimal.format(v)
+                                : key === "Variación (%)"
+                                ? sourceDecimal.format(v) + " %"
                                 : number(v)
-                              : String(v)}
+                              : key === "Unidad" && typeof v === "string"
+                                ? unitLabel(v)
+                                : String(v)}
                           </dd>
                         </div>
                       ))}
                   </dl>
-                  <EvidenceLink id={r.document_id} locator={r.source_locator}>
-                    Consultar Excel original
+                  <EvidenceLink
+                    id={r.document_id}
+                    locator={r.source_locator}
+                    productName={kind !== "electricity" ? r.name : undefined}
+                    providerName={kind === "electricity" ? r.name : undefined}
+                    stratum={kind === "electricity" ? String(r.details.Estrato ?? r.details.stratum ?? "") : undefined}
+                    marketName={typeof r.details.Ciudad === "string" ? r.details.Ciudad : undefined}
+                    units={typeof r.details.Unidad === "string" ? r.details.Unidad : undefined}
+                    month={r.observed_on}
+                  >
+                    Consultar fuente original
                   </EvidenceLink>
                 </article>
               ))}

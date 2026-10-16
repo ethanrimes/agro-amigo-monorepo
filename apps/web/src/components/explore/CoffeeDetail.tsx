@@ -1,4 +1,5 @@
 "use client";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { imageLibrary } from "@/lib/images";
 import { CoffeeCostReference } from "@/components/planning/CoffeeCostReference";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
@@ -132,7 +133,7 @@ export function CoffeeDetail() {
                       Serie diaria nacional FNC. Solo se muestran fechas
                       publicadas; no se completan vacíos con precios estimados.
                     </p>
-                    <MarketList markets={data.markets} coffee />
+                    <MarketList markets={data.markets} coffee productName="Café pergamino seco" />
                   </div>
                   <aside>
                     <section className="panel calculator">
@@ -169,30 +170,22 @@ export function CoffeeDetail() {
                           </select>
                         </label>
                       </div>
-                      <label className="form-field">
-                        Factor de rendimiento
-                        <select
-                          aria-label="Factor de rendimiento"
+                      <div className="form-field">
+                        <SearchableSelect
+                          label="Factor de rendimiento"
                           value={factor}
-                          onChange={(e) => setFactor(e.target.value)}
-                        >
-                          {(data.factors.length
-                            ? data.factors
-                            : [{ factor: 94, price: data.price }]
-                          ).map((f) => (
-                            <option value={f.factor} key={f.factor}>
-                              {f.factor}
-                              {f.factor === 94 ? " · Base FNC" : ""}
-                            </option>
-                          ))}
-                        </select>
+                          options={(data.factors.length ? data.factors : [{ factor: 94, price: data.price }]).map((f) => ({ id: String(f.factor), label: String(f.factor), detail: f.factor === 94 ? "Base FNC" : undefined }))}
+                          onChange={setFactor}
+                          placeholder="Busca el factor"
+                          allowClear={false}
+                        />
                         <small>
                           Usa el factor de tu análisis de trilla.{" "}
                           <EvidenceLink id="fnc-price" page={1}>
                             Ver tabla FNC
                           </EvidenceLink>
                         </small>
-                      </label>
+                      </div>
                       <label className="form-field">
                         Oferta del comprador por carga (COP)
                         <input

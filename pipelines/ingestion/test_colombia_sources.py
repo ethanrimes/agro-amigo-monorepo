@@ -248,6 +248,29 @@ class PriceSemantics(unittest.TestCase):
 
 
 class OcrFallback(unittest.TestCase):
+    def test_typed_pork_agreement_accepts_prose_only_and_rejects_price_or_market(self):
+        from .ocr import compare_pork_price_readings
+
+        pairs = {
+            page: tuple(json.loads(fixture(f"pork-2020-page{page}-reading{i}.json"))
+                        for i in (0, 1))
+            for page in (2, 3)
+        }
+        body = fixture("semana-4-marzo-2020.pdf")
+        url = "https://porkcolombia.co/semana-4-marzo-2020.pdf"
+        changed = copy.deepcopy(pairs)
+        changed[2][1]["text"] += "\nLogotipo institucional."
+        self.assertTrue(compare_pork_price_readings(body, url, changed))
+        changed = copy.deepcopy(pairs)
+        changed[2][1]["tables"][0][3][1] = "$ 5,287"
+        self.assertFalse(compare_pork_price_readings(body, url, changed))
+        changed = copy.deepcopy(pairs)
+        changed[2][1]["tables"][0][0][1] = "Bogotá"
+        self.assertFalse(compare_pork_price_readings(body, url, changed))
+        # The native failure declares both physical pages required. One good
+        # cached page cannot masquerade as agreement for the complete PDF.
+        self.assertFalse(compare_pork_price_readings(body, url, {2: pairs[2]}))
+
     @staticmethod
     def actual_readings():
         from .ocr import compare_readings

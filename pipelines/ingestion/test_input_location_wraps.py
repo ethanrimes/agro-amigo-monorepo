@@ -154,7 +154,7 @@ class WrappedMunicipalityPublication(unittest.TestCase):
             meta,
         )
         with (
-            patch.object(pdf_sources, "INPUT_PDF_VERSION", version),
+            publication_tests.synthetic_pdf_publication_version(version),
             self.db.transaction(),
         ):
             worker.save_rows(self.db, "old", [row])

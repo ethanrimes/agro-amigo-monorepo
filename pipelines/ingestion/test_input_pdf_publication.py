@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import unittest
+from contextlib import contextmanager
 from datetime import date
 from unittest.mock import patch
 
@@ -14,6 +15,26 @@ from . import inputs, pdf_sources, worker
 HERE = Path(__file__).parent
 MIGRATION = HERE / 'migrations/20260927_017_input_pdf_publication.sql'
 PERIOD = date(2012, 7, 31)
+
+
+@contextmanager
+def synthetic_pdf_publication_version(version):
+    """Bind a synthetic historic PDF fixture at both actual dispatch boundaries.
+
+    The direct conservative parser still emits v14 by default; production
+    input PDF sources use their unpatched source-bound v15/v16/v17 routing.
+    """
+    asset_version = worker.asset_parser_version
+
+    def scoped_asset_version(kind, url):
+        return version if kind == "inputs-pdf" else asset_version(kind, url)
+
+    with (
+        patch.object(pdf_sources, "INPUT_PDF_VERSION", version),
+        patch.object(inputs, "input_pdf_version_for_document", return_value=version),
+        patch.object(worker, "asset_parser_version", side_effect=scoped_asset_version),
+    ):
+        yield
 
 
 class PrintedInputOriginal(unittest.TestCase):
@@ -75,7 +96,7 @@ class InputPDFPublication(unittest.TestCase):
         return rows
 
     def publish(self, version, values, did='old', fail=False):
-        with patch.object(pdf_sources, 'INPUT_PDF_VERSION', version):
+        with synthetic_pdf_publication_version(version):
             with self.db.transaction():
                 worker.save_rows(self.db, did, self.rows(version, values))
                 worker.project(self.db, did, 'https://official.example/original.pdf', 'inputs-pdf')
@@ -154,7 +175,8 @@ class InputPDFPublication(unittest.TestCase):
 
     def test_registered_current_version_revalidates_without_changing_the_quote(self):
         current = pdf_sources.INPUT_PDF_VERSION
-        self.assertEqual(worker.parser_version('inputs-pdf'), current)
+        self.assertEqual(worker.parser_version('inputs-pdf'), 'inputs-pdf-v17')
+        self.assertEqual(current, 'inputs-pdf-v14')
         self.publish('inputs-pdf-v4', [(1,'Same',100,True)])
         self.publish(current, [(1,'Same',100,True)])
         for table in ('input_price','input_municipal_price'):
@@ -162,6 +184,40 @@ class InputPDFPublication(unittest.TestCase):
             self.assertEqual(row[:3], ('Same',100,'old'))
             self.assertTrue(row[3].endswith('; ' + current))
         self.assertEqual(self.db.execute("SELECT count(*) FROM ingestion_checkpoint WHERE processor_version=%s AND step='inputs-pdf:published'", (current,)).fetchone()[0], 1)
+
+    def test_exact_wuxal_continuation_replay_withdraws_false_presentation(self):
+        original = HERE / 'testdata/cb2289b8dad52378bc04a9787c7560a93a1feccfd47c64a41e010a33a499f5ab.pdf'
+        body = original.read_bytes()
+        self.assertEqual(hashlib.sha256(body).hexdigest(), original.stem)
+        target = next(row for row in pdf_sources.parse_input_pdf(body, date(2016, 2, 29), last_page=20)
+                      if 'PDF page 20,col 1,y 158.3' in row[0])
+        self.assertEqual((target[3], target[4], target[5], target[6]),
+                         ('Wuxal Tapa Negra', 'Armenia', '1 litro', 34025))
+        old_meta = {**target[-1], 'parser_version': 'inputs-pdf-v13',
+                    'presentation': '1 litro (continaución)'}
+        old = worker.record('dane-inputs-pdf', target[2], target[3], target[4],
+                            '1 litro (continaución)', target[6],
+                            target[0].replace(pdf_sources.INPUT_PDF_VERSION, 'inputs-pdf-v13'),
+                            details=old_meta)
+        with synthetic_pdf_publication_version('inputs-pdf-v13'):
+            with self.db.transaction():
+                worker.save_rows(self.db, 'old', [old])
+                worker.project(self.db, 'old', 'https://www.dane.gov.co/official-original.pdf', 'inputs-pdf')
+        self.assertEqual([r[0] for r in self.db.execute(
+            "SELECT presentation FROM published_input_municipal_price WHERE name='Wuxal Tapa Negra'").fetchall()],
+            ['1 litro (continaución)'])
+        with synthetic_pdf_publication_version(pdf_sources.INPUT_PDF_VERSION), self.db.transaction():
+            worker.save_rows(self.db, 'old', [target])
+            worker.project(self.db, 'old', 'https://www.dane.gov.co/official-original.pdf', 'inputs-pdf')
+        self.assertEqual(self.db.execute(
+            "SELECT presentation,price FROM published_input_municipal_price WHERE name='Wuxal Tapa Negra'").fetchall(),
+            [('1 litro', 34025)])
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM historical_price WHERE document_id='old' AND product_name='Wuxal Tapa Negra'").fetchone(),
+            (2,))
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM ingestion_checkpoint WHERE document_id='old' AND processor_version=%s "
+            "AND step='inputs-pdf:published'", (pdf_sources.INPUT_PDF_VERSION,)).fetchone(), (1,))
 
     def test_migration_seeds_committed_v4_without_claiming_attempted_v5(self):
         with self.db.transaction():

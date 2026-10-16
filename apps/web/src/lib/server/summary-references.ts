@@ -2,6 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import type { OfficialPrice } from "../official-types";
 import { database } from "./db";
+import { snapshotCache } from "./snapshot-cache";
 
 type SummaryRow = {
   product_name: string;
@@ -58,19 +59,25 @@ function observation(row: SummaryRow, productId: string | null): SummaryReferenc
   };
 }
 
-let snapshot: { expires: number; rows: SummaryReference[] } | undefined;
-let pending: Promise<SummaryReference[]> | undefined;
+const summarySnapshot = snapshotCache<SummaryReference[]>(300_000, 1, "monthly-summary-latest-v1");
 /** Latest identities only are cached; an individual history is queried on demand. */
 export async function latestSummaryReferences(): Promise<SummaryReference[]> {
-  if (snapshot && snapshot.expires > Date.now()) return snapshot.rows;
-  if (pending) return pending;
-  pending = (async () => {
+  return summarySnapshot("all", async () => {
     const [data, products] = await Promise.all([
       database().query<SummaryRow>(`
-        SELECT DISTINCT ON(h.product_name,h.market_name,h.unit) h.*,d.source_url
-        FROM published_historical_price h JOIN source_document d ON d.id=h.document_id
-        WHERE ${validSource}
-        ORDER BY h.product_name,h.market_name,h.unit,h.observed_on DESC,d.retrieved_at DESC,h.document_id,h.source_locator
+        WITH identities AS MATERIALIZED (
+          SELECT DISTINCT product_name,market_name,unit
+          FROM monthly_summary_identity
+        )
+        SELECT latest.* FROM identities i CROSS JOIN LATERAL (
+          SELECT h.*,d.source_url
+          FROM published_historical_price h JOIN source_document d ON d.id=h.document_id
+          WHERE ${validSource} AND h.product_name=i.product_name
+            AND h.market_name=i.market_name AND h.unit=i.unit
+          ORDER BY h.observed_on DESC,d.retrieved_at DESC,h.document_id,h.source_locator
+          LIMIT 1
+        ) latest
+        ORDER BY latest.product_name,latest.market_name,latest.unit
       `),
       database().query<{ id: string; name: string }>("SELECT id,name FROM product"),
     ]);
@@ -83,10 +90,8 @@ export async function latestSummaryReferences(): Promise<SummaryReference[]> {
       const matches = names.get(canonicalName(row.product_name)) || [];
       return observation(row, matches.length === 1 ? matches[0] : null);
     });
-    snapshot = { rows, expires: Date.now() + 300_000 };
     return rows;
-  })().finally(() => { pending = undefined; });
-  return pending;
+  });
 }
 
 export async function summaryReference(id: string) {

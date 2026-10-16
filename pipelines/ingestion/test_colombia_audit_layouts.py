@@ -86,11 +86,14 @@ class NativeLayoutRegressions(unittest.TestCase):
         self.assertEqual([r["price"] for r in intact], [10000, 10000])
 
     def test_blank_publisher_template_cannot_invent_a_date_or_trigger_ocr(self):
-        with self.assertRaisesRegex(ValueError, "explicit observation date"):
-            source.parse_corabastos(
-                original("c4f5b171fddb"),
-                "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-18febrero2025-1.pdf",
-            )
+        rows = source.parse_corabastos(
+            original("c4f5b171fddb"),
+            "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-18febrero2025-1.pdf",
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertIsNone(rows[0]["price"])
+        self.assertNotIn("date", rows[0])
+        self.assertIn("no observation date or price table", rows[0]["details"]["quality_issue"])
 
     def test_letter_spaced_current_and_monthly_native_prices(self):
         rows = source.parse_pork(original("8d4f4a0f69aa"))

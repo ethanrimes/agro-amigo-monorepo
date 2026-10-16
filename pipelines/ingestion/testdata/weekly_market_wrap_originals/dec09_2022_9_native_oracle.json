@@ -1,0 +1,95 @@
+{
+  "rows": [
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        1920,
+        1960,
+        1953
+      ],
+      "product": "Ahuyama",
+      "source_locator": "PDF page 9,table 1,column 1,line 40"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        7800,
+        8000,
+        7850
+      ],
+      "product": "Ajo importado",
+      "source_locator": "PDF page 10,table 1,column 1,line 19"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        5100,
+        6400,
+        5738
+      ],
+      "product": "Arveja verde en vaina pastusa",
+      "source_locator": "PDF page 10,table 1,column 2,line 47"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        4375,
+        4688,
+        4531
+      ],
+      "product": "Cebolla cabezona blanca pastusa",
+      "source_locator": "PDF page 11,table 1,column 2,line 38"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        1600,
+        2000,
+        1794
+      ],
+      "product": "Cebolla junca pastusa",
+      "source_locator": "PDF page 12,table 1,column 2,line 13"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        3000,
+        3500,
+        3250
+      ],
+      "product": "Cilantro",
+      "source_locator": "PDF page 13,table 1,column 1,line 50"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        5000,
+        5200,
+        5150
+      ],
+      "product": "Fríjol verde cargamanto",
+      "source_locator": "PDF page 14,table 1,column 1,line 34"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        1000,
+        1385,
+        1202
+      ],
+      "product": "Lechuga Batavia",
+      "source_locator": "PDF page 15,table 1,column 1,line 50"
+    },
+    {
+      "market": "Popayán, Plaza de mercado del barrio Bolívar",
+      "money": [
+        1308,
+        1385,
+        1356
+      ],
+      "product": "Pepino cohombro",
+      "source_locator": "PDF page 15,table 1,column 2,line 48"
+    }
+  ],
+  "source_pdf_sha256": "bc1793504b595c2fb17957330c5698e2fd848252b4b11b2af5fe61c268e49e83"
+}

@@ -25,6 +25,8 @@ export function AppliedFilters({
 export const priceSeriesLabel: Record<string, string> = {
   city: "Informe por ciudad · diario",
   monthly: "Promedio mayorista · mensual",
+  daily: "Precio mayorista · diario",
+  weekly: "Precio mayorista · semanal",
   farmgate: "Leche en finca · mensual",
   mill: "Arroz en molino · mensual",
   coffee: "Referencia FNC",

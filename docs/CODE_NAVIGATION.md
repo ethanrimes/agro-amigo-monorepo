@@ -7,6 +7,8 @@ Use this map to find the implementation of a feature. The [app site map](SITE_MA
 | Area | Entry points | Responsibility |
 |---|---|---|
 | Shared interface | [app](../apps/web/src/app), [components](../apps/web/src/components) | Next.js routes and React screens |
+| Searchable choices | [SearchableSelect.tsx](../apps/web/src/components/ui/SearchableSelect.tsx), [SearchBox.tsx](../apps/web/src/components/ui/SearchBox.tsx), [planning-math.ts](../apps/web/src/lib/planning-math.ts), [sql-search-fold.ts](../apps/web/src/lib/server/sql-search-fold.ts) | Case/accent-insensitive bounded matching, retained exact identifiers, visible applied selection, optional actions for the exact selected record and keyboard controls |
+| Supply source rows | [SupplyEvidenceRecords.tsx](../apps/web/src/components/planning/SupplyEvidenceRecords.tsx) | Every contributing workbook interval is searchable; the selected native row keeps its sheet, reporting month, market and units in the source viewer |
 | Server boundary | [db.ts](../apps/web/src/lib/server/db.ts), [server queries](../apps/web/src/lib/server) | PostgreSQL connections and validated data access |
 | Android | [MainActivity.java](../apps/android/app/src/main/java/co/agroamigo/demo/MainActivity.java) | Trusted-origin WebView, back, permissions and downloads |
 | iOS | [main.dart](../apps/ios/lib/main.dart) | WKWebView, safe areas, navigation, permissions and sharing |
@@ -18,9 +20,10 @@ Use this map to find the implementation of a feature. The [app site map](SITE_MA
 |---|---|
 | [function_app.py](../pipelines/ingestion/function_app.py) | Timer and authenticated worker entry points |
 | [worker.py](../pipelines/ingestion/worker.py), [queue_plan.py](../pipelines/ingestion/queue_plan.py) | Discovery, version dispatch, bounded scheduling and canonical price projections |
+| [city_refresh_cohort_worker.py](../pipelines/ingestion/city_refresh_cohort_worker.py), [city_cohort_visibility.py](../pipelines/ingestion/city_cohort_visibility.py) | Retain changed city-ZIP bodies and members, validate a full parsed cohort, and switch the visible source head only after acceptance |
 | [inputs.py](../pipelines/ingestion/inputs.py), [resumable_inputs.py](../pipelines/ingestion/resumable_inputs.py), [input_references.py](../pipelines/ingestion/input_references.py) | Input identities, resumable publication and ancillary annex data |
 | [pdf_sources.py](../pipelines/ingestion/pdf_sources.py) | Native PDF text/tables, monetary guards and input PDF parsing |
-| [city_reports.py](../pipelines/ingestion/city_reports.py) | ZIP members, city packages, rounds, classification and member checkpoints |
+| [city_reports.py](../pipelines/ingestion/city_reports.py) | ZIP members, city packages, rounds, classification, publication parity and member checkpoints; conflicting PDF children retain their raw evidence and are withheld from public price views |
 | [daily_discovery.py](../pipelines/ingestion/daily_discovery.py), [daily_archives.py](../pipelines/ingestion/daily_archives.py), [daily_publication.py](../pipelines/ingestion/daily_publication.py) | Historical daily archives, native annex workbook members, percentage semantics and retained corrections |
 | [dane_weekly.py](../pipelines/ingestion/dane_weekly.py) | Weekly PDF/XLS/XLSX periods, means, ranges and review rows |
 | [special_prices.py](../pipelines/ingestion/special_prices.py) | Municipal milk and mill rice observations |
@@ -29,6 +32,9 @@ Use this map to find the implementation of a feature. The [app site map](SITE_MA
 | [supply_summaries.py](../pipelines/ingestion/supply_summaries.py), [supply_period_summaries.py](../pipelines/ingestion/supply_period_summaries.py) | Separate daily/monthly/fortnight totals, shares, native precision and missing-value semantics |
 | [coffee_sources.py](../pipelines/ingestion/coffee_sources.py), [colombia_sources.py](../pipelines/ingestion/colombia_sources.py), [international_sources.py](../pipelines/ingestion/international_sources.py) | Publisher-specific price semantics |
 | [official_sources.py](../pipelines/ingestion/official_sources.py), [official_catalog.py](../pipelines/ingestion/official_catalog.py) | Official quote publication, reviews and current catalog refresh |
+| [label_normalization.py](../pipelines/ingestion/label_normalization.py), [shared dictionary](../shared/label-normalization.json), [app labels](../apps/web/src/lib/label-normalization.ts) | Reviewed spelling, Unicode cleanup, automatic metadata scan and correction evidence |
+| [blob_archive.py](../pipelines/ingestion/blob_archive.py) | Immutable Azure originals shared by the recurring worker and static reference imports |
+| [write_pacing.py](../pipelines/ingestion/write_pacing.py), [input_projection.py](../pipelines/ingestion/input_projection.py) | Yield after durable publication batches and maintain input-location indexes; readers combine a complete baseline with committed changes, or use published observations when that coverage is unavailable |
 | [ocr.py](../pipelines/ingestion/ocr.py) | Retained images, paired readings and supported typed fallback dispatch |
 | [source_link_recovery.py](../pipelines/ingestion/source_link_recovery.py), [query_publication.py](../pipelines/ingestion/query_publication.py) | Evidence-preserving alternative sources and historical-query responses |
 | [schema.sql](../pipelines/ingestion/schema.sql), [migrations](../pipelines/ingestion/migrations) | Durable data structures and publication views |
@@ -40,9 +46,13 @@ Parser versions affect retry eligibility as well as extraction. Inspect `worker.
 | Feature | Server implementation | UI implementation |
 |---|---|---|
 | Unified products | [catalog.ts](../apps/web/src/lib/server/catalog.ts), [catalog-types.ts](../apps/web/src/lib/catalog-types.ts) | [CatalogView.tsx](../apps/web/src/components/marketplace/CatalogView.tsx) |
+| City publication eligibility | [city-publication-epoch.ts](../apps/web/src/lib/server/city-publication-epoch.ts), [publication migration](../pipelines/ingestion/migrations/20261005_056_city_pdf_publication_conflicts.sql) | Public city queries exclude unresolved PDF conflicts; cache reads detect newly committed conflicts before returning data |
+| Source-supported category hierarchy | [catalog-sql.ts](../apps/web/src/lib/server/catalog-sql.ts), [category-hierarchy.ts](../apps/web/src/lib/category-hierarchy.ts), [catalog-page.ts](../apps/web/src/lib/catalog-page.ts) | [HierarchicalCategorySelect.tsx](../apps/web/src/components/ui/HierarchicalCategorySelect.tsx) |
 | Product filters/history | [price-quotes.ts](../apps/web/src/lib/server/price-quotes.ts) | [product detail route](../apps/web/src/app/product) |
+| Daily bulletins and available dates | [daily-quotes.ts](../apps/web/src/lib/server/daily-quotes.ts), [planning API](../apps/web/src/app/api/planning) | [daily route](../apps/web/src/app/daily/page.tsx) keeps date, product and market selections in the URL query string |
 | Official references | [official-references.ts](../apps/web/src/lib/server/official-references.ts), [summary-references.ts](../apps/web/src/lib/server/summary-references.ts) | [reference route](../apps/web/src/app/references) |
 | Markets, inputs and supply | [explore.ts](../apps/web/src/lib/server/explore.ts), [planning.ts](../apps/web/src/lib/server/planning.ts) | [explore components](../apps/web/src/components/explore) |
+| Supply map and original files | [supply-sql.ts](../apps/web/src/lib/server/supply-sql.ts) scopes monthly totals by product, department and available history | [SupplyMapEvidence.tsx](../apps/web/src/components/explore/SupplyMapEvidence.tsx) opens each contributing original for the selected market and reporting month |
 | Comparisons | [comparisons.ts](../apps/web/src/lib/server/comparisons.ts), [comparison-math.ts](../apps/web/src/lib/comparison-math.ts) | [comparison components](../apps/web/src/components/comparison) |
 | Source display/download | [evidence API](../apps/web/src/app/api/evidence), [source-storage.ts](../apps/web/src/lib/server/source-storage.ts) | [EvidenceContent.tsx](../apps/web/src/components/planning/EvidenceContent.tsx) |
 | Workbook preview | [workbook_preview.py](../pipelines/ingestion/workbook_preview.py) | Read-only worksheet pagination in the source viewer |
@@ -50,5 +60,6 @@ Parser versions affect retry eligibility as well as extraction. Inspect `worker.
 | Crop references | [planning.ts](../apps/web/src/lib/server/planning.ts) | [CropOptions.tsx](../apps/web/src/components/planning/CropOptions.tsx), [CropReferences.tsx](../apps/web/src/components/planning/CropReferences.tsx), [plan route](../apps/web/src/app/plan) |
 | Private device state | [farm-types.ts](../apps/web/src/lib/farm-types.ts) | [FarmContext.tsx](../apps/web/src/components/planning/FarmContext.tsx) |
 | Photos and attribution | [images.ts](../apps/web/src/lib/images.ts), [image-library.json](../apps/web/src/lib/image-library.json) | [credits route](../apps/web/src/app/credits) |
+| Problem reports | [bug-reports.ts](../apps/web/src/lib/server/bug-reports.ts), [bug_reports.py](../pipelines/ingestion/bug_reports.py) | [report form](../apps/web/src/app/reportar): consented submission, private outbox and retrying owner email delivery |
 
 Static planning and geographic imports live under [pipelines/planning](../pipelines/planning) and [pipelines/spatial](../pipelines/spatial). The separate [news collector](../pipelines/news/README.md) has no connected public app feed.

@@ -65,6 +65,26 @@ class DailyPercentageFormats(unittest.TestCase):
             with self.assertRaises(ValueError):
                 daily_recovery.percentage_change(0.1, fmt)
 
+    def test_ocr_requires_complete_printed_percent_and_keeps_native_numeric_semantics(self):
+        for raw, expected in [("22 %", 22), ("17 %", 17), ("-4 %", -4),
+                              ("−4 %", -4), ("1,5 %", 1.5), ("0 %", 0)]:
+            with self.subTest(raw=raw):
+                value, details = daily_recovery.percentage_change(
+                    raw, "General", ocr_printed_percent=True
+                )
+                self.assertEqual(value, expected)
+                self.assertEqual(details["raw_change"], raw)
+                self.assertEqual(details["change_percent_encoding"], "printed_ocr_percent")
+        for raw in ("22", 22, 0.22, "22 %?", "22.5 %", "n.d.", "", None):
+            with self.subTest(ambiguous=raw):
+                value, details = daily_recovery.percentage_change(
+                    raw, "General", ocr_printed_percent=True
+                )
+                self.assertIsNone(value)
+                self.assertEqual(details["change_percent_encoding"], "unverified_ocr_percent")
+        self.assertEqual(daily_recovery.percentage_change(0.22, "0%")[0], 22)
+        self.assertEqual(daily_recovery.percentage_change(22, "General")[0], 22)
+
     @unittest.skipUnless(
         (ROOT / "daily-percent/mayoristas_diciembre_17_2021.xlsx").exists(),
         "Retained official originals unavailable",

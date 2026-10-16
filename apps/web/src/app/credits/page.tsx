@@ -1,6 +1,19 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { imageLibrary } from "@/lib/images";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+
+const creditOptions = Object.entries(imageLibrary).map(([key, photo]) => ({
+  id: key,
+  label: photo.title,
+  detail: `${photo.description} · ${photo.author} · ${photo.license}`,
+}));
+
 export default function Credits() {
+  const [selectedImage, setSelectedImage] = useState("");
+  const p = imageLibrary[selectedImage];
   return (
     <>
       <Link className="back-link" href="/sources">
@@ -15,9 +28,18 @@ export default function Credits() {
           </p>
         </div>
       </div>
+      <SearchableSelect
+        label="Consultar los créditos de una imagen"
+        placeholder="Busca imagen, producto, autor o licencia…"
+        emptyLabel="Elige una imagen para consultar su autor, licencia y origen"
+        value={selectedImage}
+        onChange={setSelectedImage}
+        options={creditOptions}
+      />
+      <p>{creditOptions.length} imágenes con sus créditos conservados.</p>
       <div className="credits-grid">
-        {Object.entries(imageLibrary).map(([key, p]) => (
-          <article className="panel" key={key}>
+        {p ? (
+          <article className="panel" key={selectedImage}>
             <img src={p.src} alt={p.title} loading="lazy" />
             <h2>{p.title}</h2>
             <p>{p.author}</p>
@@ -37,7 +59,7 @@ export default function Credits() {
             )}
             {p.modifications && <p>{p.modifications}</p>}
           </article>
-        ))}
+        ) : <p>Busca y elige una imagen para ver sus créditos.</p>}
       </div>
     </>
   );

@@ -1,0 +1,112 @@
+{
+  "captured_utc": "2026-10-08T08:32:16.548292+00:00",
+  "download_receipt_sha256": "e048174a0673f83efac74026df5550638bdc15072bac97bec276eb75ea8ac38a",
+  "helper_sha256": "f012b87b8d290e1307c63c2b0ba700cff5275f651dbb3ce077bf3caa52524589",
+  "transaction": "repeatable-read read-only, rolled back",
+  "statement_timeout_seconds": 3,
+  "lock_timeout_seconds": 1,
+  "documents": [
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-28enero2025.pdf",
+      "document_id": "9d4db5b54c55b65ce5358a10a33f9484a2d3b905db21d3e624c6fd96121bae6a",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3245869,
+      "file": "9d4db5b54c55b65ce5358a10a33f9484a2d3b905db21d3e624c6fd96121bae6a.json",
+      "sha256": "d572fd429bdb10fdd579d0f01a5bc22c8026da1e4d8389a6b01ddb548754124b"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-29enero2025.pdf",
+      "document_id": "06212c7f7b3e9a9fa16298496e52332ad36e1a05fb65d67aa4caec048e02019f",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3246812,
+      "file": "06212c7f7b3e9a9fa16298496e52332ad36e1a05fb65d67aa4caec048e02019f.json",
+      "sha256": "d221d8a8db75a6171104d153dec7914afc4c3666772b9b78f9423372b84d5a5d"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-30enero2025.pdf",
+      "document_id": "cae5dbd7989ab43d98921b8716b178438e284e70a04c8dd156d6408998a638ab",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3245737,
+      "file": "cae5dbd7989ab43d98921b8716b178438e284e70a04c8dd156d6408998a638ab.json",
+      "sha256": "7e4b05bebadcde245dd36921095aaa3698578a8a6bc399b9bf648fcf96c4922c"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/01/Boletin-31enero2025.pdf",
+      "document_id": "a64618aa12cb427239231ce9c2a6a7dc27cdb7c8ce1683f0a9e8fc54f2198e90",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3246395,
+      "file": "a64618aa12cb427239231ce9c2a6a7dc27cdb7c8ce1683f0a9e8fc54f2198e90.json",
+      "sha256": "da677312d4b9323ccffc39d3d5ea22142de3a63bed16dd0f049dc022d07b6fa7"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-03febrero2025.pdf",
+      "document_id": "8acbaf5c2c1138de3a45a25dcb8978559c3698268a377a81f16bce9fd0dc5524",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3246149,
+      "file": "8acbaf5c2c1138de3a45a25dcb8978559c3698268a377a81f16bce9fd0dc5524.json",
+      "sha256": "1f792d29eb6acb3c8d0bb1d0d2aa0fd6265907caaa88e140563fa8319f15466a"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-04febrero2025.pdf",
+      "document_id": "0f1f1799263d38d85988fdc1e2b24aee07a6e616c638a414ece44b1ce0f22d5b",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3246443,
+      "file": "0f1f1799263d38d85988fdc1e2b24aee07a6e616c638a414ece44b1ce0f22d5b.json",
+      "sha256": "25db6a52b62e1881df06482e82e2d99fad6455c60f719a6f6e3b7759045f9a73"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-05febrero2025.pdf",
+      "document_id": "b05bb77e370e058d0fa47df957214335f6424d5fddfecba0eb7eb746880748e3",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3245944,
+      "file": "b05bb77e370e058d0fa47df957214335f6424d5fddfecba0eb7eb746880748e3.json",
+      "sha256": "8a743a0d0d62bf7d2001d662004053ecea8550a7a9953731820f9592f90488e1"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-06febrero2025.pdf",
+      "document_id": "2edfaf81ac6606cfa779e3772dbcc1aa9873fd2f4a316f279f208baae5ce4ade",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3246553,
+      "file": "2edfaf81ac6606cfa779e3772dbcc1aa9873fd2f4a316f279f208baae5ce4ade.json",
+      "sha256": "b6f2be65029b1304f27028dfa37b8434069e10c964787ee61b7f2a46d4b100b4"
+    },
+    {
+      "url": "https://corabastos.com.co/wp-content/uploads/2025/02/Boletin-07febrero2025.pdf",
+      "document_id": "845f2461b0fd0fc120cedb8675d03463e84a464d11e567d591fc398af26c4bae",
+      "quotes": 350,
+      "versions": [
+        "official-v2:colombia-prices-v2"
+      ],
+      "source_bytes": 3245794,
+      "file": "845f2461b0fd0fc120cedb8675d03463e84a464d11e567d591fc398af26c4bae.json",
+      "sha256": "ed5727a3438153df7df7b55f23b29c750ae67246851c9510a8e722ef67aca77a"
+    }
+  ],
+  "production_writes": 0,
+  "provider_calls": 0,
+  "manual_timers": 0
+}

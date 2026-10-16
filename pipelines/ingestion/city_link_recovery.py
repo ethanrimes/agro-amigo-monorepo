@@ -16,7 +16,7 @@ from hashlib import sha256
 
 import pdfplumber
 
-VERSION = "city-link-recovery-v2"
+VERSION = "city-link-recovery-v3"
 _ARCHIVE_URL = (
     "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/"
     "sistema-de-informacion-de-precios-sipsa/"
@@ -28,6 +28,26 @@ _FEB_2024_ARCHIVE_URL = (
     "componente-precios-mayoristas-febrero-de-2024"
 )
 _BASE = "https://www.dane.gov.co/files/operaciones/SIPSA/"
+# This exact native PDF prints 20 January, despite its 22 January filename.
+# The same ZIP also contains an independently named 20 January San Gil report.
+# A changed document must be reviewed again; filename conflicts are not a
+# general permission to infer or substitute observation dates.
+_AUDITED_FILENAME_CONFLICTS = {
+    (
+        "San Gil, 22-1-2024.pdf",
+        "6baed1add3c3cf7ebe49db037fc2e14eaa6a62d45a829e4f374b5c09201eaa73",
+        date(2024, 1, 22),
+        date(2024, 1, 20),
+    ),
+}
+
+
+def _archive_page(month, year):
+    return (
+        "https://www.dane.gov.co/index.php/estadisticas-por-tema/agropecuario/"
+        "sistema-de-informacion-de-precios-sipsa/"
+        f"componente-precios-mayoristas-{month}-de-{year}"
+    )
 
 
 @dataclass(frozen=True)
@@ -55,6 +75,24 @@ ALIASES = {
         22,
         "dd9f0254207604693ce901ffee0ed6207630d1f20bf7e47a1ef698706bb3abf4",
         _FEB_2024_ARCHIVE_URL,
+    ),
+    _BASE + "bol-SIPSADiario-regionales-30dic2025.zip": CityAlias(
+        _BASE + "bol-SIPSADiario-regionales-31dic2025.zip",
+        date(2025, 12, 30), date(2025, 12, 31), 4,
+        "62e7bbb10c29fac4711af412f9ec80d568aa74e68ca05bd0b6d4fa63949dff9a",
+        _archive_page("diciembre", 2025),
+    ),
+    _BASE + "bol-SIPSADiario-regionales-04jul2025.zip": CityAlias(
+        _BASE + "bol-SIPSADiario-regionales-07jul2025.zip",
+        date(2025, 7, 4), date(2025, 7, 7), 1,
+        "a7c30a53b87c295161c547d0117148294fd1fb52f38262fe8b78c1a8c0a088aa",
+        _archive_page("julio", 2025),
+    ),
+    _BASE + "bol-SIPSADiario-regionales-20ene2024.zip": CityAlias(
+        _BASE + "bol-SIPSADiario-regionales-22ene2024.zip",
+        date(2024, 1, 20), date(2024, 1, 22), 25,
+        "02a02ab3c94aa9de058dd6797415d56dd63784b638c5c932cc391c95f8bd64e4",
+        _archive_page("enero", 2024),
     ),
 }
 
@@ -132,15 +170,20 @@ def _validate_member(body, filename, archive_day):
                 "Invalid calendar date in filename; explicit native date retained"
             )
         if named_day is not None and named_day != day:
-            raise ValueError(
-                "City recovery member filename conflicts with its printed date"
+            if (filename, sha256(body).hexdigest(), named_day, day) not in _AUDITED_FILENAME_CONFLICTS:
+                raise ValueError(
+                    "City recovery member filename conflicts with its printed date"
+                )
+            filename_issue = (
+                f"Audited filename date {named_day} conflicts with explicit native "
+                f"printed date {day}; printed date retained for these exact bytes"
             )
     return {
         "filename": filename,
         "sha256": sha256(body).hexdigest(),
         "bytes": len(body),
         "observed_on": day.isoformat(),
-        "filename_date_verified": named_day is not None,
+        "filename_date_verified": named_day == day,
         "filename_date_issue": filename_issue,
         "records": len(rows),
         "empty_template": not rows,

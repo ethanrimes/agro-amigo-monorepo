@@ -1401,7 +1401,7 @@
   },
   {
     "name": "DANE input 21 13-26-6 · 50 kilogramos",
-    "route": "/insumo/13-26-6-50-kilogramos-fertisa-colombia-s-a-6235?department=Antioquia&scope=department&history=recent",
+    "route": "/insumo/13-26-6-50-kilogramos-fertisa-colombia-s-a-6235?department=Antioquia&scope=department&history=all",
     "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
     "steps": [
       {
@@ -1469,7 +1469,7 @@
   },
   {
     "name": "DANE input 22 13-26-6 · 50 kilogramos",
-    "route": "/insumo/13-26-6-50-kilogramos-fertisa-colombia-s-a-6235-0?department=Antioquia&scope=department&history=recent",
+    "route": "/insumo/13-26-6-50-kilogramos-fertisa-colombia-s-a-6235-0?department=Antioquia&scope=department&history=all",
     "ready": "!!document.querySelector(\".input-detail-summary h2\") && !!document.querySelector(\".price-chart\")",
     "steps": [
       {
@@ -1758,8 +1758,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===99000",
-            "expected": "COP 99000 midpoint of literal 98000–100000 package range"
+            "condition": "(()=>{const q=window.__qaPriceApi?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaPriceApi.filters.series===new URLSearchParams(location.search).get('series')&&window.__qaPriceApi.filters.units===new URLSearchParams(location.search).get('units');})()",
+            "expected": "Moving current card value/date/unit/series match same-filter product API; pinned original dated price and document locator remain exact in PRD-09/EVI-01"
           },
           {
             "id": "PRD-02",
@@ -1781,7 +1781,9 @@
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
           }
-        ]
+        ],
+        "action": "\nwindow.__qaPriceApi=null;window.__qaPriceApiError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('product '+r.status);return r.json()}).then(x=>window.__qaPriceApi=x).catch(e=>window.__qaPriceApiError=String(e));",
+        "ready": "!!window.__qaPriceApi?.current||!!window.__qaPriceApiError"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -1809,8 +1811,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===22500",
-            "expected": "COP 22500 midpoint of literal 22000–23000 package range"
+            "condition": "(()=>{const q=window.__qaPriceApi?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaPriceApi.filters.series===new URLSearchParams(location.search).get('series')&&window.__qaPriceApi.filters.units===new URLSearchParams(location.search).get('units');})()",
+            "expected": "Moving current card value/date/unit/series match same-filter product API; pinned original dated price and document locator remain exact in PRD-09/EVI-01"
           },
           {
             "id": "PRD-02",
@@ -1832,7 +1834,9 @@
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
           }
-        ]
+        ],
+        "action": "\nwindow.__qaPriceApi=null;window.__qaPriceApiError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('product '+r.status);return r.json()}).then(x=>window.__qaPriceApi=x).catch(e=>window.__qaPriceApiError=String(e));",
+        "ready": "!!window.__qaPriceApi?.current||!!window.__qaPriceApiError"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -1860,8 +1864,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===79000",
-            "expected": "COP 79000 midpoint of literal 78000–80000 package range"
+            "condition": "(()=>{const q=window.__qaPriceApi?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaPriceApi.filters.series===new URLSearchParams(location.search).get('series')&&window.__qaPriceApi.filters.units===new URLSearchParams(location.search).get('units');})()",
+            "expected": "Moving current card value/date/unit/series match same-filter product API; pinned original dated price and document locator remain exact in PRD-09/EVI-01"
           },
           {
             "id": "PRD-02",
@@ -1883,7 +1887,9 @@
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\"))",
             "expected": "Exact archived Sep25 member PDF reachable"
           }
-        ]
+        ],
+        "action": "\nwindow.__qaPriceApi=null;window.__qaPriceApiError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('product '+r.status);return r.json()}).then(x=>window.__qaPriceApi=x).catch(e=>window.__qaPriceApiError=String(e));",
+        "ready": "!!window.__qaPriceApi?.current||!!window.__qaPriceApiError"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -2220,58 +2226,103 @@
     "ready": "!!document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")",
     "steps": [
       {
+        "action": "window.__qaCmpCurrent=await fetch(\"/api/compare/markets?a=sipsa-barranquilla-barranquillita&b=__national__&series=city&product=mora-de-castilla&dates=same&sources=true\").then(async r=>{if(!r.ok)throw Error(\"comparison HTTP \"+r.status);return r.json()});",
+        "ready": "!!window.__qaCmpCurrent?.rows?.length && !!document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")",
         "checks": [
           {
-            "id": "CMP-04",
-            "condition": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"-0,24 %\")",
-            "expected": "Unweighted mean of +1.740506329% and −2.222222222% = −0.2408579466%"
+            "id": "CMP-CURRENT-SAME-FILTER",
+            "condition": "window.__qaCmpCurrent.rows.length===2 && window.__qaCmpCurrent.rows.every(r=>r.b&&Math.abs((r.b.price-r.a.price)/r.a.price*100-r.percent)<1e-9) && Math.abs(window.__qaCmpCurrent.percent-window.__qaCmpCurrent.rows.reduce((s,r)=>s+r.percent,0)/window.__qaCmpCurrent.rows.length)<1e-9",
+            "expected": "Same-filter API has two comparable package rows; each and overall percentage recompute from current prices"
           },
           {
-            "id": "CMP-05",
-            "condition": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\"))?.innerText.includes(\"80.375\") && Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\"))?.innerText.includes(\"4 lugares\")",
-            "expected": "12.5kg national mean(79000,83500,85500,73500)=80375"
+            "id": "CMP-CURRENT-VISIBLE",
+            "condition": "document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\").innerText.includes(window.__qaCmpCurrent.percent.toLocaleString(\"es-CO\",{minimumFractionDigits:2,maximumFractionDigits:2})+\" %\")",
+            "expected": "Visible overall percentage matches current same-filter API"
           },
           {
-            "id": "CMP-02",
-            "condition": "Array.from(document.querySelectorAll(\"article\")).some(a=>a.innerText.includes(\"2.5 Kilogramo\")&&!a.innerText.includes(\"12.5 Kilogramo\")&&a.innerText.includes(\"22.000\")&&a.innerText.includes(\"-2,22 %\"))",
-            "expected": "2.5kg national mean22500/21500=22000; diff−500/22500"
+            "id": "CMP-CURRENT-PACKAGES",
+            "condition": "window.__qaCmpCurrent.rows.every(r=>{const a=[...document.querySelectorAll(\"article\")].find(x=>x.innerText.includes(\"Caja de cartón · \"+r.a.units));return !!a&&a.innerText.includes(r.b.price.toLocaleString(\"es-CO\"))&&a.innerText.includes(r.b.location_count+\" lugar\"+(r.b.location_count===1?\"\":\"es\"))})",
+            "expected": "Each exact-unit current package card displays the same-filter API mean and correctly singular/plural constituent count"
           },
           {
             "id": "CMP-06",
-            "condition": "(document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"Solo fechas iguales\")",
-            "expected": "Same-date constraint visible"
+            "condition": "(()=>{const t=document.querySelector(\".applied-filters\")?.innerText||\"\";return t.includes(\"Solo fechas iguales\")&&t.includes(\"Mora de castilla\")&&t.includes(\"Barranquilla, Barranquillita\")&&t.includes(\"Promedio de Colombia\")&&t.includes(\"Informe por ciudad\")})()",
+            "expected": "Visible current filters retain same-date DANE city sources, exact Mora product, Barranquillita base and Colombia mean"
           }
         ]
       },
       {
-        "action": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").open=true;",
-        "ready": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\"))?.querySelector(\"details\")?.querySelectorAll(\"a.evidence-link\").length===4",
+        "action": "[...document.querySelectorAll(\"article\")].filter(a=>window.__qaCmpCurrent.rows.some(r=>a.innerText.includes(r.a.units)&&(r.a.units!==\"2.5 Kilogramo\"||!a.innerText.includes(\"12.5 Kilogramo\")))).forEach(a=>{const d=a.querySelector(\"details\");if(d)d.open=true});",
+        "ready": "window.__qaCmpCurrent.rows.every(r=>[...document.querySelectorAll(\"article\")].find(a=>a.innerText.includes(r.a.units)&&(r.a.units!==\"2.5 Kilogramo\"||!a.innerText.includes(\"12.5 Kilogramo\")))?.querySelectorAll(\"details a.evidence-link\").length===r.b.sources.length)",
         "checks": [
           {
-            "id": "CMP-12",
-            "condition": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").querySelectorAll(\"a.evidence-link\").length===4",
-            "expected": "All four exact national constituents expose source links"
+            "id": "CMP-CURRENT-ARITHMETIC",
+            "condition": "window.__qaCmpCurrent.rows.every(r=>r.b.price===Math.round(r.b.sources.reduce((s,x)=>s+x.price,0)/r.b.sources.length) && r.b.sources.length===r.b.location_count)",
+            "expected": "Moving-current national package mean and constituent count recompute exactly from same-date API market rows; fixed Oct2 original-backed values are checked separately"
           },
           {
-            "id": "CMP-12",
-            "condition": "Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").innerText.includes(\"Cartagena\") && Array.from(document.querySelectorAll(\"article\")).find(a=>a.innerText.includes(\"12.5 Kilogramo\")).querySelector(\"details\").innerText.includes(\"85.500\")",
-            "expected": "Independent Cartagena source85000–86000 midpoint85500"
+            "id": "CMP-CURRENT-SOURCE-LINKS",
+            "condition": "window.__qaCmpCurrent.rows.every(r=>{const a=[...document.querySelectorAll(\"article\")].find(x=>x.innerText.includes(r.a.units)&&(r.a.units!==\"2.5 Kilogramo\"||!x.innerText.includes(\"12.5 Kilogramo\")));const links=[...a.querySelectorAll(\"details a.evidence-link\")];return links.length===r.b.sources.length&&r.b.sources.every(s=>links.some(l=>l.pathname===\"/evidence/\"+s.document_id&&new URL(l.href).searchParams.get(\"page\")===String(s.source_page)))})",
+            "expected": "Visible constituent links map to every exact current source document and PDF page"
           }
         ]
       },
       {
-        "action": "const select=Array.from(document.querySelectorAll(\"label\")).find(l=>l.innerText.trim().startsWith(\"Unidades\")).querySelector(\"select\");select.value=\"2.5 Kilogramo\";select.dispatchEvent(new Event(\"change\",{bubbles:true}));",
-        "ready": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"-2,22 %\")",
+        "action": "const group=document.querySelector('[role=group][aria-label=Unidades]');const input=group?.querySelector('input[role=combobox]');if(!input)throw Error('Units selector missing');input.focus();Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'2.5 Kilogramo');input.dispatchEvent(new Event('input',{bubbles:true}));setTimeout(()=>{const match=[...group.querySelectorAll('[role=option]')].find(x=>x.textContent.trim()==='2.5 Kilogramo');if(!match)throw Error('2.5 Kilogramo option missing');match.click()},100);",
+        "ready": "(()=>{const r=window.__qaCmpCurrent.rows.find(r=>r.a.units===\"2.5 Kilogramo\");return !!r&&(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(r.percent.toLocaleString(\"es-CO\",{minimumFractionDigits:2,maximumFractionDigits:2})+\" %\")})()",
         "checks": [
           {
             "id": "CMP-08",
-            "condition": "(document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(\"-2,22 %\") && (document.querySelector(\".applied-filters\")?.innerText||\"\").includes(\"2.5 Kilogramo\")",
-            "expected": "Filtered single package recomputes overall mean and visible units"
+            "condition": "(()=>{const r=window.__qaCmpCurrent.rows.find(r=>r.a.units===\"2.5 Kilogramo\"),pct=r.percent.toLocaleString(\"es-CO\",{minimumFractionDigits:2,maximumFractionDigits:2})+\" %\",t=document.querySelector(\".applied-filters\")?.innerText||\"\";return (document.querySelector(\"[aria-label=\\\"Resultado de la comparación\\\"]\")?.innerText||\"\").includes(pct)&&t.includes(\"2.5 Kilogramo\")&&t.includes(\"Solo fechas iguales\")&&t.includes(\"Mora de castilla\")})()",
+            "expected": "Selecting 2.5kg recomputes overall comparison from same-filter API and visibly retains product, units and same-date scope"
           },
           {
             "id": "CMP-04",
-            "condition": "(document.querySelector(\"[aria-label=\\\"Promedios por categoría\\\"]\")?.innerText||\"\").includes(\"-2,22 %\")",
-            "expected": "Category/subcategory totals use filtered population"
+            "condition": "(()=>{const r=window.__qaCmpCurrent.rows.find(r=>r.a.units===\"2.5 Kilogramo\"),pct=r.percent.toLocaleString(\"es-CO\",{minimumFractionDigits:2,maximumFractionDigits:2})+\" %\";return (document.querySelector(\"[aria-label=\\\"Promedios por categoría\\\"]\")?.innerText||\"\").includes(pct)})()",
+            "expected": "Filtered category/subcategory summary recomputes to the selected 2.5kg current-source percentage"
+          }
+        ]
+      },
+      {
+        "action": "const a=[...document.querySelectorAll(\"article\")].find(a=>a.innerText.includes(\"2.5 Kilogramo\")&&!a.innerText.includes(\"12.5 Kilogramo\"));if(!a)throw Error(\"Filtered 2.5kg card missing\");a.querySelector(\"details\").open=true;",
+        "ready": "(()=>{const r=window.__qaCmpCurrent.rows.find(r=>r.a.units===\"2.5 Kilogramo\"),a=[...document.querySelectorAll(\"article\")].find(a=>a.innerText.includes(\"2.5 Kilogramo\")&&!a.innerText.includes(\"12.5 Kilogramo\"));return a?.querySelectorAll(\"details a.evidence-link\").length===r?.b.sources.length})()",
+        "checks": [
+          {
+            "id": "CMP-12",
+            "condition": "(()=>{const r=window.__qaCmpCurrent.rows.find(r=>r.a.units===\"2.5 Kilogramo\"),a=[...document.querySelectorAll(\"article\")].find(a=>a.innerText.includes(\"2.5 Kilogramo\")&&!a.innerText.includes(\"12.5 Kilogramo\")),links=[...a.querySelectorAll(\"details a.evidence-link\")];return links.length===r.b.sources.length&&r.b.sources.every(s=>links.some(l=>l.pathname===\"/evidence/\"+s.document_id&&new URL(l.href).searchParams.get(\"page\")===String(s.source_page)))})()",
+            "expected": "After unit filter, every visible 2.5kg current national constituent retains exact source document and PDF page link"
+          }
+        ]
+      },
+      {
+        "action": "window.__qaMoraSep25National={};await Promise.all([\"2.5 Kilogramo\",\"12.5 Kilogramo\"].map(async units=>{const q=new URLSearchParams({series:\"city\",presentation:\"Caja de cartón\",units,history:\"all\"});const r=await fetch(\"/api/products/mora-de-castilla?\"+q,{cache:\"no-store\"});if(!r.ok)throw Error(\"Mora Sep25 national HTTP \"+r.status);window.__qaMoraSep25National[units]=(await r.json()).history.find(x=>x.date===\"2026-09-25\")}));",
+        "ready": "!!window.__qaMoraSep25National?.[\"2.5 Kilogramo\"] && !!window.__qaMoraSep25National?.[\"12.5 Kilogramo\"]",
+        "checks": [
+          {
+            "id": "CMP-HISTORICAL-25SEP",
+            "condition": "window.__qaMoraSep25National[\"2.5 Kilogramo\"].price===22000&&window.__qaMoraSep25National[\"2.5 Kilogramo\"].market_count===2&&window.__qaMoraSep25National[\"12.5 Kilogramo\"].price===80375&&window.__qaMoraSep25National[\"12.5 Kilogramo\"].market_count===4&&Math.abs((((80375-79000)/79000*100)+((22000-22500)/22500*100))/2-(-0.2408579466))<1e-6",
+            "expected": "Independent Sep25 DANE originals remain historically 2.5kg mean(22500,21500)=22000, 12.5kg mean(79000,83500,85500,73500)=80375; Barranquillita differences average -0.2408579466%"
+          },
+          {
+            "id": "CMP-HISTORICAL-SOURCES",
+            "condition": "[[\"2.5 Kilogramo\",[\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\",\"053d4db55d8a950488f3f30a8273908355d9c1a7713879daeed7ca589c66f655\"]],[\"12.5 Kilogramo\",[\"6f6427903f2879d35e6032601f4cdc1e4ef7b66cb8648155b2353a0a6c55ac30\",\"053d4db55d8a950488f3f30a8273908355d9c1a7713879daeed7ca589c66f655\",\"07a3a5443aa6621987c96f927594e1016d5263417f2e2c7c71c48147e7cf3f7b\",\"37ce782bf5f7db47e19758cc0664122b77c5cec0f55500ac3a3c373f1fa59c32\"]]].every(([units,ids])=>{const sources=window.__qaMoraSep25National[units].sources;return sources.length===ids.length&&ids.every(id=>sources.some(s=>s.document_id===id&&s.source_page===1))})",
+            "expected": "Historical Sep25 two-small/four-large source constituents retain exact original PDF document IDs and page 1"
+          }
+        ]
+      },
+      {
+        "action": "window.__qaMoraOct2={};for(const units of [\"2.5 Kilogramo\",\"12.5 Kilogramo\"]){const q=new URLSearchParams({series:\"city\",presentation:\"Caja de cartón\",units,history:\"all\"});const r=await fetch(\"/api/products/mora-de-castilla?\"+q,{cache:\"no-store\"});if(!r.ok)throw Error(\"Mora Oct2 history HTTP \"+r.status);window.__qaMoraOct2[units]=(await r.json()).history.find(x=>x.date===\"2026-10-02\")}",
+        "ready": "!!window.__qaMoraOct2?.[\"2.5 Kilogramo\"]&&!!window.__qaMoraOct2?.[\"12.5 Kilogramo\"]",
+        "checks": [
+          {
+            "id": "CMP-HISTORICAL-02OCT",
+            "expected": "Oct2 original-backed national Mora Caja de cartón means: 2.5kg COP20750 from 2 markets and 12.5kg COP78500 from 4 markets; exact equal-weight package comparison 0.6097560976%",
+            "condition": "(()=>{const a=window.__qaMoraOct2[\"2.5 Kilogramo\"],b=window.__qaMoraOct2[\"12.5 Kilogramo\"];return a.price===20750&&a.market_count===2&&b.price===78500&&b.market_count===4&&Math.abs(((20750-20500)/20500*100)/2-0.6097560975609756)<1e-9})()"
+          },
+          {
+            "id": "CMP-HISTORICAL-02OCT-SOURCES",
+            "expected": "Oct2 exact market/product/presentation/units constituents and four immutable DANE PDF page1 identities; per-package means recompute from six original ranges",
+            "condition": "[[\"2.5 Kilogramo\",[[\"sipsa-barranquilla-barranquillita\",20500,\"5ec147f7068d6b7ac01f441cfe050ecfb839a3108fc514299ebe36ddc8869ada\",\"PDF page 1,table 1,row 21,round 1\"],[\"sipsa-barranquilla-granabastos\",21000,\"64f706a8544c8a9c4482fc058e4aeda4728ba77348dcd461882b73fefada0b50\",\"PDF page 1,table 1,row 10,round 1\"]]],[\"12.5 Kilogramo\",[[\"sipsa-barranquilla-barranquillita\",78500,\"5ec147f7068d6b7ac01f441cfe050ecfb839a3108fc514299ebe36ddc8869ada\",\"PDF page 1,table 1,row 22,round 1\"],[\"sipsa-barranquilla-granabastos\",79500,\"64f706a8544c8a9c4482fc058e4aeda4728ba77348dcd461882b73fefada0b50\",\"PDF page 1,table 1,row 11,round 1\"],[\"sipsa-cartagena-bazurto\",77500,\"38305a31ff2e7f74ea1fdd17f6f2a1a69612dcf45f9ff20468165a68a8093742\",\"PDF page 1,table 1,row 18,round 1\"],[\"sipsa-santa-marta-magdalena\",78500,\"de52c050c9722f1b65fe36f4a8c208691d50d33aba9b63b8afa056e289b462bb\",\"PDF page 1,table 1,row 9,round 1\"]]]].every(([u,want])=>{const row=window.__qaMoraOct2[u],sources=row?.sources||[];return sources.length===want.length&&sources.reduce((s,x)=>s+x.price,0)/sources.length===row.price&&want.every(([market,price,id,locator])=>sources.some(x=>x.market_id===market&&x.price===price&&x.document_id===id&&x.source_page===1&&x.source_locator===locator))})"
           }
         ]
       }
@@ -2286,8 +2337,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===1350",
-            "expected": "Literal 1350000.0 COP/tonne divided by1000 = 1350.00 COP/kg"
+            "condition": "(()=>{const q=window.__qaPriceApi?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaPriceApi.filters.series===new URLSearchParams(location.search).get('series')&&window.__qaPriceApi.filters.units===new URLSearchParams(location.search).get('units');})()",
+            "expected": "Moving current card value/date/unit/series match same-filter product API; pinned original dated price and document locator remain exact in PRD-09/EVI-01"
           },
           {
             "id": "PRD-06",
@@ -2309,7 +2360,9 @@
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e\")&&new URL(a.href).searchParams.get(\"locator\")===\"precios de arroz en molino!row 803; COP/tonelada dividido entre 1000 = COP/kg\")",
             "expected": "Original workbook plus explicit normalized-price locator"
           }
-        ]
+        ],
+        "action": "\nwindow.__qaPriceApi=null;window.__qaPriceApiError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('product '+r.status);return r.json()}).then(x=>window.__qaPriceApi=x).catch(e=>window.__qaPriceApiError=String(e));",
+        "ready": "!!window.__qaPriceApi?.current||!!window.__qaPriceApiError"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -2337,8 +2390,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===3616",
-            "expected": "Literal 3616000.0 COP/tonne divided by1000 = 3616.00 COP/kg"
+            "condition": "(()=>{const q=window.__qaPriceApi?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaPriceApi.filters.series===new URLSearchParams(location.search).get('series')&&window.__qaPriceApi.filters.units===new URLSearchParams(location.search).get('units');})()",
+            "expected": "Moving current card value/date/unit/series match same-filter product API; pinned original dated price and document locator remain exact in PRD-09/EVI-01"
           },
           {
             "id": "PRD-06",
@@ -2360,7 +2413,9 @@
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e\")&&new URL(a.href).searchParams.get(\"locator\")===\"precios de arroz en molino!row 738; COP/tonelada dividido entre 1000 = COP/kg\")",
             "expected": "Original workbook plus explicit normalized-price locator"
           }
-        ]
+        ],
+        "action": "\nwindow.__qaPriceApi=null;window.__qaPriceApiError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('product '+r.status);return r.json()}).then(x=>window.__qaPriceApi=x).catch(e=>window.__qaPriceApiError=String(e));",
+        "ready": "!!window.__qaPriceApi?.current||!!window.__qaPriceApiError"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",
@@ -2388,8 +2443,8 @@
         "checks": [
           {
             "id": "PRD-01",
-            "condition": "Number((document.querySelector(\"[data-testid=current-product-price]\")?.innerText||\"\").replace(/[^0-9]/g,\"\"))===1200",
-            "expected": "Literal 1200000.0 COP/tonne divided by1000 = 1200.00 COP/kg"
+            "condition": "(()=>{const q=window.__qaPriceApi?.current,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const date=new Date(String(q.date).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.textContent.replace(/[^0-9]/g,''))===Math.round(Number(q.price))&&head.textContent.includes(date)&&window.__qaPriceApi.filters.series===new URLSearchParams(location.search).get('series')&&window.__qaPriceApi.filters.units===new URLSearchParams(location.search).get('units');})()",
+            "expected": "Moving current card value/date/unit/series match same-filter product API; pinned original dated price and document locator remain exact in PRD-09/EVI-01"
           },
           {
             "id": "PRD-06",
@@ -2411,7 +2466,9 @@
             "condition": "Array.from(document.querySelectorAll(\"a.evidence-link\")).some(a=>a.href.includes(\"3fb46e0841161c8521d560ed5262e730d0ae4489e233581e43d2784bb229948e\")&&new URL(a.href).searchParams.get(\"locator\")===\"precios de arroz en molino!row 824; COP/tonelada dividido entre 1000 = COP/kg\")",
             "expected": "Original workbook plus explicit normalized-price locator"
           }
-        ]
+        ],
+        "action": "\nwindow.__qaPriceApi=null;window.__qaPriceApiError=null;fetch('/api/products/'+location.pathname.split('/').pop()+location.search,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('product '+r.status);return r.json()}).then(x=>window.__qaPriceApi=x).catch(e=>window.__qaPriceApiError=String(e));",
+        "ready": "!!window.__qaPriceApi?.current||!!window.__qaPriceApiError"
       },
       {
         "action": "document.querySelector(\".chart-data\").open=true;",

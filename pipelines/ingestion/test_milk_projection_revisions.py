@@ -146,7 +146,7 @@ class MilkProjectionRevisionTests(SpecialProjectionPostgresTests):
             self.db.execute("SELECT market_id FROM price_observation").fetchone()[0],
             "finca-antioquia-villa-de-san-diego-de-ubate",
         )
-        self.assertIn("; parser milk-pdf-v7", self.prices()[0][-1])
+        self.assertIn("; parser " + special_prices.MILK_PDF_VERSION, self.prices()[0][-1])
         retained = self.count("retained_record")
         self.assertEqual(self.publish(original), 0)
         self.assertEqual(self.count("retained_record"), retained)

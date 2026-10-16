@@ -10,24 +10,36 @@ test("Unified catalog preserves dated source identities and exact detail prices"
   expect(catalog.products.length).toBeGreaterThan(100);
   expect(new Set(catalog.products.map((p: any) => p.identity)).size).toBe(catalog.products.length);
   expect(new Set(catalog.products.map((p: any) => p.saved_key)).size).toBe(catalog.products.length);
-  for (const p of catalog.products) {
-    expect(p.price).toBeGreaterThan(0);
-    expect(p.unit).toBeTruthy();
-    expect(p.source).toBeTruthy();
-    expect(p.currency).toMatch(/^[A-Z]{3}$/);
-    expect(p.basis).toBeTruthy();
-    expect(p.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(p.href).toMatch(/^\/(product|references)\//);
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Bogota",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  // Check every identity without creating a Playwright assertion for every
+  // field of every source row. Thousands of such assertions can stall a worker
+  // before its timeout can interrupt the synchronous loop.
+  const invalid: string[] = [];
+  for (const [index, p] of catalog.products.entries()) {
+    const bad = (field: string) => invalid.push(`${index}:${p.identity}:${field}`);
+    if (!(p.price > 0)) bad("price");
+    if (!p.unit) bad("unit");
+    if (!p.source) bad("source");
+    if (!/^[A-Z]{3}$/.test(p.currency)) bad("currency");
+    if (!p.basis) bad("basis");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(p.date) || p.date > today) bad("date");
+    if (!/^\/(product|references)\//.test(p.href)) bad("href");
     if (p.kind === "official-reference") {
-      expect(p.saved_key).toBe("reference:" + p.quote_key);
-      expect(p.href).toBe("/references/" + p.quote_key);
-      expect(p.map_supported).toBe(false);
+      if (p.saved_key !== "reference:" + p.quote_key) bad("saved_key");
+      if (p.href !== "/references/" + p.quote_key) bad("reference_href");
+      if (p.map_supported !== false) bad("map_supported");
     } else {
-      expect(p.identity).toBe(p.id);
-      expect(p.saved_key).toBe(p.id);
-      expect(new URL(p.href, "https://example.test").searchParams.get("region")).toBe("");
+      if (p.identity !== p.id) bad("identity");
+      if (p.saved_key !== p.id) bad("saved_key");
+      if (new URL(p.href, "https://example.test").searchParams.get("region") !== "") bad("region");
     }
   }
+  expect(invalid).toEqual([]);
   const search = catalog.products.flatMap((p: any) => [p.name, ...p.search_terms]).join(" ")
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   for (const family of ["arabica", "robusta", "cacao", "banano", "rosa", "palma", "coco", "azucar", "cerdo", "leche", "arroz"]) {
@@ -75,14 +87,7 @@ test("Unified catalog preserves dated source identities and exact detail prices"
   expect(coffee.markets.length).toBe(16);
   expect(coffee.factors.length).toBe(13);
   expect(coffee.exchange.price).toBeGreaterThan(0);
-  const today = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Bogota",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
   const cutoff = `${Number(today.slice(0, 4)) - 1}${today.slice(4)}`;
-  for (const product of catalog.products) expect(product.date <= today).toBeTruthy();
   for (const row of [...coffee.history, ...detail.history]) {
     expect(row.date > cutoff).toBeTruthy();
     expect(row.date <= today).toBeTruthy();

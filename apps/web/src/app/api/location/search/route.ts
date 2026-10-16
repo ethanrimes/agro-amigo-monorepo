@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { inColombia } from "@/lib/location-types";
 import type { MapPlace } from "@/lib/place-types";
+import { fold } from "@/lib/planning-math";
 export const dynamic = "force-dynamic";
 const cache = new Map<string, { expires: number; places: MapPlace[] }>();
 const pending = new Map<string, Promise<MapPlace[]>>();
@@ -36,13 +37,13 @@ export async function GET(req: NextRequest) {
   const query = (req.nextUrl.searchParams.get("q") || "").trim();
   if (query.length < 3 || query.length > 120)
     return NextResponse.json({ places: [] }, { status: 400 });
-  const key = query.toLocaleLowerCase("es-CO"), saved = cache.get(key);
+  const key = fold(query), saved = cache.get(key);
   if (saved && saved.expires > Date.now()) return NextResponse.json({ places: saved.places });
   if (!pending.has(key) && pending.size >= 2)
     return NextResponse.json({ error: "La búsqueda está ocupada. Intenta de nuevo." }, { status: 429 });
   let task = pending.get(key);
   if (!task) {
-    task = search(query); pending.set(key, task);
+    task = search(key); pending.set(key, task);
     void task.finally(() => pending.delete(key)).catch(() => {});
   }
   try {

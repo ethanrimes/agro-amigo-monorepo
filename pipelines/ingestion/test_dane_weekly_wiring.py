@@ -46,6 +46,65 @@ def quote():
     }
 
 
+def install_sql_aware_process_fake(db, version_row, prior_row):
+    """Answer only the reviewed weekly-worker SELECTs; reject every unknown read."""
+    processor_sql = "SELECT processor_version FROM ingestion_asset WHERE url=%s"
+    prior_sql = "SELECT document_id,status,records,error FROM ingestion_asset WHERE url=%s"
+    review_unit_feb_sql = (
+        "SELECT 1 FROM official_source_review WHERE document_id=%s "
+        "AND source_locator=%s AND parser_version=%s "
+        "AND record->'details'->>'quality_issue'=%s"
+    )
+    review_native_sql = (
+        "SELECT 1 FROM official_source_review WHERE document_id=%s "
+        "AND source_locator=%s AND parser_version=%s "
+        "AND record->'details'->>'quality_issue'=%s "
+        "AND record->'details'->>'original_sha256'=%s"
+    )
+    review_generic_sql = (
+        "SELECT 1 FROM official_source_review WHERE document_id=%s "
+        "AND source_locator=%s AND parser_version=%s "
+        "AND record->'details'->>'quality_issue'=%s "
+        "AND record->'details'->>'original_sha256'=%s "
+        "AND record->'details'->>'source_url'=%s"
+    )
+    finalized_sql = "SELECT status,records,error,processor_version FROM ingestion_asset WHERE url=%s AND kind=%s"
+    review_rows = {
+        review_unit_feb_sql: (4, None),
+        review_native_sql: (5, None),
+        review_generic_sql: (6, None),
+    }
+
+    def execute(statement, *args, **kwargs):
+        normalized = " ".join(str(statement).split())
+        params = args[0] if args else None
+        if normalized == processor_sql:
+            if not isinstance(params, tuple) or len(params) != 1:
+                raise AssertionError("Unexpected parameters for exact processor-version SELECT")
+            row = version_row
+        elif normalized == prior_sql:
+            if not isinstance(params, tuple) or len(params) != 1:
+                raise AssertionError("Unexpected parameters for exact prior-asset SELECT")
+            row = prior_row
+        elif normalized in review_rows:
+            arity, row = review_rows[normalized]
+            if not isinstance(params, tuple) or len(params) != arity:
+                raise AssertionError("Unexpected parameters for exact weekly review SELECT")
+        elif normalized == finalized_sql:
+            if not isinstance(params, tuple) or len(params) != 2:
+                raise AssertionError("Unexpected parameters for exact review-finalization SELECT")
+            row = None
+        elif normalized.lstrip().upper().startswith("SELECT"):
+            raise AssertionError("Unexpected SELECT in mock-only worker test: " + normalized)
+        else:
+            return MagicMock()
+        result = MagicMock()
+        result.fetchone.return_value = row
+        return result
+
+    db.execute.side_effect = execute
+
+
 class WeeklyWiring(unittest.TestCase):
     def test_explicit_weekly_filename_supplies_date_but_ambiguous_history_does_not(
         self,
@@ -63,10 +122,10 @@ class WeeklyWiring(unittest.TestCase):
         for kind in dane_weekly.PUBLISHERS:
             self.assertIs(official_sources.adapter(kind), dane_weekly)
             self.assertTrue(official_sources.is_reference_kind(kind))
-            self.assertEqual(
-                worker.parser_version(kind),
-                official_sources.VERSION + ":" + dane_weekly.VERSION,
-            )
+            expected = official_sources.VERSION + ":" + dane_weekly.VERSION
+            if kind == "dane-weekly-xlsx":
+                expected = official_sources.VERSION + ":audited-unit-review-2018-v1:" + dane_weekly.VERSION
+            self.assertEqual(worker.parser_version(kind), expected)
         self.assertFalse(official_sources.is_reference_kind("dane-weekly-unsupported"))
         with self.assertRaisesRegex(ValueError, "Unregistered"):
             official_sources.adapter("dane-weekly-unsupported")
@@ -133,8 +192,8 @@ class WeeklyWiring(unittest.TestCase):
         for data, count in ((None, 0), (old, 0), (changed, 1)):
             with self.subTest(body=data):
                 db = MagicMock()
-                db.execute.return_value.fetchone.side_effect = [(version,)] + (
-                    [(old_did, "complete", 1)] if data else []
+                install_sql_aware_process_fake(
+                    db, (version,), (old_did, "complete", 1, None) if data else None
                 )
                 with (
                     patch.object(worker, "fetch_asset", return_value=data) as fetch,
@@ -160,10 +219,9 @@ class WeeklyWiring(unittest.TestCase):
 
     def test_parser_upgrade_forces_revalidation_and_missing_ocr_never_completes(self):
         db = MagicMock()
-        db.execute.return_value.fetchone.side_effect = [
-            ("old-version",),
-            ("doc", "complete", 1),
-        ]
+        install_sql_aware_process_fake(
+            db, ("old-version",), ("doc", "complete", 1, None)
+        )
         with (
             patch.object(worker, "fetch_asset", return_value=b"original") as fetch,
             patch.object(worker, "archive", return_value="doc"),
@@ -176,7 +234,7 @@ class WeeklyWiring(unittest.TestCase):
             for c in db.execute.call_args_list
             if "status=%s,records=%s" in c.args[0]
         ]
-        self.assertEqual(updated[-1], ("doc", "awaiting-ocr", 0, URL))
+        self.assertEqual(updated[-1], ("doc", "awaiting-ocr", 0, None, URL))
 
     def test_http_304_and_updated_validator_keep_source_revalidation(self):
         db = MagicMock()
@@ -207,7 +265,9 @@ class WeeklyWiring(unittest.TestCase):
     ):
         class WeeklyOCR(OCRDatabase):
             def execute(self, sql, params=()):
-                if sql.startswith("SELECT document_id,source_locator,image_id"):
+                if "FROM source_ocr_task t WHERE t.status" in sql:
+                    if params[2]:
+                        return OCRResult()
                     return OCRResult(
                         many=[("doc", "PDF page 1", "image", "dane-weekly-pdf", 1)]
                     )
@@ -286,7 +346,19 @@ class WeeklyPostgresWiring(unittest.TestCase):
         self.seed(old_index, "dane-weekly-index")
         self.seed(URL, KIND, day=DAY)
         self.seed(URL + "?cooldown", KIND, day=DAY, checked="now()")
-        self.seed(URL + "?ocr", KIND, day=DAY, status="awaiting-ocr")
+        # Current pending-OCR originals are revalidated after one day. Keep
+        # this cooldown fixture strictly inside the window, not on a moving
+        # timestamp boundary (now()-1 day becomes due before the SELECT).
+        self.seed(URL + "?ocr", KIND, day=DAY, status="awaiting-ocr",
+                  checked="now()-interval '23 hours'")
+        self.seed(
+            URL + "?ocr-stale-current", KIND, day=DAY,
+            status="awaiting-ocr", checked="now()-interval '2 days'",
+        )
+        self.seed(
+            URL + "?ocr-stale-history", KIND, day=date(2012, 6, 22),
+            status="awaiting-ocr", checked="now()-interval '31 days'",
+        )
         self.seed(URL + "?old", KIND, day=date(2012, 6, 22))
         self.seed(
             URL + "?upgrade",
@@ -300,7 +372,8 @@ class WeeklyPostgresWiring(unittest.TestCase):
         self.seed(URL + "?undated", "dane-weekly-pdf", status="pending")
         daily = {r[0] for r in queue_plan.daily_candidates(self.db, date(2026, 9, 27))}
         self.assertTrue(
-            {root, current_index, URL, URL + "?pending-2026", URL + "?undated"} <= daily
+            {root, current_index, URL, URL + "?pending-2026", URL + "?undated",
+             URL + "?ocr-stale-current"} <= daily
         )
         self.assertFalse(
             {
@@ -308,6 +381,7 @@ class WeeklyPostgresWiring(unittest.TestCase):
                 URL + "?old",
                 URL + "?cooldown",
                 URL + "?ocr",
+                URL + "?ocr-stale-history",
                 URL + "?upgrade",
                 URL + "?pending-2012",
             }
@@ -315,6 +389,8 @@ class WeeklyPostgresWiring(unittest.TestCase):
         )
         backfill = [r[0] for r in queue_plan.backfill_candidates(self.db, 100)]
         self.assertIn(URL + "?upgrade", backfill)
+        self.assertIn(URL + "?ocr-stale-history", backfill)
+        self.assertNotIn(URL + "?ocr", backfill)
         self.assertIn(URL + "?pending-2012", backfill)
         self.assertLess(
             backfill.index(URL + "?pending-2026"), backfill.index(URL + "?pending-2012")
@@ -451,10 +527,11 @@ class WeeklyPostgresWiring(unittest.TestCase):
             ),
         ]
         for key, publisher, kind, media, expected in cases:
-            did = key * 64
+            archived = (key + " archived workbook").encode()
+            did = hashlib.sha256(archived).hexdigest()
             self.db.execute(
                 "INSERT INTO source_document VALUES(%s,%s,%s,%s,jsonb_build_object('ingestion_kind',%s::text))",
-                (did, b"archived workbook", publisher, media, kind),
+                (did, archived, publisher, media, kind),
             )
             request = SimpleNamespace(
                 route_params={"id": did},
@@ -468,16 +545,39 @@ class WeeklyPostgresWiring(unittest.TestCase):
                     "pipelines.ingestion.workbook_preview.preview",
                     return_value={"sheet": "Precios", "rows": []},
                 ) as preview,
+                patch(
+                    "pipelines.ingestion.workbook_archive.original",
+                    return_value=archived,
+                ) as original,
             ):
                 response = function_app.source_workbook.build().get_user_function()(
                     request
                 )
             self.assertEqual(response.status_code, expected, kind)
             if expected == 200:
-                preview.assert_called_once_with(b"archived workbook", "Precios", 5, 50)
+                original.assert_called_once()
+                self.assertEqual(original.call_args.args[:2], (did, media))
+                preview.assert_called_once_with(archived, "Precios", 5, 50)
                 self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
             else:
+                original.assert_not_called()
                 preview.assert_not_called()
+        # An earlier permitted document cannot bypass a later metadata guard.
+        self.db.execute(
+            "UPDATE source_document SET publisher='Unregistered publisher',"
+            "metadata=jsonb_build_object('ingestion_kind','unsupported') WHERE id=%s",
+            (hashlib.sha256(b"a archived workbook").hexdigest(),),
+        )
+        request = SimpleNamespace(
+            route_params={"id": hashlib.sha256(b"a archived workbook").hexdigest()}, params={"sheet": "Precios"}
+        )
+        with (
+            patch.object(function_app, "connect", return_value=nullcontext(self.db)),
+            patch("pipelines.ingestion.workbook_archive.original") as original,
+        ):
+            response = function_app.source_workbook.build().get_user_function()(request)
+        self.assertEqual(response.status_code, 404)
+        original.assert_not_called()
 
 
 if __name__ == "__main__":

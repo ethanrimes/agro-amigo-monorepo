@@ -9,9 +9,9 @@
         "checks": [
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"3\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue===\"3\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
             "expected": "Exact independently rendered and audited source page",
-            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+            "observed": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue"
           },
           {
             "id": "EVI-03",
@@ -43,9 +43,9 @@
         "checks": [
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"13\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue===\"13\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
             "expected": "Exact independently rendered and audited source page",
-            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+            "observed": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue"
           },
           {
             "id": "EVI-03",
@@ -77,9 +77,9 @@
         "checks": [
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"7\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue===\"7\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
             "expected": "Exact independently rendered and audited source page",
-            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+            "observed": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue"
           },
           {
             "id": "EVI-03",
@@ -111,9 +111,9 @@
         "checks": [
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value===\"8\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue===\"8\"&&!!document.querySelector(\"canvas[data-rendered=true]\")",
             "expected": "Exact independently rendered and audited source page",
-            "observed": "document.querySelector('select[aria-label=\"Página del documento\"]').value"
+            "observed": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue"
           },
           {
             "id": "EVI-03",

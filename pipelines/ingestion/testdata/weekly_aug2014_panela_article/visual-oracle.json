@@ -1,0 +1,181 @@
+{
+  "at": "2026-10-08T11:21:02.644895+00:00",
+  "source_sha256": "b6558d09580b038bbc077dc02475eb0d6a22ef32bb5979ba5b5a271e22148442",
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_11ago_15ago_2014.pdf",
+  "method": "root independent visual transcription from printed original page43 and page44 grids before reading native cell output",
+  "renders": {
+    "aug11-pdf-p43.png": "f3967d12ad532c6c2b812b6bec155499064dd214e66a1fe5da5a5b0d9f1b108c",
+    "ROOT_AUG2014_PAGE44_FIRST_A.png": "06c31be6f559b64fc7af699f8f735115306fa4902fa85202f767bcd52a572170"
+  },
+  "period_header": "2014 (12 de julio al 15 de agosto)",
+  "weeks": [
+    [
+      "2014-07-12",
+      "2014-07-18"
+    ],
+    [
+      "2014-07-19",
+      "2014-07-25"
+    ],
+    [
+      "2014-07-26",
+      "2014-08-01"
+    ],
+    [
+      "2014-08-02",
+      "2014-08-08"
+    ],
+    [
+      "2014-08-09",
+      "2014-08-15"
+    ]
+  ],
+  "unit_literal": "Precios por kilo",
+  "statistic": "single published table cell; not Cuadro min/max/mean",
+  "currency": "COP",
+  "tables": [
+    {
+      "page": 43,
+      "table": 2,
+      "product": "panela cuadrada blanca",
+      "rows": [
+        [
+          "Charalá (Santander)",
+          [
+            1344,
+            1344,
+            1406,
+            1344,
+            1313
+          ]
+        ],
+        [
+          "Güepsa (Santander)",
+          [
+            1225,
+            1300,
+            1250,
+            1200,
+            1150
+          ]
+        ],
+        [
+          "Moniquirá (Boyacá)",
+          [
+            1250,
+            1250,
+            1250,
+            1175,
+            1150
+          ]
+        ],
+        [
+          "San Gil (Santander)",
+          [
+            1225,
+            1225,
+            1225,
+            1275,
+            1225
+          ]
+        ],
+        [
+          "Santana (Boyacá)",
+          [
+            1300,
+            1325,
+            1300,
+            1175,
+            1175
+          ]
+        ],
+        [
+          "Vélez (Santander)",
+          [
+            1200,
+            1200,
+            1175,
+            1200,
+            1150
+          ]
+        ]
+      ]
+    },
+    {
+      "page": 44,
+      "table": 3,
+      "product": "panela cuadrada morena",
+      "rows": [
+        [
+          "Caparrapí (Cundinamarca)",
+          [
+            1300,
+            1300,
+            1200,
+            1150,
+            1100
+          ]
+        ],
+        [
+          "Charalá (Santander)",
+          [
+            1219,
+            1219,
+            1281,
+            1219,
+            1250
+          ]
+        ],
+        [
+          "Nocaima (Cundinamarca)",
+          [
+            1275,
+            1315,
+            1175,
+            1125,
+            1110
+          ]
+        ],
+        [
+          "San Gil (Santander)",
+          [
+            1225,
+            1225,
+            1225,
+            1275,
+            1125
+          ]
+        ],
+        [
+          "Villeta (Cundinamarca)",
+          [
+            1250,
+            1294,
+            1131,
+            1081,
+            1063
+          ]
+        ]
+      ]
+    },
+    {
+      "page": 44,
+      "table": 4,
+      "product": "panela redonda morena",
+      "rows": [
+        [
+          "Caparrapí (Cundinamarca)",
+          [
+            1200,
+            1200,
+            1100,
+            1000,
+            1000
+          ]
+        ]
+      ]
+    }
+  ],
+  "cells": 60,
+  "writes": 0
+}

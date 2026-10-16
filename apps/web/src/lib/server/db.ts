@@ -9,13 +9,20 @@ export function database() {
   if (!globalForDb.agroPool) {
     globalForDb.agroPool = new Pool({
       connectionString: process.env.DATABASE_URL,
+      // Every CURRENT_DATE cutoff must agree with Colombia's displayed day,
+      // including the hours after UTC midnight and before Bogotá midnight.
+      options: "-c timezone=America/Bogota",
       ssl:
         process.env.DATABASE_SSL === "false"
           ? false
           : { rejectUnauthorized: true },
-      max: 5,
+      // Four bounded connections allow the two historical catalog readers
+      // to run alongside interactive product and source reads.
+      max: 4,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 8000,
+      // A busy pool may queue a fast read behind bounded historical
+      // queries. Allow that wait without extending the SQL execution deadline.
+      connectionTimeoutMillis: 30000,
       statement_timeout: 15000,
     });
     globalForDb.agroPool.on("error", () =>

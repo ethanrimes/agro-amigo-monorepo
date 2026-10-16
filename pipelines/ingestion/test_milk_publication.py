@@ -7,10 +7,11 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
-from . import milk_macroregions as macro, milk_publication as publication, worker
+from . import milk_macroregions as macro, milk_publication as publication, special_prices, worker
 from . import official_catalog
 from .special_prices import MilkNarrativeOnly
 from .test_milk_macroregions import CHART, reading, DECEMBER, MAY, CURRENT
+from .test_official_catalog import install_cache
 from . import test_special_projection as projection_tests
 
 milk = projection_tests.milk
@@ -19,7 +20,7 @@ milk = projection_tests.milk
 class MilkPublicationVersion(unittest.TestCase):
     def test_composite_version_and_release_include_both_independent_parsers(self):
         self.assertEqual(
-            worker.parser_version("milk-pdf"), "milk-pdf-v7:" + macro.VERSION
+            worker.parser_version("milk-pdf"), special_prices.MILK_PDF_VERSION + ":" + macro.VERSION
         )
         self.assertEqual(worker.parser_version(macro.KIND), macro.VERSION)
         for filename in ("milk_macroregions.py", "milk_publication.py"):
@@ -52,6 +53,9 @@ class MilkPublicationPostgres(unittest.TestCase):
             observed_on date,period text,unit text,reason text,evidence jsonb,
             PRIMARY KEY(document_id,source_locator,product_id,market_id,source_id,observed_on,period,unit));
         """)
+        # Match the actual catalog migrations, including V28's internal winner
+        # dates. All relations and trigger functions remain session-local.
+        install_cache(self.db)
         self.did, self.url = self.original(
             "milk-composite", [], media="application/pdf"
         )
@@ -75,14 +79,19 @@ class MilkPublicationPostgres(unittest.TestCase):
         )
         self.native_chart = replace(CHART, native_rows=self.chart_rows, bbox=None)
         self.refresh_states = []
+        self.refresh_older_only = []
         actual_refresh = official_catalog.refresh_document
 
-        def refresh(db, did):
+        def refresh(db, did, revision=None, *, older_only=False):
             state = db.execute(
                 "SELECT status FROM ingestion_asset WHERE document_id=%s", (did,)
             ).fetchone()[0]
             self.refresh_states.append(state)
-            return actual_refresh(db, did)
+            self.assertIsInstance(older_only, bool)
+            self.refresh_older_only.append(older_only)
+            if revision is not None:
+                self.assertEqual(revision, worker.parser_version(macro.KIND))
+            return actual_refresh(db, did, revision, older_only=older_only)
 
         self.enterContext(
             patch(
@@ -253,7 +262,7 @@ class MilkPublicationPostgres(unittest.TestCase):
     def test_previous_chart_review_hides_exact_old_rows_and_next_version_recovers(self):
         self.run_publication(self.native_chart)
         with (
-            patch.object(macro, "VERSION", "milk-macroregions-v2"),
+            patch.object(macro, "VERSION", macro.VERSION + ":test-next"),
             patch(
                 "pipelines.ingestion.special_prices.parse_milk_pdf",
                 return_value=iter(self.rows),
@@ -279,7 +288,7 @@ class MilkPublicationPostgres(unittest.TestCase):
             ).fetchone()[0],
             10,
         )
-        with patch.object(macro, "VERSION", "milk-macroregions-v3"):
+        with patch.object(macro, "VERSION", macro.VERSION + ":test-recovered"):
             self.assertEqual(self.run_publication(self.native_chart), 12)
         self.assertEqual(self.count("official_price_quote"), 20)
         self.assertEqual(
@@ -291,7 +300,7 @@ class MilkPublicationPostgres(unittest.TestCase):
 
     def test_ocr_disagreement_withdraws_prior_chart_not_municipal_siblings(self):
         self.run_publication(self.native_chart)
-        with patch.object(macro, "VERSION", "milk-macroregions-v2"):
+        with patch.object(macro, "VERSION", macro.VERSION + ":test-next"):
             publication._checkpoint(self.db, self.did, publication.MUNICIPAL_STEP, 2)
             self.db.execute(
                 "INSERT INTO source_ocr_task(document_id,source_locator,source_kind,status,error) VALUES(%s,%s,%s,'review','Independent readings disagree')",

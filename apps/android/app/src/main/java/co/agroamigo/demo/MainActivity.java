@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewStructure;
 import android.view.WindowInsets;
 import android.webkit.*;
 import android.widget.*;
@@ -44,7 +45,15 @@ public class MainActivity extends Activity {
         root.setOnApplyWindowInsetsListener((v,insets)->{if(Build.VERSION.SDK_INT<30){v.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());return insets.consumeSystemWindowInsets();}android.graphics.Insets b=insets.getInsets(WindowInsets.Type.systemBars()|WindowInsets.Type.displayCutout()|WindowInsets.Type.ime());v.setPadding(b.left,b.top,b.right,b.bottom);return WindowInsets.CONSUMED;});
         progress = new ProgressBar(this,null,android.R.attr.progressBarStyleHorizontal); root.addView(progress,new LinearLayout.LayoutParams(-1,6));
         FrameLayout body = new FrameLayout(this); root.addView(body,new LinearLayout.LayoutParams(-1,0,1));
-        web = new WebView(this); body.addView(web,new FrameLayout.LayoutParams(-1,-1));
+        web = new WebView(this) {
+            @Override public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
+                // Search and page selectors must not be offered saved payment credentials.
+                structure.setAutofillType(View.AUTOFILL_TYPE_NONE);
+                structure.setChildCount(0);
+            }
+        }; body.addView(web,new FrameLayout.LayoutParams(-1,-1));
+        // The app's fields are search/filter controls, not account or payment forms.
+        web.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
         error = new LinearLayout(this); error.setOrientation(LinearLayout.VERTICAL); error.setGravity(Gravity.CENTER); error.setPadding(36,36,36,36); error.setBackgroundColor(Color.rgb(247,248,242));
         TextView title = new TextView(this); title.setText("Volvamos a conectar"); title.setTextSize(26); title.setTextColor(Color.rgb(23,76,53)); error.addView(title);
         TextView message = new TextView(this); message.setText("Revisa tu conexión a internet y vuelve a intentar. Los datos que guardaste en este dispositivo se conservan."); message.setTextSize(17); message.setPadding(0,24,0,28); error.addView(message);

@@ -11,7 +11,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from . import colombia_sources as source
-from . import official_catalog, official_sources
+from . import official_catalog, official_sources, worker
 
 FIXTURE = Path(
     "artifacts/extraction-robustness-2026-09-27/pork-zero-check/Quincena16de2026_.pdf"
@@ -159,9 +159,11 @@ class PorkZeroTerciles(unittest.TestCase):
         # Exercise actual publisher prevalidation/classification without a
         # database connection: only its final SQL transport is captured here.
         class CaptureDB:
+            autocommit = False
             def __init__(self):
                 self.quotes = []
                 self.reviews = []
+                self.catalog_phase_checks = []
 
             def cursor(self):
                 return self
@@ -175,8 +177,16 @@ class PorkZeroTerciles(unittest.TestCase):
             def __exit__(self, *_):
                 return False
 
-            def execute(self, *_):
+            def execute(self, statement, parameters=()):
+                if "FROM ingestion_checkpoint" in statement:
+                    self.catalog_phase_checks.append(parameters)
+                return self
+
+            def fetchone(self):
                 return None
+
+            def fetchall(self):
+                return []
 
             def executemany(self, _, values):
                 self.reviews.extend(values)
@@ -197,3 +207,7 @@ class PorkZeroTerciles(unittest.TestCase):
         self.assertEqual(len(db.reviews), 15)
         self.assertEqual(sum(r[3].obj["price"] is None for r in db.reviews), 9)
         self.assertTrue(all(row[15] > 0 for row in db.quotes))
+        self.assertEqual(len(db.catalog_phase_checks), 1)
+        self.assertEqual(db.catalog_phase_checks[0][0], "original")
+        self.assertEqual(db.catalog_phase_checks[0][1],
+                         worker.parser_version("colombia-pork-pdf"))

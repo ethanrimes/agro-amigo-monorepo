@@ -1,0 +1,412 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:agroamigo_iphone/main.dart' as app;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+
+void main() {
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+  testWidgets(
+    'Latest deployed iOS release images filters PDF workbook navigation',
+    (tester) async {
+      app.main();
+      await tester.pump(const Duration(seconds: 1));
+      final state = tester.state<app.FarmBrowserState>(
+        find.byType(app.FarmBrowser),
+      );
+      final web = state.controller;
+      final completed = <String>[];
+      final report = <String, dynamic>{
+        'platform': 'IOS',
+        'started_at': DateTime.now().toUtc().toIso8601String(),
+        'completed': completed,
+        'settings_restored': false,
+      };
+      binding.reportData = report;
+      Future<dynamic> js(String code) => web.runJavaScriptReturningResult(code);
+      Future<void> until(String condition) async {
+        final end = DateTime.now().add(const Duration(seconds: 90));
+        while (DateTime.now().isBefore(end)) {
+          final value = await js('Boolean($condition)');
+          if (value == true || value == 'true') return;
+          await tester.pump(const Duration(milliseconds: 300));
+        }
+        fail(
+          'Timed out: $condition; ${await js('document.body.innerText.slice(0,3000)')}',
+        );
+      }
+
+      Future<void> run(String code) async {
+        await web.runJavaScript(code);
+        await tester.pump(const Duration(milliseconds: 250));
+      }
+
+      Future<void> go(String path, String ready) async {
+        final target = Uri.parse('${app.appOrigin}$path');
+        final marker = DateTime.now().microsecondsSinceEpoch.toString();
+        await web.runJavaScript(
+          'window.agroPreviousDocument=${jsonEncode(marker)}',
+        );
+        await web.loadRequest(target);
+        await until(
+          'window.agroPreviousDocument!==${jsonEncode(marker)} && location.pathname===${jsonEncode(target.path)} && ($ready)',
+        );
+        expect(state.failed, false);
+        expect(
+          await js('document.documentElement.scrollWidth <= innerWidth'),
+          true,
+        );
+      }
+
+      Future<void> click(String selector) async {
+        await until('document.querySelector(${jsonEncode(selector)}) !== null');
+        await run('document.querySelector(${jsonEncode(selector)}).click()');
+      }
+
+      Future<void> select(String selector, String value) async {
+        await until(
+          '[...document.querySelector(${jsonEncode(selector)})?.options||[]].some(o=>o.value===${jsonEncode(value)})',
+        );
+        await run(
+          '''(()=>{const e=document.querySelector(${jsonEncode(selector)});e.value=${jsonEncode(value)};e.dispatchEvent(new Event('change',{bubbles:true}));})()''',
+        );
+      }
+
+      Future<void> shot(String name) async {
+        await binding.takeScreenshot('ios-full-$name');
+        completed.add(name);
+        debugPrint('PASS $name');
+      }
+
+      Future<Map<String, dynamic>> priceFixture(
+        String id,
+        String presentation,
+        String units,
+        num september7Price,
+      ) async {
+        await run('''(() => {
+          window.agroPriceFixture = null; window.agroPriceFixtureError = null;
+          const normalize = s => s.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();
+          const get = async p => { const r = await fetch(p); if (!r.ok) throw Error('Fixture HTTP ' + r.status); return r.json(); };
+          (async () => {
+            const params = new URLSearchParams({series:'city',presentation:${jsonEncode(presentation)},units:${jsonEncode(units)},history:'all',region:''});
+            const all = await get('/api/products/${Uri.encodeComponent(id)}?' + params);
+            const market = all.options.markets.find(m => normalize(m.name).includes('barranquillita'));
+            const actualPresentation = all.options.presentations.find(p => normalize(p) === normalize(${jsonEncode(presentation)}));
+            if (!market || !actualPresentation) throw Error('Exact fixture market/package missing');
+            params.set('market', market.id); params.set('presentation', actualPresentation);
+            const exact = await get('/api/products/${Uri.encodeComponent(id)}?' + params);
+            if (!exact.current || !exact.markets.length) throw Error('Exact current quotation missing');
+            window.agroPriceFixture = {
+              route: '/product/${Uri.encodeComponent(id)}?' + params,
+              priceText: new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(exact.current.price),
+              current: exact.current, market, sourceDocument: exact.markets[0].document_id,
+              september7: exact.history.find(r => r.date === '2026-09-07')?.price
+            };
+          })().catch(e => { window.agroPriceFixtureError = String(e); });
+        })()''');
+        await until('window.agroPriceFixture || window.agroPriceFixtureError');
+        expect(await js('!window.agroPriceFixtureError'), true);
+        final fixture =
+            jsonDecode(
+                  (await js(
+                    'JSON.stringify(window.agroPriceFixture)',
+                  )).toString(),
+                )
+                as Map<String, dynamic>;
+        // The retained original's fixed historical price is independent of the
+        // changing latest quote. UI equality is then checked on that exact scope.
+        expect(fixture['september7'], september7Price);
+        debugPrint('PRICE_FIXTURE ${jsonEncode(fixture)}');
+        return fixture;
+      }
+
+      await until('document.querySelector(".mobile-nav")');
+      final storage = await js(
+        'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))',
+      );
+      addTearDown(() async {
+        await run(
+          '''(()=>{const old=JSON.parse(${jsonEncode(storage.toString())});localStorage.clear();for(const [k,v] of Object.entries(old))localStorage.setItem(k,v);})()''',
+        );
+        expect(
+          await js(
+            'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))',
+          ),
+          storage,
+          reason: 'Native QA must restore every original setting byte',
+        );
+        report['settings_restored'] = true;
+        report['finished_at'] = DateTime.now().toUtc().toIso8601String();
+        binding.reportData = report;
+        final out = Directory(
+          '${Directory.systemTemp.path}/agro-ios-release-2354',
+        );
+        await out.create(recursive: true);
+        final shots = binding.reportData?['screenshots'] as List? ?? [];
+        for (final shot in shots) {
+          await File(
+            '${out.path}/${shot['screenshotName']}.png',
+          ).writeAsBytes((shot['bytes'] as List).cast<int>());
+        }
+        await File('${out.path}/report.json').writeAsString(
+          jsonEncode({
+            ...report,
+            'failure_details': binding.failureMethodsDetails
+                .map((f) => f.toString())
+                .toList(),
+            'screenshots': shots
+                .map(
+                  (s) => Map<String, dynamic>.from(s as Map)..remove('bytes'),
+                )
+                .toList(),
+          }),
+        );
+      });
+      await run(
+        '''(()=>{const p=JSON.parse(localStorage.getItem("agroamigo-preferences-v2")||"{}");p.region="";localStorage.setItem("agroamigo-preferences-v2",JSON.stringify(p));})()''',
+      );
+      await go(
+        '/products',
+        'document.querySelectorAll(".product-card").length>0',
+      );
+      await run(
+        'document.querySelector(".product-card").scrollIntoView({block:"center"})',
+      );
+      await until(
+        '(()=>{const images=[...document.querySelectorAll(".product-card img")].filter(e=>e.getBoundingClientRect().top<innerHeight && e.getBoundingClientRect().bottom>0);return images.length>0 && images.every(e=>e.complete && e.naturalWidth>0)})()',
+      );
+      expect(
+        await js('document.documentElement.scrollWidth <= innerWidth'),
+        true,
+      );
+      await shot('00-products-loaded-images');
+      const price =
+          'document.querySelector("[data-testid=current-product-price]")';
+      if (!const bool.fromEnvironment('AGRO_IOS_FARM_AND_SOURCES_ONLY')) {
+        final lemon = await priceFixture(
+          'limon-tahiti',
+          'Bulto',
+          '24 Kilogramo',
+          86000,
+        );
+        await go(
+          lemon['route'] as String,
+          '$price?.textContent === ${jsonEncode(lemon['priceText'])}',
+        );
+        expect(await js('document.body.innerText.includes("Cítricos")'), true);
+        expect(
+          await js(
+            'document.querySelector(".applied-filters").textContent.includes("24 Kilogramo")',
+          ),
+          true,
+        );
+        expect(
+          await js('document.body.innerText.includes("Calcular transporte")'),
+          false,
+        );
+        await until(
+          '(()=>{const i=document.querySelector(".detail-picture img");return !!i && i.complete && i.naturalWidth>0})()',
+        );
+        await tester.pump(const Duration(seconds: 1));
+        await shot('01-filtered-price-classification');
+        await click('.chart-data summary');
+        expect(
+          await js(
+            '''(()=>{const p=[...document.querySelectorAll('.chart-data tbody tr td:nth-child(2)')].map(x=>Number(x.textContent.replace(/[^0-9]/g,'')));return p.length>0 && p.every((v,i)=>!i||p[i-1]>=v)})()''',
+          ),
+          true,
+        );
+        await shot('02-descending-price-table');
+        await click('.map-button');
+        await until(
+          'document.querySelector(".colombia-map")?.dataset.ready==="true"',
+        );
+        await select('.map-summary select', 'Atlántico');
+        await until(
+          'document.querySelector(".map-popup-price")?.textContent.includes(${jsonEncode(lemon['priceText'])})',
+        );
+        expect(
+          await js(
+            'document.querySelector(".map-price-popup").textContent.includes("24 Kilogramo")',
+          ),
+          true,
+        );
+        await shot('03-filtered-map-popup');
+        await click('button[aria-label="Cerrar ventana"]');
+        await until('!document.querySelector("dialog[open]")');
+        await run(
+          '''[...document.querySelectorAll('a.evidence-link')].find(a=>a.textContent.includes('fuente del precio actual')).click()''',
+        );
+        await until(
+          'document.querySelector(".pdf-paper canvas")?.dataset.rendered==="true"',
+        );
+        await run(
+          'document.querySelector(".pdf-paper").scrollIntoView({block:"center"})',
+        );
+        await shot('04-city-pdf-in-app');
+        await click('button[aria-label="Cerrar ventana"]');
+        await until('!document.querySelector("dialog[open]")');
+        final smallMora = await priceFixture(
+          'mora-de-castilla',
+          'Caja de cartón',
+          '2.5 Kilogramo',
+          21000,
+        );
+        final largeMora = await priceFixture(
+          'mora-de-castilla',
+          'Caja de cartón',
+          '12.5 Kilogramo',
+          79500,
+        );
+        await go(
+          smallMora['route'] as String,
+          '$price && document.querySelector("select[aria-label=Unidades]")',
+        );
+        await run(
+          '''(()=>{const m=document.querySelector('select[aria-label=Mercado]');const o=[...m.options].find(o=>o.textContent.includes('Barranquillita'));if(!o)throw Error('Missing market');m.value=o.value;m.dispatchEvent(new Event('change',{bubbles:true}));})()''',
+        );
+        await until(
+          '$price?.textContent === ${jsonEncode(smallMora['priceText'])}',
+        );
+        await shot('05-small-package');
+        await select('select[aria-label=Unidades]', '12.5 Kilogramo');
+        await until(
+          '$price?.textContent === ${jsonEncode(largeMora['priceText'])}',
+        );
+        await shot('06-large-package');
+        await go(
+          '/evidence/2d70e39303ad4dc9337101faa6399d6dbb936f8cb952114db095245c098431e8',
+          'document.querySelector(".workbook-scroll tbody tr")',
+        );
+        await select('select[aria-label="Hoja del archivo Excel"]', '1.3');
+        await until(
+          'document.querySelector(".workbook-scroll")?.textContent.includes("Fertilizantes")',
+        );
+        expect(
+          await js(
+            'document.querySelector(".workbook-viewer").textContent.includes("Solo lectura") && !document.querySelector(".workbook-scroll [contenteditable=true]")',
+          ),
+          true,
+        );
+        await run(
+          'document.querySelector(".workbook-scroll").scrollIntoView({block:"center"})',
+        );
+        await shot('07-readonly-excel-sheet');
+        await run(
+          '''[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Siguientes filas')).click()''',
+        );
+        await until(
+          'document.querySelector(".workbook-scroll tbody th")?.textContent==="101"',
+        );
+        await shot('08-excel-row-pagination');
+        for (final entry in {
+          'Productos': '/products',
+          'Mercados': '/markets',
+          'Insumos': '/insumos',
+          'Mi finca': '/farm',
+          'Inicio': '/',
+        }.entries) {
+          await go(
+            '/credits',
+            'document.querySelector("h1")?.textContent==="Créditos de imágenes"',
+          );
+          await run(
+            '''[...document.querySelectorAll('.mobile-nav a')].find(a=>a.textContent.trim()===${jsonEncode(entry.key)}).click()''',
+          );
+          await until(
+            'location.pathname===${jsonEncode(entry.value)} && document.querySelector("main")?.dataset.section!=="credits"',
+          );
+          expect(state.failed, false);
+          await shot(
+            '09-credits-nav-${entry.value.replaceAll('/', '').isEmpty ? 'home' : entry.value.replaceAll('/', '')}',
+          );
+        }
+        await go(
+          '/compare/markets?series=city',
+          '''document.querySelector('[aria-label="Resultado de la comparación"]')''',
+        );
+        expect(
+          await js(
+            'document.querySelector(".applied-filters")?.textContent.includes("Colombia")',
+          ),
+          true,
+        );
+        await shot('10-market-national-comparison');
+        await go(
+          '/compare/inputs?department=Cundinamarca',
+          '''document.querySelector('[aria-label="Resultado de la comparación"]')''',
+        );
+        await shot('11-input-comparison');
+        await go(
+          '/insumos?scope=municipality',
+          'document.querySelector(".input-catalog-card")',
+        );
+        expect(
+          await js(
+            'document.querySelector(".applied-filters")?.textContent.includes("Municipio")',
+          ),
+          true,
+        );
+        await shot('12-municipal-input-filters');
+        await go('/regional?q=Mora', 'document.querySelector(".input-card")');
+        await select('select', 'Barranquilla, Barranquillita');
+        await until('document.querySelectorAll(".input-card").length>0');
+        await click('.input-card h2 a');
+        await until(
+          '$price && !document.body.innerText.includes("Consultando precios con estos filtros")',
+        );
+        expect(
+          await js(
+            'document.querySelector("select[aria-label=Mercado]")?.selectedOptions[0].textContent.includes("Barranquillita")',
+          ),
+          true,
+        );
+        await shot('13-regional-market-preserved');
+        await go(
+          '/references?category=Café',
+          'document.querySelector(".official-reference")',
+        );
+        await select('.price-filter-grid label:nth-child(4) select', 'USD');
+        await until(
+          '[...document.querySelectorAll(".official-reference")].length>0 && [...document.querySelectorAll(".official-reference")].every(x=>x.textContent.includes("USD"))',
+        );
+        expect(
+          await js(
+            'document.querySelector(".official-reference").textContent.includes("USD")',
+          ),
+          true,
+        );
+        await shot('14-official-usd-references');
+        final historicalPublisher = (await js(
+          '[...document.querySelectorAll(".price-filter-grid label:nth-child(3) select option")].find(o=>/world bank|banco mundial/i.test(o.textContent))?.value || ""',
+        )).toString();
+        expect(historicalPublisher, isNotEmpty);
+        await select(
+          '.price-filter-grid label:nth-child(3) select',
+          historicalPublisher,
+        );
+        await until(
+          '[...document.querySelectorAll(".official-reference")].length>0 && [...document.querySelectorAll(".official-reference")].every(x=>x.textContent.includes(${jsonEncode(historicalPublisher)}))',
+        );
+        await click('.official-reference h2 a');
+        await until(
+          'document.querySelector(".current-product-price")?.textContent.includes("USD")',
+        );
+        await select('select', 'all');
+        await until('document.body.innerText.includes("1960")');
+        await click('.chart-data summary');
+        await shot('15-international-complete-history');
+        expect(
+          await js('document.documentElement.scrollWidth<=innerWidth'),
+          true,
+        );
+      }
+      await go('/', 'document.querySelector(".mobile-nav")');
+      debugPrint('PASS native iOS full price/source/navigation suite');
+    },
+    timeout: const Timeout(Duration(minutes: 25)),
+  );
+}

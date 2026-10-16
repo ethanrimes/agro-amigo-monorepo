@@ -3,15 +3,25 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
+import { categoryMatches } from "@/lib/category-hierarchy";
 import {
   AppliedFilters,
   priceSeriesLabel,
 } from "@/components/explore/AppliedFilters";
 import { money, dateLabel } from "@/lib/market-types";
 import { fold } from "@/lib/planning-math";
-import type { ComparisonData } from "@/lib/comparison-types";
+import { normalizeLabel } from "@/lib/label-normalization";
+import { quotePresentationOptions } from "@/lib/quote-filter-options";
+import type { ComparisonData, ComparisonQuote } from "@/lib/comparison-types";
 import { QuoteEvidence, quoteHref } from "./QuoteEvidence";
 import styles from "./comparison.module.css";
+
+const quoteKey = (q: ComparisonQuote) => JSON.stringify([
+  q.id, q.presentation, q.units, q.series, q.location_id,
+  q.date, q.document_id, q.source_locator,
+]);
 
 export function MarketPrices({ id, name }: { id: string; name: string }) {
   const [series, setSeries] = useState("");
@@ -20,7 +30,7 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
   const [category, setCategory] = useState("");
   const [presentation, setPresentation] = useState("");
   const [units, setUnits] = useState("");
-  const [limit, setLimit] = useState(12);
+  const [selectedQuoteKey, setSelectedQuoteKey] = useState("");
   const params = new URLSearchParams({
     a: id,
     view: "prices",
@@ -37,12 +47,16 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
     .map((r) => r.a)
     .filter(
       (r) =>
-        (!category || r.category_path.join(" > ") === category) &&
+        categoryMatches(r.category_path.join(" > "), category) &&
         (!presentation || r.presentation === presentation) &&
         (!units || r.units === units) &&
         fold(r.name).includes(fold(query)),
     )
     .sort((a, b) => b.price - a.price || a.name.localeCompare(b.name, "es"));
+  const selectedQuote = rows.find((q) => quoteKey(q) === selectedQuoteKey);
+  const visibleRows = rows.slice(0, 6);
+  if (selectedQuote && !visibleRows.some((q) => quoteKey(q) === selectedQuoteKey))
+    visibleRows.push(selectedQuote);
   const sourceRows = metadata?.rows || [];
   const selectedSeries = series || metadata?.filters.series || "";
   return (
@@ -69,7 +83,7 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
               setCategory("");
               setPresentation("");
               setUnits("");
-              setLimit(12);
+              setSelectedQuoteKey("");
             }}
           >
             {(metadata?.series || []).map((s) => (
@@ -87,70 +101,38 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              setLimit(12);
+              setSelectedQuoteKey("");
             }}
           />
         </label>
-        <label>
-          Categoría
-          <select
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setLimit(12);
-            }}
-          >
-            <option value="">Todas</option>
-            {[...new Set(sourceRows.map((r) => r.a.category_path.join(" > ")))]
-              .sort()
-              .map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-          </select>
-        </label>
-        <label>
-          Presentación
-          <select
-            value={presentation}
-            onChange={(e) => {
-              setPresentation(e.target.value);
-              setUnits("");
-              setLimit(12);
-            }}
-          >
-            <option value="">Todas</option>
-            {[...new Set(sourceRows.map((r) => r.a.presentation))]
-              .sort()
-              .map((p) => (
-                <option key={p}>{p}</option>
-              ))}
-          </select>
-        </label>
-        <label>
-          Unidades
-          <select
-            value={units}
-            onChange={(e) => {
-              setUnits(e.target.value);
-              setLimit(12);
-            }}
-          >
-            <option value="">Todas</option>
-            {[
-              ...new Set(
-                sourceRows
-                  .filter(
-                    (r) => !presentation || r.a.presentation === presentation,
-                  )
-                  .map((r) => r.a.units),
-              ),
-            ]
-              .sort()
-              .map((u) => (
-                <option key={u}>{u}</option>
-              ))}
-          </select>
-        </label>
+        <HierarchicalCategorySelect
+          emptyLabel="Todas"
+          value={category}
+          paths={[...new Set(sourceRows.map((r) => r.a.category_path.join(" > ")))]}
+          onChange={(id) => { setCategory(id); setSelectedQuoteKey(""); }}
+        />
+        <SearchableSelect
+          label="Presentación"
+          placeholder="Busca una presentación…"
+          emptyLabel="Todas"
+          value={presentation}
+          options={quotePresentationOptions([...new Set(sourceRows.map((r) => r.a.presentation))].sort())}
+          onChange={(id) => { setPresentation(id); setUnits(""); setSelectedQuoteKey(""); }}
+        />
+        <SearchableSelect
+          label="Unidades"
+          placeholder="Busca unidades…"
+          emptyLabel="Todas"
+          value={units}
+          options={[
+            ...new Set(
+              sourceRows
+                .filter((r) => !presentation || r.a.presentation === presentation)
+                .map((r) => r.a.units),
+            ),
+          ].sort().map((u) => ({ id: u, label: u }))}
+          onChange={(id) => { setUnits(id); setSelectedQuoteKey(""); }}
+        />
       </div>
       <AppliedFilters
         items={[
@@ -160,7 +142,7 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
             value: priceSeriesLabel[selectedSeries] || selectedSeries,
           },
           { label: "Categoría", value: category || "Todas" },
-          { label: "Presentación", value: presentation || "Todas" },
+          { label: "Presentación", value: normalizeLabel(presentation, "presentation") || "Todas" },
           { label: "Unidades", value: units || "Todas" },
           { label: "Búsqueda", value: query, clear: () => setQuery("") },
         ]}
@@ -181,11 +163,32 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
         <ErrorState message={error} retry={retry} />
       ) : (
         <>
+          {rows.length > 6 && (
+            <>
+              <p className={styles.note}>
+                Se muestran las seis cotizaciones de mayor precio y la cotización elegida.
+                Busca entre las {rows.length} combinaciones para consultar otra.
+              </p>
+              <SearchableSelect
+                label="Consultar una cotización de este mercado"
+                placeholder="Busca producto, presentación o unidades…"
+                value={selectedQuote ? selectedQuoteKey : ""}
+                options={rows.map((q) => ({
+                  id: quoteKey(q),
+                  label: `${q.name} · ${normalizeLabel(q.presentation, "presentation")} · ${q.units}`,
+                  detail: `${dateLabel(q.date)} · ${money(q.price)} · ${q.category_path.join(" > ")} · ${q.source_locator}`,
+                  searchText: [q.name, q.presentation, q.units, q.category_path.join(" > "), q.date, q.source_locator].join(" "),
+                }))}
+                onChange={setSelectedQuoteKey}
+                emptyLabel="Elige una cotización exacta para verla junto a las seis de mayor precio"
+              />
+            </>
+          )}
           <div className={styles.list}>
-            {rows.slice(0, limit).map((q) => (
+            {visibleRows.map((q) => (
               <article
                 className={styles.row}
-                key={JSON.stringify([q.id, q.presentation, q.units, q.series])}
+                key={quoteKey(q)}
               >
                 <div className={styles.rowHead}>
                   <div>
@@ -194,7 +197,7 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
                     </Link>
                     <p>{q.category_path.join(" > ")}</p>
                     <p>
-                      {q.presentation} · {q.units}
+                      {normalizeLabel(q.presentation, "presentation")} · {q.units}
                     </p>
                     <small>{dateLabel(q.date)}</small>
                   </div>
@@ -219,29 +222,9 @@ export function MarketPrices({ id, name }: { id: string; name: string }) {
           )}
           <div className={styles.expand}>
             <span className={styles.total}>
-              {Math.min(limit, rows.length)} de {rows.length} combinaciones
+              {visibleRows.length} de {rows.length}{" "}
+              {rows.length === 1 ? "combinación" : "combinaciones"}
             </span>
-            {rows.length > limit && (
-              <>
-                <button
-                  className="button secondary"
-                  onClick={() => setLimit((n) => n + 24)}
-                >
-                  Ver 24 más
-                </button>
-                <button
-                  className="button secondary"
-                  onClick={() => setLimit(rows.length)}
-                >
-                  Expandir lista completa
-                </button>
-              </>
-            )}
-            {limit > 12 && (
-              <button className="button secondary" onClick={() => setLimit(12)}>
-                Mostrar menos
-              </button>
-            )}
           </div>
         </>
       )}

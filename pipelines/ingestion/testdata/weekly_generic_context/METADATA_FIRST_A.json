@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-08T17:36:12.172697+00:00",
+  "read_only": true,
+  "scope": "Exactly three asset URLs and their original metadata; indexed quote/review existence only",
+  "cases": [
+    {
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anex_Bol_Semanal_dic13_19_2014.xls",
+        "document_id": "e8b58b399351b89f903a5ecc4bec978f7d85b6ae315c89b027882e137c045779",
+        "observed_on": null,
+        "processor_version": "official-v2:audited-unit-review-2018-v1:dane-weekly-v24",
+        "status": "failed",
+        "records": 0,
+        "error": "ValueError: Weekly grouped workbook has no explicit period in cells or URL",
+        "xmin": "1095127"
+      },
+      "source": {
+        "id": "e8b58b399351b89f903a5ecc4bec978f7d85b6ae315c89b027882e137c045779",
+        "title": "DANE · SIPSA - Anex_Bol_Semanal_dic13_19_2014.xls",
+        "publisher": "DANE · SIPSA",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anex_Bol_Semanal_dic13_19_2014.xls",
+        "media_type": "application/vnd.ms-excel",
+        "kind": "original",
+        "reference_period": "Serie histórica completa",
+        "page_count": null,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "dane-weekly-xlsx",
+          "original_filename": "Anex_Bol_Semanal_dic13_19_2014.xls"
+        },
+        "xmin": "1095125",
+        "bytes": 432640
+      },
+      "has_price_history": false,
+      "has_review_history": false
+    },
+    {
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anex_Bol_Semanal_dic_20_26_2014.xls",
+        "document_id": "3f64c2336392dbdfffdbb61cc929bf82d60a5dce92a7183794c80fd3a95df1c7",
+        "observed_on": null,
+        "processor_version": "official-v2:audited-unit-review-2018-v1:dane-weekly-v24",
+        "status": "failed",
+        "records": 0,
+        "error": "ValueError: Weekly grouped workbook has no explicit period in cells or URL",
+        "xmin": "1095252"
+      },
+      "source": {
+        "id": "3f64c2336392dbdfffdbb61cc929bf82d60a5dce92a7183794c80fd3a95df1c7",
+        "title": "DANE · SIPSA - Anex_Bol_Semanal_dic_20_26_2014.xls",
+        "publisher": "DANE · SIPSA",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anex_Bol_Semanal_dic_20_26_2014.xls",
+        "media_type": "application/vnd.ms-excel",
+        "kind": "original",
+        "reference_period": "Serie histórica completa",
+        "page_count": null,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "dane-weekly-xlsx",
+          "original_filename": "Anex_Bol_Semanal_dic_20_26_2014.xls"
+        },
+        "xmin": "1095250",
+        "bytes": 429568
+      },
+      "has_price_history": false,
+      "has_review_history": false
+    },
+    {
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anexo_Bol_Semanal_SIPSA_enero_04_2013.xls",
+        "document_id": "b1cefe1df6ee820c0af24d52e452c62a3d571fbb2d69982149eaffee184f462e",
+        "observed_on": null,
+        "processor_version": "official-v2:audited-unit-review-2018-v1:dane-weekly-v24",
+        "status": "failed",
+        "records": 0,
+        "error": "ValueError: Weekly grouped workbook has no explicit period in cells or URL",
+        "xmin": "1095454"
+      },
+      "source": {
+        "id": "b1cefe1df6ee820c0af24d52e452c62a3d571fbb2d69982149eaffee184f462e",
+        "title": "DANE · SIPSA - Anexo_Bol_Semanal_SIPSA_enero_04_2013.xls",
+        "publisher": "DANE · SIPSA",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Anexo_Bol_Semanal_SIPSA_enero_04_2013.xls",
+        "media_type": "application/vnd.ms-excel",
+        "kind": "original",
+        "reference_period": "Serie histórica completa",
+        "page_count": null,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "dane-weekly-xlsx",
+          "original_filename": "Anexo_Bol_Semanal_SIPSA_enero_04_2013.xls"
+        },
+        "xmin": "1095452",
+        "bytes": 380416
+      },
+      "has_price_history": false,
+      "has_review_history": false
+    }
+  ],
+  "complete": true,
+  "ended": "2026-10-08T17:36:13.460321+00:00"
+}

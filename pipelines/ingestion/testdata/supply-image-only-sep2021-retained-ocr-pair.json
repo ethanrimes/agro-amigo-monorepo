@@ -1,0 +1,500 @@
+{
+  "document_id": "05abc2c0ccfce9a42f11805c1500fc81c8b8e10bdf025b4469569b06d98a5121",
+  "image_id": "65184f296144b62869646f34db7f3219de0aa793826c615997973986a25a18f7",
+  "source_locator": "PDF page 4; supply market table native extraction failed; printed-row-v2",
+  "readings": [
+    {
+      "text": "Cuadro 1. Variación en el abastecimiento de alimentos según ciudad y mercado mayorista\n29 mercados mayoristas\nAgosto y septiembre de 2021\n* Para el día 27 de septiembre no hubo recolección de información en el mercado de Popayán, lo que afectó la información m",
+      "model": "gemini-3.5-flash",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 6449,
+        "promptTokenCount": 1387,
+        "thoughtsTokenCount": 3849,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1085
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 302
+          }
+        ],
+        "candidatesTokenCount": 1213
+      },
+      "tables": [
+        [
+          [
+            "Ciudad",
+            "Central",
+            "Agosto 2021 (t)",
+            "Septiembre 2021 (t)",
+            "Variación (%)"
+          ],
+          [
+            "Armenia",
+            "Mercar",
+            "9.317",
+            "10.504",
+            "12,74%"
+          ],
+          [
+            "Barranquilla",
+            "Barranquillita",
+            "30.904",
+            "29.150",
+            "-5,68%"
+          ],
+          [
+            "Barranquilla",
+            "Granabastos",
+            "9.817",
+            "11.198",
+            "14,07%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Corabastos",
+            "189.625",
+            "194.049",
+            "2,33%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Paloquemao",
+            "3.774",
+            "4.194",
+            "11,13%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Las Flores",
+            "2.595",
+            "3.976",
+            "53,22%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Samper Mendoza",
+            "2.449",
+            "2.674",
+            "9,21%"
+          ],
+          [
+            "Bucaramanga",
+            "Centroabastos",
+            "35.061",
+            "38.156",
+            "8,83%"
+          ],
+          [
+            "Cali",
+            "Cavasa",
+            "23.421",
+            "23.950",
+            "2,26%"
+          ],
+          [
+            "Cali",
+            "Santa Elena",
+            "20.858",
+            "22.785",
+            "9,23%"
+          ],
+          [
+            "Cartagena",
+            "Bazurto",
+            "17.427",
+            "17.920",
+            "2,83%"
+          ],
+          [
+            "Cúcuta",
+            "Cenabastos",
+            "27.120",
+            "28.130",
+            "3,72%"
+          ],
+          [
+            "Cúcuta",
+            "La Nueva Sexta",
+            "2.863",
+            "2.530",
+            "-11,64%"
+          ],
+          [
+            "Ibagué",
+            "Plaza La 21",
+            "4.726",
+            "4.170",
+            "-11,75%"
+          ],
+          [
+            "Ipiales",
+            "Centro de acopio",
+            "2.605",
+            "2.743",
+            "5,27%"
+          ],
+          [
+            "Manizales",
+            "Centro Galerías",
+            "5.828",
+            "6.261",
+            "7,43%"
+          ],
+          [
+            "Medellín",
+            "Central Mayorista de Antioquia",
+            "56.649",
+            "73.294",
+            "29,38%"
+          ],
+          [
+            "Medellín",
+            "Plaza Minorista \"José María Villa\"",
+            "12.281",
+            "14.559",
+            "18,55%"
+          ],
+          [
+            "Montería",
+            "Mercado del Sur",
+            "3.790",
+            "4.232",
+            "11,67%"
+          ],
+          [
+            "Neiva",
+            "Surabastos",
+            "8.934",
+            "9.320",
+            "4,32%"
+          ],
+          [
+            "Pasto",
+            "El Potrerillo",
+            "9.845",
+            "11.021",
+            "11,94%"
+          ],
+          [
+            "Pereira",
+            "Mercasa",
+            "9.409",
+            "11.045",
+            "17,39%"
+          ],
+          [
+            "Popayán*",
+            "Plaza de mercado del barrio Bolívar",
+            "5.573",
+            "5.820",
+            "4,43%"
+          ],
+          [
+            "Santa Marta",
+            "Santa Marta (Magdalena)",
+            "3.317",
+            "3.481",
+            "4,92%"
+          ],
+          [
+            "Sincelejo",
+            "Nuevo Mercado",
+            "3.781",
+            "4.441",
+            "17,44%"
+          ],
+          [
+            "Tunja",
+            "Complejo de Servicios del Sur",
+            "10.085",
+            "9.947",
+            "-1,36%"
+          ],
+          [
+            "Valledupar",
+            "Mercabastos",
+            "3.729",
+            "3.710",
+            "-0,51%"
+          ],
+          [
+            "Valledupar",
+            "Mercado Nuevo",
+            "2.092",
+            "2.622",
+            "25,34%"
+          ],
+          [
+            "Villavicencio",
+            "CAV",
+            "9.277",
+            "9.117",
+            "-1,72%"
+          ],
+          [
+            "TOTAL",
+            "",
+            "527.152",
+            "565.000",
+            "7,18%"
+          ]
+        ]
+      ],
+      "version": "gemini-image-ocr-v2",
+      "review_notes": [
+        "The footnote at the bottom of the page is cropped and incomplete."
+      ]
+    },
+    {
+      "text": "Cuadro 1. Variación en el abastecimiento de alimentos según ciudad y mercado mayorista\n29 mercados mayoristas\nAgosto y septiembre de 2021\n* Para el día 27 de septiembre no hubo recolección de información en el mercado de Popayán, lo que afectó la información...",
+      "model": "gemini-3.5-flash",
+      "usage": {
+        "serviceTier": "standard",
+        "totalTokenCount": 6367,
+        "promptTokenCount": 1402,
+        "thoughtsTokenCount": 3719,
+        "promptTokensDetails": [
+          {
+            "modality": "IMAGE",
+            "tokenCount": 1085
+          },
+          {
+            "modality": "TEXT",
+            "tokenCount": 317
+          }
+        ],
+        "candidatesTokenCount": 1246
+      },
+      "tables": [
+        [
+          [
+            "Ciudad",
+            "Central",
+            "Agosto 2021\n(t)",
+            "Septiembre 2021\n(t)",
+            "Variación (%)"
+          ],
+          [
+            "Armenia",
+            "Mercar",
+            "9.317",
+            "10.504",
+            "12,74%"
+          ],
+          [
+            "Barranquilla",
+            "Barranquillita",
+            "30.904",
+            "29.150",
+            "-5,68%"
+          ],
+          [
+            "Barranquilla",
+            "Granabastos",
+            "9.817",
+            "11.198",
+            "14,07%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Corabastos",
+            "189.625",
+            "194.049",
+            "2,33%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Paloquemao",
+            "3.774",
+            "4.194",
+            "11,13%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Las Flores",
+            "2.595",
+            "3.976",
+            "53,22%"
+          ],
+          [
+            "Bogotá, D.C.",
+            "Plaza Samper Mendoza",
+            "2.449",
+            "2.674",
+            "9,21%"
+          ],
+          [
+            "Bucaramanga",
+            "Centroabastos",
+            "35.061",
+            "38.156",
+            "8,83%"
+          ],
+          [
+            "Cali",
+            "Cavasa",
+            "23.421",
+            "23.950",
+            "2,26%"
+          ],
+          [
+            "Cali",
+            "Santa Elena",
+            "20.858",
+            "22.785",
+            "9,23%"
+          ],
+          [
+            "Cartagena",
+            "Bazurto",
+            "17.427",
+            "17.920",
+            "2,83%"
+          ],
+          [
+            "Cúcuta",
+            "Cenabastos",
+            "27.120",
+            "28.130",
+            "3,72%"
+          ],
+          [
+            "Cúcuta",
+            "La Nueva Sexta",
+            "2.863",
+            "2.530",
+            "-11,64%"
+          ],
+          [
+            "Ibagué",
+            "Plaza La 21",
+            "4.726",
+            "4.170",
+            "-11,75%"
+          ],
+          [
+            "Ipiales",
+            "Centro de acopio",
+            "2.605",
+            "2.743",
+            "5,27%"
+          ],
+          [
+            "Manizales",
+            "Centro Galerías",
+            "5.828",
+            "6.261",
+            "7,43%"
+          ],
+          [
+            "Medellín",
+            "Central Mayorista de Antioquia",
+            "56.649",
+            "73.294",
+            "29,38%"
+          ],
+          [
+            "Medellín",
+            "Plaza Minorista \"José María Villa\"",
+            "12.281",
+            "14.559",
+            "18,55%"
+          ],
+          [
+            "Montería",
+            "Mercado del Sur",
+            "3.790",
+            "4.232",
+            "11,67%"
+          ],
+          [
+            "Neiva",
+            "Surabastos",
+            "8.934",
+            "9.320",
+            "4,32%"
+          ],
+          [
+            "Pasto",
+            "El Potrerillo",
+            "9.845",
+            "11.021",
+            "11,94%"
+          ],
+          [
+            "Pereira",
+            "Mercasa",
+            "9.409",
+            "11.045",
+            "17,39%"
+          ],
+          [
+            "Popayán*",
+            "Plaza de mercado del barrio Bolívar",
+            "5.573",
+            "5.820",
+            "4,43%"
+          ],
+          [
+            "Santa Marta",
+            "Santa Marta (Magdalena)",
+            "3.317",
+            "3.481",
+            "4,92%"
+          ],
+          [
+            "Sincelejo",
+            "Nuevo Mercado",
+            "3.781",
+            "4.441",
+            "17,44%"
+          ],
+          [
+            "Tunja",
+            "Complejo de Servicios del Sur",
+            "10.085",
+            "9.947",
+            "-1,36%"
+          ],
+          [
+            "Valledupar",
+            "Mercabastos",
+            "3.729",
+            "3.710",
+            "-0,51%"
+          ],
+          [
+            "Valledupar",
+            "Mercado Nuevo",
+            "2.092",
+            "2.622",
+            "25,34%"
+          ],
+          [
+            "Villavicencio",
+            "CAV",
+            "9.277",
+            "9.117",
+            "-1,72%"
+          ],
+          [
+            "TOTAL",
+            "",
+            "527.152",
+            "565.000",
+            "7,18%"
+          ]
+        ]
+      ],
+      "version": "gemini-image-ocr-v2",
+      "review_notes": [
+        "The footnote at the bottom of the page is cropped: '* Para el día 27 de septiembre no hubo recolección de información en el mercado de Popayán, lo que afectó la información...'"
+      ]
+    }
+  ],
+  "provenance": "Retained 2026-10-01 source_ocr_result pair after exact-SHA cropped DANE original. Raw notes preserved; all 150 printed Cuadro 1 cells independently visually matched."
+}

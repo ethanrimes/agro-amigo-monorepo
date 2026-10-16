@@ -1,0 +1,17 @@
+{
+  "pdf_sha256": "7bdeb21148f0ae14ef55259f30cd7f4806689bd67a149e4ccff59de226057343",
+  "xlsx_sha256": "a43ecc1514e23f8e0a0f25eb85321e5e2eec970ef238117c6b15ae751f347cdc",
+  "page": 7,
+  "unit_heading": "Pesos por litro",
+  "visual_reading": "The same eight Meta municipality rows are printed under Nariño before Puerres; paired workbook rows 151-158 carry department code 50 Meta and row 159 begins 52 Nariño.",
+  "rows": [
+    {"meta_line": 19, "narino_line": 28, "municipality": "Acacías", "min": 1500, "max": 2000, "mean": 1676},
+    {"meta_line": 20, "narino_line": 29, "municipality": "Castilla la Nueva", "min": 1200, "max": 1700, "mean": 1564},
+    {"meta_line": 21, "narino_line": 30, "municipality": "Cumaral", "min": 1500, "max": 2000, "mean": 1784},
+    {"meta_line": 22, "narino_line": 31, "municipality": "Granada", "min": 1100, "max": 2000, "mean": 1774},
+    {"meta_line": 23, "narino_line": 32, "municipality": "Guamal", "min": 1600, "max": 1800, "mean": 1694},
+    {"meta_line": 24, "narino_line": 33, "municipality": "Restrepo", "min": 1500, "max": 2100, "mean": 1850},
+    {"meta_line": 25, "narino_line": 34, "municipality": "San Martín", "min": 1300, "max": 1800, "mean": 1554},
+    {"meta_line": 26, "narino_line": 35, "municipality": "Villavicencio", "min": 1600, "max": 2200, "mean": 1905}
+  ]
+}

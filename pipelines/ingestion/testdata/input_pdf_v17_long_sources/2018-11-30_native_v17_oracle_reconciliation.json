@@ -1,0 +1,43 @@
+{
+  "asset_initial_state": {
+    "error": "ValueError: Retained input old publication checkpoint changed",
+    "processor_version": "inputs-pdf-v17",
+    "records": 15241,
+    "status": "failed"
+  },
+  "checkpoints_initial": {
+    "v14_typed": 15215,
+    "v17": null
+  },
+  "comparison": {
+    "different_business_fields": 0,
+    "different_locators": 0,
+    "extra": 0,
+    "missing": 0
+  },
+  "document_id": "79b2dadcad9c2387648b64620d92a896b5ef5d8f9a2d366e522021ff62d7cbb3",
+  "native_v17_raw_rows": 15241,
+  "native_v17_typed_rows": 15215,
+  "native_v17_unresolved_rows": 26,
+  "native_v17_vector_sha256": "f4091a0233146c619e0b0789ffa031945692b0ed7c9c0f3075b2148fc0bf3125",
+  "observed_on": "2018-11-30",
+  "old_v14_vector_sha256": "d72f5489dabb9530fa058a8409aeb7e6caa70641fdb6a99357e12d2c7e1ae059",
+  "pdf_pages": 195,
+  "public_capture": {
+    "published_rows": 15613,
+    "raw_rows": 15638,
+    "revision_rows": 23478,
+    "winner_witnesses": 15638
+  },
+  "qualification_note": "Offline parsing and comparison only; no database/network/provider operation performed by this artifact.",
+  "retained_v14_raw_rows": 15241,
+  "retained_v14_typed_rows": 15215,
+  "retained_v14_unresolved_rows": 26,
+  "source_binding_receipt": "artifacts/qa-resumed-20261001/root-insumos-nov2018-readonly-20261009-a/ORIGINAL_SOURCE_BINDING_FIRST_A.json",
+  "source_binding_sha256": "fb491164f92e50fbede50c122a494261b7c88ec0280120486c8b725835c77653",
+  "source_bytes": 2806034,
+  "source_capture_receipt": "artifacts/qa-resumed-20261001/root-insumos-nov2018-readonly-20261009-a/FULL_NOV2018_CAPTURE_FIRST_A.json",
+  "source_capture_sha256": "ef7825b3d56f70c4f6c279cb844c403b81f99e7715f555bdc52c7d226edab5ad",
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Bol_Insumos_nov_2018.pdf",
+  "version_normalization": "Only details.parser_version and exact source_locator parser suffix v14->v17; all nine business fields and row multiplicity match."
+}

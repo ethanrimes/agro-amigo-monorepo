@@ -1,0 +1,582 @@
+{
+  "pdf_sha256": "58b12b179a9293e584e22473f60a97fab1b632cee35f27318953dc7de10e866c",
+  "xlsx_sha256": "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5",
+  "pdf_page": 21,
+  "sheet": "1.2",
+  "pdf_heading": "Wuxal tapa Nnegra, 1 litro",
+  "workbook_name": "Wuxal Tapa Negra",
+  "pdf_count": 47,
+  "workbook_count": 47,
+  "matched_markets": 47,
+  "missing_pdf": [],
+  "missing_workbook": [],
+  "price_mismatches": [],
+  "printed_rows": [
+    {
+      "pdf_line": 15,
+      "market": "Silos (Norte de Santander)",
+      "price": 33333
+    },
+    {
+      "pdf_line": 16,
+      "market": "Sonsón (Antioquia)",
+      "price": 31560
+    },
+    {
+      "pdf_line": 17,
+      "market": "Subachoque (Cundinamarca)",
+      "price": 31333
+    },
+    {
+      "pdf_line": 18,
+      "market": "Tibaná (Boyacá)",
+      "price": 29800
+    },
+    {
+      "pdf_line": 19,
+      "market": "Tunja (Boyacá)",
+      "price": 29667
+    },
+    {
+      "pdf_line": 20,
+      "market": "Túquerres (Nariño)",
+      "price": 30320
+    },
+    {
+      "pdf_line": 21,
+      "market": "Villapinzón (Cundinamarca)",
+      "price": 30667
+    },
+    {
+      "pdf_line": 24,
+      "market": "Ábrego (Norte de Santander)",
+      "price": 30857
+    },
+    {
+      "pdf_line": 25,
+      "market": "Andes (Antioquia)",
+      "price": 33177
+    },
+    {
+      "pdf_line": 26,
+      "market": "Anserma (Caldas)",
+      "price": 33717
+    },
+    {
+      "pdf_line": 27,
+      "market": "Aquitania (Boyacá)",
+      "price": 30667
+    },
+    {
+      "pdf_line": 33,
+      "market": "Armenia (Quindío)",
+      "price": 30550
+    },
+    {
+      "pdf_line": 34,
+      "market": "Belén de Umbría (Risaralda)",
+      "price": 32700
+    },
+    {
+      "pdf_line": 35,
+      "market": "Bogotá, D. C.",
+      "price": 31360
+    },
+    {
+      "pdf_line": 36,
+      "market": "Cajamarca (Tolima)",
+      "price": 32550
+    },
+    {
+      "pdf_line": 37,
+      "market": "Chinchiná (Caldas)",
+      "price": 34650
+    },
+    {
+      "pdf_line": 38,
+      "market": "Chiquinquirá (Boyacá)",
+      "price": 29733
+    },
+    {
+      "pdf_line": 39,
+      "market": "Chitagá (Norte de Santander)",
+      "price": 31000
+    },
+    {
+      "pdf_line": 40,
+      "market": "Chocontá (Cundinamarca)",
+      "price": 30333
+    },
+    {
+      "pdf_line": 41,
+      "market": "Corinto (Cauca)",
+      "price": 30333
+    },
+    {
+      "pdf_line": 42,
+      "market": "Cota (Cundinamarca)",
+      "price": 30750
+    },
+    {
+      "pdf_line": 43,
+      "market": "Duitama (Boyacá)",
+      "price": 30267
+    },
+    {
+      "pdf_line": 44,
+      "market": "El Carmen de Viboral (Antioquia)",
+      "price": 30013
+    },
+    {
+      "pdf_line": 45,
+      "market": "El Santuario (Antioquia)",
+      "price": 29333
+    },
+    {
+      "pdf_line": 46,
+      "market": "Funza (Cundinamarca)",
+      "price": 31293
+    },
+    {
+      "pdf_line": 47,
+      "market": "Guarne (Antioquia)",
+      "price": 31325
+    },
+    {
+      "pdf_line": 48,
+      "market": "Ipiales (Nariño)",
+      "price": 31500
+    },
+    {
+      "pdf_line": 49,
+      "market": "La Ceja (Antioquia)",
+      "price": 32100
+    },
+    {
+      "pdf_line": 50,
+      "market": "La Unión (Antioquia)",
+      "price": 30570
+    },
+    {
+      "pdf_line": 51,
+      "market": "La Virginia (Risaralda)",
+      "price": 33233
+    },
+    {
+      "pdf_line": 52,
+      "market": "Manizales (Caldas)",
+      "price": 33670
+    },
+    {
+      "pdf_line": 53,
+      "market": "Marinilla (Antioquia)",
+      "price": 30720
+    },
+    {
+      "pdf_line": 54,
+      "market": "Marsella (Risaralda)",
+      "price": 32150
+    },
+    {
+      "pdf_line": 55,
+      "market": "Medellín (Antioquia)",
+      "price": 31510
+    },
+    {
+      "pdf_line": 56,
+      "market": "Ocaña (Norte de Santander)",
+      "price": 31333
+    },
+    {
+      "pdf_line": 57,
+      "market": "Pamplona (Norte de Santander)",
+      "price": 31750
+    },
+    {
+      "pdf_line": 58,
+      "market": "Pasto (Nariño)",
+      "price": 31225
+    },
+    {
+      "pdf_line": 59,
+      "market": "Peñol (Antioquia)",
+      "price": 29000
+    },
+    {
+      "pdf_line": 60,
+      "market": "Pereira (Risaralda)",
+      "price": 31833
+    },
+    {
+      "pdf_line": 61,
+      "market": "Piendamó (Cauca)",
+      "price": 31325
+    },
+    {
+      "pdf_line": 62,
+      "market": "Popayán (Cauca)",
+      "price": 31250
+    },
+    {
+      "pdf_line": 63,
+      "market": "Pupiales (Nariño)",
+      "price": 31333
+    },
+    {
+      "pdf_line": 64,
+      "market": "Rionegro (Antioquia)",
+      "price": 31916
+    },
+    {
+      "pdf_line": 65,
+      "market": "Samacá (Boyacá)",
+      "price": 29833
+    },
+    {
+      "pdf_line": 66,
+      "market": "San Vicente Ferrer (Antioquia)",
+      "price": 32120
+    },
+    {
+      "pdf_line": 67,
+      "market": "Santa Rosa de Cabal (Risaralda)",
+      "price": 32167
+    },
+    {
+      "pdf_line": 68,
+      "market": "Sibaté (Cundinamarca)",
+      "price": 33440
+    }
+  ],
+  "workbook_rows": [
+    {
+      "row": 20468,
+      "market": "Ábrego",
+      "department": "Norte de Santander",
+      "raw_price": "30857.142857142859",
+      "printed_price": 30857
+    },
+    {
+      "row": 20469,
+      "market": "Andes",
+      "department": "Antioquia",
+      "raw_price": "33176.75",
+      "printed_price": 33177
+    },
+    {
+      "row": 20470,
+      "market": "Anserma",
+      "department": "Caldas",
+      "raw_price": "33716.666666666664",
+      "printed_price": 33717
+    },
+    {
+      "row": 20471,
+      "market": "Aquitania",
+      "department": "Boyacá",
+      "raw_price": "30666.666666666668",
+      "printed_price": 30667
+    },
+    {
+      "row": 20472,
+      "market": "Armenia",
+      "department": "Quindío",
+      "raw_price": "30550",
+      "printed_price": 30550
+    },
+    {
+      "row": 20473,
+      "market": "Belén de Umbría",
+      "department": "Risaralda",
+      "raw_price": "32700",
+      "printed_price": 32700
+    },
+    {
+      "row": 20474,
+      "market": "Bogotá, D.C.",
+      "department": "Bogotá, D.C.",
+      "raw_price": "31360",
+      "printed_price": 31360
+    },
+    {
+      "row": 20475,
+      "market": "Cajamarca",
+      "department": "Tolima",
+      "raw_price": "32550",
+      "printed_price": 32550
+    },
+    {
+      "row": 20476,
+      "market": "Chinchiná",
+      "department": "Caldas",
+      "raw_price": "34650",
+      "printed_price": 34650
+    },
+    {
+      "row": 20477,
+      "market": "Chiquinquirá",
+      "department": "Boyacá",
+      "raw_price": "29733.333333333332",
+      "printed_price": 29733
+    },
+    {
+      "row": 20478,
+      "market": "Chitagá",
+      "department": "Norte de Santander",
+      "raw_price": "31000",
+      "printed_price": 31000
+    },
+    {
+      "row": 20479,
+      "market": "Chocontá",
+      "department": "Cundinamarca",
+      "raw_price": "30333.333333333332",
+      "printed_price": 30333
+    },
+    {
+      "row": 20480,
+      "market": "Corinto",
+      "department": "Cauca",
+      "raw_price": "30333.333333333332",
+      "printed_price": 30333
+    },
+    {
+      "row": 20481,
+      "market": "Cota",
+      "department": "Cundinamarca",
+      "raw_price": "30750",
+      "printed_price": 30750
+    },
+    {
+      "row": 20482,
+      "market": "Duitama",
+      "department": "Boyacá",
+      "raw_price": "30266.666666666668",
+      "printed_price": 30267
+    },
+    {
+      "row": 20483,
+      "market": "El Carmen de Viboral",
+      "department": "Antioquia",
+      "raw_price": "30012.5",
+      "printed_price": 30013
+    },
+    {
+      "row": 20484,
+      "market": "El Santuario",
+      "department": "Antioquia",
+      "raw_price": "29333.333333333332",
+      "printed_price": 29333
+    },
+    {
+      "row": 20485,
+      "market": "Funza",
+      "department": "Cundinamarca",
+      "raw_price": "31293.333333333332",
+      "printed_price": 31293
+    },
+    {
+      "row": 20486,
+      "market": "Guarne",
+      "department": "Antioquia",
+      "raw_price": "31325",
+      "printed_price": 31325
+    },
+    {
+      "row": 20487,
+      "market": "Ipiales",
+      "department": "Nariño",
+      "raw_price": "31500",
+      "printed_price": 31500
+    },
+    {
+      "row": 20488,
+      "market": "La Ceja",
+      "department": "Antioquia",
+      "raw_price": "32100",
+      "printed_price": 32100
+    },
+    {
+      "row": 20489,
+      "market": "La Unión",
+      "department": "Antioquia",
+      "raw_price": "30570",
+      "printed_price": 30570
+    },
+    {
+      "row": 20490,
+      "market": "La Virginia",
+      "department": "Risaralda",
+      "raw_price": "33233.333333333336",
+      "printed_price": 33233
+    },
+    {
+      "row": 20491,
+      "market": "Manizales",
+      "department": "Caldas",
+      "raw_price": "33670",
+      "printed_price": 33670
+    },
+    {
+      "row": 20492,
+      "market": "Marinilla",
+      "department": "Antioquia",
+      "raw_price": "30720",
+      "printed_price": 30720
+    },
+    {
+      "row": 20493,
+      "market": "Marsella",
+      "department": "Risaralda",
+      "raw_price": "32150",
+      "printed_price": 32150
+    },
+    {
+      "row": 20494,
+      "market": "Medellín",
+      "department": "Antioquia",
+      "raw_price": "31510",
+      "printed_price": 31510
+    },
+    {
+      "row": 20495,
+      "market": "Ocaña",
+      "department": "Norte de Santander",
+      "raw_price": "31333.333333333332",
+      "printed_price": 31333
+    },
+    {
+      "row": 20496,
+      "market": "Pamplona",
+      "department": "Norte de Santander",
+      "raw_price": "31750",
+      "printed_price": 31750
+    },
+    {
+      "row": 20497,
+      "market": "Pasto",
+      "department": "Nariño",
+      "raw_price": "31225",
+      "printed_price": 31225
+    },
+    {
+      "row": 20498,
+      "market": "Peñol",
+      "department": "Antioquia",
+      "raw_price": "29000",
+      "printed_price": 29000
+    },
+    {
+      "row": 20499,
+      "market": "Pereira",
+      "department": "Risaralda",
+      "raw_price": "31833.333333333332",
+      "printed_price": 31833
+    },
+    {
+      "row": 20500,
+      "market": "Piendamó",
+      "department": "Cauca",
+      "raw_price": "31325",
+      "printed_price": 31325
+    },
+    {
+      "row": 20501,
+      "market": "Popayán",
+      "department": "Cauca",
+      "raw_price": "31250",
+      "printed_price": 31250
+    },
+    {
+      "row": 20502,
+      "market": "Pupiales",
+      "department": "Nariño",
+      "raw_price": "31333.333333333332",
+      "printed_price": 31333
+    },
+    {
+      "row": 20503,
+      "market": "Rionegro",
+      "department": "Antioquia",
+      "raw_price": "31916.400000000001",
+      "printed_price": 31916
+    },
+    {
+      "row": 20504,
+      "market": "Samacá",
+      "department": "Boyacá",
+      "raw_price": "29833.333333333332",
+      "printed_price": 29833
+    },
+    {
+      "row": 20505,
+      "market": "San Vicente Ferrer",
+      "department": "Antioquia",
+      "raw_price": "32120",
+      "printed_price": 32120
+    },
+    {
+      "row": 20506,
+      "market": "Santa Rosa de Cabal",
+      "department": "Risaralda",
+      "raw_price": "32166.666666666668",
+      "printed_price": 32167
+    },
+    {
+      "row": 20507,
+      "market": "Sibaté",
+      "department": "Cundinamarca",
+      "raw_price": "33440",
+      "printed_price": 33440
+    },
+    {
+      "row": 20508,
+      "market": "Silos",
+      "department": "Norte de Santander",
+      "raw_price": "33333.333333333336",
+      "printed_price": 33333
+    },
+    {
+      "row": 20509,
+      "market": "Sonsón",
+      "department": "Antioquia",
+      "raw_price": "31560",
+      "printed_price": 31560
+    },
+    {
+      "row": 20510,
+      "market": "Subachoque",
+      "department": "Cundinamarca",
+      "raw_price": "31333.333333333332",
+      "printed_price": 31333
+    },
+    {
+      "row": 20511,
+      "market": "Tibaná",
+      "department": "Boyacá",
+      "raw_price": "29800",
+      "printed_price": 29800
+    },
+    {
+      "row": 20512,
+      "market": "Tunja",
+      "department": "Boyacá",
+      "raw_price": "29666.666666666668",
+      "printed_price": 29667
+    },
+    {
+      "row": 20513,
+      "market": "Túquerres",
+      "department": "Nariño",
+      "raw_price": "30320",
+      "printed_price": 30320
+    },
+    {
+      "row": 20514,
+      "market": "Villapinzón",
+      "department": "Cundinamarca",
+      "raw_price": "30666.666666666668",
+      "printed_price": 30667
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "scope": "Exact whole-label, display-only place aliases; no market identity or source-row merge.",
+  "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSASemanal-08ago14agos-2026.pdf",
+  "parent_zip_sha256": null,
+  "document_id": "29934d6aea144d87e2a3cfeb5bc6346ec0ac54f8bc11e3d0badf36b67a8a180f",
+  "quote_key": "908ac50d1f3fd9c41e04811b8589e420d284f86ad1c2580072a91e6a3d5d0b23",
+  "locator": "PDF page 49, table 1, column 2, line 37",
+  "observation": "2026-08-14; Bola de pierna; Popayán; 34,667 COP/kg",
+  "aliases": {
+    "Popayán, Plaza de }mercado del barrio Bolívar": "Popayán, Plaza de mercado del barrio Bolívar",
+    "Bogotá, D.C., Frigorífi co Guadalupe": "Bogotá, D.C., Frigorífico Guadalupe",
+    "Bogotá, D. C., Frigorífi co Guadalupe": "Bogotá, D.C., Frigorífico Guadalupe",
+    "Bogotá, D.C., Frigorífi co Ble Ltda.": "Bogotá, D.C., Frigorífico Ble Ltda.",
+    "Bogotá, D. C., Frigorífi co Ble Ltda.": "Bogotá, D.C., Frigorífico Ble Ltda."
+  },
+  "interpretation": {
+    "Popayán": "The original PDF visibly prints the stray closing brace; remove only that exact full-label typo in display.",
+    "Bogotá": "The original PDF prints Frigorífico continuously; the split spelling is a text extraction artifact. Ble Ltda. and Guadalupe remain distinct.",
+    "preservation": "Keep raw labels, IDs, source locators, quotes, prices and history unchanged."
+  },
+  "pixel_evidence": [
+    {
+      "path": "artifacts/qa-resumed-20261001/root-weekly-market-spelling-20261016-a/01-source-context.png",
+      "sha256": "014407b852edba5cc9aa4f2e25cec7a37f1542cefd9800c8789b729d43bfdd72"
+    },
+    {
+      "path": "artifacts/qa-resumed-20261001/root-weekly-market-spelling-20261016-a/02-original-frigorifico-headings.png",
+      "sha256": "0918d8ef28c35fbc7f3f6f5f29182bcb3ccd17b66e7e603a2d1ac6ae1fa3b821"
+    },
+    {
+      "path": "artifacts/qa-resumed-20261001/root-weekly-market-spelling-20261016-a/03-original-popayan-brace-row.png",
+      "sha256": "4503124841eecb704e6b6e0c6208f0d8b95234b1e9e46e583d85449ce3c97bf8"
+    }
+  ]
+}

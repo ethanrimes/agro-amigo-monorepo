@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-08T19:16:28.436026+00:00",
+  "read_only": true,
+  "scope": "One January2014 input asset URL/original metadata/checkpoints only; no writes or source fetches",
+  "cases": [
+    {
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_ene_2014.pdf",
+        "kind": "inputs-pdf",
+        "document_id": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+        "observed_on": "2014-01-31",
+        "processor_version": "inputs-pdf-v17",
+        "status": "failed",
+        "records": 5639,
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "xmin": "1099742"
+      },
+      "source": {
+        "id": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+        "title": "DANE - insumos_factores_de_produccion_ene_2014.pdf",
+        "publisher": "DANE",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_ene_2014.pdf",
+        "media_type": "application/pdf",
+        "kind": "original",
+        "reference_period": "2014-01-31",
+        "page_count": 59,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "context-pdf",
+          "original_filename": "insumos_factores_de_produccion_ene_2014.pdf"
+        },
+        "xmin": "48888",
+        "bytes": 2561852
+      },
+      "checkpoints": [
+        {
+          "processor_version": "inputs-pdf-v11",
+          "step": "inputs-pdf:published",
+          "records": 5639,
+          "xmin": "599732"
+        },
+        {
+          "processor_version": "inputs-pdf-v12",
+          "step": "inputs-pdf:published",
+          "records": 5639,
+          "xmin": "633802"
+        },
+        {
+          "processor_version": "inputs-pdf-v13",
+          "step": "inputs-pdf:published",
+          "records": 5639,
+          "xmin": "704918"
+        },
+        {
+          "processor_version": "inputs-pdf-v14",
+          "step": "inputs-pdf:published",
+          "records": 5639,
+          "xmin": "926729"
+        },
+        {
+          "processor_version": "inputs-pdf-v4",
+          "step": "inputs-pdf:published",
+          "records": 0,
+          "xmin": "591175"
+        }
+      ],
+      "cohorts": []
+    }
+  ],
+  "complete": true
+}

@@ -99,7 +99,7 @@ test("map and GPS replace typed coordinates; searching never changes the saved f
   expect(await page.evaluate(() => window.visualViewport?.scale)).toBe(1);
 });
 
-test("sources have visible link styling and input catalog has no period selector", async ({ page }, info) => {
+test("sources have visible link styling and input catalog exposes its history choice", async ({ page }, info) => {
   await page.route("**/api/catalog**", route => route.fulfill({ json: { products: [], regions: [], latestDate: null } }));
   await page.route("**/api/planning/municipalities", route => route.fulfill({ json: [] }));
   await page.route("**/api/planning/inputs?**", route => route.fulfill({ json: [] }));
@@ -116,6 +116,6 @@ test("sources have visible link styling and input catalog has no period selector
   await footer.screenshot({ path: info.outputPath("sources-footer.png") });
   await page.goto("/insumos?history=all");
   await expect(page.getByRole("heading", { name: "Insumos agropecuarios" })).toBeVisible();
-  await expect(page.getByText("Período", { exact: true })).toHaveCount(0);
-  await expect(page.locator("select option").filter({ hasText: /12 meses|histórico/ })).toHaveCount(0);
+  await expect(page.getByRole("combobox", { name: "Historial de precios" })).toHaveValue("all");
+  await expect(page.getByRole("combobox", { name: "Historial de precios" }).locator("option")).toHaveText(["Últimos 12 meses", "Todo el historial"]);
 });

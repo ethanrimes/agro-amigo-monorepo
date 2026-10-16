@@ -1,0 +1,285 @@
+{
+  "children": [
+    {
+      "blank_evidence_sha256": "9845a76023cec9959a617ca8bce3c37edde4cbc817e89cc2c9e165c79a316019",
+      "child_sha256": "f5d39758d2921991b120381bafbfa2f3dd3cdd07cbbdfc8611f60d51c3a5dd93",
+      "count": {
+        "blanks": 2,
+        "noquotes": 25,
+        "priced": 172,
+        "reviews": 3
+      },
+      "derived_bounds": [
+        43.48,
+        175.92,
+        273.75,
+        337.02,
+        395.24,
+        453.66,
+        511.9,
+        570.46
+      ],
+      "noquote_evidence_sha256": "f59f4bbab4e9cfac603626cdf65ada708fa5df8f9870cd2445a113c0fb8dc4a5",
+      "priced_17_sha256": "fee50134f0d6150d2b58ee2c706d68554f88625f226880bf64e7f41b50fa1553",
+      "priced_evidence_sha256": "0e9ae936bef96622e22e1bd11c76ede8fd236673d1377176f9e70b7ae7978858",
+      "review_evidence_sha256": "fa849f995bcaead4d70cc619199fc39b6f6fd489560b29957d7c8ad5a3feb7bf"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "f74ba57880a0a199d6926b8fb5652b652926d7d6ec7bfd17efea320186de1b2c",
+      "count": {
+        "blanks": 0,
+        "noquotes": 24,
+        "priced": 21,
+        "reviews": 3
+      },
+      "derived_bounds": [
+        22.97,
+        179.91,
+        277.71,
+        357.41,
+        415.73,
+        474.08,
+        532.4,
+        590.85
+      ],
+      "noquote_evidence_sha256": "2b2751885be9241f93f91f005cf2eb9734dc7d6b68d574b22bcd5a7532dae435",
+      "priced_17_sha256": "1a298c93a72bba1d18b61ae32da44daa85968e450ea6ffb0acecc4061b3554d9",
+      "priced_evidence_sha256": "303d3b006533c3dd1ceb3a97df1e285511c158692f7f9ec3e93d482fd1719877",
+      "review_evidence_sha256": "808b62752208f06014ec0d77fe1211c082867d270759d1a5b8a07a02b6697e39"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "16381c4b870066c7f3f4aab8c0d732dc36187d3b088c68bb308a46ec6c33b463",
+      "count": {
+        "blanks": 0,
+        "noquotes": 69,
+        "priced": 39,
+        "reviews": 0
+      },
+      "derived_bounds": [
+        38.8,
+        171.24,
+        269.07,
+        341.69,
+        400.04,
+        458.36,
+        516.7,
+        575.12
+      ],
+      "noquote_evidence_sha256": "3339156fcfc0b947fda144172b3f4a591950e72d08db23373999a1839ad06618",
+      "priced_17_sha256": "0098aac3723e5d5dcf7e7f561353965340e8e10895cd6e80dec589a2f7c1024b",
+      "priced_evidence_sha256": "48a857e06f3a1273b4c16733010ab014470b1ba1254fa2ca91274bed7942d7b6",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "d0403c415af395c5bca852a4dd6977dfb1d5a784e040d579d58d0d9f97efdbee",
+      "count": {
+        "blanks": 0,
+        "noquotes": 113,
+        "priced": 92,
+        "reviews": 21
+      },
+      "derived_bounds": [
+        43.51,
+        175.92,
+        273.75,
+        337.02,
+        395.24,
+        453.8,
+        511.9,
+        570.38
+      ],
+      "noquote_evidence_sha256": "f4626b223a2aee31883f62bf3fc42f12786c0562a053b3fa7f99a2fc780a9037",
+      "priced_17_sha256": "1f3de11c82fe947d614eb0b93c49acadef10350340bf4adac8f5c099409c3f2d",
+      "priced_evidence_sha256": "b2930a742d84bb348aa1a2cdbd2539d89c074476e472f11af7f9da996a0f9d01",
+      "review_evidence_sha256": "70b1e99217e4ebce6a04fd67539f50ceef13b711ab5edb611b742bed9dd2757d"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "36058d3e2ab35b83737c3379870dfc94cfc8f93798f6873101beb296f2bd68ad",
+      "count": {
+        "blanks": 0,
+        "noquotes": 64,
+        "priced": 146,
+        "reviews": 0
+      },
+      "derived_bounds": [
+        22.96,
+        179.91,
+        277.71,
+        357.41,
+        415.73,
+        474.08,
+        532.4,
+        590.82
+      ],
+      "noquote_evidence_sha256": "52b054d52a5e6af59e7625ae7de54f1283042e1b1c623d2f47cf1bb0553c753c",
+      "priced_17_sha256": "6fad87acf17d9b68875aef074b6f2855a1ff1c5b64455c8e3c9eb9e7ec6ce6d2",
+      "priced_evidence_sha256": "420a61c5baf6eeca0436f88c1dc9b011bea491aa39f4f3fece0d3e54a61015ef",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "blank_evidence_sha256": "36d844af9bd7a54c852be014f682e716daa886138653a1d7a8ff386e91ba903a",
+      "child_sha256": "eaaafa06421b7ffba4828df57827e90987d9e889bbd854d5174b88831a32148f",
+      "count": {
+        "blanks": 1,
+        "noquotes": 74,
+        "priced": 32,
+        "reviews": 32
+      },
+      "derived_bounds": [
+        43.49,
+        175.92,
+        273.75,
+        336.89,
+        395.24,
+        453.56,
+        511.9,
+        570.35
+      ],
+      "noquote_evidence_sha256": "54f3ee7b2f903ed55c9923ef9e8aa9cf9bcf239ddf4184457c8ce175f7425c38",
+      "priced_17_sha256": "33f31e44112ef211c95ecf06a6a1088cc381d2ec1ac1271118eac80dfc7699c7",
+      "priced_evidence_sha256": "34f334459f09dcd026e349e14e0583a64593da3c4ad79d23f9b0244b05d71ae3",
+      "review_evidence_sha256": "1a252b183ea495763cbad5c800c30266057bf24c0c73f4c8ca6bf14b1925d5c0"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "301dff168ebe1cc357fd2bf0cc84409b28410e418ff57a43250c05b78a846e66",
+      "count": {
+        "blanks": 0,
+        "noquotes": 94,
+        "priced": 80,
+        "reviews": 0
+      },
+      "derived_bounds": [
+        43.49,
+        175.92,
+        273.75,
+        336.89,
+        395.24,
+        453.56,
+        511.9,
+        570.35
+      ],
+      "noquote_evidence_sha256": "ed2d2aed4e8c6f150ff92a0b25491f3c0a8c24e59e02d91a8dce7b1210dff5a8",
+      "priced_17_sha256": "c8cf943147089fdfe84c8af795233b9e9aac12da7bd7f3786e44f232a2c40a25",
+      "priced_evidence_sha256": "fa4bf725a6a6e6766ac4b04e7d9293e06d00791f1dd9e9282e21b3bbfd266ded",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "cc58e5ce38fa751138de088436ece59fb35610fc14eca39d1811f76d2009bd78",
+      "count": {
+        "blanks": 0,
+        "noquotes": 23,
+        "priced": 19,
+        "reviews": 4
+      },
+      "derived_bounds": [
+        37.99,
+        170.4,
+        268.23,
+        342.41,
+        400.73,
+        459.05,
+        517.4,
+        575.85
+      ],
+      "noquote_evidence_sha256": "11802b5e5f7e76cdeadfeaccbe1400740d651028b3c42e2783f25d5a3395a1dc",
+      "priced_17_sha256": "4b4441eb27276157d01582f108772b2c7905a2d2b940835412e2f393bb83b123",
+      "priced_evidence_sha256": "dc2fc7327a72b297a2d7872ecfe95450b8517785ae3aa4b655e08bac39b81917",
+      "review_evidence_sha256": "e081030bfea7b6d339ef4a049fc9dec54dadd1d68c01652ec32bfcada90dabc9"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "32c73fee19652051a882222b51178105fd36e65098c9004992bfb971ead116fc",
+      "count": {
+        "blanks": 0,
+        "noquotes": 49,
+        "priced": 44,
+        "reviews": 5
+      },
+      "derived_bounds": [
+        32.83,
+        180.99,
+        278.79,
+        347.45,
+        405.77,
+        464.09,
+        522.44,
+        580.89
+      ],
+      "noquote_evidence_sha256": "6e3ddd56ba94224d495deb0568003f3deca683e4a2dc0ef6d2ebbc3a999f5074",
+      "priced_17_sha256": "37589c6ec597d27447fe2c50dbdf54a5121c7e546fb5c9d075e458a1db71c566",
+      "priced_evidence_sha256": "7b8e5c481ce29e54bd583a7023d1d899774ae0f6fb3f12eede4f82d86583b332",
+      "review_evidence_sha256": "1c8d3879f345967c44a582651bd1e36cb6b84dc283a8f7416e15b5d5a32d8702"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "479bb6418ba84694e41bdf3b6249761127dd88fa1227b5e2dd3e3975430d5aa6",
+      "count": {
+        "blanks": 0,
+        "noquotes": 59,
+        "priced": 182,
+        "reviews": 7
+      },
+      "derived_bounds": [
+        43.48,
+        175.92,
+        273.75,
+        337.02,
+        395.24,
+        453.56,
+        511.9,
+        570.47
+      ],
+      "noquote_evidence_sha256": "a575f6098637e0012fa8e959825a730fb41d1dce774f1db6733a17b7202f7f90",
+      "priced_17_sha256": "8b5af3c04f9edba77acf36653554928ec58880bfd9b26241f3879284295254ee",
+      "priced_evidence_sha256": "a13a6000afd635522feb565167c4c07d726b17ef7e0eb97cb8d36855fdf37cb9",
+      "review_evidence_sha256": "19f8bccd46c03e7a0d7c39ef9f5ca2b8164ea91a6b4953996fadfac02925ebae"
+    },
+    {
+      "blank_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "child_sha256": "80009b21f92c47bac30d7a8d181605682fa3404c43a96610d93305b4cfbf1058",
+      "count": {
+        "blanks": 0,
+        "noquotes": 40,
+        "priced": 38,
+        "reviews": 0
+      },
+      "derived_bounds": [
+        43.47,
+        175.92,
+        273.75,
+        336.89,
+        395.24,
+        453.56,
+        511.9,
+        570.31
+      ],
+      "noquote_evidence_sha256": "6f794fb51d936a2790622c58e7c51e51ad89a02672514fa66d2fca1b375ab3cb",
+      "priced_17_sha256": "1fa8009b37009cbb47d9c5cc46525997b44960264412bf5e9e75c3fa5f2b7687",
+      "priced_evidence_sha256": "cc7c124a3a2e9a42abc3bc60d160d442021e872ba9925bc0301cf96adaa06500",
+      "review_evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ],
+  "counts": {
+    "blanks": 3,
+    "category_headings": 45,
+    "lines": 787,
+    "noquotes": 634,
+    "pages": 22,
+    "priced": 865,
+    "reviews": 75
+  },
+  "independent_poppler_oracle_sha256": "93149d4817db57e6f349434c334f0bd32de1853e3d29f209fc2f739dae5f5c81",
+  "new_29_evidence_sha256": "3800b7e361aef7043b984799cf27bfafc760018d3cc12596ae41a95215bdd0e2",
+  "new_29_full17_sha256": "d6ee4bb6c09fc09b17fb7011d02988558f8a9a0a8d2d6c1957074e09a184e1f5",
+  "old_836_sha256": "1a05410e1a4bf87bd34dbc937dfa6751c60f4907850360f6562f69eb8e6da19a",
+  "parent_sha256": "cbd378bc2d1863439c9e0a806dcdaa5026ebdd9e920fbd9c63dc1473de589edf",
+  "scope": "Digest-only runtime attestation. No saved price answers are read by runtime.",
+  "v43_module_sha256": "d368bfbd339f8f3c025cb0984323af92ffa342f0a439c6424764059725a70004",
+  "version": "city-v8:sep2021-native-geometry-v44-private-v1"
+}

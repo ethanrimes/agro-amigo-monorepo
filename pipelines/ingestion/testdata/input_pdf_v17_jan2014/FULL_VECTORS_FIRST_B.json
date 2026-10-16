@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-08T19:17:56.707980+00:00",
+  "read_only": true,
+  "metadata_sha256": "4b13c98f5a3254786d317864693b7145f1070f1f333af8b5976c07a645b589c8",
+  "scope": "One exact January2014 DID and monthly date, v14 business rows/xmins;3second query bound. Existing archived app original GET is hash/byte-bound.",
+  "cases": [
+    {
+      "document_id": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+      "observed_on": "2014-01-31",
+      "rows": 5639,
+      "typed": 5639,
+      "unresolved": 0,
+      "old_checkpoint": {
+        "processor_version": "inputs-pdf-v14",
+        "step": "inputs-pdf:published",
+        "records": 5639,
+        "xmin": "926729"
+      },
+      "vector_file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/2014-01-31_V14_FULL_VECTOR_FIRST_B.json.gz",
+      "vector_sha256": "350fd6cac8e3cd019df521ab1a9aa634197d538217a12e341c8527ca833c59a6",
+      "original_file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/2014-01-31_original.pdf",
+      "original_sha256": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+      "bytes": 2561852
+    }
+  ],
+  "complete": true
+}

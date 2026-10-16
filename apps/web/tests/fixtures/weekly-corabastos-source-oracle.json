@@ -1,0 +1,152 @@
+{
+  "basis": "Precio mayorista semanal",
+  "publisher": "DANE · SIPSA",
+  "currency": "COP",
+  "unit": "kg",
+  "products": [
+    {
+      "product_id": "ahuyama",
+      "product_name": "Ahuyama",
+      "keys": [
+        {
+          "market": "Bogotá D. C., Corabastos",
+          "key": "a48f7a9d542b0731cf09ae7a0f83dc6094f846544fb1b258ec8ae73423be73cd"
+        },
+        {
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "3cdf0a3d3a18c0d47797268cd4a599a751d2c43afc8c6d535a4c090514447e3d"
+        },
+        {
+          "market": "Bogotá, D. C. Corabastos",
+          "key": "09711b28eec09a3f55c6ec60ad425f6ed25be28bd536882b8f48fb0a39813ff8"
+        },
+        {
+          "market": "Bogotá, D. C., Corabastos",
+          "key": "bba261e953f3ae4aae1e4595bae4ad27c60952e7cd694aff2bb5419599752a7b"
+        },
+        {
+          "market": "Bogotá, D.C., Corabastos",
+          "key": "0c7c96ed4de79d59daef1c4bab5a62c1f3fc4e11c5dc24b526d868fad0f3f654"
+        }
+      ],
+      "source_examples": [
+        {
+          "date": "2018-03-09",
+          "market": "Bogotá D. C., Corabastos",
+          "key": "a48f7a9d542b0731cf09ae7a0f83dc6094f846544fb1b258ec8ae73423be73cd",
+          "price": 858,
+          "min": 800,
+          "max": 900,
+          "document_id": "36c5753ce51358c8ac777cfdd94fbdd538e939f17aa0b2e76562c0741c55ff60",
+          "source_locator": "PDF page 8,table 1,column 1,line 26",
+          "source_page": 8
+        },
+        {
+          "date": "2022-06-24",
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "3cdf0a3d3a18c0d47797268cd4a599a751d2c43afc8c6d535a4c090514447e3d",
+          "price": 1937,
+          "min": 1800,
+          "max": 2200,
+          "document_id": "0f7aaace0f54fb2c31b016011076acd2bb782f9993ca5ddcfe13ed2b4fe3c486",
+          "source_locator": "1.1!row 31,cols C:E",
+          "source_page": null
+        },
+        {
+          "date": "2012-06-22",
+          "market": "Bogotá, D. C. Corabastos",
+          "key": "09711b28eec09a3f55c6ec60ad425f6ed25be28bd536882b8f48fb0a39813ff8",
+          "price": 867,
+          "min": 800,
+          "max": 900,
+          "document_id": "dd059a09eecb1fa01cadb24a4f21a7768d97d9e31684dee6a57222c536faf6a8",
+          "source_locator": "PDF page 4,table 1,column 1,line 12",
+          "source_page": 4
+        },
+        {
+          "date": "2017-05-19",
+          "market": "Bogotá, D. C., Corabastos",
+          "key": "bba261e953f3ae4aae1e4595bae4ad27c60952e7cd694aff2bb5419599752a7b",
+          "price": 1658,
+          "min": 1600,
+          "max": 1700,
+          "document_id": "6f9381605113bbacd05bfccef645af7ee5b8a856604471ae8aca7f79e3ef73b3",
+          "source_locator": "PDF page 7,table 1,column 1,line 26",
+          "source_page": 7
+        }
+      ]
+    },
+    {
+      "product_id": "ajo",
+      "product_name": "Ajo",
+      "keys": [
+        {
+          "market": "Bogotá D. C., Corabastos",
+          "key": "f3bccb1b4ddf20989709d8cb8f9d463aaba3d64e42e7db651398b5efb5fa6566"
+        },
+        {
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "d7bfe3fc7404eeacf96a170be223ad615a70a816753a5f9903528b516b7cb949"
+        },
+        {
+          "market": "Bogotá, D. C. Corabastos",
+          "key": "728a8649922bc09c03936e471c0dca91007d3973046117ad63643aec931ed413"
+        },
+        {
+          "market": "Bogotá, D. C., Corabastos",
+          "key": "4447eb32f7744322bdd296c9d0079c0d7c52a138e98ccfe3eff1b9d5d0dd5ad0"
+        },
+        {
+          "market": "Bogotá, D.C., Corabastos",
+          "key": "70eb7651c1310c360ce35677d73f61452e5276a9d6c89c61f0d697208a864785"
+        }
+      ],
+      "source_examples": [
+        {
+          "date": "2018-03-09",
+          "market": "Bogotá D. C., Corabastos",
+          "key": "f3bccb1b4ddf20989709d8cb8f9d463aaba3d64e42e7db651398b5efb5fa6566",
+          "price": 7100,
+          "min": 6600,
+          "max": 8000,
+          "document_id": "36c5753ce51358c8ac777cfdd94fbdd538e939f17aa0b2e76562c0741c55ff60",
+          "source_locator": "PDF page 8,table 1,column 2,line 30",
+          "source_page": 8
+        },
+        {
+          "date": "2022-06-24",
+          "market": "Bogotá, D,C,, Corabastos",
+          "key": "d7bfe3fc7404eeacf96a170be223ad615a70a816753a5f9903528b516b7cb949",
+          "price": 13242,
+          "min": 12000,
+          "max": 14000,
+          "document_id": "0f7aaace0f54fb2c31b016011076acd2bb782f9993ca5ddcfe13ed2b4fe3c486",
+          "source_locator": "1.1!row 75,cols C:E",
+          "source_page": null
+        },
+        {
+          "date": "2012-06-22",
+          "market": "Bogotá, D. C. Corabastos",
+          "key": "728a8649922bc09c03936e471c0dca91007d3973046117ad63643aec931ed413",
+          "price": 4652,
+          "min": 4533,
+          "max": 5000,
+          "document_id": "dd059a09eecb1fa01cadb24a4f21a7768d97d9e31684dee6a57222c536faf6a8",
+          "source_locator": "PDF page 4,table 1,column 1,line 28",
+          "source_page": 4
+        },
+        {
+          "date": "2017-05-19",
+          "market": "Bogotá, D. C., Corabastos",
+          "key": "4447eb32f7744322bdd296c9d0079c0d7c52a138e98ccfe3eff1b9d5d0dd5ad0",
+          "price": 5811,
+          "min": 5000,
+          "max": 6000,
+          "document_id": "6f9381605113bbacd05bfccef645af7ee5b8a856604471ae8aca7f79e3ef73b3",
+          "source_locator": "PDF page 7,table 1,column 1,line 76",
+          "source_page": 7
+        }
+      ]
+    }
+  ]
+}

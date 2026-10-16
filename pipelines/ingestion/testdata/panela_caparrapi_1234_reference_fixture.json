@@ -1,0 +1,47 @@
+{
+  "reference": {
+    "document_id": "1e6cce86cc4d4eece34173592cc59b3edca2bdd76911e6b856b1fb9895c30f4c",
+    "source_locator": "PDF page 42,table 1,column 1,line 3",
+    "parser_version": "official-v2:dane-weekly-v24",
+    "quote_key": "bbfbb906073d4d10f4709a07af9e81023c05d0c5b7f0c0933488840def9724ec",
+    "product_id": "panela-cuadrada-morena-1234",
+    "product_name": "Panela cuadrada morena 1234",
+    "category": "productos procesados",
+    "publisher": "DANE · SIPSA",
+    "series": "dane-weekly",
+    "basis": "Precio mayorista semanal",
+    "currency": "COP",
+    "unit": "kg",
+    "market": "Caparrapí (Cundinamarca)",
+    "observed_on": "2013-02-15",
+    "period_start": "2013-02-09",
+    "price": 1550,
+    "min_price": 1550,
+    "max_price": 1550,
+    "source_page": 42,
+    "details": {
+      "trend": "++",
+      "period_end": "2013-02-15",
+      "unit_basis": "Pesos por kilogramo; excepciones de huevos/líquidos solo según nota explícita de la publicación.",
+      "period_type": "weekly",
+      "source_note": "Media semanal publicada por DANE; mínimo y máximo de la misma semana. La tendencia es el símbolo literal de la fuente.",
+      "period_start": "2013-02-09",
+      "price_statistic": "published_mean",
+      "identity_dimensions": {
+        "source_product": "Panela cuadrada morena 1234"
+      }
+    },
+    "parsed_at": "2026-10-09T04:30:27.494Z",
+    "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_9feb_15feb_2013.pdf",
+    "department": "Cundinamarca"
+  },
+  "source_evidence": {
+    "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_9feb_15feb_2013.pdf",
+    "document_id_sha256": "1e6cce86cc4d4eece34173592cc59b3edca2bdd76911e6b856b1fb9895c30f4c",
+    "source_locator": "PDF page 42,table 1,column 1,line 3",
+    "printed_heading": "Panela cuadrada morena",
+    "detached_token": "1234",
+    "printed_row": "Caparrapí (Cundinamarca) 1.550 1.550 1.550 ++",
+    "interpretation_limit": "The source prints 1234 on a separate line beneath the heading; its meaning is unresolved."
+  }
+}

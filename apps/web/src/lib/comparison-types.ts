@@ -14,6 +14,7 @@ export type ComparisonQuote = {
   unit: string;
   series: string;
   location_id: string;
+  source_market_id?: string | null;
   location_name: string;
   department?: string;
   municipality?: string;
@@ -25,6 +26,9 @@ export type ComparisonQuote = {
   document_id: string;
   source_locator: string;
   source_page?: number;
+  source_units?: string | null;
+  source_input_id?: string;
+  source_name?: string;
   min_price?: number;
   max_price?: number;
 };

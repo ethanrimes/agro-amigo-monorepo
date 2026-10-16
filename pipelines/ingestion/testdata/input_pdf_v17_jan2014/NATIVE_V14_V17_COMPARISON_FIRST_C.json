@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-08T19:22:01.062083+00:00",
+  "scope": "Full native9-field source comparison after only parser-version/numeric/date normalization",
+  "old_raw": 5639,
+  "new_raw": 5639,
+  "new_typed": 5639,
+  "new_unresolved": 0,
+  "lost_or_changed": 0,
+  "added": 0,
+  "lost_vectors": [],
+  "added_vectors": [],
+  "vector_sha256": "a811d999b2f7b8818b42b1482f635280cc466be091c45fb22f1496aa8aa475b9",
+  "seconds": 35.77703029100667,
+  "no_database_network_provider": true
+}

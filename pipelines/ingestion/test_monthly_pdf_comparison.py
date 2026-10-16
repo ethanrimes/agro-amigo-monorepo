@@ -1,6 +1,7 @@
 """Mixed monthly monetary/percentage captions retain their actual reference month."""
 
 import io
+import hashlib
 import os
 import unittest
 from datetime import date
@@ -19,6 +20,11 @@ FIXTURES = Path(
             / "artifacts/source-verification-2026-09-28/dane-prices/originals"
         ),
     )
+)
+FEB_2015_ORIGINAL = (
+    Path(__file__).resolve().parents[2]
+    / "artifacts/qa-resumed-20261001/web/monthly-original-audit"
+    / "a39c2c8c89aa129f22161d3a39cae0ec761aa952c56c90e66c1551e034ca7c63.pdf"
 )
 
 
@@ -53,7 +59,51 @@ class MonthlyComparisonCaptions(unittest.TestCase):
         self.assertTrue(
             all(r[-1]["period_evidence"] == "Agosto/julio 2015" for r in rows)
         )
-        self.assertTrue(all(r[0].endswith("monthly-pdf-v4") for r in rows))
+        self.assertTrue(all(r[0].endswith("monthly-pdf-v5") for r in rows))
+        self.assertEqual([r[7] for r in rows], [-3.02, 0, -2])
+
+    def test_exact_february_2015_pdf_preserves_price_and_adjacent_change(self):
+        self.assertTrue(FEB_2015_ORIGINAL.is_file())
+        data = FEB_2015_ORIGINAL.read_bytes()
+        self.assertEqual(
+            hashlib.sha256(data).hexdigest(),
+            "a39c2c8c89aa129f22161d3a39cae0ec761aa952c56c90e66c1551e034ca7c63",
+        )
+        with pdfplumber.open(io.BytesIO(data)) as pdf:
+            printed = pdf.pages[22].extract_tables()[0]
+            self.assertEqual(printed[0][2:6], ["Barranquilla", None, "Bogotá", None])
+            self.assertEqual(printed[1][2:6], ["Precio", "Var %", "Precio", "Var %"])
+            self.assertEqual(printed[3][0], "Ahuyama")
+            self.assertEqual(printed[3][2:6], ["468", "6.61", "816", "-6.96"])
+            self.assertEqual(printed[5][0], "Cebolla cabezona blanca")
+            self.assertEqual(printed[5][12:14], ["760", "18.38"])
+            rows = list(parse_pdf_pages(pdf.pages, date(2015, 2, 28), True))
+        self.assertEqual(len(rows), 404)
+        by_locator = {row[0].split("; ")[0]: row for row in rows}
+        for locator, name, market, price, change in (
+            ("PDF page 23,table 1,row 4,col 3", "Ahuyama", "Barranquilla", 468, 6.61),
+            ("PDF page 23,table 1,row 4,col 5", "Ahuyama", "Bogotá", 816, -6.96),
+            ("PDF page 23,table 1,row 6,col 13", "Cebolla cabezona blanca", "Cúcuta", 760, 18.38),
+        ):
+            row = by_locator[locator]
+            self.assertEqual((row[3], row[4], row[5], row[6], row[7]),
+                             (name, market, "kg", price, change))
+            self.assertEqual(row[-1]["variation_basis"], "monthly")
+
+    def test_missing_and_unrecognized_variations_never_become_prices(self):
+        cells = table("Variación mensual. Agosto/julio 2015")
+        cells[3] = ["Ahuyama", "900", "-", "525", "n.d.", "587", "dato dudoso"]
+        page = VerifiedPDFPage({"text": "", "tables": [cells]})
+        rows = list(parse_pdf_pages([page], date(2015, 8, 31), True))
+        self.assertEqual([r[6] for r in rows], [900, 525, 587])
+        self.assertEqual([r[7] for r in rows], [None, None, None])
+        self.assertEqual(rows[2][-1]["change_percent_review"],
+                         "Unrecognized printed Var % cell")
+        cells[3][2] = ""
+        cells[2][2] = "Precio"
+        rows = list(parse_pdf_pages([VerifiedPDFPage({"text": "", "tables": [cells]})],
+                                    date(2015, 8, 31), True))
+        self.assertIsNone(rows[0][7])
 
     def test_year_rollover_is_previous_month_not_future_december(self):
         rows = parse("Variación mensual. Enero 2015/diciembre 2014", date(2015, 1, 31))
@@ -171,7 +221,7 @@ class MonthlyComparisonCaptions(unittest.TestCase):
             [(r[4], r[6]) for r in rows],
             [("Bogotá", 900), ("Medellín", 525), ("Cartagena", 587)],
         )
-        self.assertTrue(all(r[-1]["parser_version"] == "daily-pdf-v5" for r in rows))
+        self.assertTrue(all(r[-1]["parser_version"] == "daily-pdf-v6" for r in rows))
 
 
 if __name__ == "__main__":

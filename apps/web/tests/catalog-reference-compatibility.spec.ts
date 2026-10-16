@@ -174,15 +174,15 @@ for (const unit of ["kg", "pack"]) {
         exact: true,
       })
       .click();
-    const picker = page.getByLabel("Producto comparable");
-    await expect(picker).toHaveValue("frijol-rojo");
-    await expect(picker.locator("option")).toHaveText(["Frijol rojo local"]);
-    await expect(
-      page.getByRole("combobox", {
-        name: "Mercado de referencia",
-        exact: true,
-      }),
-    ).toHaveValue("safe-market");
+    const productChoice = page.getByRole("group", { name: "Producto comparable" });
+    await expect(productChoice).toContainText("Seleccionado: Frijol rojo local");
+    await productChoice.getByRole("combobox").fill("Frijol");
+    await expect(productChoice.getByRole("option")).toHaveCount(1);
+    await expect(productChoice.getByRole("option")).toContainText("Frijol rojo local");
+    await productChoice.getByRole("combobox").fill("producto inexistente");
+    await expect(productChoice).toContainText("Seleccionado: Frijol rojo local");
+    await expect(page.getByRole("group", { name: "Mercado de referencia" }))
+      .toContainText("Seleccionado: Mercado COP/kg");
     await expect.poll(() => requests.length).toBeGreaterThan(0);
     if (unit === "kg")
       await expect(page.locator(".seasonal-bars button")).toHaveCount(12);

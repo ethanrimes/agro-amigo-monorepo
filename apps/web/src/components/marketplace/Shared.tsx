@@ -46,9 +46,11 @@ export function Change({
 export function ProductCard({
   product,
   detailReturnTo,
+  prefetch,
 }: {
   product: CatalogCard;
   detailReturnTo?: string;
+  prefetch?: boolean;
 }) {
   const { saved, toggleSaved } = usePreferences();
   const savedKey = catalogSavedKey(product);
@@ -60,7 +62,7 @@ export function ProductCard({
       data-catalog-identity={catalogIdentity(product)}
       data-product-id={product.id}
     >
-      <Link className="product-image-link" href={href}>
+      <Link className="product-image-link" href={href} prefetch={prefetch}>
         <CropPicture
           imageKey={product.image_key}
           name={product.name}
@@ -77,7 +79,7 @@ export function ProductCard({
         {active ? <IoHeart /> : <IoHeartOutline />}
       </button>
       <div className="product-card-body">
-        <Link href={href} className="product-name">
+        <Link href={href} className="product-name" prefetch={prefetch}>
           {product.name}
         </Link>
         <span className="product-date">{catalogDate(product.date)}</span>
@@ -105,7 +107,7 @@ export function ProductCard({
               : "vs. mes anterior"
           }
         />
-        <Link href={href} className="product-card-footer">
+        <Link href={href} className="product-card-footer" prefetch={prefetch}>
           <span>Ver producto</span>
           <IoArrowForward />
         </Link>
@@ -150,11 +152,13 @@ export function SectionTitle({
   title,
   href,
   link,
+  prefetch,
 }: {
   eyebrow?: string;
   title: string;
   href?: string;
   link?: string;
+  prefetch?: boolean;
 }) {
   return (
     <div className="section-title">
@@ -163,7 +167,7 @@ export function SectionTitle({
         <h2>{title}</h2>
       </div>
       {href && (
-        <Link href={href} className="text-link">
+        <Link href={href} className="text-link" prefetch={prefetch}>
           {link || "Ver todos"} <IoArrowForward />
         </Link>
       )}

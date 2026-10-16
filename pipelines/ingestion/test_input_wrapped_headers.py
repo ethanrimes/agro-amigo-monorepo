@@ -16,6 +16,7 @@ from . import inputs, worker
 from . import pdf_sources as parser
 from . import test_input_pdf_publication as publication_tests
 from .worker import SourceDateMismatch, parser_version
+from .input_pdf_v17_replay import VERSION as GENERIC_INPUT_VERSION
 
 FIXTURES = Path(
     os.environ.get(
@@ -53,7 +54,9 @@ class ActualWrappedInputHeaders(unittest.TestCase):
                 return list(parser.parse_input_pdf(b"", date(2019, 1, 31)))
 
     def test_full_document_independent_literal_price_and_variation_cells(self):
-        self.assertEqual(parser.INPUT_PDF_VERSION, parser_version("inputs-pdf"))
+        self.assertEqual(parser.INPUT_PDF_VERSION, "inputs-pdf-v14")
+        self.assertEqual(parser_version("inputs-pdf"), GENERIC_INPUT_VERSION)
+        self.assertEqual(inputs.input_pdf_version_for_document(DID), GENERIC_INPUT_VERSION)
         self.assertEqual(len(self.rows), 14458)
         printed = Counter()
         pattern = re.compile(
@@ -171,7 +174,7 @@ class WrappedInputPublication(unittest.TestCase):
             self.assertEqual(exact[0][6], price)
             rows.extend(exact)
         for _ in range(2):
-            with self.db.transaction():
+            with publication_tests.synthetic_pdf_publication_version(parser.INPUT_PDF_VERSION), self.db.transaction():
                 worker.save_rows(self.db, "old", rows)
                 inputs.project_pdf_inputs(self.db, "old")
         actual = self.db.execute(

@@ -7,9 +7,11 @@ import { useData } from "@/components/marketplace/useData";
 import { usePreferences } from "@/components/marketplace/Preferences";
 import { ErrorState, LoadingCards } from "@/components/marketplace/Shared";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { AppliedFilters } from "@/components/explore/AppliedFilters";
 import { MapButton } from "@/components/explore/ColombiaMap";
 import { fold } from "@/lib/planning-math";
+import { departmentLabel, departmentLabels } from "@/lib/filter-labels";
 import { dateLabel } from "@/lib/market-types";
 import { photoFor } from "@/lib/images";
 import type { Market } from "@/lib/explore-types";
@@ -58,32 +60,24 @@ export default function Markets() {
           }))}
           onSelect={(m) => router.push("/market/" + m.id)}
         />
-        <label className="region-field">
-          <span>Departamento</span>
-          <select
-            value={region}
-            onChange={(e) => {
-              setRegion(e.target.value);
-              setLimit(24);
-            }}
-          >
-            <option value="">Toda Colombia</option>
-            {[
-              ...new Set([
-                ...(data || []).map((m) => m.region),
-                ...(region ? [region] : []),
-              ]),
-            ]
-              .sort()
-              .map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-          </select>
-        </label>
+        <SearchableSelect
+          className="region-field"
+          label="Departamento"
+          placeholder="Busca un departamento…"
+          emptyLabel="Toda Colombia"
+          value={departmentLabel(region)}
+          options={departmentLabels([
+            ...(data || []).map((m) => m.region),
+            ...(region ? [region] : []),
+          ]).map((r) => ({ id: r, label: r }))}
+          onChange={(id) => { setRegion(id); setLimit(24); }}
+          loading={loading}
+          error={!!error}
+        />
       </div>
       <AppliedFilters
         items={[
-          { label: "Departamento", value: region || "Toda Colombia" },
+          { label: "Departamento", value: departmentLabel(region) || "Toda Colombia" },
           { label: "Búsqueda", value: query, clear: () => setQuery("") },
         ]}
       />

@@ -6,12 +6,17 @@ import { useData } from "@/components/marketplace/useData";
 import { ErrorState } from "@/components/marketplace/Shared";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
 import { SearchBox } from "@/components/ui/SearchBox";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { HierarchicalCategorySelect } from "@/components/ui/HierarchicalCategorySelect";
+import { categoryMatches } from "@/lib/category-hierarchy";
 import { ReportProductPicture } from "./ReportProductPicture";
 import { fold } from "@/lib/planning-math";
 import { money, dateLabel, unitLabel } from "@/lib/market-types";
+import { normalizeLabel } from "@/lib/label-normalization";
 type CityPrice = {
   product_id: string;
   market_id: string;
+  market_region: string | null;
   category_path: string[];
   document_id: string;
   source_page: number;
@@ -19,6 +24,7 @@ type CityPrice = {
   observed_on: string;
   product_name: string;
   market_name: string;
+  display_market_name?: string;
   presentation: string;
   quantity: number;
   source_unit: string;
@@ -30,19 +36,24 @@ type CityPrice = {
   min_unit_price: number | null;
   max_unit_price: number | null;
 };
+// The server groups only source-verified aliases. Keep the literal market
+// name on the evidence link and the canonical label on the browsing filter.
+const marketLabel = (row: CityPrice) => row.display_market_name || row.market_name;
 export function CityPrices() {
   const { data, loading, error, retry } = useData<CityPrice[]>(
     "/api/planning/regional",
   );
   const [query, setQuery] = useState(""),
     [market, setMarket] = useState(""),
+    [category, setCategory] = useState(""),
     [limit, setLimit] = useState(36);
   useEffect(() => {
     setQuery(new URLSearchParams(window.location.search).get("q") || "");
   }, []);
   const rows = (data || []).filter(
     (r) =>
-      (!market || r.market_name === market) &&
+      (!market || marketLabel(r) === market) &&
+      categoryMatches(r.category_path.join(" > "), category) &&
       fold(r.product_name + " " + r.presentation).includes(fold(query)),
   );
   return (
@@ -70,23 +81,23 @@ export function CityPrices() {
               (n) => ({ id: n, label: n }),
             )}
           />
-          <label className="form-field">
-            Mercado del informe
-            <select
-              value={market}
-              onChange={(e) => {
-                setMarket(e.target.value);
-                setLimit(36);
-              }}
-            >
-              <option value="">Todos los mercados</option>
-              {[...new Set((data || []).map((r) => r.market_name))]
-                .sort()
-                .map((m) => (
-                  <option key={m}>{m}</option>
-                ))}
-            </select>
-          </label>
+          <SearchableSelect
+            label="Mercado del informe"
+            placeholder="Busca un mercado del informe…"
+            emptyLabel="Todos los mercados"
+            value={market}
+            options={[...new Set((data || []).map(marketLabel))]
+              .sort().map((m) => ({ id: m, label: m }))}
+            onChange={(id) => { setMarket(id); setLimit(36); }}
+            loading={loading}
+            error={!!error}
+          />
+          <HierarchicalCategorySelect
+            value={category}
+            paths={(data || []).map((row) => row.category_path.join(" > "))}
+            onChange={(path) => { setCategory(path); setLimit(36); }}
+            loading={loading}
+          />
         </div>
         <p>
           El rango principal corresponde al empaque completo. La equivalencia
@@ -98,6 +109,7 @@ export function CityPrices() {
       <AppliedFilters
         items={[
           { label: "Mercado", value: market || "Todos" },
+          { label: "Categoría", value: category || "Todas", clear: category ? () => setCategory("") : undefined },
           { label: "Búsqueda", value: query },
           { label: "Fecha", value: "Último informe de cada mercado" },
         ]}
@@ -119,7 +131,7 @@ export function CityPrices() {
                 key={r.document_id + r.source_locator}
               >
                 <ReportProductPicture name={r.product_name} />
-                <span className="eyebrow">{r.market_name}</span>
+                <span className="eyebrow">{marketLabel(r)}</span>
                 <h2>
                   <Link
                     href={
@@ -127,8 +139,12 @@ export function CityPrices() {
                       r.product_id +
                       "?" +
                       new URLSearchParams({
+                        // The card identifies a specific market. Its verified
+                        // department must override another saved department.
+                        // An uncurated market uses explicit national scope.
+                        region: r.market_region || "",
                         series: "city",
-                            market: r.market_id,
+                        market: r.market_id,
                         presentation: r.presentation,
                         units: r.quantity + " " + r.source_unit,
                       })
@@ -139,7 +155,7 @@ export function CityPrices() {
                 </h2>
                 <small>{r.category_path.join(" > ")}</small>
                 <p>
-                  {r.presentation} · {r.quantity} {r.source_unit}
+                  {normalizeLabel(r.presentation, "presentation")} · {r.quantity} {r.source_unit}
                 </p>
                 <strong className="input-price">
                   {money(r.min_price)} – {money(r.max_price)}
@@ -154,7 +170,18 @@ export function CityPrices() {
                 <p>
                   {dateLabel(r.observed_on)} · {r.round_label}
                 </p>
-                <EvidenceLink id={r.document_id} page={r.source_page}>
+                <EvidenceLink
+                  id={r.document_id}
+                  page={r.source_page}
+                  locator={r.source_locator}
+                  product={r.product_id}
+                  productName={r.product_name}
+                  market={r.market_id}
+                  marketName={r.market_name}
+                  presentation={r.presentation}
+                  units={r.quantity + " " + r.source_unit}
+                  month={r.observed_on}
+                >
                   Consultar fuente · PDF de la ciudad
                 </EvidenceLink>
               </article>

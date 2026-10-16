@@ -41,8 +41,8 @@ test("catalog cards preserve their contents through scrolling and expansion", as
   } else {
     await expect.poll(() => first.evaluate((el) => getComputedStyle(el).transform)).not.toBe("none");
   }
-  await page.getByRole("button", { name: /^Ver más productos/ }).click();
+  await page.getByRole("button", { name: /^Ver más resultados/ }).click();
   await expect(cards).toHaveCount(48);
-  await expect(first.locator(".product-price")).toHaveText(firstPrice);
+  expect(await first.locator(".product-price").innerText()).toBe(firstPrice);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

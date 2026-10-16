@@ -1,0 +1,23 @@
+page|paragraph|product_literal|place_literal|price_cop_per_kg|change_percent|place_binding
+1|2|pepino cohombro|Ibagué, Plaza La 21|920|-51|explicit product and market
+1|2|pepino cohombro|Montería, Mercado del Sur|1075|-37|paragraph product context; explicit market
+1|3|zanahoria|Villavicencio, CAV|1833|-17|explicit product and market
+1|3|zanahoria|Sincelejo, Nuevo Mercado|1688|-14|paragraph product context; explicit market
+1|4|chócolo mazorca|Ibagué, Plaza La 21|2850|-15|explicit product and market
+1|4|chócolo mazorca|Villavicencio, CAV|3350|-11|paragraph product context; explicit market
+1|5|fríjol verde|Ibagué, Plaza La 21|4000|33|explicit product and market
+1|5|fríjol verde|Popayán, Plaza de mercado del barrio Bolívar|4850|18|paragraph product context; explicit market
+1|6|habichuela|Neiva, Surabastos|5067|53|explicit product and market
+1|6|habichuela|Villavicencio, CAV|3333|43|paragraph product and place context; price follows supplier municipalities
+2|2|banano|Ibagué, Plaza La 21|1600|-17|explicit product and market; generic product has no stated variety
+2|3|granadilla|Neiva, Surabastos|8000|-11|explicit product and market
+2|4|guayaba|Pereira, Mercasa|2533|-14|explicit product and market; generic product has no stated variety
+2|5|limón Tahití|Ibagué, Plaza La 21|3143|32|explicit product and market
+2|5|limón Tahití|Cartagena, Bazurto|4261|22|paragraph product context; explicit market
+2|6|mango Tommy|Popayán, Plaza de mercado del barrio Bolívar|8350|16|explicit product and market
+2|6|mango Tommy|Barranquilla|6747|14|paragraph product context; native source names city only
+3|2|arracacha|Ibagué, Plaza La 21|3200|-29|explicit product and market
+3|3|papa negra|Popayán, Plaza de mercado del barrio Bolívar|2210|-16|explicit product and market; generic product has no stated variety
+3|4|papa criolla|Villavicencio, CAV|5050|-22|explicit product and market; generic product has no stated variety
+3|5|plátano hartón verde|Montería, Mercado del Sur|1969|13|explicit product and market
+3|5|plátano hartón verde|Villavicencio, CAV|2660|12|paragraph product context; explicit market

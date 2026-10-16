@@ -1,0 +1,146 @@
+{
+  "fixture_source_sha256": "4abcd3aa9402a3572e0d7899ce93fdef9e885cbe8fb02a512fdcb38195238e55",
+  "fixture_image_sha256": "1bc3dc076acfd29389a40723e16b723e18cb80733678403fff72a78a7384f3d0",
+  "provider_model": "gemini-3.5-flash",
+  "provider_readings": [
+    {
+      "text": "Viernes 4 de septiembre de 2026\nPrecio $/Kg",
+      "tables": [
+        [
+          [
+            "Producto",
+            "Bogotá, Corabastos",
+            "",
+            "Bucaramanga, Centroabastos",
+            "",
+            "Medellín, CMA",
+            "",
+            ""
+          ],
+          [
+            "",
+            "Precio",
+            "Var %",
+            "Precio",
+            "Var %",
+            "Precio",
+            "Var %",
+            ""
+          ],
+          [
+            "Verduras y hortalizas",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Cebolla junca",
+            "3125",
+            "22 %",
+            "1719",
+            "-4 %",
+            "2175",
+            "4 %",
+            ""
+          ],
+          [
+            "Limón Tahití",
+            "2500",
+            "7 %",
+            "2250",
+            "2 %",
+            "2900",
+            "17 %",
+            ""
+          ]
+        ]
+      ],
+      "review_notes": [
+        "There is an empty column on the far right of the table.",
+        "There is an empty row (row 4) between 'Verduras y hortalizas' and 'Cebolla junca'."
+      ]
+    },
+    {
+      "text": "Viernes 4 de septiembre de 2026\nPrecio $/Kg",
+      "tables": [
+        [
+          [
+            "Producto",
+            "Bogotá, Corabastos",
+            "",
+            "Bucaramanga, Centroabastos",
+            "",
+            "Medellín, CMA",
+            "",
+            ""
+          ],
+          [
+            "",
+            "Precio",
+            "Var %",
+            "Precio",
+            "Var %",
+            "Precio",
+            "Var %",
+            ""
+          ],
+          [
+            "Verduras y hortalizas",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            "Cebolla junca",
+            "3125",
+            "22 %",
+            "1719",
+            "-4 %",
+            "2175",
+            "4 %",
+            ""
+          ],
+          [
+            "Limón Tahití",
+            "2500",
+            "7 %",
+            "2250",
+            "2 %",
+            "2900",
+            "17 %",
+            ""
+          ]
+        ]
+      ],
+      "review_notes": []
+    }
+  ]
+}

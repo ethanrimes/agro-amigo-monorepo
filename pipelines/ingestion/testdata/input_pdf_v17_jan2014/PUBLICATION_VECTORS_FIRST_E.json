@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-08T19:25:04.926203+00:00",
+  "scope": "Exact January2014 DID/date production13field baseline exports; reader,TLS,15second bound after preserved3second timeout,repeatable-read read-only",
+  "cases": [
+    {
+      "table": "input_municipal_price",
+      "document_id": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+      "observed_on": "2014-01-31",
+      "rows": 4136,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/2014-01-31_input_municipal_price_THIRTEEN_FIELDS_FIRST_E.json.gz",
+      "sha256": "50a4f8f3791407872c69c16dc0fc59f22f35c9fcab232c5acc69dd881a72f2e3"
+    },
+    {
+      "table": "published_input_municipal_price",
+      "document_id": "8e7fa15de3e8cf11535eed5d54401cac447f849ed145ca8c6f980526c639c818",
+      "observed_on": "2014-01-31",
+      "rows": 4136,
+      "file": "artifacts/qa-resumed-20261001/root-input2014-january-readonly-20261008-a/2014-01-31_published_input_municipal_price_THIRTEEN_FIELDS_FIRST_E.json.gz",
+      "sha256": "a204ea1907debf592159bbd135e788c89057c3ca02c8a33554b5040633570873"
+    }
+  ],
+  "complete": true
+}

@@ -12,6 +12,7 @@ from .pdf_sources import (
     VerifiedPDFPage,
     legacy_pdf_price_needs_review,
     parse_archived_price_pdf,
+    price_grid_evidence,
 )
 from .worker import SourceDateMismatch, parse_pdf, parse_pdf_pages
 
@@ -39,8 +40,9 @@ class PriceSemantics(unittest.TestCase):
         rows = self.parse([matrix()])
         self.assertEqual([r[6] for r in rows], [1000, 2000, 3000])
         self.assertEqual({r[1] for r in rows}, {"dane-monthly-summary"})
-        self.assertTrue(all(r[0].endswith("; monthly-pdf-v4") for r in rows))
-        self.assertTrue(all(r[-1]["parser_version"] == "monthly-pdf-v4" for r in rows))
+        self.assertTrue(all(r[0].endswith("; monthly-pdf-v5") for r in rows))
+        self.assertTrue(all(r[-1]["parser_version"] == "monthly-pdf-v5" for r in rows))
+        self.assertEqual([r[7] for r in rows], [63.99, 0.09, 15])
 
     def test_price_words_elsewhere_never_authorize_percentage_grid(self):
         table = [
@@ -70,11 +72,26 @@ class PriceSemantics(unittest.TestCase):
                 monthly=False,
             )
 
+    def test_caption_crop_clips_old_slide_table_to_actual_pdf_canvas(self):
+        page = MagicMock()
+        page.bbox = (0, 0, 720, 540)
+        page.find_tables.return_value = [MagicMock(bbox=(31.88, 146.12, 766.92, 310))]
+        page.crop.return_value.extract_text.return_value = "Cuadro 1 Septiembre de 2013"
+        table = matrix("Precio $/Kg · Septiembre de 2013")
+        evidence = price_grid_evidence(page, table, 1, 1, date(2013, 9, 30), True)
+        self.assertEqual(evidence["parser_version"], "monthly-pdf-v5")
+        page.crop.assert_called_once_with((31.88, 16.120000000000005, 720, 146.12))
+
     def test_legacy_review_predicate_is_narrow_and_requires_verified_version(self):
         self.assertTrue(legacy_pdf_price_needs_review("dane-monthly-bulletin", {}))
         self.assertTrue(legacy_pdf_price_needs_review("dane-monthly-bulletin", None))
         self.assertFalse(legacy_pdf_price_needs_review("dane-monthly-summary", {}))
         self.assertFalse(
+            legacy_pdf_price_needs_review(
+                "dane-monthly-bulletin", {"parser_version": "monthly-pdf-v5"}
+            )
+        )
+        self.assertTrue(
             legacy_pdf_price_needs_review(
                 "dane-monthly-bulletin", {"parser_version": "monthly-pdf-v4"}
             )

@@ -3,6 +3,7 @@
 import io
 import os
 import unittest
+from datetime import datetime
 from unittest.mock import patch
 
 from PIL import Image
@@ -32,14 +33,25 @@ class Database:
         self.png = stream.getvalue()
 
     def execute(self, sql, params=()):
+        if sql.startswith("SELECT clock_timestamp()"):
+            return Result(one=(datetime(2026, 10, 15, 12, 0),))
         if sql.startswith("SELECT id,content"):
-            self.scan_limit = params[1]
+            self.scan_limit = params[-1]
             return Result()
+        if sql.startswith("SELECT count(*) FROM source_ocr_attempt a"):
+            return Result(one=(0,))
         if sql.startswith("SELECT count(*) FROM source_ocr_attempt"):
             return Result(one=(self.used,))
-        if sql.startswith("SELECT document_id,source_locator,image_id"):
+        if "FROM source_ocr_task t WHERE t.status" in sql:
+            if params[2]:
+                return Result()
+            images = list(self.tasks)
+            if "r.reading=1" in sql:
+                images = [image for image in images if all((image, idx) in self.cache for idx in range(2))]
+            elif "r.reading IN (0,1)" in sql:
+                images = [image for image in images if any((image, idx) in self.cache for idx in range(2))]
             return Result(
-                many=[("doc", image, image, "fixture", None) for image in self.tasks]
+                many=[("doc", image, image, "fixture", None) for image in images[:params[-1]]]
             )
         if sql.startswith("SELECT content FROM source_document"):
             return Result(one=(self.png,))
@@ -84,7 +96,10 @@ class OCRBudgetTests(unittest.TestCase):
         result, calls, end, db = self.run_case(
             start=350, used=39, cache=(("image", 0),), duration=200
         )
-        self.assertEqual((result["processed"], calls, end, db.used), (1, 1, 550, 40))
+        # Legacy 39 external requests already exceed the other-source lane.
+        # A partial cache cannot spend its last global request on this lane.
+        self.assertEqual((result["processed"], calls, end, db.used), (0, 0, 350, 39))
+        self.assertEqual(result["provider_quota"]["other_used"], 39)
 
     def test_two_uncached_readings_fit_fresh_600_second_slot(self):
         result, calls, end, db = self.run_case(duration=200)
@@ -100,8 +115,10 @@ class OCRBudgetTests(unittest.TestCase):
             used=40, tasks=("new", "cached"), cache=(("cached", 0), ("cached", 1))
         )
         self.assertEqual(
-            (result["processed"], result["deferred"], calls, db.used), (1, 1, 0, 40)
+            (result["processed"], result["deferred"], calls, db.used), (1, 0, 0, 40)
         )
+        self.assertEqual(result["provider_quota"]["selected_other"], 1)
+        self.assertTrue(result["provider_quota"]["global_exhausted"])
 
     def test_no_publication_starts_after_final_sql_reserve_is_spent(self):
         result, calls, _, _ = self.run_case(

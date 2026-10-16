@@ -1,6 +1,9 @@
 "use client";
 import Link from "next/link";
 import { EvidenceLink } from "@/components/planning/EvidenceLink";
+import { priceSeriesLabel } from "@/components/explore/AppliedFilters";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { normalizeLabel } from "@/lib/label-normalization";
 import { useMemo, useState } from "react";
 import {
   dateLabel,
@@ -11,12 +14,14 @@ import {
 export function MarketList({
   markets,
   coffee = false,
+  productName,
 }: {
   markets: MarketPrice[];
   coffee?: boolean;
+  productName?: string;
 }) {
   const [order, setOrder] = useState("high");
-  const [showAll, setShowAll] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState("");
   const sorted = useMemo(
     () =>
       [...markets].sort((a, b) => {
@@ -27,6 +32,9 @@ export function MarketList({
       }),
     [markets, order],
   );
+  const selectedIndex = sorted.findIndex((market) => market.id === selectedMarket);
+  const visible = sorted.slice(0, 6);
+  if (selectedIndex >= 6) visible.push(sorted[selectedIndex]);
   return (
     <section className="market-section">
       <div className="section-title">
@@ -38,7 +46,7 @@ export function MarketList({
               : "Compara los mercados"}
         </h2>
       </div>
-      <div className="market-sort">
+      {markets.length > 0 && <div className="market-sort">
         <span className="muted" style={{ fontSize: 12 }}>
           {markets.length}{" "}
           {coffee
@@ -48,10 +56,10 @@ export function MarketList({
             ? "COP por carga de 125 kg"
             : markets[0]?.series === "city"
               ? "Informe diario · " +
-                markets[0].presentation +
+                normalizeLabel(markets[0].presentation || "", "presentation") +
                 " · " +
                 markets[0].units
-              : "Promedios mensuales, COP por " +
+              : (priceSeriesLabel[markets[0]?.series || "monthly"] || "Precio reportado") + ", COP por " +
                 unitLabel(markets[0]?.unit || "kg")}
         </span>
         <label>
@@ -61,22 +69,38 @@ export function MarketList({
             <option value="low">Menor precio primero</option>
           </select>
         </label>
-      </div>
+      </div>}
+      {(sorted.length > 6 || selectedMarket) && (
+        <SearchableSelect
+          label="Consultar un mercado de la comparación"
+          placeholder="Busca mercado, departamento o fecha…"
+          emptyLabel="Se muestran los seis primeros; busca otro mercado por su nombre"
+          value={selectedMarket}
+          onChange={setSelectedMarket}
+          selectedLabel={selectedMarket ? "Mercado ya no disponible con estos filtros" : undefined}
+          options={sorted.map((market) => ({
+            id: market.id,
+            label: market.name,
+            detail: `${market.region} · ${dateLabel(market.date)} · ${normalizeLabel(market.presentation || "", "presentation") || unitLabel(market.unit)}${market.units ? ` · ${market.units}` : ""}`,
+          }))}
+        />
+      )}
       {!sorted.length ? (
         <p className="empty-state">
-          No hay mercados disponibles para este departamento.
+          Sin cotizaciones para los filtros aplicados.
         </p>
       ) : (
-        sorted.slice(0, showAll ? undefined : 6).map((m, i) => (
+        visible.map((m) => (
           <article className="market-row" key={m.id}>
-            <span className="market-number">{i + 1}</span>
+            <span className="market-number">{sorted.findIndex((market) => market.id === m.id) + 1}</span>
             <div className="market-info">
               <h3>
                 <Link href={"/market/" + m.id}>{m.name}</Link>
               </h3>
               <p>
-                {m.region} · {dateLabel(m.date, true)}
+                {m.region} · {dateLabel(m.date)}
               </p>
+              {m.id === selectedMarket && <p>Mercado seleccionado para consultar</p>}
               {m.date !==
                 markets.reduce((d, r) => (r.date > d ? r.date : d), "") && (
                 <p>Dato de un período anterior</p>
@@ -88,7 +112,7 @@ export function MarketList({
                 {" "}
                 /{" "}
                 {m.series === "city"
-                  ? `${m.presentation} · ${m.units}`
+                  ? `${normalizeLabel(m.presentation || "", "presentation")} · ${m.units}`
                   : unitLabel(m.unit)}
               </small>
               {m.series === "city" && (
@@ -100,7 +124,13 @@ export function MarketList({
                 id={m.document_id}
                 locator={m.source_locator}
                 product={m.product_id}
+                productName={productName}
                 market={m.id}
+                marketName={m.name}
+                department={m.region}
+                presentation={m.presentation}
+                units={m.source_units || m.units}
+                currency="COP"
                 month={m.date}
                 page={
                   m.source_page ||
@@ -115,16 +145,6 @@ export function MarketList({
             </div>
           </article>
         ))
-      )}
-      {sorted.length > 6 && (
-        <button
-          className="button secondary"
-          onClick={() => setShowAll((x) => !x)}
-        >
-          {showAll
-            ? "Ver menos"
-            : `Ver los ${sorted.length} ${coffee ? "puntos" : "mercados"}`}
-        </button>
       )}
     </section>
   );

@@ -22,7 +22,7 @@ test("daily supply summary is visibly non-additive and opens the original tonnes
   await expect(page.getByTestId("supply-summary-note")).toHaveText(new RegExp("provisional:.*toneladas.*no se suman.*ni son precios"));
   await page.getByRole("link", { name: "Ver celdas originales de abastecimiento" }).click();
   await expect(page).toHaveURL(/sheet=Abastecimiento&row=11/);
-  await expect(page.getByLabel("Hoja del archivo Excel")).toHaveValue("Abastecimiento");
+  await expect(page.getByRole("group", { name: "Hoja del archivo Excel", exact: true })).toHaveAttribute("data-selected-value", "Abastecimiento");
   await expect(page.locator(".workbook-range")).toContainText("Filas 11–13");
   await expect(page.locator(".workbook-scroll")).toContainText("21.818");
   await expect(page.locator(".workbook-scroll")).toContainText("422");
@@ -40,4 +40,44 @@ test("explicit price/crop selection preserves its records instead of supply tonn
   expect(showsSupplySummaryRecords(new URLSearchParams({ locator: "Bogotá!row 15,cols D:G,round 1; daily-zip-v1" }))).toBe(false);
   expect(showsSupplySummaryRecords(new URLSearchParams({ sheet: "Abastecimiento", row: "11" }))).toBe(true);
   expect(showsSupplySummaryRecords(new URLSearchParams({ locator: "Abastecimiento!row 12,col 53; supply-daily-summary-v1" }))).toBe(true);
+});
+
+test("mixed workbook price cell keeps supply synopsis on its own sheet", async ({ page }) => {
+  const note = "Abastecimiento diario provisional: 1.026 valores en toneladas, del 2021-11-09 al 2021-12-20. No son precios.";
+  await page.route("**/api/evidence/**", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith("/workbook")) {
+      const sheet = url.searchParams.get("sheet") || "Cali";
+      const value = (text: string | number) => ({ value: text, type: typeof text === "number" ? "number" : "text", number_format: "General" });
+      await route.fulfill({ json: {
+        sheets: ["Índice", "Abastecimiento", "Cali"], sheet,
+        start: Number(url.searchParams.get("start") || 1), totalRows: 120, totalColumns: 7,
+        displayedColumns: 7, readOnly: true,
+        rows: sheet === "Cali"
+          ? [[value("Arroz de primera"), value("Bolsa"), value("25 Unidades 500 GR"), value(28400), value(29000)]]
+          : [[value("Abastecimiento"), value(1026)]],
+      } });
+      return;
+    }
+    await route.fulfill({ json: {
+      id, title: "DANE - Consolidado precios mínimos y máximos diciembre_21_2021.xlsx",
+      publisher: "DANE", media_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      kind: "original", source_url: "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_diciembre_21_2021.zip",
+      reference_period: "2021-12-21", retrieved_at: "2026-09-28T00:00:00Z", bytes: 1, page_count: null,
+      metadata: { ingestion_kind: "daily-zip-member", supply_summary_note: note, supply_summary_sheet: "Abastecimiento" },
+      parents: [], records: [],
+    } });
+  });
+  await page.goto(`/evidence/${id}?sheet=Cali&row=100&locator=Cali!row%20100,cols%20D:G,round%201;daily-zip-v1`);
+  await expect(page.getByText("Arroz de primera")).toBeVisible();
+  const otherSheet = page.getByTestId("other-sheet-supply-summary");
+  await expect(otherSheet.getByText("Este archivo también contiene abastecimiento (hoja Abastecimiento)")).toBeVisible();
+  await expect(otherSheet).not.toHaveAttribute("open", "");
+  await expect(page.getByTestId("supply-summary-note")).not.toBeVisible();
+  await otherSheet.locator("summary").click();
+  await expect(page.getByTestId("supply-summary-note")).toContainText("No son precios");
+  await otherSheet.getByRole("link", { name: "Ver celdas originales de abastecimiento" }).click();
+  await expect(page).toHaveURL(/sheet=Abastecimiento&row=11/);
+  await expect(page.getByTestId("other-sheet-supply-summary")).toHaveCount(0);
+  await expect(page.getByTestId("supply-summary-note")).toBeVisible();
 });

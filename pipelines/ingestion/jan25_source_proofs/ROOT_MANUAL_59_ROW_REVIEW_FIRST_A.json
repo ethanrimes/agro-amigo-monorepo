@@ -1,0 +1,980 @@
+{
+  "schema": "root-physical-source-review-v1",
+  "at_utc": "2026-10-16T06:55:10.990768+00:00",
+  "basis": "Root physically read both retained page images, every59 numeric min/max/quantity/presentation/product row and headings; manual vectors transcribed from pixels independently of OCR JSON",
+  "authorization": "Private exact-source adjudication of the seven textual differences only, subject to full source/task/cache/manual-vector proof. No maintained/cloud promotion yet.",
+  "parent_archive_sha256": "503a044d44069e1bbb39d18f5082c86cc1489ad697c823c1345920cda56b8a2b",
+  "archive_entry": "Armenia, Mercar 25-1-2024.pdf",
+  "child_sha256": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412",
+  "printed_market": "Armenia, Mercar",
+  "printed_date": "2024-01-25",
+  "printed_round1_hours": "05:00 - 07:00",
+  "round2_policy": "All59rows show0/0, not actual zero-price observations",
+  "text_adjudication": {
+    "packaging": "Printed uppercase-accent Caja de cartÓn may display as Caja de cartón for the six p1 disputed cells and p2 Ajo importado; all numerical dimensions unchanged",
+    "category": "The plantain heading visibly reads PlÁtano; the two rows immediately below are Plátano hartón maduro and verde. The OCR alternative PIÁtano is an I/l glyph misreading. Exact-source canonical category Plátano authorized, no general identity fuzzing.",
+    "case_policy": "Manual product vectors use ordinary Spanish case/accents; native glyphs/raw OCR strings remain immutable; any semantic mismatch beyond these exact recorded text corrections must stop."
+  },
+  "images": [
+    {
+      "path": "pipelines/ingestion/testdata/city_armenia_20240125_ocr/c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3.png",
+      "sha256": "c448dee7e0e84b348c13789bcef36edc92594e1b38c8e616007637d83c04f1f3"
+    },
+    {
+      "path": "pipelines/ingestion/testdata/city_armenia_20240125_ocr/b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b.png",
+      "sha256": "b011257b884b377b07c4e8479efda3193feacb5f2c9f8399d4aa08132f93ae7b"
+    }
+  ],
+  "manual_row_count": 59,
+  "page_counts": {
+    "1": 37,
+    "2": 22
+  },
+  "manual_rows": [
+    {
+      "ordinal": 1,
+      "page": 1,
+      "product": "Limón tahití",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 1100,
+      "r1_max_cop": 1200,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "ordinal": 2,
+      "page": 1,
+      "product": "Limón común",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3000,
+      "r1_max_cop": 3200,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "ordinal": 3,
+      "page": 1,
+      "product": "Limón mandarino",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 2200,
+      "r1_max_cop": 2300,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "ordinal": 4,
+      "page": 1,
+      "product": "Mandarina oneco",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 2500,
+      "r1_max_cop": 2500,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "ordinal": 5,
+      "page": 1,
+      "product": "Naranja sweet",
+      "presentation": "Bulto",
+      "quantity": "50",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 60000,
+      "r1_max_cop": 62000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "ordinal": 6,
+      "page": 1,
+      "product": "Aguacate papelillo",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 9500,
+      "r1_max_cop": 9600,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 7,
+      "page": 1,
+      "product": "Banano criollo",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 1400,
+      "r1_max_cop": 1500,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 8,
+      "page": 1,
+      "product": "Coco",
+      "presentation": "Docena",
+      "quantity": "15",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 70000,
+      "r1_max_cop": 74000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 9,
+      "page": 1,
+      "product": "Curuba",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3000,
+      "r1_max_cop": 3200,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 10,
+      "page": 1,
+      "product": "Fresa",
+      "presentation": "Caja de cartón",
+      "quantity": "5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 60000,
+      "r1_max_cop": 65000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 11,
+      "page": 1,
+      "product": "Guayaba agria",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3300,
+      "r1_max_cop": 3500,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 12,
+      "page": 1,
+      "product": "Guayaba pera",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 2000,
+      "r1_max_cop": 2200,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 13,
+      "page": 1,
+      "product": "Lulo",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3600,
+      "r1_max_cop": 3800,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 14,
+      "page": 1,
+      "product": "Mango tommy",
+      "presentation": "Caja de madera",
+      "quantity": "10",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 16000,
+      "r1_max_cop": 17000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 15,
+      "page": 1,
+      "product": "Mango yulima",
+      "presentation": "Caja de madera",
+      "quantity": "10",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 13000,
+      "r1_max_cop": 14000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 16,
+      "page": 1,
+      "product": "Mango manzano",
+      "presentation": "Caja de madera",
+      "quantity": "10",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 14000,
+      "r1_max_cop": 15000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 17,
+      "page": 1,
+      "product": "Manzana roja importada",
+      "presentation": "Caja de cartón",
+      "quantity": "19",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 140000,
+      "r1_max_cop": 150000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 18,
+      "page": 1,
+      "product": "Manzana royal gala importada",
+      "presentation": "Caja de cartón",
+      "quantity": "19",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 140000,
+      "r1_max_cop": 150000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 19,
+      "page": 1,
+      "product": "Manzana verde importada",
+      "presentation": "Caja de cartón",
+      "quantity": "19",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 185000,
+      "r1_max_cop": 190000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 20,
+      "page": 1,
+      "product": "Maracuyá",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 2600,
+      "r1_max_cop": 2800,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 21,
+      "page": 1,
+      "product": "Melón cantalup",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 4500,
+      "r1_max_cop": 4800,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 22,
+      "page": 1,
+      "product": "Mora de castilla",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 5200,
+      "r1_max_cop": 5600,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 23,
+      "page": 1,
+      "product": "Papaya maradol",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 900,
+      "r1_max_cop": 1000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 24,
+      "page": 1,
+      "product": "Patilla",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 1600,
+      "r1_max_cop": 1700,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 25,
+      "page": 1,
+      "product": "Pera importada",
+      "presentation": "Caja de cartón",
+      "quantity": "19",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 150000,
+      "r1_max_cop": 155000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 26,
+      "page": 1,
+      "product": "Piña gold",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3500,
+      "r1_max_cop": 3600,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 27,
+      "page": 1,
+      "product": "Tomate de árbol",
+      "presentation": "Bulto",
+      "quantity": "25",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 58000,
+      "r1_max_cop": 60000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 28,
+      "page": 1,
+      "product": "Uva red globe nacional",
+      "presentation": "Caja de cartón",
+      "quantity": "12.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 115000,
+      "r1_max_cop": 120000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "ordinal": 29,
+      "page": 1,
+      "product": "Arracacha blanca",
+      "presentation": "Bulto",
+      "quantity": "60",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 230000,
+      "r1_max_cop": 240000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Otros tuberculos"
+      ]
+    },
+    {
+      "ordinal": 30,
+      "page": 1,
+      "product": "Plátano hartón maduro",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 1400,
+      "r1_max_cop": 1500,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Plátano"
+      ]
+    },
+    {
+      "ordinal": 31,
+      "page": 1,
+      "product": "Plátano hartón verde",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 1600,
+      "r1_max_cop": 1700,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Plátano"
+      ]
+    },
+    {
+      "ordinal": 32,
+      "page": 1,
+      "product": "Papa criolla limpia",
+      "presentation": "Bulto",
+      "quantity": "60",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 170000,
+      "r1_max_cop": 180000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "ordinal": 33,
+      "page": 1,
+      "product": "Papa parda pastusa",
+      "presentation": "Bulto",
+      "quantity": "50",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 74000,
+      "r1_max_cop": 75000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "ordinal": 34,
+      "page": 1,
+      "product": "Papa suprema",
+      "presentation": "Bulto",
+      "quantity": "50",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 74000,
+      "r1_max_cop": 75000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "ordinal": 35,
+      "page": 1,
+      "product": "Yuca ica",
+      "presentation": "Bolsa",
+      "quantity": "25",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 26000,
+      "r1_max_cop": 28000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Tuberculos, raices y platanos",
+        "Yuca"
+      ]
+    },
+    {
+      "ordinal": 36,
+      "page": 1,
+      "product": "Arveja verde en vaina",
+      "presentation": "Arroba",
+      "quantity": "12.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 70000,
+      "r1_max_cop": 72000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Leguminosas"
+      ]
+    },
+    {
+      "ordinal": 37,
+      "page": 1,
+      "product": "Fríjol verde en vaina",
+      "presentation": "Arroba",
+      "quantity": "12.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 65000,
+      "r1_max_cop": 67000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Leguminosas"
+      ]
+    },
+    {
+      "ordinal": 38,
+      "page": 2,
+      "product": "Habichuela",
+      "presentation": "Arroba",
+      "quantity": "12.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 48000,
+      "r1_max_cop": 50000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Leguminosas"
+      ]
+    },
+    {
+      "ordinal": 39,
+      "page": 2,
+      "product": "Ahuyama",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 1000,
+      "r1_max_cop": 1100,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 40,
+      "page": 2,
+      "product": "Ajo importado",
+      "presentation": "Caja de cartón",
+      "quantity": "10",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 95000,
+      "r1_max_cop": 95000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 41,
+      "page": 2,
+      "product": "Chócolo mazorca",
+      "presentation": "Bulto",
+      "quantity": "70",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 75000,
+      "r1_max_cop": 80000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 42,
+      "page": 2,
+      "product": "Pepino cohombro",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3800,
+      "r1_max_cop": 4000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 43,
+      "page": 2,
+      "product": "Pimentón",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 3800,
+      "r1_max_cop": 4000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 44,
+      "page": 2,
+      "product": "Remolacha",
+      "presentation": "Bulto",
+      "quantity": "62.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 115000,
+      "r1_max_cop": 120000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 45,
+      "page": 2,
+      "product": "Rábano rojo",
+      "presentation": "Atado/manojo",
+      "quantity": "5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 18000,
+      "r1_max_cop": 20000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "ordinal": 46,
+      "page": 2,
+      "product": "Zanahoria",
+      "presentation": "Bulto",
+      "quantity": "60",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 130000,
+      "r1_max_cop": 140000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Zanahorias"
+      ]
+    },
+    {
+      "ordinal": 47,
+      "page": 2,
+      "product": "Cebolla cabezona blanca",
+      "presentation": "Bulto",
+      "quantity": "50",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 65000,
+      "r1_max_cop": 68000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Cebollas"
+      ]
+    },
+    {
+      "ordinal": 48,
+      "page": 2,
+      "product": "Cebolla junca",
+      "presentation": "Atado/manojo",
+      "quantity": "14",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 42000,
+      "r1_max_cop": 45000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Cebollas"
+      ]
+    },
+    {
+      "ordinal": 49,
+      "page": 2,
+      "product": "Tomate chonto",
+      "presentation": "Canastilla",
+      "quantity": "22",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 75000,
+      "r1_max_cop": 80000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Tomates"
+      ]
+    },
+    {
+      "ordinal": 50,
+      "page": 2,
+      "product": "Tomate riñón",
+      "presentation": "Kilogramo",
+      "quantity": "1",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 5000,
+      "r1_max_cop": 5200,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Tomates"
+      ]
+    },
+    {
+      "ordinal": 51,
+      "page": 2,
+      "product": "Acelga",
+      "presentation": "Atado/manojo",
+      "quantity": "15",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 18000,
+      "r1_max_cop": 20000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 52,
+      "page": 2,
+      "product": "Apio",
+      "presentation": "Docena",
+      "quantity": "20",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 20000,
+      "r1_max_cop": 20000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 53,
+      "page": 2,
+      "product": "Brócoli",
+      "presentation": "Atado/manojo",
+      "quantity": "2.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 8000,
+      "r1_max_cop": 9000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 54,
+      "page": 2,
+      "product": "Cilantro",
+      "presentation": "Atado/manojo",
+      "quantity": "2.5",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 9000,
+      "r1_max_cop": 9000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 55,
+      "page": 2,
+      "product": "Coliflor",
+      "presentation": "Docena",
+      "quantity": "12",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 50000,
+      "r1_max_cop": 54000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 56,
+      "page": 2,
+      "product": "Espinaca",
+      "presentation": "Atado/manojo",
+      "quantity": "9",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 38000,
+      "r1_max_cop": 40000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 57,
+      "page": 2,
+      "product": "Lechuga batavia",
+      "presentation": "Docena",
+      "quantity": "15",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 32000,
+      "r1_max_cop": 34000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 58,
+      "page": 2,
+      "product": "Perejil",
+      "presentation": "Atado/manojo",
+      "quantity": "4",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 40000,
+      "r1_max_cop": 43000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    },
+    {
+      "ordinal": 59,
+      "page": 2,
+      "product": "Repollo blanco",
+      "presentation": "Bolsa",
+      "quantity": "30",
+      "source_unit": "Kilogramo",
+      "r1_min_cop": 35000,
+      "r1_max_cop": 35000,
+      "r2_min_cop": 0,
+      "r2_max_cop": 0,
+      "category_path_manual_display": [
+        "Verduras y hortalizas",
+        "Hortalizas"
+      ]
+    }
+  ],
+  "limitations": "Does not by itself prove cache task association or full30member archive eligibility. Those remain mandatory automated proofs; no fabricated accepted head."
+}

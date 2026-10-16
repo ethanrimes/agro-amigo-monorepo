@@ -1,0 +1,30 @@
+{
+  "category_counts": {
+    "Huevos y lacteos": 1,
+    "Pescados y mariscos": 7
+  },
+  "child_sha256": "a309fbd8b620b034da2d2627618469c4b4716e0c00b1a83e4f0b98363dda4da4",
+  "entry_name": "Pereira, Mercasa 6-1-2022.pdf",
+  "expected_rows": 104,
+  "fields_per_row": 17,
+  "independent_poppler_full17_104_sha256": "3d33dc4e5f647fe893c338d2f328b77ac74f5d3d681fb2457adcbcf1f14a76b9",
+  "parent_sha256": "0f53db2e11ac41c7646bc011209c1029c6ca3f9eee590d0438b64d9c0010a08f",
+  "price_answer_rows_embedded": false,
+  "source_heading_rows": [
+    {
+      "canonical": "Huevos y lacteos",
+      "literal": "Huevos y Lacteos",
+      "page": 3,
+      "row": 11,
+      "table": 1
+    },
+    {
+      "canonical": "Pescados y mariscos",
+      "literal": "Pescados y Mariscos",
+      "page": 3,
+      "row": 33,
+      "table": 1
+    }
+  ],
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-06-01-2022.zip"
+}

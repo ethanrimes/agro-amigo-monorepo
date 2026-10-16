@@ -14,16 +14,36 @@ test('input history starts recent and reveals retained years only when explicitl
  await page.goto(`/insumo/${id}?department=Antioquia`);
  await expect(page.locator('.price-chart')).toBeVisible();
  expect(requested.every(url=>new URL(url).searchParams.get('history')!=='all')).toBe(true);
- await expect(page.getByLabel('Historial de precios')).toHaveValue('recent');
- await expect(page.locator('.chart-data tbody tr')).toHaveCount(recent.history.length);
- await page.getByLabel('Historial de precios').selectOption('all');
- await expect(page.locator('.chart-data tbody tr')).toHaveCount(all.history.length);
+ const visibleHistory=page.locator('select[aria-label="Historial de precios"]:visible');
+ await expect(visibleHistory).toHaveCount(1);
+ await expect(visibleHistory).toHaveValue('recent');
+ await expect(page.locator('.chart-data tbody tr')).toHaveCount(recent.history.length > 24 ? 12 : recent.history.length);
+ await visibleHistory.selectOption('all');
+ await expect(page.locator('.chart-data tbody tr')).toHaveCount(all.history.length > 24 ? 12 : all.history.length);
  await expect(page.getByLabel('Filtros aplicados')).toContainText('Todo el historial');
  await page.getByText('Ver datos en tabla',{exact:true}).click();
  const values=await page.locator('.chart-data tbody tr td:nth-child(2)').allTextContents();
  const numbers=values.map(x=>Number(x.replace(/[^0-9]/g,'')));
  expect(numbers).toEqual([...numbers].sort((a,b)=>b-a));
- expect(numbers).toEqual(all.history.map((x:{price:number})=>Math.round(x.price)).sort((a:number,b:number)=>b-a));
+ const ranked=all.history.map((x:{price:number})=>Math.round(x.price)).sort((a:number,b:number)=>b-a);
+ expect(numbers).toEqual(all.history.length > 24 ? ranked.slice(0,12) : ranked);
+ await expect(page.locator('.price-chart')).toHaveAttribute('aria-label',new RegExp(`${all.history.length} observaciones`));
+ const axisDates=await page.locator('.price-chart > text').allTextContents();
+ expect(axisDates).toHaveLength(2);
+ expect(axisDates[0]).toContain(all.history[0].date.slice(0,4));
+ expect(axisDates[1]).toContain(all.history.at(-1).date.slice(0,4));
+ if(all.history.length > 24) {
+  const oldest=all.history[0];
+  const choice=page.getByRole('group',{name:'Consultar una fecha de esta tabla',exact:true});
+  await choice.getByRole('combobox').fill(oldest.date);
+  await choice.getByRole('option').click();
+  await expect(choice).toHaveAttribute('data-selected-value',oldest.date);
+  const date=new Date(oldest.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});
+  const row=page.locator('.chart-data tbody tr').filter({hasText:date});
+  await expect(row).toContainText(new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(oldest.price));
+  await expect(row.getByRole('link',{name:'Consultar fuente',exact:true})).toHaveAttribute('href',new RegExp(`month=${oldest.date}`));
+  expect(await page.locator('.chart-data tbody tr').count()).toBeLessThanOrEqual(13);
+ }
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await expect(page.locator('.input-detail-summary h2')).toHaveText(new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(all.input.price));
 });
@@ -39,7 +59,9 @@ test('full municipal and departmental catalogs retain every returned identity an
   const older=rows.find((row:{observed_on:string;name:string})=>row.observed_on<'2020-01-01'&&row.name==='Monitor') || rows.find((row:{observed_on:string})=>row.observed_on<'2020-01-01');
   expect(older).toBeTruthy();
   await page.goto(`/insumos?scope=${scope}&history=all&department=`);
-  await expect(page.getByLabel('Historial de precios')).toHaveValue('all');
+  const visibleHistory=page.locator('select[aria-label="Historial de precios"]:visible');
+  await expect(visibleHistory).toHaveCount(1);
+  await expect(visibleHistory).toHaveValue('all');
   await expect(page.locator('.results-label')).toContainText(`${rows.length} insumos y presentaciones`,{timeout:60000});
   await expect(page.getByLabel('Filtros aplicados')).toContainText('Todo el historial');
   await page.getByRole('combobox',{name:'Buscar insumo',exact:true}).fill(older.name);
@@ -50,7 +72,8 @@ test('full municipal and departmental catalogs retain every returned identity an
   expect(new URL((await card.getAttribute('href'))!,'http://localhost').searchParams.get('history')).toBe('all');
   await card.click();
   await expect(page.locator('.input-detail-summary h2')).toBeVisible();
-  await expect(page.getByLabel('Historial de precios')).toHaveValue('all');
+  await expect(visibleHistory).toHaveCount(1);
+  await expect(visibleHistory).toHaveValue('all');
   await expect(page.locator('.input-detail-summary')).toContainText(older.observed_on.slice(0,4));
  }
 });

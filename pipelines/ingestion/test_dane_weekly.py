@@ -77,6 +77,82 @@ def native_pdf(
 
 
 class WeeklySemantics(unittest.TestCase):
+    def test_printed_2019_tocino_barriga_line_wrap(self):
+        # Official 16–22 Feb 2019 PDF, page 53, prints the bold heading as
+        # "Carne de cerdo, tocino ba-" on one line and "rriga" on the next.
+        def word(text, x, top, bold=False):
+            return {
+                "text": text,
+                "x0": x,
+                "x1": x + len(text) * 3,
+                "top": top,
+                "fontname": "FuturaStd-Bold" if bold else "FuturaStd-Book",
+            }
+
+        lines = [
+            [word("Carne de cerdo, tocino ba-", 36, 10, bold=True)],
+            [word("rriga", 36, 20, bold=True)],
+            [word("Bogotá, D.C., Frigorífico Guadalupe", 36, 30),
+             word("10.000", 180, 30), word("11.000", 215, 30),
+             word("10.500", 250, 30)],
+        ]
+        headers = [{"x0": x, "x1": x + 25} for x in (170, 205, 240)]
+        rows = weekly._native_column(
+            lines, headers, "carnes",
+            (date(2019, 2, 16), date(2019, 2, 22)),
+            53, 1, 1, {},
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["product_name"], "Carne de cerdo, tocino barriga")
+        self.assertEqual(rows[0]["market"], "Bogotá, D.C., Frigorífico Guadalupe")
+        self.assertEqual((rows[0]["min"], rows[0]["max"], rows[0]["price"]),
+                         (10000, 11000, 10500))
+        self.assertEqual(rows[0]["details"]["literal_product_heading"],
+                         "Carne de cerdo, tocino ba- rriga")
+
+    def test_printed_weekly_continuation_variants_and_repeated_headings(self):
+        self.assertEqual(
+            weekly._product_heading("Zanahoria (contoinuación)"),
+            ("Zanahoria", True),
+        )
+        self.assertEqual(
+            weekly._product_heading("Panela redonda morena continuación)"),
+            ("Panela redonda morena", True),
+        )
+
+        def word(text, x, top, bold=False):
+            return {
+                "text": text,
+                "x0": x,
+                "x1": x + len(text) * 4,
+                "top": top,
+                "fontname": "FuturaStd-Bold" if bold else "FuturaStd-Book",
+            }
+
+        headers = [{"x0": x, "x1": x + 25} for x in (170, 205, 240)]
+        for product, market in (
+            ("Mandarina Oneco", "Pereira, Mercasa"),
+            ("Tomate chonto", "Santa Bárbara (Antioquia)"),
+            ("Tomate de árbol", "Cali, Cavasa"),
+        ):
+            with self.subTest(product=product):
+                lines = [
+                    [word(product, 36, 10, bold=True)],
+                    [word("Armenia, Mercar", 36, 20), word("800", 180, 20),
+                     word("900", 210, 20), word("833", 245, 20)],
+                    [word(product + " (continuación)", 36, 30)],
+                    [word(market, 36, 40), word("1.500", 180, 40),
+                     word("1.600", 210, 40), word("1.533", 245, 40)],
+                ]
+                rows = weekly._native_column(
+                    lines, headers, "frutas frescas",
+                    (date(2021, 6, 5), date(2021, 6, 11)),
+                    25, 1, 2, {},
+                )
+                self.assertEqual([row["market"] for row in rows], ["Armenia, Mercar", market])
+                self.assertEqual(rows[1]["product_name"], product)
+                self.assertEqual(rows[1]["details"]["literal_product_heading"], product + " (continuación)")
+
     def test_original_cross_year_weekly_pdf(self):
         path = Path(__file__).parent / "testdata/Sem_28dic_2019__03ene_2020.pdf"
         data = path.read_bytes()
@@ -134,6 +210,44 @@ class WeeklySemantics(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "supported weekly period"):
             weekly._period("2019 (20 de diciembre) - 2020 (3 de enero)")
+
+    def test_original_february_2026_pdf_cross_month_caption(self):
+        # Page 11 extracted from DANE's 77-page bulletin, with blank pages
+        # preserving the printed page index. Original SHA-256:
+        # 62516d0607efb77f396f8ee4e94d80bbdda499c372bf643d6802fe3b191ca78f
+        path = Path(__file__).parent / "testdata/dane_weekly_2026_01_31_page11.pdf"
+        data = path.read_bytes()
+        self.assertEqual(
+            sha256(data).hexdigest(),
+            "2e50d0e12c4d72fa6e564448d2efd40b87c62fc1c5064e5b393742e15182c88b",
+        )
+        url = "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSASemanal-31ene06feb-2026.pdf"
+        self.assertEqual(
+            weekly._period("2026 (31 al 6 de febrero)"),
+            (date(2026, 1, 31), date(2026, 2, 6)),
+        )
+        rows = weekly.parse_pdf(data, url)
+        self.assertEqual((len(rows), sum(r["price"] is not None for r in rows)), (96, 96))
+        self.assertEqual(
+            {(r["period_start"], r["date"]) for r in rows},
+            {("2026-01-31", "2026-02-06")},
+        )
+        self.assertEqual(
+            (rows[0]["product_name"], rows[0]["market"], rows[0]["min"], rows[0]["max"], rows[0]["price"]),
+            ("Acelga", "Armenia, Mercar", 1333, 1667, 1478),
+        )
+        with self.assertRaisesRegex(ValueError, "conflicts with the dated source URL"):
+            weekly.parse_pdf(data, "bol-SIPSASemanal-07feb13feb-2026.pdf")
+
+    def test_abbreviated_cross_month_caption_requires_real_week(self):
+        self.assertEqual(
+            weekly._period("2026 (27 al 2 de enero)"),
+            (date(2025, 12, 27), date(2026, 1, 2)),
+        )
+        with self.assertRaises(ValueError):
+            weekly._period("2026 (31 al 6 de marzo)")
+        with self.assertRaisesRegex(ValueError, "supported weekly period"):
+            weekly._period("2026 (1 al 20 de febrero)")
 
     def test_supply_reporting_range_does_not_replace_workbook_price_week(self):
         book = openpyxl.Workbook()

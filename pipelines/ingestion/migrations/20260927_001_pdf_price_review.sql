@@ -18,7 +18,7 @@ GRANT SELECT,INSERT ON historical_price_review TO agro_ingestor;
 GRANT SELECT ON historical_price_review TO agro_reader;
 CREATE OR REPLACE VIEW published_historical_price AS
 SELECT h.* FROM historical_price h
-WHERE (h.series<>'dane-monthly-bulletin' OR h.details->>'parser_version'='monthly-pdf-v3')
+WHERE (h.series<>'dane-monthly-bulletin' OR h.details->>'parser_version' IN ('monthly-pdf-v3','monthly-pdf-v4'))
 AND NOT EXISTS(
  SELECT 1 FROM ingestion_asset a WHERE a.document_id=h.document_id
  AND a.kind='monthly-annex' AND a.processor_version='monthly-annex-v2'
@@ -30,9 +30,10 @@ AND NOT EXISTS(
 );
 GRANT SELECT ON published_historical_price TO agro_ingestor,agro_reader;
 
--- The view withholds the previous monthly-bulletin series as a whole pending
--- strict re-extraction. No full historical scan or deletion is necessary.
+-- The view withholds unverified monthly-bulletin rows pending strict
+-- re-extraction. Reapplying this migration must never withdraw v4
+-- table-local monetary parses that have already completed publication.
 UPDATE ingestion_asset SET status='review',
  error='Legacy monthly PDF price grids require table-local monetary verification; originals and prior parser rows retained'
 WHERE kind='monthly-pdf' AND status='complete' AND records>0
- AND processor_version<>'monthly-pdf-v3';
+ AND processor_version NOT IN ('monthly-pdf-v3','monthly-pdf-v4');

@@ -1,0 +1,71 @@
+{
+  "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/bol-reg-06-09-2022.zip",
+  "expected_archive_date": "2022-09-06",
+  "source_zip": {
+    "sha256": "3915a477f01a4b57117681987049185cd6b4e762fed5b7575e5c2ed7ee6a3481",
+    "bytes": 328061,
+    "member_count": 11,
+    "bad_crc_member": null,
+    "origin": "official DANE SIPSA source; see source_url"
+  },
+  "parsed_members": [
+    {
+      "member": "Armenia, Mercar-06-09-2022.pdf",
+      "row_count": 100,
+      "native_row_sha256": "1cf5a7c507c08fb66538fd10a2cf945b01c95c774e02aefc0b23245491f5ef0a"
+    },
+    {
+      "member": "Bogotá, Corabastos 6-09-2022.pdf",
+      "row_count": 258,
+      "native_row_sha256": "13b7a175920ec350b211a074c90f0faf1339f3e55e3c02347764165570f1bff2"
+    },
+    {
+      "member": "Cali, Santa Elena-06-09-2022.pdf",
+      "row_count": 135,
+      "native_row_sha256": "f463fc5a955bbf7064d3c52bdf81446a2f97e8ac0e5c88afa2077a9b616db8c5"
+    },
+    {
+      "member": "Cúcuta, Cenabastos-06-09-2022.pdf",
+      "row_count": 135,
+      "native_row_sha256": "a0acede0680c078d964ed098aa196daa9f879da530b8ca61097c027c937511eb"
+    },
+    {
+      "member": "Ibagué, Plaza La 21-06-09-2022.pdf",
+      "row_count": 126,
+      "native_row_sha256": "46d0bb507eb9955c004a6a58951e0f517b970dfd0ae56b087e97ec3cce6e41dd"
+    },
+    {
+      "member": "Medellín, Central Mayorista de Antioquia-06-09-2022.pdf",
+      "row_count": 214,
+      "native_row_sha256": "d4de0cfa93df44f2a79938f8608f7ffa81f8d2fda3aa597c87e0575e281046d6"
+    },
+    {
+      "member": "Neiva, Surabastos-06-09-2022.pdf",
+      "row_count": 62,
+      "native_row_sha256": "9d5ac0cda8401560cc8ea3180cb486bb06e3dedb60d34b89f8eb901f43a289a3"
+    },
+    {
+      "member": "Pereira, La 41-06-09-2022.pdf",
+      "row_count": 78,
+      "native_row_sha256": "0b0eb1f050ee18d948e6876e778cc09b8580d94f34444bd88956ec2036ff7370"
+    },
+    {
+      "member": "Santa Marta (Magdalena)-06-09-2022.pdf",
+      "row_count": 19,
+      "native_row_sha256": "fc83e8468782732c2a877088e8722df1ba24469cd0a1e6ad823daeac9d2bce7e"
+    },
+    {
+      "member": "Tunja, Complejo de Servicios del Sur-06-09-2022.pdf",
+      "row_count": 88,
+      "native_row_sha256": "8ea73ac19c11b1e33ef02cbeb7fa823daa74d5160aa1fc18bfefcc1fc9cb92d6"
+    }
+  ],
+  "failed_members": [
+    {
+      "member": "Bucaramanga, Centroabastos-06-09-2022.pdf",
+      "bytes": 117581,
+      "sha256": "f96bbed4f594872dd7f812f84c15b8f6686340f42c937c7fc70b9984f5138aa9"
+    }
+  ],
+  "total_native_rows": 1215
+}

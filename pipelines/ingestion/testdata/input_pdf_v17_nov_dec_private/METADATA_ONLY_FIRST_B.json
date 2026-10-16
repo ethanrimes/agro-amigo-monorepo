@@ -1,0 +1,134 @@
+{
+  "at": "2026-10-08T18:05:44.343473+00:00",
+  "read_only": true,
+  "scope": "Exactly two input asset URLs/original metadata/checkpoints only; prior count timeout preserved separately",
+  "cases": [
+    {
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_noviembre_2012.pdf",
+        "kind": "inputs-pdf",
+        "document_id": "0c2cf79ba4c3c25c006f8979f4d4e96b0b556cb609054d1cbcaa47fe933113d7",
+        "observed_on": "2012-11-30",
+        "processor_version": "inputs-pdf-v17",
+        "status": "failed",
+        "records": 8036,
+        "error": "ValueError: Retained input old publication checkpoint changed",
+        "xmin": "1091625"
+      },
+      "source": {
+        "id": "0c2cf79ba4c3c25c006f8979f4d4e96b0b556cb609054d1cbcaa47fe933113d7",
+        "title": "DANE - insumos_factores_de_produccion_noviembre_2012.pdf",
+        "publisher": "DANE",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_noviembre_2012.pdf",
+        "media_type": "application/pdf",
+        "kind": "original",
+        "reference_period": "2012-11-30",
+        "page_count": 75,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "inputs-pdf",
+          "original_filename": "insumos_factores_de_produccion_noviembre_2012.pdf"
+        },
+        "xmin": "25544",
+        "bytes": 1338752
+      },
+      "checkpoints": [
+        {
+          "processor_version": "inputs-pdf-v11",
+          "step": "inputs-pdf:published",
+          "records": 8177,
+          "xmin": "586722"
+        },
+        {
+          "processor_version": "inputs-pdf-v12",
+          "step": "inputs-pdf:published",
+          "records": 8177,
+          "xmin": "617543"
+        },
+        {
+          "processor_version": "inputs-pdf-v13",
+          "step": "inputs-pdf:published",
+          "records": 8177,
+          "xmin": "693690"
+        },
+        {
+          "processor_version": "inputs-pdf-v14",
+          "step": "inputs-pdf:published",
+          "records": 7997,
+          "xmin": "846744"
+        },
+        {
+          "processor_version": "inputs-pdf-v4",
+          "step": "inputs-pdf:published",
+          "records": 0,
+          "xmin": "591175"
+        }
+      ],
+      "cohorts": []
+    },
+    {
+      "asset": {
+        "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_diciembre_2012.pdf",
+        "kind": "inputs-pdf",
+        "document_id": "fddfc753c883425d3e7f9374285c07e037313be68a69ad97a0ac56fff1d7bd6a",
+        "observed_on": "2012-12-31",
+        "processor_version": "inputs-pdf-v17",
+        "status": "failed",
+        "records": 7833,
+        "error": "ValueError: Retained input old publication checkpoint changed",
+        "xmin": "1090478"
+      },
+      "source": {
+        "id": "fddfc753c883425d3e7f9374285c07e037313be68a69ad97a0ac56fff1d7bd6a",
+        "title": "DANE - insumos_factores_de_produccion_diciembre_2012.pdf",
+        "publisher": "DANE",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_diciembre_2012.pdf",
+        "media_type": "application/pdf",
+        "kind": "original",
+        "reference_period": "2012-12-31",
+        "page_count": 76,
+        "metadata": {
+          "retention": "permanent",
+          "ingestion_kind": "inputs-pdf",
+          "original_filename": "insumos_factores_de_produccion_diciembre_2012.pdf"
+        },
+        "xmin": "25569",
+        "bytes": 1268719
+      },
+      "checkpoints": [
+        {
+          "processor_version": "inputs-pdf-v11",
+          "step": "inputs-pdf:published",
+          "records": 7895,
+          "xmin": "588679"
+        },
+        {
+          "processor_version": "inputs-pdf-v12",
+          "step": "inputs-pdf:published",
+          "records": 7895,
+          "xmin": "621304"
+        },
+        {
+          "processor_version": "inputs-pdf-v13",
+          "step": "inputs-pdf:published",
+          "records": 7895,
+          "xmin": "695463"
+        },
+        {
+          "processor_version": "inputs-pdf-v14",
+          "step": "inputs-pdf:published",
+          "records": 7726,
+          "xmin": "847126"
+        },
+        {
+          "processor_version": "inputs-pdf-v4",
+          "step": "inputs-pdf:published",
+          "records": 0,
+          "xmin": "591175"
+        }
+      ],
+      "cohorts": []
+    }
+  ],
+  "complete": true
+}

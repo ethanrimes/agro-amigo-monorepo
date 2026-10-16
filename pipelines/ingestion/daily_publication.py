@@ -126,7 +126,7 @@ def publish(db, data, did, url, expected_day, *, update_asset=True, parsed_resul
     result = (
         parsed_result
         if parsed_result is not None
-        else daily_recovery.parse_daily(data, expected_day)
+        else daily_recovery.parse_daily(data, expected_day, source_url=url)
     )
     rows, reviews = result["rows"], result["reviews"]
     # A variation correction appends a versioned locator only after every

@@ -79,7 +79,7 @@ class CompactCityQuantities(unittest.TestCase):
             row_for("0Kilogramo")
 
     def test_default_checkpoint_version_matches_worker_registry(self):
-        self.assertEqual(city_reports.VERSION, "city-v5")
+        self.assertEqual(city_reports.VERSION, "city-v8")
         self.assertEqual(
             inspect.signature(city_reports.publish_city_zip)
             .parameters["processor_version"]

@@ -110,7 +110,39 @@ void main() {
     await checkTabs();
     await binding.takeScreenshot('ios-layout-products');
 
-    // This suite runs only on an explicitly created disposable test simulator.
+    final originalLocation =
+        (jsonDecode(
+                  (await web.runJavaScriptReturningResult(
+                    'JSON.stringify({value:localStorage.getItem("agroamigo-location-v1")})',
+                  )).toString(),
+                )
+                as Map<String, dynamic>)['value']
+            as String?;
+    addTearDown(() async {
+      if (originalLocation == null) {
+        await web.runJavaScript(
+          'localStorage.removeItem("agroamigo-location-v1")',
+        );
+      } else {
+        await web.runJavaScript(
+          'localStorage.setItem("agroamigo-location-v1", ${jsonEncode(originalLocation)})',
+        );
+      }
+      final restoredLocation =
+          (jsonDecode(
+                    (await web.runJavaScriptReturningResult(
+                      'JSON.stringify({value:localStorage.getItem("agroamigo-location-v1")})',
+                    )).toString(),
+                  )
+                  as Map<String, dynamic>)['value']
+              as String?;
+      expect(
+        restoredLocation,
+        originalLocation,
+        reason:
+            'Native farm QA restores the original location preference byte for byte',
+      );
+    });
     await web.runJavaScript(
       'localStorage.setItem("agroamigo-location-v1", JSON.stringify({point:{latitude:1.9,longitude:-76.1},municipalityId:"41551",name:"Pin de prueba"}))',
     );
@@ -142,17 +174,15 @@ void main() {
       'document.querySelector(".zone-map").scrollIntoView()',
     );
     await binding.takeScreenshot('ios-location-map');
-    await web.runJavaScript('document.getElementById("clean-tab").click()');
-    await until('document.querySelector(".clean-sheet") !== null');
-    await until(
-      'Array.from(document.querySelectorAll("a.evidence-link")).some(a => a.textContent.includes("Ver costo publicado"))',
+    // The former embedded cost sheet moved to the read-only source viewer.
+    // Open the retained original through the same native WebView history.
+    await web.loadRequest(
+      Uri.parse(
+        '${app.appOrigin}/evidence/b5b46e162c750b47965d769cb8c13b1808d4e9adb342b15eb9cc24da5d985e03?page=5',
+      ),
     );
-    await web.runJavaScript(
-      'Array.from(document.querySelectorAll("a.evidence-link")).find(a => a.textContent.includes("Ver costo publicado")).click()',
-    );
-    await until('document.querySelector("dialog[open]") !== null');
     await until(
-      r'document.querySelector("canvas[data-rendered=true][aria-label=\"Página 6 del PDF\"]") !== null && document.querySelector(".pdf-text")?.textContent.includes("1,550,805")',
+      'document.querySelector("canvas[data-rendered=true]") !== null && document.querySelector("[aria-label=\\"Página del documento\\"]")?.value === "5"',
     );
     await web.runJavaScript(
       'document.querySelector(".pdf-viewer").scrollIntoView()',
@@ -161,11 +191,12 @@ void main() {
     await binding.takeScreenshot('ios-evidence');
     expect(state.canGoBack, isTrue);
     await web.goBack();
-    await until('document.querySelector("dialog[open]") === null');
-    await until('document.querySelector(".clean-sheet") !== null');
+    await until(
+      'location.pathname === "/farm" && document.querySelector(".zone-map") !== null',
+    );
 
-    // Inspect all exported data through the same native navigation path used by
-    // the budget UI. The share sheet is left open for simulator visual QA.
+    // Inspect native export handling. The share sheet is left open for simulator
+    // visual QA and the original saved farm location is restored in teardown.
     const payload = {
       'crop': 'Café',
       'totalCost': 600000,

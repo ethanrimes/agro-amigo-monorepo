@@ -6,9 +6,12 @@ export type CatalogProduct = Product & {
   saved_key: string;
   href: string;
   kind: "product" | "official-reference";
+  /** null means this source does not declare a recognizable report frequency. */
+  frequency_label?: string | null;
   currency: string;
   basis: string;
   market: string;
+  department?: string;
   map_supported: boolean;
   search_terms: string[];
   product_id?: string;

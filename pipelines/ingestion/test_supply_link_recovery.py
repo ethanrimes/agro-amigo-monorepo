@@ -1,4 +1,4 @@
-"""The one source-verified April 2024 DANE supply PDF recovery."""
+"""Source-verified April 2024 DANE supply PDF and workbook recovery."""
 
 import hashlib
 import unittest
@@ -16,6 +16,7 @@ ORIGINAL = (
     Path(__file__).resolve().parent
     / "testdata/bol-SIPSAabastecimiento-1raquincenaAbril2024.pdf"
 )
+ORIGINAL_XLSX = Path(__file__).resolve().parent / "testdata/anex-SIPSAabastecimiento-1raquinabril2024.xlsx"
 
 
 class SupplyPDFLinkRecovery(unittest.TestCase):
@@ -27,12 +28,97 @@ class SupplyPDFLinkRecovery(unittest.TestCase):
             recovery.BROKEN_PDF + "?download=1",
             recovery.BROKEN_PDF.replace("www.dane.gov.co", "example.org"),
             recovery.BROKEN_PDF.replace("1raquinabr", "1raquinmay"),
-            recovery.FILES + "anex-SIPSAabastecimiento-1raquinabr2024.xlsx",
         ):
             self.assertIsNone(recovery.recover_link(url, 404, None, fetcher))
         with self.assertRaisesRegex(ValueError, "undated fortnight"):
             recovery.recover_link(recovery.BROKEN_PDF, 404, date(2024, 4, 30), fetcher)
         fetcher.assert_not_called()
+
+    def test_only_exact_missing_april_annex_can_fetch(self):
+        fetcher = Mock()
+        for status in (200, 304, 403, 429, 500, 503):
+            self.assertIsNone(recovery.recover_workbook(recovery.BROKEN_XLSX, status, None, fetcher))
+        for url in (
+            recovery.BROKEN_XLSX + "?download=1",
+            recovery.BROKEN_XLSX.replace("www.dane.gov.co", "example.org"),
+            recovery.BROKEN_XLSX.replace("1raquinabr", "1raquinmay"),
+            recovery.BROKEN_PDF,
+        ):
+            self.assertIsNone(recovery.recover_workbook(url, 404, None, fetcher))
+        with self.assertRaisesRegex(ValueError, "undated fortnight"):
+            recovery.recover_workbook(recovery.BROKEN_XLSX, 404, date(2024, 4, 15), fetcher)
+        fetcher.assert_not_called()
+
+    def test_april_annex_native_tables_and_exact_hash(self):
+        body = ORIGINAL_XLSX.read_bytes()
+        self.assertEqual(hashlib.sha256(body).hexdigest(), recovery.AUDITED_XLSX_SHA256)
+        fetcher = Mock(return_value=body)
+        result = recovery.recover_workbook(recovery.BROKEN_XLSX, 404, None, fetcher)
+        fetcher.assert_called_once_with(recovery.CANONICAL_XLSX)
+        self.assertEqual(result.canonical_url, recovery.CANONICAL_XLSX)
+        self.assertEqual(result.evidence["validated_records"], 983)
+        self.assertEqual(result.evidence["period_end"], "2024-04-15")
+        rows, reviews = supply_period_summaries.parse_workbook(body)
+        self.assertEqual(reviews, [])
+        self.assertEqual(len(rows), 983)
+        april_total = [
+            row for row in rows
+            if row["details"]["statistic"] == "market_arrivals"
+            and row["details"]["aggregation_level"] == "reported_markets_total"
+            and row["details"]["period_end"] == "2024-04-15"
+        ]
+        self.assertEqual(len(april_total), 1)
+        self.assertAlmostEqual(april_total[0]["details"]["value"], 307711.5221)
+        self.assertEqual(april_total[0]["details"]["period_start"], "2024-04-01")
+        self.assertEqual(april_total[0]["details"]["frequency"], "first_fortnight")
+        self.assertEqual(april_total[0]["details"]["parser_version"], supply_period_summaries.WORKBOOK_VERSION)
+        self.assertEqual(worker.parser_version("supply-reference").split(":")[-1], supply_period_summaries.WORKBOOK_VERSION)
+        self.assertIn("pipelines/ingestion/supply_period_summaries.py", worker.RELEASE_FILES)
+
+    def test_changed_april_annex_cannot_silently_replace_audited_workbook(self):
+        for candidate in (b"<html>missing</html>", ORIGINAL_XLSX.read_bytes() + b"changed"):
+            with self.subTest(candidate_length=len(candidate)), self.assertRaises(ValueError):
+                recovery.recover_workbook(recovery.BROKEN_XLSX, 404, None, lambda _, body=candidate: body)
+
+    def test_worker_retries_broken_annex_under_canonical_source_identity(self):
+        body = ORIGINAL_XLSX.read_bytes()
+        response = requests.Response()
+        response.status_code = 404
+        error = requests.HTTPError("missing", response=response)
+
+        class DB:
+            def __init__(self):
+                self.calls = []
+
+            def execute(self, sql, args=()):
+                self.calls.append((sql, args))
+                if sql.startswith("SELECT processor_version"):
+                    return Mock(fetchone=lambda: ("supply-daily-summary-v1:supply-period-summary-v1",))
+                if sql.startswith("SELECT document_id,status,records"):
+                    return Mock(fetchone=lambda: ("older", "failed", 0))
+                return Mock(fetchone=lambda: None)
+
+            def transaction(self):
+                return nullcontext()
+
+        db = DB()
+        with (
+            patch.object(worker, "fetch_asset", side_effect=error),
+            patch.object(worker, "fetch", return_value=body) as fetch,
+            patch.object(worker, "archive", return_value=recovery.AUDITED_XLSX_SHA256) as archive,
+            patch("pipelines.ingestion.daily_publication.retain_resolution") as retain,
+            patch.object(supply_period_summaries, "publish", return_value=(983, [])) as publish,
+        ):
+            self.assertEqual(worker._process_asset(db, recovery.BROKEN_XLSX, "supply-reference", None), 983)
+        fetch.assert_called_once_with(recovery.CANONICAL_XLSX)
+        self.assertEqual(archive.call_args.args[1], recovery.CANONICAL_XLSX)
+        publish.assert_called_once_with(db, body, recovery.AUDITED_XLSX_SHA256, "supply-reference", None)
+        resolution = [c for c in retain.call_args_list if c.args[1] == "source_link_resolution"]
+        self.assertEqual(len(resolution), 1)
+        self.assertEqual(resolution[0].args[2]["original_url"], recovery.BROKEN_XLSX)
+        updates = [args for sql, args in db.calls if "SET document_id=%s,status=%s,records=%s" in sql]
+        self.assertEqual(len(updates), 1)
+        self.assertEqual((updates[0][1], updates[0][2]), ("complete", 983))
 
     def test_changed_or_non_pdf_candidate_cannot_be_published(self):
         for candidate in (b"<html>not found</html>", b"%PDF-changed"):
@@ -58,7 +144,7 @@ class SupplyPDFLinkRecovery(unittest.TestCase):
         self.assertEqual(result.evidence["period_start"], "2024-04-01")
         self.assertEqual(result.evidence["period_end"], "2024-04-15")
         self.assertEqual(result.evidence["printed_publication_date"], "2024-05-03")
-        self.assertIn("XLSX remains HTTP 404", result.evidence["coverage_note"])
+        self.assertIn("XLSX URL is also HTTP 404", result.evidence["coverage_note"])
         rows, reviews = supply_period_summaries.parse_pdf(result.body)
         self.assertEqual(len(rows), 99)
         self.assertEqual(reviews, [])
@@ -127,7 +213,7 @@ class SupplyPDFLinkRecovery(unittest.TestCase):
         updates = [args for sql, args in db.calls if "SET document_id=%s,status=%s,records=%s" in sql]
         self.assertEqual(len(updates), 1)
         self.assertEqual(updates[0][1], "review")
-        self.assertIn("XLSX remains HTTP 404", updates[0][3])
+        self.assertIn("XLSX URL is also HTTP 404", updates[0][3])
 
 
 if __name__ == "__main__":

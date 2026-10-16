@@ -1,0 +1,342 @@
+{
+  "source_pdf_sha256": "041ecad842cb6a55ead77cc36ba1af3fb2a7ee858dcada53b18b833b5e616977",
+  "source_grid_sha256": "9b48292c039c994909d80f07b46581b350936432fb3a7afef920358e92d35248",
+  "cached_pairs_sha256": "5a8aa2e0dcf8210de5857cc83da17e24c0c500542f78fdfec93ebb64defef82b",
+  "source_row_count": 103,
+  "source_money_cells": 412,
+  "source_blank_or_zero_money_cells": 0,
+  "source_printed_headings": [
+    "PRECIOS DE VENTA MAYORISTA",
+    "Medellín, Central Mayorista de Antioquia",
+    "PRODUCTOS PRIMERA CALIDAD - Boletín Gratuito",
+    "03 de Enero de 2023",
+    "Ronda 1 04:00 - 06:00",
+    "Ronda 2 06:30 - 08:30"
+  ],
+  "source_category_heading_sequence": {
+    "1": [
+      "Frutas",
+      "Cítricos",
+      "Otras frutas"
+    ],
+    "2": [
+      "Tuberculos, raices y platanos",
+      "Otros tuberculos",
+      "PlÁtano",
+      "Papa",
+      "Yuca",
+      "Verduras y hortalizas",
+      "Leguminosas",
+      "Otras hortalizas y verduras",
+      "Zanahorias",
+      "Cebollas"
+    ],
+    "3": [
+      "Tomates",
+      "Hortalizas"
+    ]
+  },
+  "reads": [
+    {
+      "page": 3,
+      "image_id": "2d3cba5675f140b978df36efd18091e4993cde07278e7c9bd77af82e4b764fbc",
+      "reading": 0,
+      "status": "review",
+      "error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "source_rows": 18,
+      "source_money_cells": 72,
+      "equal_seven_field_cells": 126,
+      "mismatches": [],
+      "source_headings": [
+        "Tomates",
+        "Hortalizas"
+      ],
+      "cached_headings": [
+        "Tomates",
+        "Hortalizas"
+      ],
+      "heading_mismatches": [],
+      "review_notes": [
+        "The word 'cartÓn' in 'Caja de cartÓn' has a capitalized 'Ó' with an accent mark in the original text."
+      ]
+    },
+    {
+      "page": 3,
+      "image_id": "2d3cba5675f140b978df36efd18091e4993cde07278e7c9bd77af82e4b764fbc",
+      "reading": 1,
+      "status": "review",
+      "error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "source_rows": 18,
+      "source_money_cells": 72,
+      "equal_seven_field_cells": 122,
+      "mismatches": [
+        {
+          "page": 3,
+          "source_row_ordinal": 12,
+          "product": "Espinaca",
+          "field": "r1_max",
+          "source": "2.000",
+          "cached": "2.200"
+        },
+        {
+          "page": 3,
+          "source_row_ordinal": 12,
+          "product": "Espinaca",
+          "field": "r2_max",
+          "source": "2.000",
+          "cached": "2.200"
+        },
+        {
+          "page": 3,
+          "source_row_ordinal": 13,
+          "product": "Lechuga batavia",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartón"
+        },
+        {
+          "page": 3,
+          "source_row_ordinal": 14,
+          "product": "Lechuga batavia",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartón"
+        }
+      ],
+      "source_headings": [
+        "Tomates",
+        "Hortalizas"
+      ],
+      "cached_headings": [
+        "Tomates",
+        "Hortalizas"
+      ],
+      "heading_mismatches": [],
+      "review_notes": []
+    },
+    {
+      "page": 1,
+      "image_id": "a4cc6933e154e81b0116cab7f7d344515b80c2205f61023d9523b75325625b32",
+      "reading": 0,
+      "status": "review",
+      "error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "source_rows": 47,
+      "source_money_cells": 188,
+      "equal_seven_field_cells": 329,
+      "mismatches": [],
+      "source_headings": [
+        "Frutas",
+        "Cítricos",
+        "Otras frutas"
+      ],
+      "cached_headings": [
+        "Frutas",
+        "Cítricos",
+        "Otras frutas"
+      ],
+      "heading_mismatches": [],
+      "review_notes": []
+    },
+    {
+      "page": 1,
+      "image_id": "a4cc6933e154e81b0116cab7f7d344515b80c2205f61023d9523b75325625b32",
+      "reading": 1,
+      "status": "review",
+      "error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "source_rows": 47,
+      "source_money_cells": 188,
+      "equal_seven_field_cells": 321,
+      "mismatches": [
+        {
+          "page": 1,
+          "source_row_ordinal": 12,
+          "product": "Breva",
+          "field": "r2_max",
+          "source": "5.000",
+          "cached": "5.200"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 13,
+          "product": "Ciruela importada",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartOn"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 20,
+          "product": "Granadilla",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartOn"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 28,
+          "product": "Kiwi",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartOn"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 33,
+          "product": "Manzana roja importada",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartón"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 34,
+          "product": "Manzana royal gala importada",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartOn"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 35,
+          "product": "Manzana verde importada",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartOn"
+        },
+        {
+          "page": 1,
+          "source_row_ordinal": 43,
+          "product": "Pera importada",
+          "field": "presentation",
+          "source": "Caja de cartÓn",
+          "cached": "Caja de cartón"
+        }
+      ],
+      "source_headings": [
+        "Frutas",
+        "Cítricos",
+        "Otras frutas"
+      ],
+      "cached_headings": [
+        "Frutas",
+        "Cítricos",
+        "Otras frutas"
+      ],
+      "heading_mismatches": [],
+      "review_notes": [
+        "Preserved the exact spelling of 'Caja de cartOn' and 'Caja de cartón' as they appear in the original document."
+      ]
+    },
+    {
+      "page": 2,
+      "image_id": "cedb02555eedf11a69c3765c2d3fec6af24717915d7d0c7f3aa5a8125fc1e369",
+      "reading": 0,
+      "status": "review",
+      "error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "source_rows": 38,
+      "source_money_cells": 152,
+      "equal_seven_field_cells": 264,
+      "mismatches": [
+        {
+          "page": 2,
+          "source_row_ordinal": 7,
+          "product": "Plátano dominico verde",
+          "field": "product",
+          "source": "Plátano dominico verde",
+          "cached": "Plátano domínico verde"
+        },
+        {
+          "page": 2,
+          "source_row_ordinal": 19,
+          "product": "Fríjol verde cargamanto",
+          "field": "r2_max",
+          "source": "5.000",
+          "cached": "5.200"
+        }
+      ],
+      "source_headings": [
+        "Tuberculos, raices y platanos",
+        "Otros tuberculos",
+        "PlÁtano",
+        "Papa",
+        "Yuca",
+        "Verduras y hortalizas",
+        "Leguminosas",
+        "Otras hortalizas y verduras",
+        "Zanahorias",
+        "Cebollas"
+      ],
+      "cached_headings": [
+        "Tuberculos, raíces y platanos",
+        "Otros tuberculos",
+        "PlÁtano",
+        "Papa",
+        "Yuca",
+        "Verduras y hortalizas",
+        "Leguminosas",
+        "Otras hortalizas y verduras",
+        "Zanahorias",
+        "Cebollas"
+      ],
+      "heading_mismatches": [
+        {
+          "index": 1,
+          "source": "Tuberculos, raices y platanos",
+          "cached": "Tuberculos, raíces y platanos"
+        }
+      ],
+      "review_notes": []
+    },
+    {
+      "page": 2,
+      "image_id": "cedb02555eedf11a69c3765c2d3fec6af24717915d7d0c7f3aa5a8125fc1e369",
+      "reading": 1,
+      "status": "review",
+      "error_class": "INDEPENDENT_READINGS_DISAGREE",
+      "source_rows": 38,
+      "source_money_cells": 152,
+      "equal_seven_field_cells": 266,
+      "mismatches": [],
+      "source_headings": [
+        "Tuberculos, raices y platanos",
+        "Otros tuberculos",
+        "PlÁtano",
+        "Papa",
+        "Yuca",
+        "Verduras y hortalizas",
+        "Leguminosas",
+        "Otras hortalizas y verduras",
+        "Zanahorias",
+        "Cebollas"
+      ],
+      "cached_headings": [
+        "Tuberculos, raíces y platanos",
+        "Otros tuberculos",
+        "PLÁTANO",
+        "Papa",
+        "Yuca",
+        "Verduras y hortalizas",
+        "Leguminosas",
+        "Otras hortalizas y verduras",
+        "Zanahorias",
+        "Cebollas"
+      ],
+      "heading_mismatches": [
+        {
+          "index": 1,
+          "source": "Tuberculos, raices y platanos",
+          "cached": "Tuberculos, raíces y platanos"
+        },
+        {
+          "index": 3,
+          "source": "PlÁtano",
+          "cached": "PLÁTANO"
+        }
+      ],
+      "review_notes": [
+        "The word 'cartÓn' in 'Caja de cartÓn' has a capitalized 'Ó'.",
+        "The category headers are merged across all columns but represented as single-cell values with empty strings in the remaining columns."
+      ]
+    }
+  ]
+}

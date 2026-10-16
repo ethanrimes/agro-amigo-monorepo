@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "documents": [
+    {
+      "document_id": "2a86b7bbb51116a8cae70fb2a71ae25215f3fd44113d2ec5abb56c4e96eb30bb",
+      "bytes": 9634,
+      "media_type": "application/pdf",
+      "publisher": "DANE",
+      "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-31may2024.zip",
+      "archive_id": "535debd86950b07758ea32115a5b6906b52885726a314b54af471572f5f7c5f5",
+      "archive_entry": "metas2023finalf.pdf",
+      "scope": "non-agricultural-administration",
+      "native_pages": 2,
+      "native_anchors": ["FORMATO VALORACIÓN A LA GESTIÓN", "METAS ESTABLECIDAS Y LOGRADAS"]
+    }
+  ]
+}

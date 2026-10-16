@@ -1,0 +1,232 @@
+{
+  "scope": "Four independently verified native anchors; no whole-source release claim",
+  "canonical_key": "0e4aae5e080f2e7265c589a8a2213e7df73e7fbbf1af7d49835b20585a2d520a",
+  "legacy_key": "f001a4151aff44d99cf4152d060df62e1958acfc360a976c9450f13c2f74eacd",
+  "anchors": [
+    {
+      "native": {
+        "date": "2017-01-27",
+        "quote_key": "f001a4151aff44d99cf4152d060df62e1958acfc360a976c9450f13c2f74eacd",
+        "document_id": "95072bb4d5c98fbb2b2635c8aa3dd50c22b4e3ab9c40abcb441662868b5f062e",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_21ene_27ene_2017.pdf",
+        "source_locator": "PDF page 16,table 1,column 2,line 62",
+        "source_page": 16,
+        "printed_heading": "Limón Tahití",
+        "printed_market_lines": [
+          "Medellín, Plaza",
+          "Minorista “José María Villa”"
+        ],
+        "printed_unit": "Pesos por kilogramo",
+        "price": 1063,
+        "min_price": 800,
+        "max_price": 1200,
+        "native_check": "PDF physical p16, Cuadro 2, right column; distinct from Limón común, Limón mandarino and Medellín Central. SHA-256 of retained original equals document_id."
+      },
+      "published": {
+        "document_id": "95072bb4d5c98fbb2b2635c8aa3dd50c22b4e3ab9c40abcb441662868b5f062e",
+        "source_locator": "PDF page 16,table 1,column 2,line 62",
+        "parser_version": "official-v2:dane-weekly-v22",
+        "quote_key": "f001a4151aff44d99cf4152d060df62e1958acfc360a976c9450f13c2f74eacd",
+        "product_id": "limon-tahiti",
+        "product_name": "Limón Tahití",
+        "category": "Frutas frescas",
+        "publisher": "DANE · SIPSA",
+        "series": "dane-weekly",
+        "basis": "Precio mayorista semanal",
+        "currency": "COP",
+        "unit": "kg",
+        "market": "Medellín, Plaza Minorista “José María Villa”",
+        "observed_on": "2017-01-27",
+        "period_start": "2017-01-21",
+        "price": 1063,
+        "min_price": 800,
+        "max_price": 1200,
+        "source_page": 16,
+        "details": {
+          "trend": "-",
+          "period_end": "2017-01-27",
+          "unit_basis": "Pesos por kilogramo; excepciones de huevos/líquidos solo según nota explícita de la publicación.",
+          "period_type": "weekly",
+          "source_note": "Media semanal publicada por DANE; mínimo y máximo de la misma semana. La tendencia es el símbolo literal de la fuente.",
+          "period_start": "2017-01-21",
+          "price_statistic": "published_mean",
+          "native_market_join": "january_2017_same_column_leading_market_line",
+          "identity_dimensions": {
+            "source_product": "Limón Tahití"
+          },
+          "literal_market_lines": [
+            "Medellín, Plaza",
+            "Minorista “José María Villa”"
+          ]
+        },
+        "parsed_at": "2026-10-04T09:56:51.177Z",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_21ene_27ene_2017.pdf"
+      }
+    },
+    {
+      "native": {
+        "date": "2019-02-15",
+        "quote_key": "f001a4151aff44d99cf4152d060df62e1958acfc360a976c9450f13c2f74eacd",
+        "document_id": "dbd2bc42b7b8ec146944878ab3033812a2118dcfd15e562ea31ecd59830360b7",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_09feb_2019__15feb_2019.pdf",
+        "source_locator": "PDF page 29,table 1,column 2,line 36",
+        "source_page": 29,
+        "printed_heading": "Limón Tahití",
+        "printed_market_lines": [
+          "Medellín, Plaza Minorista “José",
+          "María Villa”"
+        ],
+        "printed_unit": "Pesos por kilogramo",
+        "price": 1400,
+        "min_price": 1300,
+        "max_price": 1500,
+        "native_check": "SHA-verified retained PDF physical p29, right column under Limón Tahití; 1.300 / 1.500 / 1.400."
+      },
+      "published": {
+        "document_id": "dbd2bc42b7b8ec146944878ab3033812a2118dcfd15e562ea31ecd59830360b7",
+        "source_locator": "PDF page 29,table 1,column 2,line 36",
+        "parser_version": "official-v2:dane-weekly-v11",
+        "quote_key": "f001a4151aff44d99cf4152d060df62e1958acfc360a976c9450f13c2f74eacd",
+        "product_id": "limon-tahiti",
+        "product_name": "Limón Tahití",
+        "category": "Frutas frescas",
+        "publisher": "DANE · SIPSA",
+        "series": "dane-weekly",
+        "basis": "Precio mayorista semanal",
+        "currency": "COP",
+        "unit": "kg",
+        "market": "Medellín, Plaza Minorista “José María Villa”",
+        "observed_on": "2019-02-15",
+        "period_start": "2019-02-09",
+        "price": 1400,
+        "min_price": 1300,
+        "max_price": 1500,
+        "source_page": 29,
+        "details": {
+          "trend": "+",
+          "period_end": "2019-02-15",
+          "unit_basis": "Pesos por kilogramo; excepciones de huevos/líquidos solo según nota explícita de la publicación.",
+          "period_type": "weekly",
+          "source_note": "Media semanal publicada por DANE; mínimo y máximo de la misma semana. La tendencia es el símbolo literal de la fuente.",
+          "period_start": "2019-02-09",
+          "price_statistic": "published_mean",
+          "identity_dimensions": {
+            "source_product": "Limón Tahití"
+          }
+        },
+        "parsed_at": "2026-09-29T04:15:47.004Z",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_09feb_2019__15feb_2019.pdf"
+      }
+    },
+    {
+      "native": {
+        "date": "2019-02-15",
+        "quote_key": "0e4aae5e080f2e7265c589a8a2213e7df73e7fbbf1af7d49835b20585a2d520a",
+        "document_id": "39a01d1177bc161614d010f6b56a68602374b389bf02f63c7c0b7218025da528",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_09feb_2019__15feb_2019.xlsx",
+        "source_locator": "1.2!row 412,cols C:E",
+        "source_page": null,
+        "printed_heading": "Limón Tahití",
+        "printed_market_lines": [
+          "Medellín, Plaza Minorista \"José María Villa\""
+        ],
+        "printed_unit": "Pesos por kilogramo",
+        "price": 1400,
+        "min_price": 1300,
+        "max_price": 1500,
+        "native_check": "SHA-verified retained XLSX sheet 1.2 row 412: A Limón Tahití; B exact straight-quote market; C 1300, D 1500, E 1400, F +."
+      },
+      "published": {
+        "document_id": "39a01d1177bc161614d010f6b56a68602374b389bf02f63c7c0b7218025da528",
+        "source_locator": "1.2!row 412,cols C:E",
+        "parser_version": "official-v2:dane-weekly-v7",
+        "quote_key": "0e4aae5e080f2e7265c589a8a2213e7df73e7fbbf1af7d49835b20585a2d520a",
+        "product_id": "limon-tahiti",
+        "product_name": "Limón Tahití",
+        "category": "Frutas frescas",
+        "publisher": "DANE · SIPSA",
+        "series": "dane-weekly",
+        "basis": "Precio mayorista semanal",
+        "currency": "COP",
+        "unit": "kg",
+        "market": "Medellín, Plaza Minorista \"José María Villa\"",
+        "observed_on": "2019-02-15",
+        "period_start": "2019-02-09",
+        "price": 1400,
+        "min_price": 1300,
+        "max_price": 1500,
+        "source_page": null,
+        "details": {
+          "trend": "+",
+          "period_end": "2019-02-15",
+          "unit_basis": "Pesos por kilogramo; excepciones de huevos/líquidos solo según nota explícita de la publicación.",
+          "period_type": "weekly",
+          "source_note": "Media semanal publicada por DANE; mínimo y máximo de la misma semana. La tendencia es el símbolo literal de la fuente.",
+          "period_start": "2019-02-09",
+          "price_statistic": "published_mean",
+          "identity_dimensions": {
+            "source_product": "Limón Tahití"
+          }
+        },
+        "parsed_at": "2026-09-29T03:17:50.668Z",
+        "source_url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Sem_09feb_2019__15feb_2019.xlsx",
+        "department": "Antioquia"
+      }
+    },
+    {
+      "native": {
+        "date": "2026-10-02",
+        "quote_key": "0e4aae5e080f2e7265c589a8a2213e7df73e7fbbf1af7d49835b20585a2d520a",
+        "document_id": "38fcd8f37723fc08c68298df40d9f2e561f465d20508f025c682df1425c3affd",
+        "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSASemanal-26sep2oct-2026.pdf",
+        "source_locator": "PDF page 26,table 1,column 1,line 25",
+        "source_page": 26,
+        "printed_heading": "Limón Tahití",
+        "printed_market_lines": [
+          "Medellín, Plaza Minorista \"José María Villa\""
+        ],
+        "printed_unit": "Pesos por kilogramo",
+        "price": 3775,
+        "min_price": 3400,
+        "max_price": 4000,
+        "native_check": "PDF physical p26, Cuadro 3, left column; source row 3.400 / 4.000 / 3.775, plus trend +++. SHA-256 of retained original equals document_id."
+      },
+      "published": {
+        "document_id": "38fcd8f37723fc08c68298df40d9f2e561f465d20508f025c682df1425c3affd",
+        "source_locator": "PDF page 26,table 1,column 1,line 25",
+        "parser_version": "official-v2:dane-weekly-v22",
+        "quote_key": "0e4aae5e080f2e7265c589a8a2213e7df73e7fbbf1af7d49835b20585a2d520a",
+        "product_id": "limon-tahiti",
+        "product_name": "Limón Tahití",
+        "category": "Frutas frescas",
+        "publisher": "DANE · SIPSA",
+        "series": "dane-weekly",
+        "basis": "Precio mayorista semanal",
+        "currency": "COP",
+        "unit": "kg",
+        "market": "Medellín, Plaza Minorista \"José María Villa\"",
+        "observed_on": "2026-10-02",
+        "period_start": "2026-09-26",
+        "price": 3775,
+        "min_price": 3400,
+        "max_price": 4000,
+        "source_page": 26,
+        "details": {
+          "trend": "+++",
+          "period_end": "2026-10-02",
+          "unit_basis": "Pesos por kilogramo; excepciones de huevos/líquidos solo según nota explícita de la publicación.",
+          "period_type": "weekly",
+          "source_note": "Media semanal publicada por DANE; mínimo y máximo de la misma semana. La tendencia es el símbolo literal de la fuente.",
+          "period_start": "2026-09-26",
+          "price_statistic": "published_mean",
+          "identity_dimensions": {
+            "source_product": "Limón Tahití"
+          }
+        },
+        "parsed_at": "2026-10-04T10:33:16.547Z",
+        "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSASemanal-26sep2oct-2026.pdf",
+        "department": "Antioquia"
+      }
+    }
+  ]
+}

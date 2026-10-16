@@ -39,10 +39,10 @@ test("search, category filters, department, and saved products work", async ({
   await page.goto("/products");
   await expect(page.locator(".product-card").first()).toBeVisible();
   await page
-    .getByRole("combobox", { name: "Buscar producto", exact: true })
+    .getByRole("combobox", { name: "Buscar producto, variedad o mercado", exact: true })
     .fill("aguacate");
   await page
-    .getByRole("combobox", { name: "Buscar producto", exact: true })
+    .getByRole("combobox", { name: "Buscar producto, variedad o mercado", exact: true })
     .press("Escape");
   await expect(page.locator(".product-card").first()).toContainText(
     /Aguacate/i,
@@ -62,15 +62,15 @@ test("search, category filters, department, and saved products work", async ({
     page.getByRole("heading", { name: "Guarda lo que te interesa" }),
   ).toBeVisible();
   await page.goto("/products");
-  await page
-    .getByLabel("Departamento", { exact: true })
-    .last()
-    .selectOption("Antioquia");
+  await page.getByRole("combobox", { name: "Departamento", exact: true }).fill("Antioquia");
+  await page.getByRole("option", { name: "Antioquia", exact: true }).click();
   await expect(page.locator(".results-label")).toContainText("Antioquia");
-  await page.getByRole("button", { name: "Frutas", exact: true }).click();
+  await page.getByRole("combobox", { name: "Categoría", exact: true }).fill("Frutas");
+  await page.getByRole("option", { name: "Frutas · Incluye las subcategorías de esta ruta", exact: true }).click();
+  await expect(page.getByRole("group", { name: "Categoría", exact: true })).toHaveAttribute("data-selected-value", "Frutas");
   await expect(page.locator(".product-category").first()).toHaveText("Frutas");
 });
-test("one shared experience ignores the retired role and shows selling and buying totals", async ({
+test("one shared experience ignores the retired role and shows a sourced product history", async ({
   page,
 }) => {
   await page.goto("/");
@@ -93,28 +93,11 @@ test("one shared experience ignores the retired role and shows selling and buyin
     .locator(".product-name")
     .filter({ hasText: "Aguacate Hass" })
     .click();
-  await expect(
-    page.getByRole("heading", { name: "Calcula el valor con transporte" }),
-  ).toBeVisible();
-  await page.getByLabel("Cantidad en kilos").fill("100");
-  await page.getByLabel("Transporte total (COP)").fill("50000");
-  const selected = await page.getByLabel("Mercado de referencia").inputValue();
-  const data = await (
-    await page.request.get("/api/products/" + page.url().split("/").at(-1))
-  ).json();
-  const price = data.markets.find((m: any) => m.id === selected).price;
-  await expect(
-    page.locator(".calculation-result [data-result=purchase]"),
-  ).toHaveText(money(price * 100 + 50000));
-  await expect(
-    page.locator(".calculation-result [data-result=sale]"),
-  ).toHaveText(money(price * 100 - 50000));
+  await expect(page.getByRole("link", { name: "Consultar una de las fuentes del promedio", exact: true })).toBeVisible();
+  await page.getByText("Ver datos en tabla", { exact: true }).click();
+  await expect(page.locator(".chart-data table")).toBeVisible();
   await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "Calcula el valor con transporte" }),
-  ).toBeVisible();
-  const text = await page.locator(".market-value strong").allTextContents();
-  expect(text.length).toBeGreaterThan(0);
+  await expect(page.getByRole("link", { name: "Consultar una de las fuentes del promedio", exact: true })).toBeVisible();
 });
 test("coffee units and a buyer quote produce the correct net estimate", async ({
   page,
@@ -139,7 +122,6 @@ test("coffee units and a buyer quote produce the correct net estimate", async ({
   await expect(page.locator(".invalid-input")).toBeVisible();
   await expect(page.locator(".calculation-result>strong")).toHaveText("—");
   await page.getByLabel("Cantidad", { exact: true }).fill("10");
-  await page.getByRole("button", { name: "3 meses", exact: true }).click();
   await page.getByText("Ver datos en tabla", { exact: true }).click();
   await expect(page.locator(".chart-data table")).toBeVisible();
   await page.getByText("Ver datos en tabla", { exact: true }).click();

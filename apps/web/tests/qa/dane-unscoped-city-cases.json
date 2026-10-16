@@ -28,8 +28,8 @@
           },
           {
             "id": "PRD-10",
-            "condition": "(()=>{const expected=[...window.__qaCityApi.history].sort((a,b)=>b.price-a.price||b.date.localeCompare(a.date)).map(r=>[new Date(r.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(r.price).replace(/\\s/g,'')]);const actual=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]);return JSON.stringify(actual)===JSON.stringify(expected)})()",
-            "expected": "Every displayed historical date/rounded price matches the complete current API, descending numeric price/newest ties; raw Decimal snapshot audited separately and changing source populations retained"
+            "condition": "(()=>{const expected=[...window.__qaCityApi.history].sort((a,b)=>b.price-a.price||b.date.localeCompare(a.date)).map(r=>[new Date(r.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(r.price).replace(/\\s/g,'')]);const actual=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].childNodes[0].textContent.replace(/\\s/g,'')]);return JSON.stringify(actual)===JSON.stringify(expected)})()",
+            "expected": "Every displayed historical date/rounded price matches the complete current API, descending numeric price/newest ties; raw Decimal snapshot audited separately and changing source populations retained; source-link label is excluded from the numeric cell text"
           },
           {
             "id": "PRD-02",
@@ -74,8 +74,8 @@
           },
           {
             "id": "PRD-10",
-            "condition": "(()=>{const expected=[...window.__qaCityApi.history].sort((a,b)=>b.price-a.price||b.date.localeCompare(a.date)).map(r=>[new Date(r.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(r.price).replace(/\\s/g,'')]);const actual=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]);return JSON.stringify(actual)===JSON.stringify(expected)})()",
-            "expected": "Every displayed historical date/rounded price matches the complete current API, descending numeric price/newest ties; raw Decimal snapshot audited separately and changing source populations retained"
+            "condition": "(()=>{const expected=[...window.__qaCityApi.history].sort((a,b)=>b.price-a.price||b.date.localeCompare(a.date)).map(r=>[new Date(r.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(r.price).replace(/\\s/g,'')]);const actual=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].childNodes[0].textContent.replace(/\\s/g,'')]);return JSON.stringify(actual)===JSON.stringify(expected)})()",
+            "expected": "Every displayed historical date/rounded price matches the complete current API, descending numeric price/newest ties; raw Decimal snapshot audited separately and changing source populations retained; source-link label is excluded from the numeric cell text"
           },
           {
             "id": "PRD-02",
@@ -120,8 +120,8 @@
           },
           {
             "id": "PRD-10",
-            "condition": "(()=>{const expected=[...window.__qaCityApi.history].sort((a,b)=>b.price-a.price||b.date.localeCompare(a.date)).map(r=>[new Date(r.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(r.price).replace(/\\s/g,'')]);const actual=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].innerText.replace(/\\s/g,'')]);return JSON.stringify(actual)===JSON.stringify(expected)})()",
-            "expected": "Every displayed historical date/rounded price matches the complete current API, descending numeric price/newest ties; raw Decimal snapshot audited separately and changing source populations retained"
+            "condition": "(()=>{const expected=[...window.__qaCityApi.history].sort((a,b)=>b.price-a.price||b.date.localeCompare(a.date)).map(r=>[new Date(r.date+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'}),new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(r.price).replace(/\\s/g,'')]);const actual=[...document.querySelectorAll('.chart-data tbody tr')].map(r=>[r.cells[0].innerText,r.cells[1].childNodes[0].textContent.replace(/\\s/g,'')]);return JSON.stringify(actual)===JSON.stringify(expected)})()",
+            "expected": "Every displayed historical date/rounded price matches the complete current API, descending numeric price/newest ties; raw Decimal snapshot audited separately and changing source populations retained; source-link label is excluded from the numeric cell text"
           },
           {
             "id": "PRD-02",

@@ -21,7 +21,7 @@ export const MONTHS = [
 export function fold(s: string) {
   return s
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\p{M}/gu, "")
     .toLowerCase()
     .trim();
 }

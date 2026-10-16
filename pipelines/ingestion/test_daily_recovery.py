@@ -232,6 +232,28 @@ class MaterializedDailyRecovery(unittest.TestCase):
 
         self.assertEqual(native(books[0]), native(books[1]))
 
+    @unittest.skipUnless(
+        (FIXTURES / "mayoristas_anexo_dic_6_2012.xls").exists(),
+        "Counterpart fixtures unavailable",
+    )
+    def test_correctly_dated_identical_counterparts_publish_their_native_dates(self):
+        for name, day in (
+            ("mayoristas_anexo_dic_6_2012.xls", date(2012, 12, 6)),
+            ("mayoristas_julio_15_2013.xls", date(2013, 7, 15)),
+            ("mayoristas_mayo_21_2013.xls", date(2013, 5, 21)),
+            ("mayoristas_junio_10_2014.xls", date(2014, 6, 10)),
+        ):
+            with self.subTest(name=name):
+                path = FIXTURES / name
+                result = recovery.parse_daily(path.read_bytes(), day)
+                self.assertEqual({r[2] for r in result["rows"]}, {day})
+                self.assertEqual(
+                    {r[0]: r[6] for r in result["rows"]}, original_price_cells(path)
+                )
+                self.assertEqual(result["date_resolutions"], [])
+                with self.assertRaises(worker.SourceDateMismatch):
+                    recovery.parse_daily(path.read_bytes(), date(2014, 1, 1))
+
     def test_october15_heading_typo_does_not_turn_it_into_september_data(self):
         october = Path(__file__).parent / "testdata/mayoristas_octubre_15_2014.xls"
         bulletin = Path(__file__).parent / "testdata/mayoristas_octubre_15_2014.pdf"

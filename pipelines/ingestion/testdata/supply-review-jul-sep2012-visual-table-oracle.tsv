@@ -1,0 +1,11 @@
+physical_page	cuadro	market	prior_period	current_period	prior_t	current_t	change_percent
+4	1	Bogotá, D. C., Corabastos	2012-07	2012-08	133174	139549	4.8
+4	1	Medellín, Central Mayorista de Antioquia	2012-07	2012-08	76352	60224	-21.1
+4	1	Cali, Cavasa	2012-07	2012-08	18780	20451	8.9
+4	1	Cali, Santa Helena	2012-07	2012-08	12858	16062	24.9
+4	1	Total	2012-07	2012-08	241164	236287	-2.0
+6	3	Bogotá, D. C., Corabastos	2012-08	2012-09	139549	120979	-13.3
+6	3	Medellín, Central Mayorista de Antioquia	2012-08	2012-09	60224	63900	6.1
+6	3	Cali, Cavasa	2012-08	2012-09	20451	19004	-7.1
+6	3	Cali, Santa Helena	2012-08	2012-09	16062	14514	-9.6
+6	3	Total	2012-08	2012-09	236287	218396	-7.6

@@ -74,6 +74,7 @@ test("generic photos disclose different cultivars, species, and commercial packs
   for (const [name, key, caveat] of [
     ["Aceite girasol", "sunflower-oil-unbranded", "refinado"],
     ["Aceite soya", "soybean-oil-unbranded", "laboratorio"],
+    ["Aceite vegetal Palma", "palm-oil-unbranded", "presentación"],
     ["Ají topito dulce", "aji-dulce", "no acredita la variedad topito"],
     ["Ahuyamín (Sakata)", "squash-moschata", "no acredita el cultivar"],
     ["Calabaza", "squash-moschata", "no acredita el cultivar"],
@@ -108,4 +109,58 @@ test("named fish use credited subject photos with presentation caveats", () => {
     expect(photo.alt).toContain("ilustrativa");
   }
   expect(photoFor("Mariscos otros", "Pescados").key).toBe("produce-neutral");
+});
+
+test("named flower families use credited photos without claiming the quoted variety", () => {
+  for (const [name, key] of [
+    ["Clavel · Sel red", "carnation-cut"],
+    ["Miniclavel · Assorted Colors", "carnation-cut"],
+    ["Crisantemo · STANDARD long", "chrysanthemum-cut"],
+    ["Chrysanthemums · Disbud Spider Pink", "chrysanthemum-cut"],
+    ["Lilies · Asiatic Type long", "lily-cut"],
+    ["Lilium (Lily) · ORIENTAL TYPE long", "lily-cut"],
+    ["Tulips · long", "tulip-cut"],
+    ["Tulipa (Tulip) · FRENCH TYPE ASSORTED COLORS extra long", "tulip-cut"],
+    ["Hortensia · Various Varieties Blue long", "hydrangea-cut"],
+    ["Alstroemeria · Assorted Colors long", "alstroemeria-cut"],
+    ["Gerbera · Large", "gerbera-cut"],
+    ["Cala · STANDARD TYPE assorted colors long", "calla-cut"],
+    ["Calla (Zantedeschia) · White long", "calla-cut"],
+    ["Limonium · SINUATA long", "statice-cut"],
+    ["Statice (Limonium) · Caspia long", "statice-cut"],
+    ["Peony · Semi-Double Type long", "peony-cut"],
+    ["Paeonia (Peony) · CORAL long", "peony-cut"],
+    ["Astilbe · RED VARIETIES", "astilbe-cut"],
+    ["Liatris · 60cm", "liatris-cut"],
+  ]) {
+    const photo = photoFor(name);
+    expect(photo.key).toBe(key);
+    expect(photo.alt).toContain("la variedad");
+    expect(photo.alt).toContain("la longitud");
+  }
+  expect(photoFor("Pompons · long").key).toBe("produce-neutral");
+  for (const name of ["Misc. Fall Items · Ornamental Pepper long", "Bouvardia · long"]) {
+    expect(photoFor(name, "Flores").key).toBe("produce-neutral");
+  }
+  expect(photoFor("Limón común").key).toBe("lime");
+  expect(photoFor("Uva red globe").key).toBe("grape");
+  expect(photoFor("Uvaredglobenacional").key).toBe("grape");
+  expect(photoFor("Ñame espino").key).toBe("yam");
+});
+
+
+test("catalog aliases preserve food subjects and exclude nonfish seafood", () => {
+  for (const [name, key] of [
+    ["Ají dulce", "aji-dulce"],
+    ["Colifl or", "cauliflower"],
+    ["Boca Chico", "bocachico"],
+    ["Carne res, bola de brazo", "beef"],
+    ["Carne bovina · referencia de importación", "beef"],
+    ["Rose, Garden Hybrids · long", "rose-colombia"],
+  ]) expect(photoFor(name).key).toBe(key);
+  for (const name of ["Almejas con concha", "Calamar anillos", "Calamaranillos", "Cazuela de mariscos (paquete)", "Palmitos de mar"]) {
+    expect(photoFor(name, "Pescados").key).toBe("produce-neutral");
+  }
+  expect(photoFor("Salmón, filete congelado", "Pescados").alt).toContain("no identifica la especie, el corte");
+  expect(photoFor("Carne res, pecho").alt).toContain("no identifica el corte");
 });

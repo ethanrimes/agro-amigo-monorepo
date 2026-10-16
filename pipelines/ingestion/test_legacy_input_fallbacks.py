@@ -496,7 +496,7 @@ class InputPDFStageVersionTests(unittest.TestCase):
             ).fetchall()
 
     def test_latest_pdf_version_supersedes_older_while_native_rows_remain(self):
-        with patch.object(pdf_sources, "INPUT_PDF_VERSION", "inputs-pdf-test-next"):
+        with patch.object(inputs, "input_pdf_version_for_document", return_value="inputs-pdf-test-next"):
             rows = self.stage(
                 [
                     ("inputs-pdf-v3", 30, "dane-inputs-pdf"),

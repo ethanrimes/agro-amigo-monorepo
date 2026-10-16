@@ -116,10 +116,12 @@ check('recent scope and absent filters preserve existing API semantics without f
 
 check('history uses covering indexes while only the selected month fetches detailed rows', async () => {
   const plans = [];
-  for (const [product, market, index] of [
-    ['', 'market-1', 'supply_market_history_cover'],
-    ['product-1', '', 'supply_product_history_cover'],
-    ['product-1', 'market-1', 'supply_product_history_cover'],
+  for (const [product, market, indexes] of [
+    ['', 'market-1', ['supply_market_history_cover']],
+    ['product-1', '', ['supply_product_history_cover']],
+    // Both predicates are selective and both covering indexes contain every
+    // column needed for the history aggregate. The planner may choose either.
+    ['product-1', 'market-1', ['supply_product_history_cover', 'supply_market_history_cover']],
   ]) {
     const query = supplyQueries(product, market, all).history;
     const plan = (await db.query('EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) ' + query.text, query.values)).rows[0]['QUERY PLAN'][0];
@@ -128,7 +130,7 @@ check('history uses covering indexes while only the selected month fetches detai
     visit(plan.Plan);
     const scan = nodes.find((node) => node['Node Type'] === 'Index Only Scan');
     assert.ok(scan, JSON.stringify(plan));
-    assert.equal(scan['Index Name'], index);
+    assert.ok(indexes.includes(scan['Index Name']), JSON.stringify(plan));
     assert.equal(scan['Heap Fetches'], 0);
     assert.equal(plan.Plan['Actual Rows'], 165);
     plans.push({ product, market, plan });

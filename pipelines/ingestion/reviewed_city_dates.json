@@ -1,0 +1,376 @@
+{
+  "format": 1,
+  "reason": "Exact retained PDF dates reviewed against printed headings and complete native price grids. DANE ZIP URLs say 2021; these exact PDFs print 2022. Preserve parent source-date discrepancies in review. No generic date exception.",
+  "archives": [
+    {
+      "archive_id": "dfef820409639dfe430470973fd3e4f9d21f6cbbcf7673b013fb069af0f6cb64",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-02-02-2021.zip",
+      "archive_day": "2021-02-02",
+      "members": [
+        {
+          "entry_name": "sipsa-02-02-2021/Barranquilla, Barranquillita 2-2-2022.pdf",
+          "document_id": "39bcd2beb203db5451fc3837657b405d9d192d734a0c665db5f829ae6e86da43",
+          "printed_day": "2022-02-02",
+          "market_name": "Barranquilla, Barranquillita",
+          "rows": 114,
+          "native_rows_sha256": "b75061abcd7ac4577e77fb93004b7ca72d9c90908018c3cf76029cfef983e035"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Barranquilla, Granabastos 2-2-2022.pdf",
+          "document_id": "3ab1858fcbed8717e80d4a9fd61b5c35e269c8046d4e9b2b424ff2a1a76c8fc7",
+          "printed_day": "2022-02-02",
+          "market_name": "Barranquilla, Granabastos",
+          "rows": 77,
+          "native_rows_sha256": "b8b342b9205d1d0c25f7c153b220f463d6facddac0e20225afd5bee7a0550137"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Bogotá, Corabastos 2-2-2022.pdf",
+          "document_id": "219ba0ec56958d141d17e5e02466587c9ac9e643ccae43f60d8305b7dd2915d0",
+          "printed_day": "2022-02-02",
+          "market_name": "Bogotá, Corabastos",
+          "rows": 181,
+          "native_rows_sha256": "44594b8efe4da0e33a0afcc7279abb9a249f9c4b01ba2489042328c805695f9c"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Cartagena, Bazurto 2-2-2022.pdf",
+          "document_id": "67684dffface4eacf0127b61fbdbb277bba42bc0f80332c6e689f03e69ec848a",
+          "printed_day": "2022-02-02",
+          "market_name": "Cartagena, Bazurto",
+          "rows": 97,
+          "native_rows_sha256": "cac933265440f1ad1219b30319763fb7ded43ca2dddbaf2ca8da5292420df2be"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Medellín, CMA 2-2-2022.pdf",
+          "document_id": "dd18df986796311d8a4f6ec9b057840e0ba494337e6406cbba683c098c272e63",
+          "printed_day": "2022-02-02",
+          "market_name": "Medellín, CMA",
+          "rows": 212,
+          "native_rows_sha256": "fb694cb9260b45b6288cfbad88fdc47d5d8aaa5a4eca4b3998136384ab7cd717"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Montería, Mercado del Sur 2-2-2022.pdf",
+          "document_id": "b0630710cca4ebe6cfd336a2e19f218226d21f8e6d5aa1a4396ec3cb0f18b5b0",
+          "printed_day": "2022-02-02",
+          "market_name": "Montería, Mercado del Sur",
+          "rows": 122,
+          "native_rows_sha256": "481c33456eca3214e9e6d99e7be25a6afde83630b00dfcffa91a962aae56874d"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Pereira, Mercasa 2-2-2022.pdf",
+          "document_id": "5080d8f99b7a057df79ba5883e3005512eae357b2df636e006bb0ddab8ed91be",
+          "printed_day": "2022-02-02",
+          "market_name": "Pereira, Mercasa",
+          "rows": 65,
+          "native_rows_sha256": "43ad4685f7e04bfb14df305f232f105d42d08e3f9cd09ada7fbef84d2dd31b0d"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Popayán, Plaza de Mercado del Barrio Bolívar 2-2-2022.pdf",
+          "document_id": "59bc549e137f82ed5c963722bd377b889f396c0aa96639684853b7ab2530ec50",
+          "printed_day": "2022-02-02",
+          "market_name": "Popayán, Plaza de Mercado del barrio Bolívar",
+          "rows": 85,
+          "native_rows_sha256": "65aa10e951dac8a818aa395d996c567f211281c8cfbf86b72706f78969de7eb6"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Santa Marta 2-2-2022.pdf",
+          "document_id": "9566bc1b83733a90cba9b6bb9f45c36220f06bfab60afcd3db76710d8c818627",
+          "printed_day": "2022-02-02",
+          "market_name": "Santa Marta",
+          "rows": 17,
+          "native_rows_sha256": "4a1bbfd35bfc97ba67a004e8af3d678914446c8a50bfc03dfb5a3eefd9177d35"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Sincelejo, Nuevo Mercado 2-2-2022.pdf",
+          "document_id": "6b5337537e40a5374a16128f2a80ea9d17c3d90d309d511018c1fdc712b7801b",
+          "printed_day": "2022-02-02",
+          "market_name": "Sincelejo, Nuevo Mercado",
+          "rows": 103,
+          "native_rows_sha256": "6905134368ff865512f77c16918e39d3739a1bc4cb0596e67c0947feb229ae93"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Valledupar, Mercabastos 2-2-2022.pdf",
+          "document_id": "ec25d35f0a8440d5a9f92c14e28f956501ef12ab5c8c13cbba2bcbe72b9f92d2",
+          "printed_day": "2022-02-02",
+          "market_name": "Valledupar, Mercabastos",
+          "rows": 38,
+          "native_rows_sha256": "3f94b8db4bab14fb0bb4bc42d32877969cb2efa19e5b54c7f4f5af78ec549d6b"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Valledupar, Mercado Nuevo 2-2-2022.pdf",
+          "document_id": "8a907c5e2ac6aedab47fd253dbc2f2bd9810386f4e0ec41670a0e5835e279f37",
+          "printed_day": "2022-02-02",
+          "market_name": "Valledupar, Mercado Nuevo",
+          "rows": 82,
+          "native_rows_sha256": "df26963bf63540d43492a28cc546b69b4ac35fc1603a4028bcc044a5d644e7f7"
+        },
+        {
+          "entry_name": "sipsa-02-02-2021/Villavicencio, CAV 2-2-2022.pdf",
+          "document_id": "4b229f716725b65ea44256e285354923fc1fee6114641286277fbac2aebb3131",
+          "printed_day": "2022-02-02",
+          "market_name": "Villavicencio, CAV",
+          "rows": 131,
+          "native_rows_sha256": "232a57ddde190acddd8f895fb2bf44fb424a30ffb49650fa00dc31b042c29cb9"
+        }
+      ]
+    },
+    {
+      "archive_id": "468efb1cf7eeea51ac1d81aae094e6ba658b302c44f1494109b5e55ac0085472",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-09-02-2021.zip",
+      "archive_day": "2021-02-09",
+      "members": [
+        {
+          "entry_name": "Bogotá, Corabastos 9-2-2022.pdf",
+          "document_id": "6270d0c2e7a44ab8cf1c0c64da0b4150c0f68249555352ad599145414ff46ba9",
+          "printed_day": "2022-02-09",
+          "market_name": "Bogotá, D.C., Corabastos",
+          "rows": 202,
+          "native_rows_sha256": "b38dc40ec4a924d7376530901913c2100d0ce6ab3bb2c87d717448da1a8432c1"
+        },
+        {
+          "entry_name": "Cartagena, Bazurto 9-2-2022.pdf",
+          "document_id": "8679a6c4a16104f7a5745fa17bcf946d03e0f66313009efcf371b1ace7a2b560",
+          "printed_day": "2022-02-09",
+          "market_name": "Cartagena, Bazurto",
+          "rows": 98,
+          "native_rows_sha256": "da24bb30b59811bfb9df04bbcb35ffbfeab60ef4f52419d1fce259ec7734cb44"
+        },
+        {
+          "entry_name": "Medellín, CMA 9-2-2022.pdf",
+          "document_id": "8343c0147967b718a011b79d351b48c448a3bb87bfff976e1961e39d0c98497f",
+          "printed_day": "2022-02-09",
+          "market_name": "Medellín, Central Mayorista de Antioquia",
+          "rows": 210,
+          "native_rows_sha256": "4dd13540e137606c9990ac78ef6ac35ea620abacd5465f87a7a407135dd6261f"
+        },
+        {
+          "entry_name": "Montería, Mercado del Sur 9-2-2022.pdf",
+          "document_id": "c2eb2db4f6ea82f9fa9b7809a15d1c15041d20220081f3f0f01fdb62e3355b40",
+          "printed_day": "2022-02-09",
+          "market_name": "Montería, Mercado del Sur",
+          "rows": 121,
+          "native_rows_sha256": "83e8aca963fbcb813dd8633f1ab1ca5a8eefb22c05a698f595f02efaf4e523b7"
+        },
+        {
+          "entry_name": "Pereira, Mercasa 9-2-2022.pdf",
+          "document_id": "a3eec862d542b72f7d021a291b1753758986b874e92b46ea28cd23699cf4c101",
+          "printed_day": "2022-02-09",
+          "market_name": "Pereira, Mercasa",
+          "rows": 62,
+          "native_rows_sha256": "9598e233c1929f891cdde4cfa2e1f10e066f4209340631baf9a694365e2f29f5"
+        },
+        {
+          "entry_name": "Popayán, Mercado del Barrio Bolívar 9-2-2022.pdf",
+          "document_id": "50e7a650c713720c55ea05857125002d86489a4971062772a857ed9db455fbe0",
+          "printed_day": "2022-02-09",
+          "market_name": "Popayán, Plaza de mercado del barrio Bolívar",
+          "rows": 85,
+          "native_rows_sha256": "2cc6936d0def2bfbcf82bc2e850abe0d1e63fad2163c0f8163f576211d3fbf69"
+        },
+        {
+          "entry_name": "Santa Marta  9-2-2022.pdf",
+          "document_id": "fb96efc96d35c670977040395f0585b98d09965d8e4a70a180aefc045b1ec231",
+          "printed_day": "2022-02-09",
+          "market_name": "Santa Marta (Magdalena)",
+          "rows": 18,
+          "native_rows_sha256": "d5702ba0ba4f17ffd8d5501149fdda859813bb7bf1e92dd6f6c8807cd6dd04b9"
+        },
+        {
+          "entry_name": "Sincelejo Nuevo Mercado 9-2-2022.pdf",
+          "document_id": "35122ec0ca9b78f4ffa268f91c80afabb9c780d256ff4bf73573b2d6bb2d6e0b",
+          "printed_day": "2022-02-09",
+          "market_name": "Sincelejo, Nuevo Mercado",
+          "rows": 104,
+          "native_rows_sha256": "7fa5030ea59e1d1156c8ec3974e764ccf5ba9f547556ac1bad961f712c94f61e"
+        },
+        {
+          "entry_name": "Valledupar, Mercabastos  9-2-2022.pdf",
+          "document_id": "2e0956d61461cd12207632e251770146437ae6e5dcc572480d78d15927a42c4c",
+          "printed_day": "2022-02-09",
+          "market_name": "Valledupar, Mercabastos",
+          "rows": 36,
+          "native_rows_sha256": "8254b2683b60f449cf0206d10df5795c3649c7dd8c0a06d045e609000f272b3e"
+        },
+        {
+          "entry_name": "Valledupar, Mercado Nuevo 9-2-2022.pdf",
+          "document_id": "1df6b3c3a6a5e57962aeaf23ce60ce6626c2bc6342ac2cb621a02f669023c12f",
+          "printed_day": "2022-02-09",
+          "market_name": "Valledupar, Mercado Nuevo",
+          "rows": 83,
+          "native_rows_sha256": "c0261419b4ee8e8945c6a99708648efd571afa1e668efbeb059ad7dc29f8bbc3"
+        },
+        {
+          "entry_name": "Villavicencio, CAV 9-2-2022.pdf",
+          "document_id": "a968b5ebef6ecff5f5a3fb20796ea927660ee6051de02a626bad4dbb5e2ac0a9",
+          "printed_day": "2022-02-09",
+          "market_name": "Villavicencio, CAV",
+          "rows": 132,
+          "native_rows_sha256": "17f9f336f3cdbc4719257345205ed683f162718f5771d9f4f6bbf123af097459"
+        },
+        {
+          "entry_name": "Barranquilla, Barranquillita 9-2-2022.pdf",
+          "document_id": "85253ee8710e685ddfd68eadaefd45741373a866aa11ff7627f36f8098928a2a",
+          "printed_day": "2022-02-09",
+          "market_name": "Barranquilla, Barranquillita",
+          "rows": 117,
+          "native_rows_sha256": "bfc7f21af0054c6e70ba9c5058fdae11eb1a7bead3762f4c2053d288fd9e0444"
+        }
+      ]
+    },
+    {
+      "archive_id": "2ca39b0eacb32edb497e0be527f93e581de9edecdd5364cda7b7ba7b381a1857",
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/sipsa-10-02-2021.zip",
+      "archive_day": "2021-02-10",
+      "members": [
+        {
+          "entry_name": "Armenia, Mercar 10-2-2022.pdf",
+          "document_id": "f62465f215aceffbb1bce6c5581965cf1a54b7b292bd66f22bea3658f4701e31",
+          "printed_day": "2022-02-10",
+          "market_name": "Armenia, Mercar",
+          "rows": 59,
+          "native_rows_sha256": "7418fadb8b779fe367dc8f0535460645decc2eda1efa5e155826629b67f18421"
+        },
+        {
+          "entry_name": "Bogotá, Corabastos 10-2-2022.pdf",
+          "document_id": "0b72e912a199590ea592abcba8cf7097479da59fa66a1c115ae73f1144fa8694",
+          "printed_day": "2022-02-10",
+          "market_name": "Bogotá, D.C., Corabastos",
+          "rows": 200,
+          "native_rows_sha256": "4e6810d096e61b6a914ae13e26bf63f514b4a314c04af756e739bbdd09566346"
+        },
+        {
+          "entry_name": "Bucaramanga, Centroabastos  10-2-2022.pdf",
+          "document_id": "30d38d93916208a45c0fe0f977003a5089c8d472157286a94206af71f4c6c430",
+          "printed_day": "2022-02-10",
+          "market_name": "Bucaramanga, Centroabastos",
+          "rows": 156,
+          "native_rows_sha256": "0effb9da6b812268e7143ce1b07b49feb495d86d808afea526654c07e23198ff"
+        },
+        {
+          "entry_name": "Cali, Cavasa 10-2-2022.pdf",
+          "document_id": "5edb8c5218cad786fe1b2ccdf644e2abdc1f81b6966940b520e7760dfdc7a0e4",
+          "printed_day": "2022-02-10",
+          "market_name": "Cali, Cavasa",
+          "rows": 126,
+          "native_rows_sha256": "a6ce108b8c8ce0b6063f520c9ba44d149846b98d6b13c2e3f274eb14d6ac8d00"
+        },
+        {
+          "entry_name": "Cúcuta, Cenabastos  10-2-2022.pdf",
+          "document_id": "9f31ab43abf35c430e99dfebac82986c060db6da129581bab1f94895569db30e",
+          "printed_day": "2022-02-10",
+          "market_name": "Cúcuta, Cenabastos",
+          "rows": 102,
+          "native_rows_sha256": "445474b1895a51a5e775d0dc8f84d8dfee3a24a3dd399b4ddfbff4ef171db84f"
+        },
+        {
+          "entry_name": "Manizales, Centro Galerias  10-2-2022.pdf",
+          "document_id": "493ab1e4c88703671a00df4454f83d5998008a1273c1d8cb8c57425eb5277f7f",
+          "printed_day": "2022-02-10",
+          "market_name": "Manizales, Centro Galerías",
+          "rows": 110,
+          "native_rows_sha256": "5349ac21aac980d1408dad000af912492f7732f684a8a962539c8978cf42e647"
+        },
+        {
+          "entry_name": "Medellín CMA 10-2-2022.pdf",
+          "document_id": "e458f4d3f1982b1c968cbb0065497e369c295bc7662ad13a9a3b3f4da884104e",
+          "printed_day": "2022-02-10",
+          "market_name": "Medellín, Central Mayorista de Antioquia",
+          "rows": 324,
+          "native_rows_sha256": "935dd045c3ab924644f961f4932d649bc9373905c9873a79f8781e76087ce85b"
+        },
+        {
+          "entry_name": "Neiva, Suarbastos 10-2-2022.pdf",
+          "document_id": "43ebf9389cf5831258e3f6363518e917b59b7bfa3e2b384ba0f5684d634f1905",
+          "printed_day": "2022-02-10",
+          "market_name": "Neiva, Surabastos",
+          "rows": 102,
+          "native_rows_sha256": "cdd9a7b89e42e05db756c9bfa2d33b4e6bc14fad07c85f88ac87871e1678efa2"
+        },
+        {
+          "entry_name": "Pasto, El Potrerillo 10-2-2022.pdf",
+          "document_id": "571748184917a869ecbb83151ade3a8d63da11f50f85127437638a43bebde038",
+          "printed_day": "2022-02-10",
+          "market_name": "Pasto, El Potrerillo",
+          "rows": 90,
+          "native_rows_sha256": "926dcd9c7106de152f01c1caba0616d8945a6783ded19ff092fe381942e79a8c"
+        },
+        {
+          "entry_name": "Pereira, La 41 10-2-2022.pdf",
+          "document_id": "145fe74b740d5d396c738f2fa795cfa6cc813c77507ea4ab29aa502d1f96ed7c",
+          "printed_day": "2022-02-10",
+          "market_name": "Pereira, La 41",
+          "rows": 51,
+          "native_rows_sha256": "2002b703ecbe7d02d20ef5b25581a92ff97ff75033baab24793d30754b93f487"
+        },
+        {
+          "entry_name": "Pereira, Mercasa 10-2-2022.pdf",
+          "document_id": "6cf3e44ccc5ba926be40ba57c5771f98a87c8fbf43a78ffb04d4604fcd17e6ea",
+          "printed_day": "2022-02-10",
+          "market_name": "Pereira, Mercasa",
+          "rows": 98,
+          "native_rows_sha256": "0db887d9698af128741d20540cbf801aac6c20e81a3cf50ba973d320fee20835"
+        },
+        {
+          "entry_name": "Santa Marta 10-2-2022.pdf",
+          "document_id": "1be4361c88d1c440ae4bb196bfd42f69f3addf8b6975d74c63857e29acc29e8a",
+          "printed_day": "2022-02-10",
+          "market_name": "Santa Marta (Magdalena)",
+          "rows": 61,
+          "native_rows_sha256": "c347691217289cf35e151dce1398f1266546a97d690a1d2c56a05ed4c8aaf199"
+        },
+        {
+          "entry_name": "Tunja, Complejo de Servicios del Sur-10-2-2022.pdf",
+          "document_id": "01ef85c337ac502fe9ad34233c8e360db246a6600cb228ba52fcd79699b323ad",
+          "printed_day": "2022-02-10",
+          "market_name": "Tunja, Complejo de Servicios del Sur",
+          "rows": 74,
+          "native_rows_sha256": "7e884d42a709bd94e28ac1810534ddbd143d43734e08ba751e86d9ade25de502"
+        }
+      ]
+    },
+    {
+      "archive_id": "51c4a6fdf9440ffdf95daab2c8f81afe092f956f366dea493181604ef784855b",
+      "url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-20oct2023.zip",
+      "archive_day": "2023-10-20",
+      "members": [
+        {
+          "entry_name": "Villeta, 20-10-2023.pdf",
+          "document_id": "0252263a3e19f9425aba43095bb0f4ad2324ad84741a42a2749626c6467f4459",
+          "printed_day": "2023-10-21",
+          "market_name": "Villeta (Cundinamarca)",
+          "rows": 5,
+          "native_rows_sha256": "f569099c50553f54dcffc514d2b4ec4982fbe21e554ba19caf07c582dde4612c"
+        }
+      ]
+    },
+    {
+      "archive_id": "584bc4da5ed1c9f5fa44cf93f7a2e1a8c2e2606616aa1bb7024e99db55e07dda",
+      "url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-30mar2024.zip",
+      "archive_day": "2024-03-30",
+      "members": [
+        {
+          "entry_name": "bol-SIPSADiario-regionales-30mar2024.pdf",
+          "document_id": "3844b9fa747d8db919bfb3a56b9349f9ec799ca77cadbb4f2a13c25347d8ffd0",
+          "printed_day": "2024-03-31",
+          "market_name": "Bogotá, D.C., Corabastos",
+          "rows": 176,
+          "native_rows_sha256": "f33d9649941307a4e51f48530a5c128d6ce896fde9e6594a7ce429381dd0c49a"
+        }
+      ]
+    },
+    {
+      "archive_id": "563c1c05f36a3db36404d85ddefe974c595d0c4833ec8b485c14bde7cf7bf785",
+      "url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-17may2024.zip",
+      "archive_day": "2024-05-17",
+      "members": [
+        {
+          "entry_name": "Villeta (Cundinamarca)-18-05-2024.pdf",
+          "document_id": "9f354bea8761fc34d298fc67c64edf387cb14c5e9461c4ae52bc9172b22105e9",
+          "printed_day": "2024-05-18",
+          "market_name": "Villeta (Cundinamarca)",
+          "rows": 4,
+          "native_rows_sha256": "c7ff04b52dd455773874cfa17b0e2dff5f075aa21bee1428b05a94c26d1554a2"
+        }
+      ]
+    }
+  ]
+}

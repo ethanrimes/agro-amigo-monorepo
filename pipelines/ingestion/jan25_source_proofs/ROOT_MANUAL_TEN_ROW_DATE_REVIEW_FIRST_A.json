@@ -1,0 +1,156 @@
+{
+  "reviewed_at": "2026-10-16T06:26:33.206714+00:00",
+  "method": "Root independently physically read whole source page; manually transcribed ten literal price rows from pixels, not parser output",
+  "page_png_sha256": "61e801a3937acbb3d999831594a3af02946df0221f26bfc82ec99c9175328647",
+  "parent_did": "503a044d44069e1bbb39d18f5082c86cc1489ad697c823c1345920cda56b8a2b",
+  "entry": "Peñol, 25-1-2024.pdf",
+  "pdf_did": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+  "archive_day": "2024-01-25",
+  "printed_measurement_day": "2024-01-23",
+  "printed_market": "Peñol (Antioquia)",
+  "printed_round1": "15:30–17:30",
+  "page_count": 1,
+  "decision": "Allow a PRIVATE exact-source date adjudication using printed2024-01-23 for these10rows; neverassignJan25, inferpublisherintent,changeoriginals,orapplythisexceptiontootherbytes/URLs/rosters. Existingcachedpaired-read proof+whole-sourceidentity+fullrowvectors mustpass; rootreviewbeforemaintainedintegration/production. MixedPDFmeasurementdates arevalid ifexplicitlyverified, aswithalreadyreviewedNeiva. No independentDANEexplanationofwrongmemberfilenameisclaimed.",
+  "rows": [
+    {
+      "product": "Limón mandarino",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1400,
+      "round1_max_COP": 1500,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "product": "Gulupa",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1200,
+      "round1_max_COP": 1200,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "product": "Tomate de árbol",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1800,
+      "round1_max_COP": 1800,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "product": "Plátano guineo",
+      "presentation": "Racimo",
+      "quantity": 15,
+      "unit": "Kilogramo",
+      "round1_min_COP": 13000,
+      "round1_max_COP": 14000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Tuberculos, raices y platanos",
+        "PlÁtano"
+      ]
+    },
+    {
+      "product": "Papa capira",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1800,
+      "round1_max_COP": 2000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "product": "Papa nevada",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 2200,
+      "round1_max_COP": 2200,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "product": "Fríjol verde cargamanto",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 3000,
+      "round1_max_COP": 3200,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Leguminosas"
+      ]
+    },
+    {
+      "product": "Chócolo mazorca",
+      "presentation": "Carga",
+      "quantity": 120,
+      "unit": "Kilogramo",
+      "round1_min_COP": 130000,
+      "round1_max_COP": 140000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "product": "Pimentón",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 3200,
+      "round1_max_COP": 3500,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "product": "Tomate chonto regional",
+      "presentation": "Caja de cartón",
+      "quantity": 10,
+      "unit": "Kilogramo",
+      "round1_min_COP": 28000,
+      "round1_max_COP": 30000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Tomates"
+      ]
+    }
+  ]
+}

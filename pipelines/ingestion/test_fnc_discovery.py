@@ -11,11 +11,21 @@ from . import worker
 
 class CoffeeDiscoveryTests(unittest.TestCase):
     def discovered(self, links):
+        class EmptyAssets:
+            def execute(self, *_args):
+                return self
+
+            def fetchall(self):
+                return []
+
+            def fetchone(self):
+                return None
+
         with (
             patch.object(worker, "links", return_value=links),
             patch.object(worker, "queue") as queue,
         ):
-            worker.discover_coffee(object())
+            worker.discover_coffee(EmptyAssets())
         return {(c.args[1], c.args[2]) for c in queue.call_args_list}
 
     def test_all_official_workbooks_and_mutable_pdf_are_queued(self):
@@ -56,3 +66,15 @@ class CoffeeDiscoveryTests(unittest.TestCase):
         self.assertEqual(sum(kind == "coffee" for _, kind in found), 2)
         self.assertTrue(any("Septiembre-2026-1.xlsx" in url for url, _ in found))
         self.assertTrue(any("Agosto-2026.xlsx" in url for url, _ in found))
+
+    def test_current_official_index_links_valid_september_filename(self):
+        fixture = Path("artifacts/qa-resumed-20261001/old-worker-three-errors-20261003/fnc-index.html")
+        if not fixture.exists():
+            self.skipTest("Current official FNC index fixture not downloaded")
+        links = [(a.get_text(" ", strip=True), a["href"])
+                 for a in BeautifulSoup(fixture.read_bytes(), "html.parser").select("a[href]")]
+        found = self.discovered(links)
+        self.assertIn((
+            "https://federaciondecafeteros.org/wp-content/uploads/2026/09/Precios-area-y-produccion-de-cafe-Septiembre-2026.xlsx",
+            "coffee"), found)
+        self.assertFalse(any("Septiembre-2026-1.xlsx" in url for url, _ in found))

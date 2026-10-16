@@ -1,0 +1,363 @@
+{
+  "cases": [
+    {
+      "body_bytes": 2487802,
+      "document_id": "21e7b209bf00c76ca714b3083c7a0604b5ca1e57b316eba2e19efb9ac1e13674",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "fd9e0d6f0b238399e9004e744430aed2a8e796067d16d57af95fdcfc6f9f2abb",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 8843,
+        "status": "failed"
+      },
+      "month": "febrero",
+      "new_raw_rows": 8843,
+      "new_typed_rows": 8843,
+      "new_unresolved_rows": 0,
+      "observed_on": "2013-02-28",
+      "page_count": 84,
+      "publisher": "DANE",
+      "raw_rows": 8843,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_febrero_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_febrero_2013.pdf",
+      "typed_rows": 8843,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_febrero_2013.pdf",
+      "v14_business_vector_sha256_sql": "339e373522aec5c8ff04737795e757870656ca12ce3d04a90e76ba29700c9697"
+    },
+    {
+      "body_bytes": 2450553,
+      "document_id": "1a13ada6199f60b15c94b4b0504330011d29348a9075d14d0562252f9dac9b58",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "b67f070187346795fdde9ccccfa0245b3652bd6e47e90f1549197a271450a57f",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 10101,
+        "status": "failed"
+      },
+      "month": "marzo",
+      "new_raw_rows": 10101,
+      "new_typed_rows": 10101,
+      "new_unresolved_rows": 0,
+      "observed_on": "2013-03-31",
+      "page_count": 96,
+      "publisher": "DANE",
+      "raw_rows": 10101,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_marzo_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_marzo_2013.pdf",
+      "typed_rows": 10101,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_marzo_2013.pdf",
+      "v14_business_vector_sha256_sql": "340affb2a0502fdc6341772739b024dbb6de017b1cf477daeccb8532af53fad2"
+    },
+    {
+      "body_bytes": 5362682,
+      "document_id": "8a7e745f864c99151e0d2aa98b67e4575f5f600e20ad13a08902cf46142e0d93",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "7e1d7ae31656fb8457aea0c1735b596153448a1e5a0d5b04d5c4a23474b670d1",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 8923,
+        "status": "failed"
+      },
+      "month": "abril",
+      "new_raw_rows": 8923,
+      "new_typed_rows": 8897,
+      "new_unresolved_rows": 26,
+      "observed_on": "2013-04-30",
+      "page_count": 84,
+      "publisher": "DANE",
+      "raw_rows": 8923,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_abril_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_abril_2013.pdf",
+      "typed_rows": 8897,
+      "unresolved_rows": 26,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_abril_2013.pdf",
+      "v14_business_vector_sha256_sql": "a5e73cee5c14ff65c266e54c73013f3443d3d9325d13826286b4504b39cfc4da"
+    },
+    {
+      "body_bytes": 2542752,
+      "document_id": "8a75439242cf7c532409a7bf53a2207f8f7c1f9b4f311338f372c62276549566",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "25b16108cb89fc24b737f0b4637465ddfa33af75e8ae83855801014d4c8f57e8",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 10711,
+        "status": "failed"
+      },
+      "month": "mayo",
+      "new_raw_rows": 10711,
+      "new_typed_rows": 10711,
+      "new_unresolved_rows": 0,
+      "observed_on": "2013-05-31",
+      "page_count": 96,
+      "publisher": "DANE",
+      "raw_rows": 10711,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_mayo_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_mayo_2013.pdf",
+      "typed_rows": 10711,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_mayo_2013.pdf",
+      "v14_business_vector_sha256_sql": "a986d5f5c500001e995c442fb2a06934c9783e7d221c659cc0eb6ed9704948df"
+    },
+    {
+      "body_bytes": 2445766,
+      "document_id": "26c8a7fc1ffe2c9252becc64055f8abf9be89e13e99668888f394d84a70db390",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "ba71aad4128404230876c09a4e5aee5206dd25624997752a5bd90fd661129755",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 9860,
+        "status": "failed"
+      },
+      "month": "junio",
+      "new_raw_rows": 9860,
+      "new_typed_rows": 9835,
+      "new_unresolved_rows": 25,
+      "observed_on": "2013-06-30",
+      "old_v14_business_vector_sha256_sql": "83606abcc7ab6d597f43fee02cc5ab0643357caae8401d165770abb79eddf19c",
+      "page_count": 92,
+      "publisher": "DANE",
+      "raw_rows": 9860,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_junio_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_junio_2013.pdf",
+      "typed_rows": 9835,
+      "unresolved_rows": 25,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_junio_2013.pdf"
+    },
+    {
+      "body_bytes": 2529454,
+      "document_id": "3861de4e5c36b88e139234b0a6ca6e5d1c4b41b9128d26c748165300f2a9ffd6",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "9af6a13db6647a0a5a5df3544115113075e3efbfeed758dd755b77deac477b52",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 10652,
+        "status": "failed"
+      },
+      "month": "julio",
+      "new_raw_rows": 10652,
+      "new_typed_rows": 10646,
+      "new_unresolved_rows": 6,
+      "observed_on": "2013-07-31",
+      "old_v14_business_vector_sha256_sql": "8a3aeab18b7d39bc0739205b258824ab85a614e818c355cfec31014892a44000",
+      "page_count": 92,
+      "publisher": "DANE",
+      "raw_rows": 10652,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_julio_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_julio_2013.pdf",
+      "typed_rows": 10646,
+      "unresolved_rows": 6,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_julio_2013.pdf"
+    },
+    {
+      "body_bytes": 2513747,
+      "document_id": "36b4ed98022f86790b4e420f8a41f8cec5d13b06f9f0961d2c4ff16ce44a8d4e",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "8e2345ff8bebdefefb9a7dccf531f07fa7f2d701a282ce2d46c75a19c8dc3024",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 10202,
+        "status": "failed"
+      },
+      "month": "agosto",
+      "new_raw_rows": 10202,
+      "new_typed_rows": 10151,
+      "new_unresolved_rows": 51,
+      "observed_on": "2013-08-31",
+      "old_v14_business_vector_sha256_sql": "064bde2a52b8ad640877163c7c7d89bd4464a653b5af8693de1ac1ce7d40592b",
+      "page_count": 92,
+      "publisher": "DANE",
+      "raw_rows": 10202,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_agosto_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_agosto_2013.pdf",
+      "typed_rows": 10151,
+      "unresolved_rows": 51,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_agosto_2013.pdf"
+    },
+    {
+      "body_bytes": 2537238,
+      "document_id": "2141ca9b89046ade49f79b31846831331ef4170c77f6d8923f04bd09bb02c6c0",
+      "expected_added_typed_locators": [
+        "PDF page 47,col 1,y 246.4; inputs-pdf-v17",
+        "PDF page 47,col 1,y 374.4; inputs-pdf-v17",
+        "PDF page 47,col 2,y 270.4; inputs-pdf-v17",
+        "PDF page 47,col 2,y 366.4; inputs-pdf-v17",
+        "PDF page 47,col 2,y 550.4; inputs-pdf-v17",
+        "PDF page 48,col 1,y 323.3; inputs-pdf-v17",
+        "PDF page 48,col 1,y 475.3; inputs-pdf-v17",
+        "PDF page 48,col 1,y 523.3; inputs-pdf-v17",
+        "PDF page 48,col 2,y 267.3; inputs-pdf-v17",
+        "PDF page 49,col 1,y 659.3; inputs-pdf-v17",
+        "PDF page 49,col 2,y 307.3; inputs-pdf-v17",
+        "PDF page 50,col 1,y 163.3; inputs-pdf-v17",
+        "PDF page 50,col 1,y 259.3; inputs-pdf-v17",
+        "PDF page 50,col 1,y 443.3; inputs-pdf-v17",
+        "PDF page 50,col 2,y 491.3; inputs-pdf-v17"
+      ],
+      "expected_added_typed_rows": 15,
+      "expected_new_v17_vector_sha256": "c6ddd065d32ebc49c992d37c16d586fdd216b8e42a37de3ce388120e326af9ef",
+      "expected_old_asset": {
+        "error": "ValueError: Retained input original identity/bytes mismatch",
+        "processor_version": "inputs-pdf-v17",
+        "records": 9295,
+        "status": "failed"
+      },
+      "month": "septiembre",
+      "new_raw_rows": 9310,
+      "new_typed_rows": 9301,
+      "new_unresolved_rows": 9,
+      "observed_on": "2013-09-30",
+      "old_v14_business_vector_sha256_sql": "d690a983859b14a83217c5e4ecc869bc515df2e5900885bf58c4d2fe7342db2a",
+      "page_count": 92,
+      "publisher": "DANE",
+      "raw_rows": 9295,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_sep_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_sep_2013.pdf",
+      "typed_rows": 9286,
+      "unresolved_rows": 9,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_sep_2013.pdf"
+    },
+    {
+      "body_bytes": 2447460,
+      "document_id": "73e73c6951273ff113cd37bb1121858ca990d2cfd836f6fcfc2b30bd0b3278fe",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "37527a14ae715b4533fa9718429660d8dbab879c718e6ba0476cfde74ccafbe9",
+      "expected_old_asset": {
+        "error": "Conflicting source keys retained but excluded from app: 5",
+        "processor_version": "inputs-pdf-v14",
+        "records": 5657,
+        "status": "complete"
+      },
+      "month": "octubre",
+      "new_raw_rows": 5657,
+      "new_typed_rows": 5657,
+      "new_unresolved_rows": 0,
+      "observed_on": "2013-10-31",
+      "old_v14_business_vector_sha256_sql": "5640593cd9ba961f5869be5ef8bdd4c28a7d625fbeaca5c23d4778b6178b1747",
+      "page_count": 56,
+      "publisher": "DANE",
+      "raw_rows": 5657,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_oct_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_oct_2013.pdf",
+      "typed_rows": 5657,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_oct_2013.pdf"
+    },
+    {
+      "body_bytes": 2519711,
+      "document_id": "c1512c726dcacc08e0b6d5cf9f69adf876a0afa782fbdcfb8d15adc40e146a72",
+      "expected_added_typed_locators": [
+        "PDF page 27,col 2,y 171.3; inputs-pdf-v17"
+      ],
+      "expected_added_typed_rows": 1,
+      "expected_new_v17_vector_sha256": "5b9e1b3df5f6c5bd625e383888e364590f4b699bf94ce9e99412135a384848dc",
+      "expected_old_asset": {
+        "error": null,
+        "processor_version": "inputs-pdf-v14",
+        "records": 6109,
+        "status": "complete"
+      },
+      "month": "noviembre",
+      "new_raw_rows": 6110,
+      "new_typed_rows": 6107,
+      "new_unresolved_rows": 3,
+      "observed_on": "2013-11-30",
+      "old_v14_business_vector_sha256_sql": "100f318262f8992192225f215d1d342b5bb87c5f849e896acb4ad54d9cdc652e",
+      "page_count": 64,
+      "publisher": "DANE",
+      "raw_rows": 6109,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_nov_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_nov_2013.pdf",
+      "typed_rows": 6106,
+      "unresolved_rows": 3,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_nov_2013.pdf"
+    },
+    {
+      "body_bytes": 1935343,
+      "document_id": "1eb6cb351a62a47406657e342ee40d5be8eb364e1cc844a210a8572588eee53f",
+      "expected_added_typed_locators": [],
+      "expected_added_typed_rows": 0,
+      "expected_new_v17_vector_sha256": "e6c1093d16c566fa1237dc2efa7d855d4a790eabd9f1ec3a3aa4f52259a2469d",
+      "expected_old_asset": {
+        "error": null,
+        "processor_version": "inputs-pdf-v14",
+        "records": 5506,
+        "status": "complete"
+      },
+      "month": "diciembre",
+      "new_raw_rows": 5506,
+      "new_typed_rows": 5506,
+      "new_unresolved_rows": 0,
+      "observed_on": "2013-12-31",
+      "old_v14_business_vector_sha256_sql": "78c9c2c1b47eeacb37416a34d533bd30d81015fdecdc8b6b7a113e0036bf20d0",
+      "page_count": 60,
+      "publisher": "DANE",
+      "raw_rows": 5506,
+      "source_metadata": {
+        "ingestion_kind": "context-pdf",
+        "original_filename": "insumos_factores_de_produccion_dic_2013.pdf",
+        "retention": "permanent"
+      },
+      "title": "DANE - insumos_factores_de_produccion_dic_2013.pdf",
+      "typed_rows": 5506,
+      "unresolved_rows": 0,
+      "url": "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/insumos_factores_de_produccion_dic_2013.pdf"
+    }
+  ]
+}

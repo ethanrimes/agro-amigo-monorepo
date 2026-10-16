@@ -1,4 +1,7 @@
 /** Immutable originals plus separately retained, auditable display annotations. */
+import { AGRICULTURAL_SOURCE_SCOPE_SQL } from "./source-document-scope";
+import { SOURCE_DOCUMENT_DISPLAY_TITLE_SQL, SOURCE_DOCUMENT_DISPLAY_FILENAME_SQL,
+  SOURCE_DOCUMENT_REVIEWED_FILENAME_SQL } from "./source-document-subjects";
 export const SOURCE_DOCUMENT_EVIDENCE_SQL = `WITH selected AS (
   SELECT id,title,publisher,source_url,media_type,kind,reference_period,retrieved_at,
     page_count,octet_length(content) AS bytes,metadata
@@ -6,10 +9,14 @@ export const SOURCE_DOCUMENT_EVIDENCE_SQL = `WITH selected AS (
   WHERE id=$1 OR id=(SELECT document_id FROM document_alias WHERE alias=$1)
   LIMIT 1
 )
-SELECT d.id,d.title,d.publisher,d.source_url,d.media_type,d.kind,
+SELECT d.id,${SOURCE_DOCUMENT_DISPLAY_TITLE_SQL} AS title,d.publisher,d.source_url,d.media_type,d.kind,
   COALESCE(a.annotations->0->>'corrected_value',d.reference_period) AS reference_period,
   d.retrieved_at,d.page_count,d.bytes,
-  d.metadata || CASE WHEN a.annotations IS NULL THEN '{}'::jsonb
+  d.metadata || CASE WHEN (${SOURCE_DOCUMENT_REVIEWED_FILENAME_SQL}) IS NULL THEN '{}'::jsonb
+    ELSE jsonb_build_object('original_title',d.title,
+      'archived_filename',d.metadata->>'original_filename',
+      'display_filename',${SOURCE_DOCUMENT_DISPLAY_FILENAME_SQL}) END ||
+  CASE WHEN a.annotations IS NULL THEN '{}'::jsonb
     ELSE jsonb_build_object('original_reference_period',d.reference_period,
       'source_document_annotations',a.annotations) END AS metadata
 FROM selected d LEFT JOIN LATERAL (
@@ -19,4 +26,4 @@ FROM selected d LEFT JOIN LATERAL (
     'created_at',created_at) ORDER BY annotation_id DESC) AS annotations
   FROM source_document_annotation
   WHERE document_id=d.id AND field='reference_period'
-) a ON true`;
+) a ON true WHERE ${AGRICULTURAL_SOURCE_SCOPE_SQL}`;

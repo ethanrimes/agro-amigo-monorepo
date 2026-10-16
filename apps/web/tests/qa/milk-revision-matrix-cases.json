@@ -2,7 +2,7 @@
   {
     "name": "DANE milk revised market san-pedro",
     "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-antioquia-san-pedro-de-los-milagros",
-    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-antioquia-san-pedro-de-los-milagros\"&&!document.querySelector('[role=alert]')",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('[role=group][aria-label=Mercado]')?.getAttribute('data-selected-value')===\"finca-antioquia-san-pedro-de-los-milagros\"&&!document.querySelector('[role=alert]')",
     "steps": [
       {
         "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
@@ -10,12 +10,12 @@
         "checks": [
           {
             "id": "PRD-03",
-            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-antioquia-san-pedro-de-los-milagros\"&&window.__qaMilk.filters.market===\"finca-antioquia-san-pedro-de-los-milagros\"&&window.__qaMilk.filters.history==='all'",
+            "condition": "document.querySelector('[role=group][aria-label=Mercado]').getAttribute('data-selected-value')===\"finca-antioquia-san-pedro-de-los-milagros\"&&window.__qaMilk.filters.market===\"finca-antioquia-san-pedro-de-los-milagros\"&&window.__qaMilk.filters.history==='all'",
             "expected": "Corrected municipality stays selected across current price and all-history data"
           },
           {
             "id": "PRD-06",
-            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "condition": "document.querySelector('[role=group][aria-label=Unidades]').getAttribute('data-selected-value')==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
             "expected": "Original farmgate milk remains COP per litre"
           },
           {
@@ -40,7 +40,7 @@
   {
     "name": "DANE milk revised market ubate",
     "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-cundinamarca-villa-de-san-diego-de-ubate",
-    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&!document.querySelector('[role=alert]')",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('[role=group][aria-label=Mercado]')?.getAttribute('data-selected-value')===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&!document.querySelector('[role=alert]')",
     "steps": [
       {
         "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
@@ -48,12 +48,12 @@
         "checks": [
           {
             "id": "PRD-03",
-            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&window.__qaMilk.filters.market===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&window.__qaMilk.filters.history==='all'",
+            "condition": "document.querySelector('[role=group][aria-label=Mercado]').getAttribute('data-selected-value')===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&window.__qaMilk.filters.market===\"finca-cundinamarca-villa-de-san-diego-de-ubate\"&&window.__qaMilk.filters.history==='all'",
             "expected": "Corrected municipality stays selected across current price and all-history data"
           },
           {
             "id": "PRD-06",
-            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "condition": "document.querySelector('[role=group][aria-label=Unidades]').getAttribute('data-selected-value')==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
             "expected": "Original farmgate milk remains COP per litre"
           },
           {
@@ -73,7 +73,7 @@
   {
     "name": "DANE milk revised market villapinzon",
     "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-cundinamarca-villapinzon",
-    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-cundinamarca-villapinzon\"&&!document.querySelector('[role=alert]')",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('[role=group][aria-label=Mercado]')?.getAttribute('data-selected-value')===\"finca-cundinamarca-villapinzon\"&&!document.querySelector('[role=alert]')",
     "steps": [
       {
         "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
@@ -81,12 +81,12 @@
         "checks": [
           {
             "id": "PRD-03",
-            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-cundinamarca-villapinzon\"&&window.__qaMilk.filters.market===\"finca-cundinamarca-villapinzon\"&&window.__qaMilk.filters.history==='all'",
+            "condition": "document.querySelector('[role=group][aria-label=Mercado]').getAttribute('data-selected-value')===\"finca-cundinamarca-villapinzon\"&&window.__qaMilk.filters.market===\"finca-cundinamarca-villapinzon\"&&window.__qaMilk.filters.history==='all'",
             "expected": "Corrected municipality stays selected across current price and all-history data"
           },
           {
             "id": "PRD-06",
-            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "condition": "document.querySelector('[role=group][aria-label=Unidades]').getAttribute('data-selected-value')==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
             "expected": "Original farmgate milk remains COP per litre"
           },
           {
@@ -106,7 +106,7 @@
   {
     "name": "DANE milk revised market magangue",
     "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-bolivar-magangue",
-    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-bolivar-magangue\"&&!document.querySelector('[role=alert]')",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('[role=group][aria-label=Mercado]')?.getAttribute('data-selected-value')===\"finca-bolivar-magangue\"&&!document.querySelector('[role=alert]')",
     "steps": [
       {
         "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
@@ -114,12 +114,12 @@
         "checks": [
           {
             "id": "PRD-03",
-            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-bolivar-magangue\"&&window.__qaMilk.filters.market===\"finca-bolivar-magangue\"&&window.__qaMilk.filters.history==='all'",
+            "condition": "document.querySelector('[role=group][aria-label=Mercado]').getAttribute('data-selected-value')===\"finca-bolivar-magangue\"&&window.__qaMilk.filters.market===\"finca-bolivar-magangue\"&&window.__qaMilk.filters.history==='all'",
             "expected": "Corrected municipality stays selected across current price and all-history data"
           },
           {
             "id": "PRD-06",
-            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "condition": "document.querySelector('[role=group][aria-label=Unidades]').getAttribute('data-selected-value')==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
             "expected": "Original farmgate milk remains COP per litre"
           },
           {
@@ -139,7 +139,7 @@
   {
     "name": "DANE milk revised market el-guamo",
     "route": "/product/leche-cruda-en-finca?region=&series=farmgate&presentation=Por+unidad+de+medida&units=1+litro&history=all&market=finca-bolivar-el-guamo",
-    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('select[aria-label=Mercado]')?.value===\"finca-bolivar-el-guamo\"&&!document.querySelector('[role=alert]')",
+    "ready": "!!document.querySelector('.price-chart')&&document.querySelector('[role=group][aria-label=Mercado]')?.getAttribute('data-selected-value')===\"finca-bolivar-el-guamo\"&&!document.querySelector('[role=alert]')",
     "steps": [
       {
         "action": "window.__qaMilk=null;window.__qaMilkError=null;document.querySelector('.chart-data').open=true;fetch('/api/products/leche-cruda-en-finca'+location.search).then(r=>{if(!r.ok)throw new Error('milk '+r.status);return r.json()}).then(x=>window.__qaMilk=x).catch(e=>window.__qaMilkError=String(e));",
@@ -147,12 +147,12 @@
         "checks": [
           {
             "id": "PRD-03",
-            "condition": "document.querySelector('select[aria-label=Mercado]').value===\"finca-bolivar-el-guamo\"&&window.__qaMilk.filters.market===\"finca-bolivar-el-guamo\"&&window.__qaMilk.filters.history==='all'",
+            "condition": "document.querySelector('[role=group][aria-label=Mercado]').getAttribute('data-selected-value')===\"finca-bolivar-el-guamo\"&&window.__qaMilk.filters.market===\"finca-bolivar-el-guamo\"&&window.__qaMilk.filters.history==='all'",
             "expected": "Corrected municipality stays selected across current price and all-history data"
           },
           {
             "id": "PRD-06",
-            "condition": "document.querySelector('select[aria-label=Unidades]').value==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
+            "condition": "document.querySelector('[role=group][aria-label=Unidades]').getAttribute('data-selected-value')==='1 litro'&&window.__qaMilk.filters.series==='farmgate'&&document.querySelector('.product-price-header').textContent.includes('1 litro')",
             "expected": "Original farmgate milk remains COP per litre"
           },
           {
@@ -184,7 +184,7 @@
           },
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='6'&&!!document.querySelector('canvas[data-rendered=true]')",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue==='6'&&!!document.querySelector('canvas[data-rendered=true]')",
             "expected": "Exact audited native page renders"
           },
           {
@@ -221,7 +221,7 @@
           },
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='4'&&!!document.querySelector('canvas[data-rendered=true]')",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue==='4'&&!!document.querySelector('canvas[data-rendered=true]')",
             "expected": "Exact audited native page renders"
           },
           {
@@ -258,7 +258,7 @@
           },
           {
             "id": "EVI-03",
-            "condition": "document.querySelector('select[aria-label=\"Página del documento\"]').value==='5'&&!!document.querySelector('canvas[data-rendered=true]')",
+            "condition": "document.querySelector('[role=group][aria-label=\"Página del documento\"]').dataset.selectedValue==='5'&&!!document.querySelector('canvas[data-rendered=true]')",
             "expected": "Exact audited native page renders"
           },
           {

@@ -1,0 +1,1361 @@
+{
+  "rows": [
+    {
+      "glyph_top": 168.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        250.0,
+        270.0,
+        264.0
+      ],
+      "product_key": "huevo blanco a",
+      "source_locator": "PDF page 30,table 1,column 1,line 4",
+      "xls_locator": "Información Boletin!row 3079,cols B:D"
+    },
+    {
+      "glyph_top": 182.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        255.0,
+        280.0,
+        270.0
+      ],
+      "product_key": "huevo blanco a",
+      "source_locator": "PDF page 30,table 1,column 1,line 6",
+      "xls_locator": "Información Boletin!row 3080,cols B:D"
+    },
+    {
+      "glyph_top": 196.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        267.0,
+        283.0,
+        275.0
+      ],
+      "product_key": "huevo blanco a",
+      "source_locator": "PDF page 30,table 1,column 1,line 8",
+      "xls_locator": "Información Boletin!row 3081,cols B:D"
+    },
+    {
+      "glyph_top": 231.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        260.0,
+        280.0,
+        274.0
+      ],
+      "product_key": "huevo blanco aa",
+      "source_locator": "PDF page 30,table 1,column 1,line 12",
+      "xls_locator": "Información Boletin!row 3085,cols B:D"
+    },
+    {
+      "glyph_top": 245.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        275.0,
+        290.0,
+        285.0
+      ],
+      "product_key": "huevo blanco aa",
+      "source_locator": "PDF page 30,table 1,column 1,line 14",
+      "xls_locator": "Información Boletin!row 3086,cols B:D"
+    },
+    {
+      "glyph_top": 259.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        280.0,
+        300.0,
+        289.0
+      ],
+      "product_key": "huevo blanco aa",
+      "source_locator": "PDF page 30,table 1,column 1,line 16",
+      "xls_locator": "Información Boletin!row 3087,cols B:D"
+    },
+    {
+      "glyph_top": 287.26,
+      "market": "Cartago (Valle del Cauca)",
+      "money": [
+        257.0,
+        260.0,
+        258.0
+      ],
+      "product_key": "huevo blanco b",
+      "source_locator": "PDF page 30,table 1,column 1,line 19",
+      "xls_locator": "Información Boletin!row 3090,cols B:D"
+    },
+    {
+      "glyph_top": 301.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        245.0,
+        270.0,
+        260.0
+      ],
+      "product_key": "huevo blanco b",
+      "source_locator": "PDF page 30,table 1,column 1,line 21",
+      "xls_locator": "Información Boletin!row 3091,cols B:D"
+    },
+    {
+      "glyph_top": 315.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        257.0,
+        267.0,
+        261.0
+      ],
+      "product_key": "huevo blanco b",
+      "source_locator": "PDF page 30,table 1,column 1,line 23",
+      "xls_locator": "Información Boletin!row 3092,cols B:D"
+    },
+    {
+      "glyph_top": 343.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        290.0,
+        310.0,
+        303.0
+      ],
+      "product_key": "huevo blanco extra",
+      "source_locator": "PDF page 30,table 1,column 1,line 26",
+      "xls_locator": "Información Boletin!row 3095,cols B:D"
+    },
+    {
+      "glyph_top": 357.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        300.0,
+        320.0,
+        313.0
+      ],
+      "product_key": "huevo blanco extra",
+      "source_locator": "PDF page 30,table 1,column 1,line 28",
+      "xls_locator": "Información Boletin!row 3096,cols B:D"
+    },
+    {
+      "glyph_top": 371.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        315.0,
+        330.0,
+        322.0
+      ],
+      "product_key": "huevo blanco extra",
+      "source_locator": "PDF page 30,table 1,column 1,line 30",
+      "xls_locator": "Información Boletin!row 3097,cols B:D"
+    },
+    {
+      "glyph_top": 476.26,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        280.0,
+        300.0,
+        287.0
+      ],
+      "product_key": "huevo rojo a",
+      "source_locator": "PDF page 30,table 1,column 1,line 44",
+      "xls_locator": "Información Boletin!row 3112,cols B:D"
+    },
+    {
+      "glyph_top": 490.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        255.0,
+        280.0,
+        270.0
+      ],
+      "product_key": "huevo rojo a",
+      "source_locator": "PDF page 30,table 1,column 1,line 46",
+      "xls_locator": "Información Boletin!row 3113,cols B:D"
+    },
+    {
+      "glyph_top": 504.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        267.0,
+        283.0,
+        275.0
+      ],
+      "product_key": "huevo rojo a",
+      "source_locator": "PDF page 30,table 1,column 1,line 48",
+      "xls_locator": "Información Boletin!row 3114,cols B:D"
+    },
+    {
+      "glyph_top": 672.26,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        290.0,
+        317.0,
+        302.0
+      ],
+      "product_key": "huevo rojo aa",
+      "source_locator": "PDF page 30,table 1,column 1,line 71",
+      "xls_locator": "Información Boletin!row 3139,cols B:D"
+    },
+    {
+      "glyph_top": 686.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        275.0,
+        290.0,
+        285.0
+      ],
+      "product_key": "huevo rojo aa",
+      "source_locator": "PDF page 30,table 1,column 1,line 73",
+      "xls_locator": "Información Boletin!row 3140,cols B:D"
+    },
+    {
+      "glyph_top": 700.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        280.0,
+        300.0,
+        289.0
+      ],
+      "product_key": "huevo rojo aa",
+      "source_locator": "PDF page 30,table 1,column 1,line 75",
+      "xls_locator": "Información Boletin!row 3141,cols B:D"
+    },
+    {
+      "glyph_top": 210.26,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        267.0,
+        283.0,
+        271.0
+      ],
+      "product_key": "huevo rojo b",
+      "source_locator": "PDF page 30,table 1,column 2,line 10",
+      "xls_locator": "Información Boletin!row 3161,cols B:D"
+    },
+    {
+      "glyph_top": 224.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        245.0,
+        270.0,
+        260.0
+      ],
+      "product_key": "huevo rojo b",
+      "source_locator": "PDF page 30,table 1,column 2,line 12",
+      "xls_locator": "Información Boletin!row 3162,cols B:D"
+    },
+    {
+      "glyph_top": 238.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        257.0,
+        267.0,
+        261.0
+      ],
+      "product_key": "huevo rojo b",
+      "source_locator": "PDF page 30,table 1,column 2,line 14",
+      "xls_locator": "Información Boletin!row 3163,cols B:D"
+    },
+    {
+      "glyph_top": 350.26,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        317.0,
+        333.0,
+        329.0
+      ],
+      "product_key": "huevo rojo extra",
+      "source_locator": "PDF page 30,table 1,column 2,line 29",
+      "xls_locator": "Información Boletin!row 3178,cols B:D"
+    },
+    {
+      "glyph_top": 364.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        300.0,
+        320.0,
+        313.0
+      ],
+      "product_key": "huevo rojo extra",
+      "source_locator": "PDF page 30,table 1,column 2,line 31",
+      "xls_locator": "Información Boletin!row 3179,cols B:D"
+    },
+    {
+      "glyph_top": 378.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        315.0,
+        330.0,
+        323.0
+      ],
+      "product_key": "huevo rojo extra",
+      "source_locator": "PDF page 30,table 1,column 2,line 33",
+      "xls_locator": "Información Boletin!row 3180,cols B:D"
+    },
+    {
+      "glyph_top": 679.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        7000.0,
+        7000.0,
+        7000.0
+      ],
+      "product_key": "queso campesino",
+      "source_locator": "PDF page 30,table 1,column 2,line 74",
+      "xls_locator": "Información Boletin!row 3221,cols B:D"
+    },
+    {
+      "glyph_top": 693.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        9000.0,
+        11500.0,
+        10433.0
+      ],
+      "product_key": "queso campesino",
+      "source_locator": "PDF page 30,table 1,column 2,line 76",
+      "xls_locator": "Información Boletin!row 3222,cols B:D"
+    },
+    {
+      "glyph_top": 308.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        9500.0,
+        9500.0,
+        9500.0
+      ],
+      "product_key": "queso costeno",
+      "source_locator": "PDF page 31,table 1,column 1,line 23",
+      "xls_locator": "Información Boletin!row 3253,cols B:D"
+    },
+    {
+      "glyph_top": 322.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10000.0,
+        11200.0,
+        10425.0
+      ],
+      "product_key": "queso costeno",
+      "source_locator": "PDF page 31,table 1,column 1,line 25",
+      "xls_locator": "Información Boletin!row 3254,cols B:D"
+    },
+    {
+      "glyph_top": 336.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        9500.0,
+        10000.0,
+        9667.0
+      ],
+      "product_key": "queso costeno",
+      "source_locator": "PDF page 31,table 1,column 1,line 27",
+      "xls_locator": "Información Boletin!row 3255,cols B:D"
+    },
+    {
+      "glyph_top": 217.86,
+      "market": "Cúcuta, Cenabastos",
+      "money": [
+        8500.0,
+        9000.0,
+        8750.0
+      ],
+      "product_key": "queso cuajada",
+      "source_locator": "PDF page 31,table 1,column 2,line 11",
+      "xls_locator": "Información Boletin!row 3275,cols B:D"
+    },
+    {
+      "glyph_top": 231.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        9000.0,
+        11000.0,
+        10167.0
+      ],
+      "product_key": "queso cuajada",
+      "source_locator": "PDF page 31,table 1,column 2,line 13",
+      "xls_locator": "Información Boletin!row 3276,cols B:D"
+    },
+    {
+      "glyph_top": 245.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        7800.0,
+        8000.0,
+        7933.0
+      ],
+      "product_key": "queso cuajada",
+      "source_locator": "PDF page 31,table 1,column 2,line 15",
+      "xls_locator": "Información Boletin!row 3277,cols B:D"
+    },
+    {
+      "glyph_top": 371.86,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        10400.0,
+        11000.0,
+        10600.0
+      ],
+      "product_key": "queso doble crema",
+      "source_locator": "PDF page 31,table 1,column 2,line 32",
+      "xls_locator": "Información Boletin!row 3296,cols B:D"
+    },
+    {
+      "glyph_top": 385.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        8800.0,
+        9400.0,
+        9050.0
+      ],
+      "product_key": "queso doble crema",
+      "source_locator": "PDF page 31,table 1,column 2,line 34",
+      "xls_locator": "Información Boletin!row 3297,cols B:D"
+    },
+    {
+      "glyph_top": 563.69,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        5750.0,
+        6000.0,
+        5938.0
+      ],
+      "product_key": "alas de pollo sin costillar",
+      "source_locator": "PDF page 31,table 2,column 2,line 4",
+      "xls_locator": "Información Boletin!row 3334,cols B:D"
+    },
+    {
+      "glyph_top": 577.69,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        5500.0,
+        5800.0,
+        5675.0
+      ],
+      "product_key": "alas de pollo sin costillar",
+      "source_locator": "PDF page 31,table 2,column 2,line 6",
+      "xls_locator": "Información Boletin!row 3335,cols B:D"
+    },
+    {
+      "glyph_top": 168.26,
+      "market": "Malambo (Atlántico), Carnes y carnes",
+      "money": [
+        8850.0,
+        8850.0,
+        8850.0
+      ],
+      "product_key": "carne de cerdo, brazo sin hueso",
+      "source_locator": "PDF page 32,table 1,column 1,line 4",
+      "xls_locator": "Información Boletin!row 3360,cols B:D"
+    },
+    {
+      "glyph_top": 182.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10100.0,
+        10300.0,
+        10225.0
+      ],
+      "product_key": "carne de cerdo, brazo sin hueso",
+      "source_locator": "PDF page 32,table 1,column 1,line 6",
+      "xls_locator": "Información Boletin!row 3361,cols B:D"
+    },
+    {
+      "glyph_top": 441.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        10500.0,
+        11000.0,
+        10833.0
+      ],
+      "product_key": "carne de cerdo, costilla",
+      "source_locator": "PDF page 32,table 1,column 1,line 41",
+      "xls_locator": "Información Boletin!row 3396,cols B:D"
+    },
+    {
+      "glyph_top": 455.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10000.0,
+        10500.0,
+        10350.0
+      ],
+      "product_key": "carne de cerdo, costilla",
+      "source_locator": "PDF page 32,table 1,column 1,line 43",
+      "xls_locator": "Información Boletin!row 3397,cols B:D"
+    },
+    {
+      "glyph_top": 469.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        11000.0,
+        13500.0,
+        12275.0
+      ],
+      "product_key": "carne de cerdo, costilla",
+      "source_locator": "PDF page 32,table 1,column 1,line 45",
+      "xls_locator": "Información Boletin!row 3398,cols B:D"
+    },
+    {
+      "glyph_top": 651.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        7000.0,
+        7000.0,
+        7000.0
+      ],
+      "product_key": "carne de cerdo, espinazo",
+      "source_locator": "PDF page 32,table 1,column 1,line 69",
+      "xls_locator": "Información Boletin!row 3423,cols B:D"
+    },
+    {
+      "glyph_top": 665.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        5000.0,
+        5500.0,
+        5350.0
+      ],
+      "product_key": "carne de cerdo, espinazo",
+      "source_locator": "PDF page 32,table 1,column 1,line 71",
+      "xls_locator": "Información Boletin!row 3424,cols B:D"
+    },
+    {
+      "glyph_top": 679.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        5400.0,
+        6200.0,
+        5800.0
+      ],
+      "product_key": "carne de cerdo, espinazo",
+      "source_locator": "PDF page 32,table 1,column 1,line 73",
+      "xls_locator": "Información Boletin!row 3425,cols B:D"
+    },
+    {
+      "glyph_top": 315.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        12000.0,
+        14000.0,
+        13000.0
+      ],
+      "product_key": "carne de cerdo, lomo sin hueso",
+      "source_locator": "PDF page 32,table 1,column 2,line 24",
+      "xls_locator": "Información Boletin!row 3457,cols B:D"
+    },
+    {
+      "glyph_top": 329.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        12200.0,
+        12400.0,
+        12325.0
+      ],
+      "product_key": "carne de cerdo, lomo sin hueso",
+      "source_locator": "PDF page 32,table 1,column 2,line 26",
+      "xls_locator": "Información Boletin!row 3458,cols B:D"
+    },
+    {
+      "glyph_top": 343.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        14000.0,
+        14800.0,
+        14500.0
+      ],
+      "product_key": "carne de cerdo, lomo sin hueso",
+      "source_locator": "PDF page 32,table 1,column 2,line 28",
+      "xls_locator": "Información Boletin!row 3459,cols B:D"
+    },
+    {
+      "glyph_top": 616.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        11000.0,
+        12000.0,
+        11333.0
+      ],
+      "product_key": "carne de cerdo, pernil sin hueso",
+      "source_locator": "PDF page 32,table 1,column 2,line 65",
+      "xls_locator": "Información Boletin!row 3496,cols B:D"
+    },
+    {
+      "glyph_top": 630.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10700.0,
+        10900.0,
+        10775.0
+      ],
+      "product_key": "carne de cerdo, pernil sin hueso",
+      "source_locator": "PDF page 32,table 1,column 2,line 67",
+      "xls_locator": "Información Boletin!row 3497,cols B:D"
+    },
+    {
+      "glyph_top": 644.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        13000.0,
+        14000.0,
+        13550.0
+      ],
+      "product_key": "carne de cerdo, pernil sin hueso",
+      "source_locator": "PDF page 32,table 1,column 2,line 69",
+      "xls_locator": "Información Boletin!row 3498,cols B:D"
+    },
+    {
+      "glyph_top": 182.86,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        6000.0,
+        7200.0,
+        6800.0
+      ],
+      "product_key": "carne de cerdo, tocino barriga",
+      "source_locator": "PDF page 33,table 1,column 1,line 6",
+      "xls_locator": "Información Boletin!row 3516,cols B:D"
+    },
+    {
+      "glyph_top": 196.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        8900.0,
+        9600.0,
+        9250.0
+      ],
+      "product_key": "carne de cerdo, tocino barriga",
+      "source_locator": "PDF page 33,table 1,column 1,line 8",
+      "xls_locator": "Información Boletin!row 3517,cols B:D"
+    },
+    {
+      "glyph_top": 210.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        11000.0,
+        12500.0,
+        11875.0
+      ],
+      "product_key": "carne de cerdo, tocino barriga",
+      "source_locator": "PDF page 33,table 1,column 1,line 10",
+      "xls_locator": "Información Boletin!row 3518,cols B:D"
+    },
+    {
+      "glyph_top": 329.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        6000.0,
+        7000.0,
+        6667.0
+      ],
+      "product_key": "carne de cerdo, tocino papada",
+      "source_locator": "PDF page 33,table 1,column 1,line 26",
+      "xls_locator": "Información Boletin!row 3534,cols B:D"
+    },
+    {
+      "glyph_top": 343.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        7000.0,
+        7500.0,
+        7150.0
+      ],
+      "product_key": "carne de cerdo, tocino papada",
+      "source_locator": "PDF page 33,table 1,column 1,line 28",
+      "xls_locator": "Información Boletin!row 3535,cols B:D"
+    },
+    {
+      "glyph_top": 357.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        7400.0,
+        8400.0,
+        7850.0
+      ],
+      "product_key": "carne de cerdo, tocino papada",
+      "source_locator": "PDF page 33,table 1,column 1,line 30",
+      "xls_locator": "Información Boletin!row 3536,cols B:D"
+    },
+    {
+      "glyph_top": 483.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        12000.0,
+        15000.0,
+        13333.0
+      ],
+      "product_key": "carne de res, bola de brazo",
+      "source_locator": "PDF page 33,table 1,column 1,line 47",
+      "xls_locator": "Información Boletin!row 3553,cols B:D"
+    },
+    {
+      "glyph_top": 497.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        13000.0,
+        14100.0,
+        13700.0
+      ],
+      "product_key": "carne de res, bola de brazo",
+      "source_locator": "PDF page 33,table 1,column 1,line 49",
+      "xls_locator": "Información Boletin!row 3554,cols B:D"
+    },
+    {
+      "glyph_top": 686.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        14000.0,
+        15000.0,
+        14333.0
+      ],
+      "product_key": "carne de res, bola de pierna",
+      "source_locator": "PDF page 33,table 1,column 1,line 75",
+      "xls_locator": "Información Boletin!row 3580,cols B:D"
+    },
+    {
+      "glyph_top": 700.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        11300.0,
+        14500.0,
+        13325.0
+      ],
+      "product_key": "carne de res, bola de pierna",
+      "source_locator": "PDF page 33,table 1,column 1,line 77",
+      "xls_locator": "Información Boletin!row 3581,cols B:D"
+    },
+    {
+      "glyph_top": 714.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        16000.0,
+        18000.0,
+        16700.0
+      ],
+      "product_key": "carne de res, bola de pierna",
+      "source_locator": "PDF page 33,table 1,column 1,line 79",
+      "xls_locator": "Información Boletin!row 3582,cols B:D"
+    },
+    {
+      "glyph_top": 280.86,
+      "market": "Malambo (Atlántico), Carnes y carnes",
+      "money": [
+        14100.0,
+        14100.0,
+        14100.0
+      ],
+      "product_key": "carne de res, bota",
+      "source_locator": "PDF page 33,table 1,column 2,line 19",
+      "xls_locator": "Información Boletin!row 3605,cols B:D"
+    },
+    {
+      "glyph_top": 294.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        13000.0,
+        13800.0,
+        13575.0
+      ],
+      "product_key": "carne de res, bota",
+      "source_locator": "PDF page 33,table 1,column 2,line 21",
+      "xls_locator": "Información Boletin!row 3606,cols B:D"
+    },
+    {
+      "glyph_top": 308.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        14800.0,
+        17000.0,
+        16100.0
+      ],
+      "product_key": "carne de res, bota",
+      "source_locator": "PDF page 33,table 1,column 2,line 23",
+      "xls_locator": "Información Boletin!row 3607,cols B:D"
+    },
+    {
+      "glyph_top": 462.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        14000.0,
+        16000.0,
+        15000.0
+      ],
+      "product_key": "carne de res, cadera",
+      "source_locator": "PDF page 33,table 1,column 2,line 44",
+      "xls_locator": "Información Boletin!row 3628,cols B:D"
+    },
+    {
+      "glyph_top": 476.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        12900.0,
+        13800.0,
+        13275.0
+      ],
+      "product_key": "carne de res, cadera",
+      "source_locator": "PDF page 33,table 1,column 2,line 46",
+      "xls_locator": "Información Boletin!row 3629,cols B:D"
+    },
+    {
+      "glyph_top": 490.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        16000.0,
+        17000.0,
+        16450.0
+      ],
+      "product_key": "carne de res, cadera",
+      "source_locator": "PDF page 33,table 1,column 2,line 48",
+      "xls_locator": "Información Boletin!row 3630,cols B:D"
+    },
+    {
+      "glyph_top": 665.86,
+      "market": "Malambo (Atlántico), Carnes y carnes",
+      "money": [
+        14100.0,
+        14100.0,
+        14100.0
+      ],
+      "product_key": "carne de res, centro de pierna",
+      "source_locator": "PDF page 33,table 1,column 2,line 72",
+      "xls_locator": "Información Boletin!row 3654,cols B:D"
+    },
+    {
+      "glyph_top": 679.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        13200.0,
+        14200.0,
+        13675.0
+      ],
+      "product_key": "carne de res, centro de pierna",
+      "source_locator": "PDF page 33,table 1,column 2,line 74",
+      "xls_locator": "Información Boletin!row 3655,cols B:D"
+    },
+    {
+      "glyph_top": 238.26,
+      "market": "Malambo (Atlántico), Carnes y carnes",
+      "money": [
+        16000.0,
+        16000.0,
+        16000.0
+      ],
+      "product_key": "carne de res, chatas",
+      "source_locator": "PDF page 34,table 1,column 1,line 14",
+      "xls_locator": "Información Boletin!row 3677,cols B:D"
+    },
+    {
+      "glyph_top": 252.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        18000.0,
+        20000.0,
+        18750.0
+      ],
+      "product_key": "carne de res, chatas",
+      "source_locator": "PDF page 34,table 1,column 1,line 16",
+      "xls_locator": "Información Boletin!row 3678,cols B:D"
+    },
+    {
+      "glyph_top": 266.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        21000.0,
+        23000.0,
+        21750.0
+      ],
+      "product_key": "carne de res, chatas",
+      "source_locator": "PDF page 34,table 1,column 1,line 18",
+      "xls_locator": "Información Boletin!row 3679,cols B:D"
+    },
+    {
+      "glyph_top": 546.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        7000.0,
+        9000.0,
+        8000.0
+      ],
+      "product_key": "carne de res, costilla",
+      "source_locator": "PDF page 34,table 1,column 1,line 56",
+      "xls_locator": "Información Boletin!row 3717,cols B:D"
+    },
+    {
+      "glyph_top": 560.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        6000.0,
+        6600.0,
+        6275.0
+      ],
+      "product_key": "carne de res, costilla",
+      "source_locator": "PDF page 34,table 1,column 1,line 58",
+      "xls_locator": "Información Boletin!row 3718,cols B:D"
+    },
+    {
+      "glyph_top": 574.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        6000.0,
+        8200.0,
+        7200.0
+      ],
+      "product_key": "carne de res, costilla",
+      "source_locator": "PDF page 34,table 1,column 1,line 60",
+      "xls_locator": "Información Boletin!row 3719,cols B:D"
+    },
+    {
+      "glyph_top": 196.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        9000.0,
+        10000.0,
+        9333.0
+      ],
+      "product_key": "carne de res, falda",
+      "source_locator": "PDF page 34,table 1,column 2,line 8",
+      "xls_locator": "Información Boletin!row 3750,cols B:D"
+    },
+    {
+      "glyph_top": 210.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10000.0,
+        11800.0,
+        10875.0
+      ],
+      "product_key": "carne de res, falda",
+      "source_locator": "PDF page 34,table 1,column 2,line 10",
+      "xls_locator": "Información Boletin!row 3751,cols B:D"
+    },
+    {
+      "glyph_top": 224.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        13600.0,
+        15500.0,
+        14625.0
+      ],
+      "product_key": "carne de res, falda",
+      "source_locator": "PDF page 34,table 1,column 2,line 12",
+      "xls_locator": "Información Boletin!row 3752,cols B:D"
+    },
+    {
+      "glyph_top": 490.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        22000.0,
+        24000.0,
+        22750.0
+      ],
+      "product_key": "carne de res, lomo fino",
+      "source_locator": "PDF page 34,table 1,column 2,line 48",
+      "xls_locator": "Información Boletin!row 3787,cols B:D"
+    },
+    {
+      "glyph_top": 476.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        15000.0,
+        16000.0,
+        15667.0
+      ],
+      "product_key": "carne de res, lomo fino",
+      "source_locator": "PDF page 34,table 1,column 2,line 46",
+      "xls_locator": "Información Boletin!row 3786,cols B:D"
+    },
+    {
+      "glyph_top": 504.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        26000.0,
+        31000.0,
+        28250.0
+      ],
+      "product_key": "carne de res, lomo fino",
+      "source_locator": "PDF page 34,table 1,column 2,line 50",
+      "xls_locator": "Información Boletin!row 3788,cols B:D"
+    },
+    {
+      "glyph_top": 175.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        11000.0,
+        12000.0,
+        11667.0
+      ],
+      "product_key": "carne de res, morrillo",
+      "source_locator": "PDF page 35,table 1,column 1,line 5",
+      "xls_locator": "Información Boletin!row 3825,cols B:D"
+    },
+    {
+      "glyph_top": 189.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        11100.0,
+        12000.0,
+        11450.0
+      ],
+      "product_key": "carne de res, morrillo",
+      "source_locator": "PDF page 35,table 1,column 1,line 7",
+      "xls_locator": "Información Boletin!row 3826,cols B:D"
+    },
+    {
+      "glyph_top": 364.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        14000.0,
+        15000.0,
+        14333.0
+      ],
+      "product_key": "carne de res, muchacho",
+      "source_locator": "PDF page 35,table 1,column 1,line 31",
+      "xls_locator": "Información Boletin!row 3850,cols B:D"
+    },
+    {
+      "glyph_top": 378.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        13000.0,
+        13800.0,
+        13400.0
+      ],
+      "product_key": "carne de res, muchacho",
+      "source_locator": "PDF page 35,table 1,column 1,line 33",
+      "xls_locator": "Información Boletin!row 3851,cols B:D"
+    },
+    {
+      "glyph_top": 392.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        16000.0,
+        16600.0,
+        16150.0
+      ],
+      "product_key": "carne de res, muchacho",
+      "source_locator": "PDF page 35,table 1,column 1,line 35",
+      "xls_locator": "Información Boletin!row 3852,cols B:D"
+    },
+    {
+      "glyph_top": 539.86,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        10000.0,
+        11000.0,
+        10500.0
+      ],
+      "product_key": "carne de res, murillo",
+      "source_locator": "PDF page 35,table 1,column 1,line 55",
+      "xls_locator": "Información Boletin!row 3872,cols B:D"
+    },
+    {
+      "glyph_top": 553.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10500.0,
+        11600.0,
+        11275.0
+      ],
+      "product_key": "carne de res, murillo",
+      "source_locator": "PDF page 35,table 1,column 1,line 57",
+      "xls_locator": "Información Boletin!row 3873,cols B:D"
+    },
+    {
+      "glyph_top": 658.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        12000.0,
+        13000.0,
+        12333.0
+      ],
+      "product_key": "carne de res, paletero",
+      "source_locator": "PDF page 35,table 1,column 1,line 71",
+      "xls_locator": "Información Boletin!row 3887,cols B:D"
+    },
+    {
+      "glyph_top": 672.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        12900.0,
+        13500.0,
+        13100.0
+      ],
+      "product_key": "carne de res, paletero",
+      "source_locator": "PDF page 35,table 1,column 1,line 73",
+      "xls_locator": "Información Boletin!row 3888,cols B:D"
+    },
+    {
+      "glyph_top": 189.86,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        12000.0,
+        13900.0,
+        12825.0
+      ],
+      "product_key": "carne de res, pecho",
+      "source_locator": "PDF page 35,table 1,column 2,line 7",
+      "xls_locator": "Información Boletin!row 3905,cols B:D"
+    },
+    {
+      "glyph_top": 203.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        8000.0,
+        8600.0,
+        8400.0
+      ],
+      "product_key": "carne de res, pecho",
+      "source_locator": "PDF page 35,table 1,column 2,line 9",
+      "xls_locator": "Información Boletin!row 3906,cols B:D"
+    },
+    {
+      "glyph_top": 217.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        11000.0,
+        12800.0,
+        12075.0
+      ],
+      "product_key": "carne de res, pecho",
+      "source_locator": "PDF page 35,table 1,column 2,line 11",
+      "xls_locator": "Información Boletin!row 3907,cols B:D"
+    },
+    {
+      "glyph_top": 392.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        14000.0,
+        16000.0,
+        15333.0
+      ],
+      "product_key": "carne de res, punta de anca",
+      "source_locator": "PDF page 35,table 1,column 2,line 35",
+      "xls_locator": "Información Boletin!row 3931,cols B:D"
+    },
+    {
+      "glyph_top": 406.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        18000.0,
+        20000.0,
+        18625.0
+      ],
+      "product_key": "carne de res, punta de anca",
+      "source_locator": "PDF page 35,table 1,column 2,line 37",
+      "xls_locator": "Información Boletin!row 3932,cols B:D"
+    },
+    {
+      "glyph_top": 420.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        20000.0,
+        23500.0,
+        21375.0
+      ],
+      "product_key": "carne de res, punta de anca",
+      "source_locator": "PDF page 35,table 1,column 2,line 39",
+      "xls_locator": "Información Boletin!row 3933,cols B:D"
+    },
+    {
+      "glyph_top": 623.86,
+      "market": "Manizales (Caldas)",
+      "money": [
+        12000.0,
+        12000.0,
+        12000.0
+      ],
+      "product_key": "carne de res, sobrebarriga",
+      "source_locator": "PDF page 35,table 1,column 2,line 67",
+      "xls_locator": "Información Boletin!row 3961,cols B:D"
+    },
+    {
+      "glyph_top": 637.86,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        10300.0,
+        11600.0,
+        11250.0
+      ],
+      "product_key": "carne de res, sobrebarriga",
+      "source_locator": "PDF page 35,table 1,column 2,line 69",
+      "xls_locator": "Información Boletin!row 3962,cols B:D"
+    },
+    {
+      "glyph_top": 651.86,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        13000.0,
+        14000.0,
+        13400.0
+      ],
+      "product_key": "carne de res, sobrebarriga",
+      "source_locator": "PDF page 35,table 1,column 2,line 71",
+      "xls_locator": "Información Boletin!row 3963,cols B:D"
+    },
+    {
+      "glyph_top": 301.26,
+      "market": "Bucaramanga, Frigoríficos",
+      "money": [
+        7100.0,
+        7400.0,
+        7200.0
+      ],
+      "product_key": "muslos de pollo sin rabadilla",
+      "source_locator": "PDF page 36,table 1,column 1,line 21",
+      "xls_locator": "Información Boletin!row 3995,cols B:D"
+    },
+    {
+      "glyph_top": 315.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        7300.0,
+        7600.0,
+        7400.0
+      ],
+      "product_key": "muslos de pollo sin rabadilla",
+      "source_locator": "PDF page 36,table 1,column 1,line 23",
+      "xls_locator": "Información Boletin!row 3996,cols B:D"
+    },
+    {
+      "glyph_top": 455.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        8200.0,
+        8700.0,
+        8433.0
+      ],
+      "product_key": "pechuga de pollo",
+      "source_locator": "PDF page 36,table 1,column 1,line 42",
+      "xls_locator": "Información Boletin!row 4015,cols B:D"
+    },
+    {
+      "glyph_top": 469.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        8700.0,
+        8900.0,
+        8775.0
+      ],
+      "product_key": "pechuga de pollo",
+      "source_locator": "PDF page 36,table 1,column 1,line 44",
+      "xls_locator": "Información Boletin!row 4016,cols B:D"
+    },
+    {
+      "glyph_top": 483.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        7800.0,
+        8200.0,
+        7975.0
+      ],
+      "product_key": "pechuga de pollo",
+      "source_locator": "PDF page 36,table 1,column 1,line 46",
+      "xls_locator": "Información Boletin!row 4017,cols B:D"
+    },
+    {
+      "glyph_top": 658.26,
+      "market": "Ibagué, Plaza La 21",
+      "money": [
+        5800.0,
+        6000.0,
+        5900.0
+      ],
+      "product_key": "pierna pernil con rabadilla",
+      "source_locator": "PDF page 36,table 1,column 1,line 70",
+      "xls_locator": "Información Boletin!row 4042,cols B:D"
+    },
+    {
+      "glyph_top": 672.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        4700.0,
+        4950.0,
+        4838.0
+      ],
+      "product_key": "pierna pernil con rabadilla",
+      "source_locator": "PDF page 36,table 1,column 1,line 72",
+      "xls_locator": "Información Boletin!row 4043,cols B:D"
+    },
+    {
+      "glyph_top": 686.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        4600.0,
+        4800.0,
+        4650.0
+      ],
+      "product_key": "pierna pernil con rabadilla",
+      "source_locator": "PDF page 36,table 1,column 1,line 74",
+      "xls_locator": "Información Boletin!row 4044,cols B:D"
+    },
+    {
+      "glyph_top": 343.26,
+      "market": "Manizales (Caldas)",
+      "money": [
+        5000.0,
+        6000.0,
+        5500.0
+      ],
+      "product_key": "piernas de pollo",
+      "source_locator": "PDF page 36,table 1,column 2,line 27",
+      "xls_locator": "Información Boletin!row 4071,cols B:D"
+    },
+    {
+      "glyph_top": 357.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        6900.0,
+        7400.0,
+        7225.0
+      ],
+      "product_key": "piernas de pollo",
+      "source_locator": "PDF page 36,table 1,column 2,line 29",
+      "xls_locator": "Información Boletin!row 4072,cols B:D"
+    },
+    {
+      "glyph_top": 371.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        5000.0,
+        5500.0,
+        5225.0
+      ],
+      "product_key": "piernas de pollo",
+      "source_locator": "PDF page 36,table 1,column 2,line 31",
+      "xls_locator": "Información Boletin!row 4073,cols B:D"
+    },
+    {
+      "glyph_top": 469.26,
+      "market": "Cartagena, Bazurto",
+      "money": [
+        5000.0,
+        5000.0,
+        5000.0
+      ],
+      "product_key": "pollo entero congelado sin visceras",
+      "source_locator": "PDF page 36,table 1,column 2,line 44",
+      "xls_locator": "Información Boletin!row 4086,cols B:D"
+    },
+    {
+      "glyph_top": 483.26,
+      "market": "Medellín, Central Mayorista de Antioquia",
+      "money": [
+        5900.0,
+        6500.0,
+        6200.0
+      ],
+      "product_key": "pollo entero congelado sin visceras",
+      "source_locator": "PDF page 36,table 1,column 2,line 46",
+      "xls_locator": "Información Boletin!row 4087,cols B:D"
+    },
+    {
+      "glyph_top": 497.26,
+      "market": "Medellín, Plaza Minorista José María Villa",
+      "money": [
+        5200.0,
+        5600.0,
+        5400.0
+      ],
+      "product_key": "pollo entero congelado sin visceras",
+      "source_locator": "PDF page 36,table 1,column 2,line 48",
+      "xls_locator": "Información Boletin!row 4088,cols B:D"
+    }
+  ],
+  "source_pdf_sha256": "1a6d6a31c9beda79688b41bf72443c1ec28dcd42ab724c49673736703b82c177"
+}

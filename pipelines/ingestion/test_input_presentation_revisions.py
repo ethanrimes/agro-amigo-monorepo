@@ -7,7 +7,7 @@ from decimal import Decimal
 from unittest.mock import patch
 
 from . import inputs, pdf_sources, worker
-from .test_input_pdf_publication import InputPDFPublication
+from .test_input_pdf_publication import InputPDFPublication, synthetic_pdf_publication_version
 
 
 @unittest.skipUnless(
@@ -52,7 +52,7 @@ class InputPresentationRevision(unittest.TestCase):
                 )
             )
         with (
-            patch.object(pdf_sources, "INPUT_PDF_VERSION", version),
+            synthetic_pdf_publication_version(version),
             self.db.transaction(),
         ):
             worker.save_rows(self.db, did, rows)

@@ -58,6 +58,12 @@ export function catalogMatches(product: CatalogCard, query: string) {
     );
 }
 
+/** Prefer the requested product while keeping related varieties selectable. */
+export function catalogNameMatchesExactly(product: CatalogCard, query: string) {
+  const normalized = (value: string) => fold(value).replace(/\s+/g, " ");
+  return normalized(product.name) === normalized(query);
+}
+
 export function catalogHref(product: CatalogCard, returnTo?: string) {
   const params = new URLSearchParams();
   if (product.series) {
@@ -120,3 +126,20 @@ export const catalogDate = (date: string) =>
     year: "numeric",
     timeZone: "America/Bogota",
   }).format(new Date(date.slice(0, 10) + "T12:00:00Z"));
+
+/** Make distinct published series and package selections recognizable in search. */
+export function catalogSuggestionDetail(product: CatalogCard) {
+  const frequency = product.kind === "official-reference" ? product.frequency_label :
+    { daily: "Diario", weekly: "Semanal", monthly: "Mensual" }[product.period];
+  const basis = catalogBasis(product);
+  const unit = catalogUnit(product);
+  return [...new Set([
+    basis,
+    frequency && !basis.toLocaleLowerCase("es-CO").includes(frequency.toLocaleLowerCase("es-CO")) ? frequency : undefined,
+    product.market,
+    product.presentation && !unit.includes(product.presentation) ? product.presentation : undefined,
+    product.units && !unit.includes(product.units) ? product.units : undefined,
+    `${catalogCurrency(product)} / ${unit}`,
+    product.date ? catalogDate(product.date) : undefined,
+  ].filter(Boolean))].join(" · ");
+}

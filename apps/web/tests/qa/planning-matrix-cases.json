@@ -60,13 +60,24 @@
   },
   {
     "name": "planning-pitalito-eva-soil-and-aptitude",
-    "route": "/plan",
-    "ready": "!!document.querySelector('.planning-tabs')||!!document.querySelector('.farm-editor')",
+    "route": "/farm",
+    "ready": "!!document.querySelector('.location-workspace')",
     "steps": [
       {
         "action": "localStorage.setItem('agroamigo-farms-v2',\"{\\\"version\\\": 2, \\\"farms\\\": [{\\\"id\\\": \\\"qa-planning-oracle\\\", \\\"profile\\\": {\\\"municipalityId\\\": \\\"41551\\\", \\\"name\\\": \\\"QA source audit Pitalito\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"latitude\\\": \\\"1.912345\\\", \\\"longitude\\\": \\\"-76.123456\\\", \\\"elevation\\\": \\\"1800\\\", \\\"locationMethod\\\": \\\"manual\\\", \\\"locationAccuracy\\\": \\\"\\\"}, \\\"crops\\\": [{\\\"id\\\": \\\"qa-coffee\\\", \\\"cropCode\\\": \\\"2030300\\\", \\\"name\\\": \\\"Caf\\u00e9\\\", \\\"variety\\\": \\\"Caf\\u00e9\\\", \\\"area\\\": \\\"2\\\", \\\"stage\\\": \\\"flowering\\\", \\\"plantingDate\\\": \\\"\\\", \\\"floweringDate\\\": \\\"2026-02-01\\\", \\\"irrigation\\\": false, \\\"yieldKgHa\\\": \\\"\\\", \\\"planYear\\\": \\\"2026\\\", \\\"physicalState\\\": \\\"Pergamino o seco de trilla\\\"}], \\\"selectedCropId\\\": \\\"qa-coffee\\\"}], \\\"activeId\\\": \\\"qa-planning-oracle\\\"}\");localStorage.removeItem('agroamigo-location-v1');window.__qaReloadPending=true;location.reload();",
-        "ready": "!window.__qaReloadPending&&(!!document.querySelector('.crop-option')&&document.querySelector('.plan-intro')?.textContent.includes('PITALITO'))",
+        "ready": "!window.__qaReloadPending&&!!document.querySelector('.location-crop-context button')",
         "checks": []
+      },
+      {
+        "action": "document.querySelector('.location-crop-context button').click();",
+        "ready": "!!document.querySelector('.plan-intro')&&document.querySelector('.plan-intro').innerText.includes('PITALITO')&&!!document.querySelector('.crop-option')",
+        "checks": [
+          {
+            "id": "CRP-01",
+            "condition": "document.querySelector('.plan-intro').innerText.includes('PITALITO')&&document.querySelector('.location-crop-context button').getAttribute('aria-expanded')==='true'",
+            "expected": "Pitalito current farm surface expands sourced municipal crop options"
+          }
+        ]
       },
       {
         "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};__pi(document.querySelector('input[aria-label=\"Buscar cultivo\"]'),'Café');",
@@ -221,13 +232,13 @@
     "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
     "steps": [
       {
-        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
-        "ready": "true",
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};\nwindow.__qaPlanReference=null;window.__qaPlanReferenceError=null;fetch('/api/references?id='+encodeURIComponent(location.pathname.split('/').pop()),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reference '+r.status);return r.json()}).then(x=>window.__qaPlanReference=x).catch(e=>window.__qaPlanReferenceError=String(e));",
+        "ready": "!!window.__qaPlanReference?.reference||!!window.__qaPlanReferenceError",
         "checks": [
           {
             "id": "REF-02",
-            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='7.97'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"kg\"",
-            "expected": "Literal7.97USD/kg"
+            "condition": "(()=>{const q=window.__qaPlanReference?.reference,c=document.querySelector('[data-testid=current-product-price]'),h=document.querySelector('.product-price-header');if(!q||!c||!h)return false;const d=new Date(String(q.observed_on).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(c.dataset.price)===Number(q.price)&&c.dataset.currency===q.currency&&c.dataset.unit===q.unit&&h.textContent.includes(d);})()",
+            "expected": "Moving World Bank price/date/unit/currency match same-key API; archived original exact rows remain pinned in official-price source cases"
           },
           {
             "id": "REF-07",
@@ -236,19 +247,19 @@
           },
           {
             "id": "REF-02",
-            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225'&&u.searchParams.get('locator')===\"Monthly Prices!M806\"})()",
-            "expected": "Exact original and locator in source link"
+            "condition": "(()=>{const q=window.__qaPlanReference?.reference,a=document.querySelector('.product-price-header a.evidence-link');if(!q||!a)return false;const u=new URL(a.href);return u.pathname==='/evidence/'+q.document_id&&(!q.source_locator||u.searchParams.get('locator')===q.source_locator);})()",
+            "expected": "Moving current source link matches same-key API; independent older World Bank original remains pinned in official-price source cases"
           }
         ]
       },
       {
         "action": "const s=[...document.querySelectorAll('select')].find(x=>x.querySelector('option[value=\"all\"]'));__ps(s,'all');document.querySelector('details.chart-data').open=true;",
-        "ready": "document.querySelectorAll('.chart-data tbody tr').length===800",
+        "ready": "document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanReference?.history?.length&&window.__qaPlanReference.history.length>=800",
         "checks": [
           {
             "id": "REF-09",
-            "condition": "document.querySelectorAll('.chart-data tbody tr').length===800",
-            "expected": "All800retainedobservations"
+            "condition": "document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanReference?.history?.length&&window.__qaPlanReference.history.length>=800",
+            "expected": "All same-key API history rows displayed; at least 800 archived rows remain as newer months append"
           },
           {
             "id": "REF-09",
@@ -265,13 +276,13 @@
     "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
     "steps": [
       {
-        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
-        "ready": "true",
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};\nwindow.__qaPlanReference=null;window.__qaPlanReferenceError=null;fetch('/api/references?id='+encodeURIComponent(location.pathname.split('/').pop()),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reference '+r.status);return r.json()}).then(x=>window.__qaPlanReference=x).catch(e=>window.__qaPlanReferenceError=String(e));",
+        "ready": "!!window.__qaPlanReference?.reference||!!window.__qaPlanReferenceError",
         "checks": [
           {
             "id": "REF-02",
-            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='1117'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"tonne\"",
-            "expected": "Literal1117USD/tonne"
+            "condition": "(()=>{const q=window.__qaPlanReference?.reference,c=document.querySelector('[data-testid=current-product-price]'),h=document.querySelector('.product-price-header');if(!q||!c||!h)return false;const d=new Date(String(q.observed_on).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(c.dataset.price)===Number(q.price)&&c.dataset.currency===q.currency&&c.dataset.unit===q.unit&&h.textContent.includes(d);})()",
+            "expected": "Moving World Bank price/date/unit/currency match same-key API; archived original exact rows remain pinned in official-price source cases"
           },
           {
             "id": "REF-07",
@@ -280,19 +291,19 @@
           },
           {
             "id": "REF-02",
-            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/9fdcfa8a2aed9a1bb545a10c1a5ce036c6a0acd4766f450424ca800b4b5a0225'&&u.searchParams.get('locator')===\"Monthly Prices!W806\"})()",
-            "expected": "Exact original and locator in source link"
+            "condition": "(()=>{const q=window.__qaPlanReference?.reference,a=document.querySelector('.product-price-header a.evidence-link');if(!q||!a)return false;const u=new URL(a.href);return u.pathname==='/evidence/'+q.document_id&&(!q.source_locator||u.searchParams.get('locator')===q.source_locator);})()",
+            "expected": "Moving current source link matches same-key API; independent older World Bank original remains pinned in official-price source cases"
           }
         ]
       },
       {
         "action": "const s=[...document.querySelectorAll('select')].find(x=>x.querySelector('option[value=\"all\"]'));__ps(s,'all');document.querySelector('details.chart-data').open=true;",
-        "ready": "document.querySelectorAll('.chart-data tbody tr').length===800",
+        "ready": "document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanReference?.history?.length&&window.__qaPlanReference.history.length>=800",
         "checks": [
           {
             "id": "REF-09",
-            "condition": "document.querySelectorAll('.chart-data tbody tr').length===800",
-            "expected": "All800retainedobservations"
+            "condition": "document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanReference?.history?.length&&window.__qaPlanReference.history.length>=800",
+            "expected": "All same-key API history rows displayed; at least 800 archived rows remain as newer months append"
           },
           {
             "id": "REF-09",
@@ -309,13 +320,13 @@
     "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
     "steps": [
       {
-        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
-        "ready": "true",
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};\nwindow.__qaPlanningRef=null;window.__qaPlanningRefError=null;fetch('/api/references?id='+encodeURIComponent(location.pathname.split('/').pop()),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reference '+r.status);return r.json()}).then(x=>window.__qaPlanningRef=x).catch(e=>window.__qaPlanningRefError=String(e));",
+        "ready": "!!window.__qaPlanningRef?.reference||!!window.__qaPlanningRefError",
         "checks": [
           {
             "id": "REF-02",
-            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='15'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"per bunch\"",
-            "expected": "Literal15USD/per bunch"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const d=new Date(String(q.observed_on).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.dataset.price)===Number(q.price)&&card.dataset.currency===q.currency&&card.dataset.unit===q.unit&&head.textContent.includes(d);})()",
+            "expected": "Moving reference card price/date/unit/currency match same-key API; independent archived original stays pinned in following history check"
           },
           {
             "id": "REF-07",
@@ -324,13 +335,24 @@
           },
           {
             "id": "REF-02",
-            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/c0c8eddfa358b456869ef80cd708e07370b0b497bd68f8e4daf4e48b89b7b078'&&u.searchParams.get('locator')===\"PDF page 1, commodity ASTILBE, quote 1\"})()",
-            "expected": "Exact original and locator in source link"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,a=document.querySelector('.product-price-header a.evidence-link');if(!q||!a)return false;const u=new URL(a.href);return u.pathname==='/evidence/'+q.document_id&&(!q.source_locator||u.searchParams.get('locator')===q.source_locator)&&(!q.source_page||u.searchParams.get('page')===String(q.source_page));})()",
+            "expected": "Moving reference current source link matches same-key API; archived original link remains pinned in following history check"
           },
           {
             "id": "REF-04",
             "condition": "document.querySelector('.product-price-header').textContent.includes(\"Punto medio calculado\")",
             "expected": "Literal statistic label"
+          }
+        ]
+      },
+      {
+        "action": "{const s=document.querySelector('.chart-panel select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s,'all');s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.chart-data').open=true;}",
+        "ready": "document.querySelector('.chart-panel select')?.value==='all'&&document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanningRef?.history?.length",
+        "checks": [
+          {
+            "id": "REF-ORIGINAL-HISTORY",
+            "condition": "(()=>{const d=new Date('2026-09-22T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const row=[...document.querySelectorAll('.chart-data tbody tr')].find(r=>r.cells[0].textContent===d);const a=row?.querySelector('a.evidence-link');if(!row||!a)return false;const u=new URL(a.href);const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'USD',currencyDisplay:'code',maximumFractionDigits:4}).format(15);return row.cells[1].textContent.replace(/\\s/g,'')===money.replace(/\\s/g,'')&&u.pathname==='/evidence/c0c8eddfa358b456869ef80cd708e07370b0b497bd68f8e4daf4e48b89b7b078'&&u.searchParams.get('locator')===\"PDF page 1, commodity ASTILBE, quote 1\";})()",
+            "expected": "Independently anchored 2026-09-22 15 USD original price/document/locator persists in complete history"
           }
         ]
       }
@@ -342,13 +364,13 @@
     "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
     "steps": [
       {
-        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
-        "ready": "true",
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};\nwindow.__qaPlanningRef=null;window.__qaPlanningRefError=null;fetch('/api/references?id='+encodeURIComponent(location.pathname.split('/').pop()),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reference '+r.status);return r.json()}).then(x=>window.__qaPlanningRef=x).catch(e=>window.__qaPlanningRefError=String(e));",
+        "ready": "!!window.__qaPlanningRef?.reference||!!window.__qaPlanningRefError",
         "checks": [
           {
             "id": "REF-02",
-            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='793'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='COP'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"kg\"",
-            "expected": "Literal793COP/kg"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const d=new Date(String(q.observed_on).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.dataset.price)===Number(q.price)&&card.dataset.currency===q.currency&&card.dataset.unit===q.unit&&head.textContent.includes(d);})()",
+            "expected": "Moving reference card price/date/unit/currency match same-key API; independent archived original stays pinned in following history check"
           },
           {
             "id": "REF-07",
@@ -357,8 +379,8 @@
           },
           {
             "id": "REF-02",
-            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/dd059a09eecb1fa01cadb24a4f21a7768d97d9e31684dee6a57222c536faf6a8'&&u.searchParams.get('locator')===\"PDF page 4,table 1,column 1,line 3\"})()",
-            "expected": "Exact original and locator in source link"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,a=document.querySelector('.product-price-header a.evidence-link');if(!q||!a)return false;const u=new URL(a.href);return u.pathname==='/evidence/'+q.document_id&&(!q.source_locator||u.searchParams.get('locator')===q.source_locator)&&(!q.source_page||u.searchParams.get('page')===String(q.source_page));})()",
+            "expected": "Moving reference current source link matches same-key API; archived original link remains pinned in following history check"
           },
           {
             "id": "REF-04",
@@ -367,8 +389,19 @@
           },
           {
             "id": "REF-05",
-            "condition": "document.querySelector('.product-price-header').textContent.includes('Período:')",
-            "expected": "Weekly period displayed"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,h=document.querySelector('.product-price-header');if(!q||!h)return false;const d=v=>new Date(String(v).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return h.textContent.includes('Período:')&&h.textContent.includes(d(q.period_start||q.observed_on))&&(!q.details?.period_end||h.textContent.includes(d(q.details.period_end)));})()",
+            "expected": "Moving weekly published period matches same-key API dates; archived 2012 original remains pinned separately"
+          }
+        ]
+      },
+      {
+        "action": "{const s=document.querySelector('.chart-panel select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s,'all');s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.chart-data').open=true;}",
+        "ready": "document.querySelector('.chart-panel select')?.value==='all'&&document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanningRef?.history?.length",
+        "checks": [
+          {
+            "id": "REF-ORIGINAL-HISTORY",
+            "condition": "(()=>{const d=new Date('2012-06-22T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const row=[...document.querySelectorAll('.chart-data tbody tr')].find(r=>r.cells[0].textContent===d);const a=row?.querySelector('a.evidence-link');if(!row||!a)return false;const u=new URL(a.href);const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',currencyDisplay:'code',maximumFractionDigits:2}).format(793);return row.cells[1].textContent.replace(/\\s/g,'')===money.replace(/\\s/g,'')&&u.pathname==='/evidence/dd059a09eecb1fa01cadb24a4f21a7768d97d9e31684dee6a57222c536faf6a8'&&u.searchParams.get('locator')===\"PDF page 4,table 1,column 1,line 3\";})()",
+            "expected": "Independently anchored 2012-06-22 793 COP original price/document/locator persists in complete history"
           }
         ]
       }
@@ -380,13 +413,13 @@
     "ready": "!!document.querySelector('[data-testid=\"current-product-price\"]')",
     "steps": [
       {
-        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};",
-        "ready": "true",
+        "action": "window.__pn=v=>new Intl.NumberFormat('es-CO',{maximumFractionDigits:1}).format(v);window.__pm=v=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(v);window.__ps=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('change',{bubbles:true}));};window.__pi=(el,v)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,String(v));el.dispatchEvent(new Event('input',{bubbles:true}));};\nwindow.__qaPlanningRef=null;window.__qaPlanningRefError=null;fetch('/api/references?id='+encodeURIComponent(location.pathname.split('/').pop()),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('reference '+r.status);return r.json()}).then(x=>window.__qaPlanningRef=x).catch(e=>window.__qaPlanningRefError=String(e));",
+        "ready": "!!window.__qaPlanningRef?.reference||!!window.__qaPlanningRefError",
         "checks": [
           {
             "id": "REF-02",
-            "condition": "document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.price==='2.786'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.currency==='USD'&&document.querySelector('[data-testid=\"current-product-price\"]')?.dataset.unit===\"lb\"",
-            "expected": "Literal2.786USD/lb"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,card=document.querySelector('[data-testid=current-product-price]'),head=document.querySelector('.product-price-header');if(!q||!card||!head)return false;const d=new Date(String(q.observed_on).slice(0,10)+'T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});return Number(card.dataset.price)===Number(q.price)&&card.dataset.currency===q.currency&&card.dataset.unit===q.unit&&head.textContent.includes(d);})()",
+            "expected": "Moving reference card price/date/unit/currency match same-key API; independent archived original stays pinned in following history check"
           },
           {
             "id": "REF-07",
@@ -395,8 +428,19 @@
           },
           {
             "id": "REF-02",
-            "condition": "(()=>{const a=document.querySelector('.product-price-header a.evidence-link');const u=new URL(a.href);return u.pathname==='/evidence/f2c4c670ea1ae46098cd4c00a29d77e63c8bd308aa2d96ecbd2de558428a7056'&&u.searchParams.get('locator')===\"PDF page 1; fnc-ny-contract-c-daily\"})()",
-            "expected": "Exact original and locator in source link"
+            "condition": "(()=>{const q=window.__qaPlanningRef?.reference,a=document.querySelector('.product-price-header a.evidence-link');if(!q||!a)return false;const u=new URL(a.href);return u.pathname==='/evidence/'+q.document_id&&(!q.source_locator||u.searchParams.get('locator')===q.source_locator)&&(!q.source_page||u.searchParams.get('page')===String(q.source_page));})()",
+            "expected": "Moving reference current source link matches same-key API; archived original link remains pinned in following history check"
+          }
+        ]
+      },
+      {
+        "action": "{const s=document.querySelector('.chart-panel select');Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(s,'all');s.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('.chart-data').open=true;}",
+        "ready": "document.querySelector('.chart-panel select')?.value==='all'&&document.querySelectorAll('.chart-data tbody tr').length===window.__qaPlanningRef?.history?.length",
+        "checks": [
+          {
+            "id": "REF-ORIGINAL-HISTORY",
+            "condition": "(()=>{const d=new Date('2026-09-25T12:00:00Z').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric',timeZone:'America/Bogota'});const row=[...document.querySelectorAll('.chart-data tbody tr')].find(r=>r.cells[0].textContent===d);const a=row?.querySelector('a.evidence-link');if(!row||!a)return false;const u=new URL(a.href);const money=new Intl.NumberFormat('es-CO',{style:'currency',currency:'USD',currencyDisplay:'code',maximumFractionDigits:4}).format(2.786);return row.cells[1].textContent.replace(/\\s/g,'')===money.replace(/\\s/g,'')&&u.pathname==='/evidence/f2c4c670ea1ae46098cd4c00a29d77e63c8bd308aa2d96ecbd2de558428a7056'&&u.searchParams.get('locator')===\"PDF page 1; fnc-ny-contract-c-daily\";})()",
+            "expected": "Independently anchored 2026-09-25 2.786 USD original price/document/locator persists in complete history"
           }
         ]
       }

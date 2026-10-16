@@ -1,0 +1,350 @@
+{
+  "format": 1,
+  "review_source": {
+    "path": "artifacts/qa-resumed-20261001/root-penol-jan2024-printed-date-review-20261016-a/ROOT_MANUAL_TEN_ROW_DATE_REVIEW_FIRST_A.json",
+    "sha256": "018dda8262928e87a6ca32cb4e11b268a090fef01c62e61319ebbf61aa0aa751",
+    "method": "Root independently physically read whole source page; manually transcribed ten literal price rows from pixels, not parser output",
+    "page_png_sha256": "61e801a3937acbb3d999831594a3af02946df0221f26bfc82ec99c9175328647"
+  },
+  "source": {
+    "url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-25ene2024.zip",
+    "archive_sha256": "503a044d44069e1bbb39d18f5082c86cc1489ad697c823c1345920cda56b8a2b",
+    "archive_publication_day": "2024-01-25",
+    "manifest_roster_sha256": "caead03dd510cb3bf0c4565d8a8a804840f5a28a61eab07529ca7e398ca750fe",
+    "roster": [
+      {
+        "entry": "Arauca (Arauca)-25-01-2024.pdf",
+        "document_id": "42c0ef95de345d88c55e3e4b334413aa63c480a4300f9c219e0ab07638e73021"
+      },
+      {
+        "entry": "Armenia, Mercar 25-1-2024.pdf",
+        "document_id": "f7b1980c7b511bf7a12fdfb325862df6ab64b35571a7ccd935f9306dbc21a412"
+      },
+      {
+        "entry": "Bogotá, D.C., Corabastos-25-01-2024.pdf",
+        "document_id": "48e6600dc985d7bc4d69cfaaa5a696a30bb273f30e4227ddc97b31c5a07ecb1b"
+      },
+      {
+        "entry": "Bogotá, D.C., Frigorífico Guadalupe-25-01-2024.pdf",
+        "document_id": "0f7d4c42410ea273319a4ca041e001d50f9d88b8be942f3d4156a6572855cfac"
+      },
+      {
+        "entry": "Bucaramanga, Centroabastos-25-01-2024.pdf",
+        "document_id": "b332e3c4bfc8f2a5b99f4321ebcfc5820f395b880598c690c8314ac085cfdf79"
+      },
+      {
+        "entry": "Cali, Cavasa 25-1-2024.pdf",
+        "document_id": "cdecfddad1fe4ebca9f32b3943e89d199bc955ee52e04663e263ff7c15dac98a"
+      },
+      {
+        "entry": "Cúcuta, Cenabastos-25-01-2024.pdf",
+        "document_id": "086a29a6bea94601e0472ab96b63d2962e80909ae57e92a5a0740c46a2cfef2d"
+      },
+      {
+        "entry": "Cúcuta, La Nueva Sexta-25-01-2024.pdf",
+        "document_id": "dfcddfbc084eec3e5215f862ccbafaadf5d62627304bff6e997f2ce79d47b88c"
+      },
+      {
+        "entry": "Florencia (Caquetá)-25-01-2024.pdf",
+        "document_id": "72022723b4563adb1c4af04c452ed2fa4b729992822fe2493d1243c18c77df4c"
+      },
+      {
+        "entry": "Ibagué, La 21 25-1-2024.pdf",
+        "document_id": "037e2ff37bf1acc48f99ec933b735d8530a2164d69a6d9afc77a9d7db92f74db"
+      },
+      {
+        "entry": "Ipiales, Ipiales somos todos 25-1-2024.pdf",
+        "document_id": "6cdcd480ab4ccffe90fe67a0dba931e9f9ee3b2468267a02553ab0e2d28dc883"
+      },
+      {
+        "entry": "La Ceja, 25-1-2024.pdf",
+        "document_id": "c7b0e5100729a042c54266568b8a95083f86fd669a3bf180a49b572505e66a21"
+      },
+      {
+        "entry": "La Unión (Antioquia)-24-01-2024.pdf",
+        "document_id": "e8361774ec42ba59b085fcefe565496309c2bbad5d2750016c09f9f3c3ac99ac"
+      },
+      {
+        "entry": "Manizales, Centro Galerias 25-1-2024.pdf",
+        "document_id": "2a741432e84e869eef6c24aad5b61e716c688f85b1217209d3cd7562025f07f0"
+      },
+      {
+        "entry": "Marinilla (Antioquia)-24-01-2024.pdf",
+        "document_id": "cf23ffebac69865186db5c0808ba9c623f93c9057b6eb051d6b49c36e84eb208"
+      },
+      {
+        "entry": "Medellín, Central Mayorista de Antioquia-25-01-2024.pdf",
+        "document_id": "652e81f820a54dca4e74768fda28ad0d944e884e770f51b5b473ba70c5104533"
+      },
+      {
+        "entry": "Medellín, José María Villa 25-1-2024.pdf",
+        "document_id": "cea9b437d3886fb18eeca6c6dca77f7b733c410bc46463df394e2f70f2453829"
+      },
+      {
+        "entry": "Neiva, Surabastos-25-01-2024.pdf",
+        "document_id": "91ac1a4f6fa302e5d9fd0f8e1897f552e42143aa5714537d142cd955ac2495c2"
+      },
+      {
+        "entry": "Pamplona (Norte de Santander)-25-01-2024.pdf",
+        "document_id": "4b809eb76971a839b03022461d65fea71b6a34cc1918456ec6dcb19b1717b7ea"
+      },
+      {
+        "entry": "Pasto, El Poterrillo 25-1-2024.pdf",
+        "document_id": "73b0a537a5bb3fcd0613b4123c76122baa55c9a07682273e20e522819b36c3bb"
+      },
+      {
+        "entry": "Pereira, La 41 25-1-2024.pdf",
+        "document_id": "f222f250473104171b69ebde5bd48d526a959a14ade3fd6668a0a538b9d844cb"
+      },
+      {
+        "entry": "Pereira, Mercasa 25-1-2024.pdf",
+        "document_id": "fb1628abf76891b0b8d6f2c7ea2885699df27b3933208b1fe0c64c5c4010fbd5"
+      },
+      {
+        "entry": "Peñol, 25-1-2024.pdf",
+        "document_id": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87"
+      },
+      {
+        "entry": "Rionegro, 25-1-2024.pdf",
+        "document_id": "2da9bb08008737a6b22d05d1f8bba390880cf11740ecff82ae970b38d10f7b0d"
+      },
+      {
+        "entry": "Santa barbara, 25-1-2024.pdf",
+        "document_id": "48a623a57195deab8d0c5f8d37057794942089b2642af511e0c56ece4d19b079"
+      },
+      {
+        "entry": "Santa Marta, 25-1-2024.pdf",
+        "document_id": "26a0c0ae9fc70c8785b84f7550a42504d9da2da212abb7a7960d8c9dba080e3c"
+      },
+      {
+        "entry": "Socorro (Santander)-25-01-2024.pdf",
+        "document_id": "0b746141e26639bce60a389ff7f8463ec0f8e70cf2a120511a2eab8ef9a741c7"
+      },
+      {
+        "entry": "Tibasosa (Boyacá), Coomproriente-25-01-2024.pdf",
+        "document_id": "e656fcdb86aa14510f5004f12dd51eed8c9eafc1e9b47f0287f9b6d652ae61d1"
+      },
+      {
+        "entry": "Tuluá, 25-1-2024.pdf",
+        "document_id": "89f7d55d882adf8ce148ffc8747fda92c2af3c4b0380e3afad374880d5ecc378"
+      },
+      {
+        "entry": "Tunja, Complejo de Servicios del Sur-25-01-2024.pdf",
+        "document_id": "cf0011a87c9650966297ffcf29f30bc16b8b3a9eecf4b954599c0f2af72c3a67"
+      }
+    ],
+    "member_entry": "Peñol, 25-1-2024.pdf",
+    "member_document_id": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+    "printed_measurement_day": "2024-01-23",
+    "printed_market": "Peñol (Antioquia)",
+    "page_count": 1,
+    "page": 1,
+    "source_locator": "PDF page 1",
+    "image_document_id": "03c81e52b0b3c234c49548de93fa97d6d0ca08e8ba8109cd77a6bab4f5dfa252",
+    "image_bytes_sha256": "03c81e52b0b3c234c49548de93fa97d6d0ca08e8ba8109cd77a6bab4f5dfa252",
+    "image_bytes": 147352,
+    "task": {
+      "document_id": "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87",
+      "source_locator": "PDF page 1",
+      "image_id": "03c81e52b0b3c234c49548de93fa97d6d0ca08e8ba8109cd77a6bab4f5dfa252",
+      "source_kind": "city-pdf",
+      "source_page": 1,
+      "status": "review",
+      "error": "Independent OCR readings disagree or contain uncertainty; not published as prices"
+    },
+    "image_metadata": {
+      "parents": [
+        "922666201d68c3b53db5da45d6c489c1a2c930223891351acf2d616b2ddd7c87"
+      ],
+      "retention": "permanent",
+      "archive_entry": "rendered-source.png",
+      "ingestion_kind": "ocr-image",
+      "original_filename": "rendered-source.png"
+    },
+    "ocr_version": "gemini-image-ocr-v2",
+    "reading_sha256": {
+      "0": "a26ef9ecb7f07fc687e08e965cc467aa442ba92ff9372c90c3322d152bb1ac1a",
+      "1": "686e9f39351cb3414a1604081c3118d9f4093a9710e30152e6091417761fb43a"
+    },
+    "normalized_projection_rows_sha256": "27277ad95452ed0dc7a5402d277877dd3e66b697732791f4846da1c95f89324e"
+  },
+  "round1_time": "15:30–17:30",
+  "manual_to_projected_text": {
+    "literal_category_path": {
+      "3": {
+        "manual": "Tuberculos, raices y platanos > PlÁtano",
+        "projected": "Tuberculos, raices y platanos > Plátano",
+        "source_ocr_variants": [
+          "PlÁtano",
+          "PlÁtano"
+        ]
+      }
+    },
+    "presentation": {
+      "9": {
+        "manual": "Caja de cartón",
+        "projected": "Caja de cartÓn",
+        "source_ocr_variants": [
+          "Caja de cartÓn",
+          "Caja de cartÓn"
+        ]
+      }
+    },
+    "product": {
+      "6": {
+        "manual": "Fríjol verde cargamanto",
+        "projected": "Fríjol verde cargamanto",
+        "source_ocr_variants": [
+          "Frijol verde cargamanto",
+          "Fríjol verde cargamanto"
+        ]
+      }
+    }
+  },
+  "manual_rows": [
+    {
+      "product": "Limón mandarino",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1400,
+      "round1_max_COP": 1500,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Frutas",
+        "Cítricos"
+      ]
+    },
+    {
+      "product": "Gulupa",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1200,
+      "round1_max_COP": 1200,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "product": "Tomate de árbol",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1800,
+      "round1_max_COP": 1800,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Frutas",
+        "Otras frutas"
+      ]
+    },
+    {
+      "product": "Plátano guineo",
+      "presentation": "Racimo",
+      "quantity": 15,
+      "unit": "Kilogramo",
+      "round1_min_COP": 13000,
+      "round1_max_COP": 14000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Tuberculos, raices y platanos",
+        "PlÁtano"
+      ]
+    },
+    {
+      "product": "Papa capira",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 1800,
+      "round1_max_COP": 2000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "product": "Papa nevada",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 2200,
+      "round1_max_COP": 2200,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Tuberculos, raices y platanos",
+        "Papa"
+      ]
+    },
+    {
+      "product": "Fríjol verde cargamanto",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 3000,
+      "round1_max_COP": 3200,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Leguminosas"
+      ]
+    },
+    {
+      "product": "Chócolo mazorca",
+      "presentation": "Carga",
+      "quantity": 120,
+      "unit": "Kilogramo",
+      "round1_min_COP": 130000,
+      "round1_max_COP": 140000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "product": "Pimentón",
+      "presentation": "Kilogramo",
+      "quantity": 1,
+      "unit": "Kilogramo",
+      "round1_min_COP": 3200,
+      "round1_max_COP": 3500,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Otras hortalizas y verduras"
+      ]
+    },
+    {
+      "product": "Tomate chonto regional",
+      "presentation": "Caja de cartón",
+      "quantity": 10,
+      "unit": "Kilogramo",
+      "round1_min_COP": 28000,
+      "round1_max_COP": 30000,
+      "round2_min": 0,
+      "round2_max": 0,
+      "literal_category_path": [
+        "Verduras y hortalizas",
+        "Tomates"
+      ]
+    }
+  ],
+  "manual_round_time_to_projection": {
+    "manual": "15:30–17:30",
+    "projected": "Ronda 1 15:30 - 17:30"
+  }
+}

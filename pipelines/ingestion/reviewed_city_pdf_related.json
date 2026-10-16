@@ -1,0 +1,406 @@
+{
+  "rules": [
+    {
+      "children": [
+        {
+          "bytes": 23994,
+          "crc32": 2239894260,
+          "document_id": "5be8fcc9d8fe44778d1c013d955fe83835429ef413461981061d728d48179621",
+          "filename": "Barranquilla, Barranquillita 13-5-2024.pdf",
+          "native_rows": 46,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 20815,
+          "crc32": 1943764796,
+          "document_id": "15fcffe84a3279989bc01e302b92b7b683b41b0f673bc23a051dd091e99b127b",
+          "filename": "Barranquilla, Granabastos 13-5-2024.pdf",
+          "native_rows": 29,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 30675,
+          "crc32": 3005899330,
+          "document_id": "91e715144d3e2f268fe6baaa22879c99693d10bc754e49f0853b80bdaf45cfc3",
+          "filename": "Bogotá, Corabastos 13-5-2024.pdf",
+          "native_rows": 192,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 25792,
+          "crc32": 2403525780,
+          "document_id": "3f718b63a8d5a37ba55fee788d25dd496523a0ae7498fe800c710924adfcd3f8",
+          "filename": "Cali, Cavasa 13-5-2024.pdf",
+          "native_rows": 122,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 23170,
+          "crc32": 3266713280,
+          "document_id": "e51069867ec3926d8421069ee4e4bcbf3d3b644c655e3b8f9aebbb52cb11e7d9",
+          "filename": "Cali, la Floresta 13-5-2024.pdf",
+          "native_rows": 39,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 23890,
+          "crc32": 941004042,
+          "document_id": "2c52b78acad907950eb285f2136ce8b101fab840040d63cdc8b7974c91d26891",
+          "filename": "Cartagena, Bazurto 13-5-2024.pdf",
+          "native_rows": 44,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 18454,
+          "crc32": 1204417784,
+          "document_id": "2a079b59d14eee5c26bbffe668cdfad2b30935fb124d30ebadfffa14e64caede",
+          "filename": "El Santuario, 13-5-2024.pdf",
+          "native_rows": 9,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 17425,
+          "crc32": 3637224211,
+          "document_id": "0e27f3cfb53f0698c8ae79c95410c406ed0e007def58d5681031a53621f5f71c",
+          "filename": "Ipiales, Centro de acopio 13-5-2024.pdf",
+          "native_rows": 4,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 19355,
+          "crc32": 1020750294,
+          "document_id": "6c6d8c6f64ac6eda07961e2ddaae8cbb342cb5b27f36abd7577420a85af6cd33",
+          "filename": "Marinilla 13-5-2024.pdf",
+          "native_rows": 18,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 24638,
+          "crc32": 1270071576,
+          "document_id": "2830cf399c905eab54f58fa0b8fa1a6ea9aeac32310c7c412467f36739f06d77",
+          "filename": "Montería, 14-5-2024.pdf",
+          "native_rows": 51,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 24148,
+          "crc32": 1583548243,
+          "document_id": "1e3141a337852880da9b3fa8b3224c098c5c41ef63ed951362c76671db1b194a",
+          "filename": "Pasto, El Potrerillo 13-5-2024.pdf",
+          "native_rows": 46,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 23223,
+          "crc32": 2196923642,
+          "document_id": "3549c511df4ba5998cf4af2ab13865d0f5b3992feafd1a1bae2066883e14cea7",
+          "filename": "Rionegro, 13-5-2024.pdf",
+          "native_rows": 39,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 24023,
+          "crc32": 1175002016,
+          "document_id": "85c2454dbf46164dea535f3202e4677e47ea09f8e6315f09caa7938b8595a3a2",
+          "filename": "San Gil, 13-5-2024.pdf",
+          "native_rows": 46,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 19356,
+          "crc32": 887607575,
+          "document_id": "c4205d6956326c9f0dedf01dfeef6d65e689d525407eb4a73faf07b787dc35e2",
+          "filename": "Santa Marta, 13-5-2024.pdf",
+          "native_rows": 16,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 24090,
+          "crc32": 2408417860,
+          "document_id": "a07471684c4b952e53bd79dcc4b67c760a64291ad7d6161efaf11a327980c0c5",
+          "filename": "Sincelejo, 13-5-2024.pdf",
+          "native_rows": 46,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 23652,
+          "crc32": 815326223,
+          "document_id": "d455628b546dcde24e9163dda662e31dc5457735bb6467e6719fb545621f5acd",
+          "filename": "Tuluá, 13-5-2024.pdf",
+          "native_rows": 43,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 21020,
+          "crc32": 1873240547,
+          "document_id": "c3cdfc5f2af4cb12d68f8371768ab2c24d8dcc16ca13f10d6c783a1a88a1c874",
+          "filename": "Valledupar, Mercabastos 13-5-2024.pdf",
+          "native_rows": 30,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 18804,
+          "crc32": 814709331,
+          "document_id": "3880f2a477736bb59fd44b49eab6931665b9c87dc3d6d3c990ebb04c1ea3d419",
+          "filename": "Valledupar, Mercado Nuevo 13-5-2024.pdf",
+          "native_rows": 12,
+          "printed_day": "2024-05-13"
+        },
+        {
+          "bytes": 26178,
+          "crc32": 163738076,
+          "document_id": "8bfa5cafbbdb2ea5ab3a55dbb2fc6d52bb9feb8ab9caba705399c963c11b86a8",
+          "filename": "Villavicencio, CAV 13-5-2024.pdf",
+          "native_rows": 66,
+          "printed_day": "2024-05-13"
+        }
+      ],
+      "later_zip_asset_records": 4320,
+      "later_zip_asset_version": "city-v3",
+      "later_zip_bytes": 1735065,
+      "later_zip_day": "2024-05-14",
+      "later_zip_id": "d6d74c9f6707cb9c8a4973fd50fd4e7197e3ed9a68a48d50b62c70dc454f9047",
+      "later_zip_kind": "city-zip",
+      "later_zip_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-14may2024.zip",
+      "missing_kind": "city-pdf",
+      "missing_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-13may2024.pdf",
+      "official_link_label": "Boletín regional Bogotá",
+      "related_label_child_ids": [
+        "91e715144d3e2f268fe6baaa22879c99693d10bc754e49f0853b80bdaf45cfc3"
+      ],
+      "requested_day": "2024-05-13",
+      "requested_day_child_count": 19,
+      "requested_day_native_rows": 898
+    },
+    {
+      "children": [
+        {
+          "bytes": 155892,
+          "crc32": 501822504,
+          "document_id": "45d028d30aa0de5a3a168f9043d6fcd7413acc3294fb646b17d92dfd80cbb236",
+          "filename": "Bogotá, D.C., Corabastos-27-09-2025.pdf",
+          "native_rows": 200,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 120688,
+          "crc32": 1035323442,
+          "document_id": "3d5e2365e51981565f287e668711bd62478d967e404913ea9e71af23766e2a44",
+          "filename": "Bucaramanga, Centroabastos-27-09-2025.pdf",
+          "native_rows": 144,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 100627,
+          "crc32": 2811268985,
+          "document_id": "839c67119b0f776ec710aecb5ab9e5621686dfd3219a700f998e87f98b2a8a5e",
+          "filename": "Cali, Santa Elena-27-09-2025.pdf",
+          "native_rows": 57,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 27825,
+          "crc32": 2022280997,
+          "document_id": "8d6c1be6f44910cd9c8db9d1564b3505759b35bd03d6f60ce1fff3f60cf5c6eb",
+          "filename": "Caparrapí (Cundinamarca)-27-09-2025.pdf",
+          "native_rows": 3,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 121915,
+          "crc32": 3491935301,
+          "document_id": "05b1aa8f3c6a9d66ae9299d30e9929a68a593356e47da42520b6be6a573fd45e",
+          "filename": "Cúcuta, Cenabastos-27-09-2025.pdf",
+          "native_rows": 113,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 36269,
+          "crc32": 1451089626,
+          "document_id": "5b30ecaee0d1539519ef273e331354de54dc2e5944bdf50df7a30784473bd936",
+          "filename": "Cúcuta, La Nueva Sexta-27-09-2025.pdf",
+          "native_rows": 9,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 26582,
+          "crc32": 1180873486,
+          "document_id": "3b589888b4858b21341cb0b356e037a8fe823fcc8e15581c64afb2b96b1372a3",
+          "filename": "El Carmen de Viboral (Antioquia)-27-09-2025.pdf",
+          "native_rows": 2,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 33280,
+          "crc32": 656717587,
+          "document_id": "1bd12cad9ea7aa05ea6ae8f038bcf43c9044b07a8c50825e9dde93a74362e1ec",
+          "filename": "La Unión (Antioquia)-27-09-2025.pdf",
+          "native_rows": 7,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 52484,
+          "crc32": 2116826925,
+          "document_id": "7c0aa490b3e316bcefc4f271d782665ffc27b2945ab8cd50be67a46a35d117cb",
+          "filename": "La Unión (Nariño)-27-09-2025.pdf",
+          "native_rows": 21,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 51200,
+          "crc32": 3817597032,
+          "document_id": "ec66e6beb591ac305fb8048f297537d7a580ef44267e743f902d1664f44e048a",
+          "filename": "Marinilla (Antioquia)-27-09-2025.pdf",
+          "native_rows": 20,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 156633,
+          "crc32": 3549648244,
+          "document_id": "601b33e26a79bbb8696b11ff3e77397f851710432e398815158254c6a309408b",
+          "filename": "Medellín, Central Mayorista de Antioquia-27-09-2025.pdf",
+          "native_rows": 202,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 97396,
+          "crc32": 1892327292,
+          "document_id": "175549fe7fedb697f1cc6f67d86bcbf1782157e029c74ccdcd9419ced5c7cecc",
+          "filename": "Medellín, Plaza Minorista-27-09-2025.pdf",
+          "native_rows": 108,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 108655,
+          "crc32": 4268160738,
+          "document_id": "b5ac4c9781eff5ee67f405be19da15b3af8d6c6123788fba54e63da0aaf61ce6",
+          "filename": "Neiva, Surabastos-27-09-2025.pdf",
+          "native_rows": 64,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 26652,
+          "crc32": 2665756556,
+          "document_id": "42b350494f5247757c9dec980cf9ed22eb31ce08572d28a911963c87d31b30ea",
+          "filename": "Nocaima (Cundinamarca)-27-09-2025.pdf",
+          "native_rows": 2,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 83819,
+          "crc32": 3045651726,
+          "document_id": "39631a7389d2af9695ea6b4e75bc0307df1e48bd11124db8a7077e8c85825774",
+          "filename": "Palmira (Valle del Cauca)-27-09-2025.pdf",
+          "native_rows": 43,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 42811,
+          "crc32": 1449662808,
+          "document_id": "b78f5e63e250c74d9c55065976179b2f73c45d7dcd3defaf7f3549b3a9925aff",
+          "filename": "Peñol (Antioquia)-27-09-2025.pdf",
+          "native_rows": 12,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 80563,
+          "crc32": 7907003,
+          "document_id": "45c2ac4d4c2a6a519a870e873603c87f77d772a9f001087832cb2f461710f7f8",
+          "filename": "Rionegro (Antioquia)-27-09-2025.pdf",
+          "native_rows": 65,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 26609,
+          "crc32": 4036390308,
+          "document_id": "a21af7d6a7e2fa88abef1658371761919ec8e891e68a004d650efdf91c13071d",
+          "filename": "San Gil (Santander), panela-27-09-2025.pdf",
+          "native_rows": 2,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 29063,
+          "crc32": 3551274832,
+          "document_id": "05ef9d08f768a1ba22fb9a7023aea2826d7a52cd6c85612bd34b94a99788a7c2",
+          "filename": "San Sebastián de Mariquita (Tolima)-27-09-2025.pdf",
+          "native_rows": 4,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 43677,
+          "crc32": 1785112003,
+          "document_id": "8cc211ebfd625879e12b33dc425ab0138546b34c90d6e43ed66284e81d424946",
+          "filename": "Santana (Boyacá)-27-09-2025.pdf",
+          "native_rows": 16,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 53717,
+          "crc32": 2144703314,
+          "document_id": "6aa8d604d1df5b72c44fe932b82cb73ea4a07a93556b8691ccfa3d162e61957f",
+          "filename": "Sonsón (Antioquia)-27-09-2025.pdf",
+          "native_rows": 21,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 26623,
+          "crc32": 889741363,
+          "document_id": "aa9d1ae8c53f502a2850ff90a4998b19ebb209c1e05efc4bd0e19eedab582abd",
+          "filename": "Vélez (Santander)-27-09-2025.pdf",
+          "native_rows": 2,
+          "printed_day": "2025-09-27"
+        },
+        {
+          "bytes": 30452,
+          "crc32": 205900604,
+          "document_id": "015a9b04f58f11785451bff06929181a2ed79062d171c95329a4763c928fb08d",
+          "filename": "Villeta (Cundinamarca)-27-09-2025.pdf",
+          "native_rows": 5,
+          "printed_day": "2025-09-27"
+        }
+      ],
+      "later_zip_asset_records": 2619,
+      "later_zip_asset_version": "city-v3",
+      "later_zip_bytes": 1304812,
+      "later_zip_day": "2025-09-29",
+      "later_zip_id": "f34da66c526081e3d91c8bc8cc722a66692b1796e3c22830fe13027bae7b7d03",
+      "later_zip_kind": "city-zip",
+      "later_zip_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-29sep2025.zip",
+      "missing_kind": "city-pdf",
+      "missing_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-27sep2025.pdf",
+      "official_link_label": "Informes por ciudades",
+      "related_label_child_ids": [
+        "45d028d30aa0de5a3a168f9043d6fcd7413acc3294fb646b17d92dfd80cbb236",
+        "3d5e2365e51981565f287e668711bd62478d967e404913ea9e71af23766e2a44",
+        "839c67119b0f776ec710aecb5ab9e5621686dfd3219a700f998e87f98b2a8a5e",
+        "8d6c1be6f44910cd9c8db9d1564b3505759b35bd03d6f60ce1fff3f60cf5c6eb",
+        "05b1aa8f3c6a9d66ae9299d30e9929a68a593356e47da42520b6be6a573fd45e",
+        "5b30ecaee0d1539519ef273e331354de54dc2e5944bdf50df7a30784473bd936",
+        "3b589888b4858b21341cb0b356e037a8fe823fcc8e15581c64afb2b96b1372a3",
+        "1bd12cad9ea7aa05ea6ae8f038bcf43c9044b07a8c50825e9dde93a74362e1ec",
+        "7c0aa490b3e316bcefc4f271d782665ffc27b2945ab8cd50be67a46a35d117cb",
+        "ec66e6beb591ac305fb8048f297537d7a580ef44267e743f902d1664f44e048a",
+        "601b33e26a79bbb8696b11ff3e77397f851710432e398815158254c6a309408b",
+        "175549fe7fedb697f1cc6f67d86bcbf1782157e029c74ccdcd9419ced5c7cecc",
+        "b5ac4c9781eff5ee67f405be19da15b3af8d6c6123788fba54e63da0aaf61ce6",
+        "42b350494f5247757c9dec980cf9ed22eb31ce08572d28a911963c87d31b30ea",
+        "39631a7389d2af9695ea6b4e75bc0307df1e48bd11124db8a7077e8c85825774",
+        "b78f5e63e250c74d9c55065976179b2f73c45d7dcd3defaf7f3549b3a9925aff",
+        "45c2ac4d4c2a6a519a870e873603c87f77d772a9f001087832cb2f461710f7f8",
+        "a21af7d6a7e2fa88abef1658371761919ec8e891e68a004d650efdf91c13071d",
+        "05ef9d08f768a1ba22fb9a7023aea2826d7a52cd6c85612bd34b94a99788a7c2",
+        "8cc211ebfd625879e12b33dc425ab0138546b34c90d6e43ed66284e81d424946",
+        "6aa8d604d1df5b72c44fe932b82cb73ea4a07a93556b8691ccfa3d162e61957f",
+        "aa9d1ae8c53f502a2850ff90a4998b19ebb209c1e05efc4bd0e19eedab582abd",
+        "015a9b04f58f11785451bff06929181a2ed79062d171c95329a4763c928fb08d"
+      ],
+      "requested_day": "2025-09-27",
+      "requested_day_child_count": 23,
+      "requested_day_native_rows": 1122
+    }
+  ],
+  "schema": "private-cross-kind-resolution-source-binding-v1",
+  "scope": "Two missing standalone city-PDF links; later ZIPs and requested-day children remain distinct originals; no byte equivalence claimed",
+  "source_proof_path": "/Users/ethan/Documents/development/agro-amigo-monorepo/artifacts/qa-resumed-20261001/two-later-city-linked-originals-20261007-a/REQUESTED_CHILDREN_FIRST_A.json",
+  "source_proof_sha256": "d9fb5658fd9604d5e8db773451d8444f36fbbe07cd703b279617bac3fa29af9f"
+}

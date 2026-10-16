@@ -5,6 +5,7 @@ import { ErrorState } from "@/components/marketplace/Shared";
 import { EMPTY_FARM, useFarm } from "./FarmContext";
 import type { FarmData, FarmProfile, Municipality } from "@/lib/planning-types";
 import { FarmLocation } from "@/components/farms/FarmLocation";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { fold } from "@/lib/planning-math";
 export function FarmEditor({
   onSaved,
@@ -127,55 +128,32 @@ export function FarmEditor({
             onChange={(p) => setDraft((d) => ({ ...d, ...p }))}
           />
           <div className="form-grid">
-            <label className="form-field">
-              Departamento
-              <select
-                required
-                aria-label="Departamento"
-                value={department}
-                onChange={(e) => {
-                  setDepartment(e.target.value);
-                  setDraft((d) => ({
-                    ...d,
-                    municipalityId: "",
-                    cropCode: "",
-                  }));
-                }}
-              >
-                <option value="">
-                  {places.loading
-                    ? "Cargando municipios…"
-                    : "Selecciona tu departamento"}
-                </option>
-                {departments.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
-            </label>
-            <label className="form-field">
-              Municipio
-              <select
-                required
-                aria-label="Municipio"
-                value={draft.municipalityId}
-                onChange={(e) =>
-                  setDraft((d) => ({
-                    ...d,
-                    municipalityId: e.target.value,
-                    cropCode: "",
-                  }))
-                }
-              >
-                <option value="">Selecciona tu municipio</option>
-                {places.data
-                  ?.filter((m) => m.department === department)
-                  .map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.name}
-                    </option>
-                  ))}
-              </select>
-            </label>
+            <SearchableSelect
+              label="Departamento"
+              placeholder="Busca tu departamento…"
+              emptyLabel="Selecciona tu departamento"
+              value={department}
+              options={departments.map((d) => ({ id: d, label: d }))}
+              loading={places.loading}
+              error={!!places.error}
+              onChange={(id) => {
+                setDepartment(id);
+                setDraft((d) => ({ ...d, municipalityId: "", cropCode: "" }));
+              }}
+            />
+            <SearchableSelect
+              key={department}
+              label="Municipio"
+              placeholder="Busca tu municipio…"
+              emptyLabel={department ? "Selecciona tu municipio" : "Selecciona primero un departamento"}
+              value={draft.municipalityId}
+              options={(places.data || [])
+                .filter((m) => m.department === department)
+                .map((m) => ({ id: m.id, label: m.name, detail: m.department }))}
+              loading={places.loading}
+              error={!!places.error}
+              onChange={(id) => setDraft((d) => ({ ...d, municipalityId: id, cropCode: "" }))}
+            />
           </div>
           {draft.municipalityId && (
             <>
@@ -201,22 +179,25 @@ export function FarmEditor({
                   />
                 </label>
                 {!locationOnly && (
-                  <label className="form-field">
-                    Cultivo principal
-                    <select
-                      aria-label="Cultivo principal"
+                  <div>
+                    <SearchableSelect
+                      key={draft.municipalityId}
+                      label="Cultivo principal"
+                      placeholder="Busca un cultivo reportado…"
+                      emptyLabel="Todavía estoy decidiendo"
                       value={draft.cropCode}
-                      onChange={(e) => patch("cropCode", e.target.value)}
-                    >
-                      <option value="">Todavía estoy decidiendo</option>
-                      {local.data?.crops.map((c) => (
-                        <option key={c.crop_code} value={c.crop_code}>
-                          {c.variety}
-                        </option>
-                      ))}
-                    </select>
+                      options={(local.data?.crops || []).map((c) => ({
+                        id: c.crop_code,
+                        label: c.variety,
+                        detail: c.physical_state,
+                      }))}
+                      loading={local.loading}
+                      error={!!local.error}
+                      selectedLabel={draft.variety}
+                      onChange={(id) => patch("cropCode", id)}
+                    />
                     <small>Opciones reportadas en el municipio por UPRA.</small>
-                  </label>
+                  </div>
                 )}
                 {!locationOnly && (
                   <label className="form-field">

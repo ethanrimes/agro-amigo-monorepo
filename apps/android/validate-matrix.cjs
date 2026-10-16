@@ -47,6 +47,8 @@ const write = ()=>fs.writeFileSync(path.join(out,'report.json'),JSON.stringify(r
       await page.evaluate(old=>{localStorage.clear();for(const[k,v]of Object.entries(old))localStorage.setItem(k,v);const p=JSON.parse(localStorage.getItem('agroamigo-preferences-v2')||'{}');p.region='';localStorage.setItem('agroamigo-preferences-v2',JSON.stringify(p));},original);
       await page.goto(origin+scenario.route,{waitUntil:'domcontentloaded'});
       await page.waitForFunction(scenario.ready||'document.querySelector(".mobile-nav")');
+      await page.waitForFunction(()=>document.readyState==='complete'&&!!document.querySelector('.mobile-nav'));
+      await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       for(const step of scenario.steps){
         if(step.action)await page.evaluate(`(async()=>{${step.action}\n})()`);
         if(step.ready)await page.waitForFunction(step.ready);

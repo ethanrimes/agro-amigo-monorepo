@@ -133,12 +133,33 @@ class CityOCRFallback(unittest.TestCase):
 
     def test_city_ocr_publisher_reconstructs_document_not_isolated_continuation(self):
         db = MagicMock()
-        db.execute.return_value.fetchone.side_effect = [
-            (date(2026, 9, 7),),
-            (self.data,),
-        ]
-        db.execute.return_value.fetchall.return_value = [(READ,), (READ,)]
-        with patch("pipelines.ingestion.city_reports.save_classifications"):
+        retained = []
+        classifications = []
+
+        def execute(sql, params=()):
+            result = MagicMock()
+            result.fetchone.return_value = None
+            result.fetchall.return_value = []
+            if "SELECT max(a.observed_on)" in sql:
+                result.fetchone.return_value = (date(2026, 9, 7),)
+            elif "SELECT content FROM source_document" in sql:
+                result.fetchone.return_value = (self.data,)
+            elif sql.startswith("SELECT id FROM source_document"):
+                result.fetchone.return_value = ("fixture",)
+            elif "SELECT r.result FROM source_ocr_task" in sql:
+                result.fetchall.return_value = [(READ,), (READ,)]
+            elif "SELECT source_locator," in sql and "FROM regional_price " in sql:
+                result.fetchall.return_value = [row[1:] for row in retained]
+            elif "SELECT source_locator,category_path FROM regional_classification" in sql:
+                result.fetchall.return_value = classifications
+            return result
+
+        def save_classifications(_db, _did, rows):
+            classifications.extend((row[0], row[5].split(" > ")) for row in rows)
+
+        db.execute.side_effect = execute
+        db.cursor.return_value.__enter__.return_value.copy.return_value.__enter__.return_value.write_row.side_effect = retained.append
+        with patch("pipelines.ingestion.city_reports.save_classifications", side_effect=save_classifications):
             count = publish_ocr_page(db, "fixture", 2, READ)
         self.assertEqual(count, 2)
         rows = [

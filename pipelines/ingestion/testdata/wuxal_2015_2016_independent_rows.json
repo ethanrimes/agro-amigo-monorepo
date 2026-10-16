@@ -1,0 +1,8 @@
+{
+  "retained_xlsx_sha256": "d1009999ad97fd1397713c5ada088d5f1698d44d19c13db99580fc831522dec5",
+  "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/anex-series-historicas-insumos-2013-2020.xlsx",
+  "rows": [
+    {"locator": "1.2!row 20472", "year": 2015, "month": "Abril", "department_code": 63, "department": "Quindío", "municipality_code": 63001, "municipality": "Armenia", "name": "Wuxal Tapa Negra", "presentation": "1 litro", "price": 30550},
+    {"locator": "1.2!row 28374", "year": 2016, "month": "Febrero", "department_code": 63, "department": "Quindío", "municipality_code": 63001, "municipality": "Armenia", "name": "Wuxal Tapa Negra", "presentation": "1 litro", "price": 34025}
+  ]
+}

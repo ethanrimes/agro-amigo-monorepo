@@ -1,0 +1,70 @@
+{
+  "captured_at": "2026-10-12T12:35:20.777140+00:00",
+  "source_id": "5a8af3b10894d3241907e149a39451d09488bf827d79b52d3789e5a8cfa60f4d",
+  "source_sha256": "5a8af3b10894d3241907e149a39451d09488bf827d79b52d3789e5a8cfa60f4d",
+  "source_bytes": 2307113,
+  "source_metadata_without_body": [
+    "5a8af3b10894d3241907e149a39451d09488bf827d79b52d3789e5a8cfa60f4d",
+    "DANE · SIPSA - Semana_20ago_23ago_2013.pdf",
+    "DANE · SIPSA",
+    "https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/Semana_20ago_23ago_2013.pdf",
+    "application/pdf",
+    "original",
+    "2013-08-23",
+    44,
+    {
+      "retention": "permanent",
+      "ingestion_kind": "dane-weekly-pdf",
+      "original_filename": "Semana_20ago_23ago_2013.pdf"
+    },
+    "974882"
+  ],
+  "asset": [
+    "complete",
+    4163,
+    null,
+    "official-v2:aug2013-page43-grid-article-period-v1:dane-weekly-v24",
+    "2026-10-12T12:27:12.476776+00:00"
+  ],
+  "checkpoints": [
+    [
+      "official-v2:aug2013-page43-grid-article-period-v1:dane-weekly-v24",
+      "official:catalog-start:official-catalog-v1:2026-10-12",
+      4163,
+      "2026-10-12T12:26:21.066200+00:00"
+    ],
+    [
+      "official-v2:aug2013-page43-grid-article-period-v1:dane-weekly-v24",
+      "official:complete",
+      4163,
+      "2026-10-12T12:27:12.404736+00:00"
+    ]
+  ],
+  "typed_quotes": 4163,
+  "unpriced_reviews": 134,
+  "all_20_typed_fields_match_native": true,
+  "all_literal_review_rows_match_native": true,
+  "reviews_by_product": {
+    "Aceite vegetal mezcla": 27,
+    "Huevo blanco A": 10,
+    "Huevo blanco AA": 9,
+    "Huevo blanco B": 8,
+    "Huevo blanco extra": 8,
+    "Huevo rojo A": 20,
+    "Huevo rojo AA": 20,
+    "Huevo rojo B": 14,
+    "Huevo rojo extra": 10,
+    "Jugo de frutas": 8
+  },
+  "files": {
+    "DATABASE_QUOTES.json": "a51a3de1d685094069d01f8e5f5ee7523c69f4e922e6d5a81e41ed6e769012c8",
+    "SOURCE_REVIEWS.json": "07ae3955af5adec9a508b960641b3994b3ba1b42d04076ee0956ebb67931051e",
+    "NATIVE_EXPECTED_QUOTES.json": "5b6ae5721dd711fbf82a0f269ea9f1b0f08179ace98f169db41462916406df91"
+  },
+  "actual_natural_job_id": "f02e1e50-132d-4ebf-9474-b7040f9d98b2",
+  "published_view_and_all_platform_coverage_not_claimed": true,
+  "read_only_role": "agro_reader",
+  "manual_jobs": 0,
+  "provider_calls": 0,
+  "origin_push": false
+}

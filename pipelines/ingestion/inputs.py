@@ -1,10 +1,11 @@
 """All SIPSA input groups, retaining geographic level and commercial identity."""
 
 import calendar
+import hashlib
 import re
 from datetime import date
 
-PUBLICATION_VERSION = "input-rounding-v1"
+PUBLICATION_VERSION = "input-rounding-v1:input-lines-v1"
 
 CATEGORIES = {
     "1.1": "Bioinsumos",
@@ -77,6 +78,14 @@ def parse_inputs(data):
 
     found = 0
     monthly_annex_period = None
+    # DANE's January 2026 department annex has stale "enero 2025" titles only
+    # on sheets 3.1 and 3.2. Its index and other sheets say January 2026,
+    # and both affected sheets carry a February 2026 update footer. Restrict
+    # this correction to the reviewed original bytes.
+    reviewed_january_2026_department_annex = (
+        hashlib.sha256(data).hexdigest()
+        == "34d5381162d54426489410cdfce83d7f08571b9443e3550082617b9907bb6678"
+    )
     for sheet, rows in workbooks(data):
         header = None
         fixed_period = None
@@ -268,6 +277,13 @@ def parse_inputs(data):
                         )
                         if annex_heading:
                             if (
+                                reviewed_january_2026_department_annex
+                                and sheet in {"3.1", "3.2"}
+                                and monthly_annex_period == date(2026, 1, 31)
+                                and candidate == date(2025, 1, 31)
+                            ):
+                                candidate = monthly_annex_period
+                            if (
                                 monthly_annex_period
                                 and monthly_annex_period != candidate
                             ):
@@ -437,13 +453,48 @@ def identity(name, meta):
         + "-"
         + meta.get("ica", "")
     )
+    line = slug(meta.get("line", ""))
+    # Elements can have the same printed product, presentation and maker but
+    # distinct commercial lines (e.g. Finquero and Iowa wire). Other groups,
+    # absent/placeholder lines and names already spelling the line keep their
+    # established IDs. Do not rewrite the literal product name or source row.
+    if (
+        (meta.get("sheet") == "3.2" or meta.get("category") == "Elementos agropecuarios")
+        and line not in {"", "na", "n-a", "no-aplica", "sin-linea"}
+        and line not in slug(name)
+    ):
+        return base + "-linea-" + line
     return base
 
 
-def prepare_input_stage(db, did, observed_on=None, *, preserve=False):
+def input_pdf_version_for_document(did, source_url=None):
+    """Keep exact reviewed originals at v15/v16 and route generic PDFs to v17."""
+    from .pdf_sources import MIXED_FEB2018_INPUT_SHA, MIXED_FEB2018_INPUT_URL
+    from .input_pdf_v17_replay import VERSION as GENERIC_VERSION, OLD_VERSION
+    from .reviewed_wuxal_apr2015 import SHA256, URL, VERSION
+    from .reviewed_quindio_sep2014 import (
+        SHA256 as SEP_SHA256, URL as SEP_URL, VERSION as SEP_VERSION,
+    )
+
+    if did == SHA256:
+        if source_url != URL:
+            raise ValueError("April 2015 Wuxal PDF requires the exact source URL")
+        return VERSION
+    if did == SEP_SHA256:
+        if source_url != SEP_URL:
+            raise ValueError("September 2014 input PDF requires the exact source URL")
+        return SEP_VERSION
+    if did == MIXED_FEB2018_INPUT_SHA:
+        if source_url != MIXED_FEB2018_INPUT_URL:
+            raise ValueError("Mixed February 2018 input PDF requires exact URL")
+        return OLD_VERSION
+    return GENERIC_VERSION
+
+
+def prepare_input_stage(db, did, observed_on=None, *, preserve=False, source_url=None):
     """Stage a complete immutable period before grouping its publication work."""
 
-    from .pdf_sources import INPUT_PDF_VERSION
+    version = input_pdf_version_for_document(did, source_url)
 
     columns = "id,department,observed_on,name,category,presentation,price,document_id,source_locator,brand,registration,product_line,municipality"
     with db.cursor() as cur:
@@ -459,18 +510,23 @@ def prepare_input_stage(db, did, observed_on=None, *, preserve=False):
                     did,
                     observed_on,
                     observed_on,
-                    INPUT_PDF_VERSION,
+                    version,
                     did,
-                    INPUT_PDF_VERSION,
+                    version,
                     did,
                 ),
             )
             while batch := source.fetchmany(2000):
+                aliases = set()
                 with cur.copy(f"COPY input_stage({columns}) FROM STDIN") as cp:
                     for loc, series, day, name, market, unit, price, meta in batch:
+                        key = identity(name, meta)
+                        legacy_key = identity(name, {**meta, "line": ""})
+                        if key != legacy_key:
+                            aliases.add((legacy_key, key))
                         cp.write_row(
                             (
-                                identity(name, meta),
+                                key,
                                 meta.get("department") or market,
                                 day,
                                 name,
@@ -487,16 +543,21 @@ def prepare_input_stage(db, did, observed_on=None, *, preserve=False):
                                 else "",
                             )
                         )
+                if aliases:
+                    cur.executemany(
+                        "INSERT INTO input_identity_alias(legacy_id,id) VALUES(%s,%s) ON CONFLICT DO NOTHING",
+                        sorted(aliases),
+                    )
         cur.execute(
             "CREATE INDEX ON input_stage(id,department,municipality,observed_on)"
         )
         cur.execute("ANALYZE input_stage")
 
 
-def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
+def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None, source_url=None):
     """Publish complete exact identities; a caller owns this transaction."""
     if not staged:
-        prepare_input_stage(db, did, observed_on)
+        prepare_input_stage(db, did, observed_on, source_url=source_url)
     columns = "id,department,observed_on,name,category,presentation,price,document_id,source_locator,brand,registration,product_line,municipality"
     stage = "input_stage"
     with db.cursor() as cur:
@@ -634,16 +695,15 @@ def project_inputs(db, did, observed_on=None, *, staged=False, bounds=None):
     return conflicts
 
 
-def project_pdf_inputs(db, did):
+def project_pdf_inputs(db, did, *, source_url=None, staged=False):
     """Publish a validated PDF and its successful version in one transaction.
 
     The caller's transaction includes every parsed row and all projections.
     Failed parsing/publication therefore cannot change view eligibility. A
     zero-row narrative never calls this function; reviewed literal rows do.
     """
-    from .pdf_sources import INPUT_PDF_VERSION
-
-    version = re.fullmatch(r"inputs-pdf-v([0-9]+)", INPUT_PDF_VERSION)
+    pdf_version = input_pdf_version_for_document(did, source_url)
+    version = re.fullmatch(r"inputs-pdf-v([0-9]+)", pdf_version)
     if version is None:
         raise ValueError("Unsupported input PDF publication version")
     if db.execute(
@@ -655,7 +715,7 @@ def project_pdf_inputs(db, did):
         return (
             0  # A rolled-back deployment may retain, but never republish, old parsing.
         )
-    conflicts = project_inputs(db, did)
+    conflicts = project_inputs(db, did, source_url=source_url, staged=staged)
     # Only repair provenance/presentation from the SAME original and normalized
     # identity, with every other business value identical to the validated row.
     # This is safe even when a newer, equal-valued original advanced the
@@ -677,12 +737,42 @@ def project_pdf_inputs(db, did):
               AND substring(x.source_locator from '; (inputs-pdf-v[0-9]+)$')=%s
               AND coalesce(substring(p.source_locator from '; inputs-pdf-v([0-9]+)$')::numeric,0)<=%s
               AND (p.source_locator,p.presentation) IS DISTINCT FROM (x.source_locator,x.presentation)""",
-            (INPUT_PDF_VERSION, int(version[1])),
+            (pdf_version, int(version[1])),
+        )
+    if (did == "6cba3d6b39f171d2ae0f6e13b8afb7ab468e6dc4d2d807febc1f2a1c2731b2fc"
+            and pdf_version == "inputs-pdf-v14"):
+        old_locator = "PDF page 72,col 1,y 163.3; inputs-pdf-v13"
+        new_locator = f"PDF page 72,col 1,y 163.3; {pdf_version}"
+        corrected = db.execute(
+            """SELECT 1 FROM historical_price WHERE document_id=%s AND source_locator=%s
+            AND series='dane-inputs-pdf' AND observed_on='2016-04-30'
+            AND product_name='Levamisol 15%%' AND market_name='Villavicencio'
+            AND unit='500 centímetros cúbicos' AND price=21333
+            AND details->>'department'='Meta' LIMIT 1""",
+            (did, new_locator),
+        ).fetchone()
+        if corrected is None:
+            raise ValueError("April 2016 input continuation correction lacks the verified v14 row")
+        db.execute(
+            """INSERT INTO official_source_review
+            (document_id,source_locator,parser_version,record,reason)
+            SELECT h.document_id,h.source_locator,%s,
+              jsonb_build_object('original',to_jsonb(h),'corrected_source_locator',%s::text,
+                'printed_location','Villavicencio (Meta)(continuación)',
+                'corrected_department','Meta','corrected_municipality','Villavicencio'),
+              'v13 bound terminal (continuación) as a department; v14 binds printed (Meta) and retains the original row'
+            FROM historical_price h WHERE h.document_id=%s AND h.source_locator=%s
+              AND h.series='dane-inputs-pdf' AND h.observed_on='2016-04-30'
+              AND h.product_name='Levamisol 15%%' AND h.market_name='Villavicencio (Meta)'
+              AND h.unit='500 centímetros cúbicos' AND h.price=21333
+              AND h.details->>'department'='continuación'
+            ON CONFLICT DO NOTHING""",
+            (pdf_version, new_locator, did, old_locator),
         )
     db.execute(
         """INSERT INTO ingestion_checkpoint(document_id,processor_version,step,records)
         SELECT %s,%s,'inputs-pdf:published',count(*) FROM input_stage
         ON CONFLICT DO NOTHING""",
-        (did, INPUT_PDF_VERSION),
+        (did, pdf_version),
     )
     return conflicts

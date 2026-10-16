@@ -1,0 +1,2219 @@
+{
+  "parent": {
+    "id": "12994008dc0a233459abd4edc0cc4ffdb67b6bfcfd93423ed9abfbed1611d2af",
+    "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-07sep2026.zip",
+    "kind": "original",
+    "media_type": "application/zip",
+    "metadata": {
+      "retention": "permanent",
+      "ingestion_kind": "city-zip",
+      "original_filename": "bol-SIPSADiario-regionales-07sep2026.zip"
+    }
+  },
+  "children": [
+    {
+      "original": {
+        "id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+        "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-07sep2026.zip",
+        "kind": "original",
+        "media_type": "application/pdf",
+        "metadata": {
+          "parents": [
+            "12994008dc0a233459abd4edc0cc4ffdb67b6bfcfd93423ed9abfbed1611d2af"
+          ],
+          "retention": "permanent",
+          "archive_entry": "Barranquilla, Barranquillita-07-09-2026.pdf",
+          "ingestion_kind": "city-pdf",
+          "original_filename": "Barranquilla, Barranquillita-07-09-2026.pdf"
+        }
+      },
+      "entry_name": "Barranquilla, Barranquillita-07-09-2026.pdf",
+      "raw_rows": [
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 10,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "banano-uraba",
+          "product_name": "Banano urabá",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "2100",
+          "max_price": "2100",
+          "unit": "kg",
+          "min_unit_price": "2100",
+          "max_unit_price": "2100",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 11,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "banano-criollo",
+          "product_name": "Banano criollo",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "2040",
+          "max_price": "2040",
+          "unit": "kg",
+          "min_unit_price": "2040",
+          "max_unit_price": "2040",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 12,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "coco",
+          "product_name": "Coco",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "3900",
+          "max_price": "4000",
+          "unit": "kg",
+          "min_unit_price": "3900",
+          "max_unit_price": "4000",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 13,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "guayaba-atlantico",
+          "product_name": "Guayaba atlántico",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Canastilla",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "64000",
+          "max_price": "65000",
+          "unit": "kg",
+          "min_unit_price": "2560",
+          "max_unit_price": "2600",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 14,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "guayaba-comun",
+          "product_name": "Guayaba común",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Canastilla",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "75000",
+          "max_price": "76000",
+          "unit": "kg",
+          "min_unit_price": "3000",
+          "max_unit_price": "3040",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 15,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "guayaba-pera",
+          "product_name": "Guayaba pera",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Caja de madera",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "41000",
+          "max_price": "42000",
+          "unit": "kg",
+          "min_unit_price": "4100",
+          "max_unit_price": "4200",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 16,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "lulo",
+          "product_name": "Lulo",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "7000",
+          "max_price": "7100",
+          "unit": "kg",
+          "min_unit_price": "7000",
+          "max_unit_price": "7100",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 17,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "mango-tommy",
+          "product_name": "Mango tommy",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Canastilla",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "185000",
+          "max_price": "187000",
+          "unit": "kg",
+          "min_unit_price": "7400",
+          "max_unit_price": "7480",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 18,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "mango-de-azucar",
+          "product_name": "Mango de azúcar",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Canastilla",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "160000",
+          "max_price": "162000",
+          "unit": "kg",
+          "min_unit_price": "6400",
+          "max_unit_price": "6480",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 19,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "maracuya-antioqueno",
+          "product_name": "Maracuyá antioqueño",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Bolsa",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "69000",
+          "max_price": "70000",
+          "unit": "kg",
+          "min_unit_price": "6900",
+          "max_unit_price": "7000",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 20,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "mora-de-castilla",
+          "product_name": "Mora de castilla",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Caja de cartÓn",
+          "quantity": "2.5",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "20000",
+          "max_price": "22000",
+          "unit": "kg",
+          "min_unit_price": "8000",
+          "max_unit_price": "8800",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 21,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "mora-de-castilla",
+          "product_name": "Mora de castilla",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Caja de cartÓn",
+          "quantity": "12.5",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "79000",
+          "max_price": "80000",
+          "unit": "kg",
+          "min_unit_price": "6320",
+          "max_unit_price": "6400",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 22,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "papaya-tainung",
+          "product_name": "Papaya tainung",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "3400",
+          "max_price": "3500",
+          "unit": "kg",
+          "min_unit_price": "3400",
+          "max_unit_price": "3500",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 23,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pina-perolera",
+          "product_name": "Piña perolera",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Caja de madera",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "103000",
+          "max_price": "105000",
+          "unit": "kg",
+          "min_unit_price": "4120",
+          "max_unit_price": "4200",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 24,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "tomate-de-arbol",
+          "product_name": "Tomate de árbol",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "4700",
+          "max_price": "4800",
+          "unit": "kg",
+          "min_unit_price": "4700",
+          "max_unit_price": "4800",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 27,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "platano-harton-verde",
+          "product_name": "Plátano hartón verde",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "PlÁtano",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "2550",
+          "max_price": "2550",
+          "unit": "kg",
+          "min_unit_price": "2550",
+          "max_unit_price": "2550",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 29,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "papa-criolla-limpia",
+          "product_name": "Papa criolla limpia",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Papa",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "318000",
+          "max_price": "321000",
+          "unit": "kg",
+          "min_unit_price": "6360",
+          "max_unit_price": "6420",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 30,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "papa-unica",
+          "product_name": "Papa única",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Papa",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "124000",
+          "max_price": "126000",
+          "unit": "kg",
+          "min_unit_price": "2480",
+          "max_unit_price": "2520",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 32,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "yuca-criolla",
+          "product_name": "Yuca criolla",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Yuca",
+          "presentation": "Bolsa",
+          "quantity": "40",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "105000",
+          "max_price": "106000",
+          "unit": "kg",
+          "min_unit_price": "2625",
+          "max_unit_price": "2650",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 35,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "arveja-verde-en-vaina",
+          "product_name": "Arveja verde en vaina",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Leguminosas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "9500",
+          "max_price": "9600",
+          "unit": "kg",
+          "min_unit_price": "9500",
+          "max_unit_price": "9600",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 36,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "frijol-verde-en-vaina",
+          "product_name": "Fríjol verde en vaina",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Leguminosas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "9800",
+          "max_price": "10000",
+          "unit": "kg",
+          "min_unit_price": "9800",
+          "max_unit_price": "10000",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 37,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "habichuela",
+          "product_name": "Habichuela",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Leguminosas",
+          "presentation": "Saco",
+          "quantity": "20",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "148000",
+          "max_price": "150000",
+          "unit": "kg",
+          "min_unit_price": "7400",
+          "max_unit_price": "7500",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 39,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "ajo-importado",
+          "product_name": "Ajo importado",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Caja de cartÓn",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "57000",
+          "max_price": "60000",
+          "unit": "kg",
+          "min_unit_price": "5700",
+          "max_unit_price": "6000",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 40,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "berenjena",
+          "product_name": "Berenjena",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Bolsa",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "34000",
+          "max_price": "35000",
+          "unit": "kg",
+          "min_unit_price": "3400",
+          "max_unit_price": "3500",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 41,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pepino-cohombro",
+          "product_name": "Pepino cohombro",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Bulto",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "64000",
+          "max_price": "65000",
+          "unit": "kg",
+          "min_unit_price": "2560",
+          "max_unit_price": "2600",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 42,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pimenton",
+          "product_name": "Pimentón",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Caja de cartÓn",
+          "quantity": "12",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "48000",
+          "max_price": "50000",
+          "unit": "kg",
+          "min_unit_price": "4000",
+          "max_unit_price": "4166.666666666666666666666667",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 43,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "remolacha",
+          "product_name": "Remolacha",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Bulto",
+          "quantity": "60",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "119000",
+          "max_price": "120000",
+          "unit": "kg",
+          "min_unit_price": "1983.333333333333333333333333",
+          "max_unit_price": "2000",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 44,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "rabano-rojo",
+          "product_name": "Rábano rojo",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "8000",
+          "max_price": "8200",
+          "unit": "kg",
+          "min_unit_price": "8000",
+          "max_unit_price": "8200",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 46,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "zanahoria",
+          "product_name": "Zanahoria",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Zanahorias",
+          "presentation": "Bulto",
+          "quantity": "60",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "100000",
+          "max_price": "102000",
+          "unit": "kg",
+          "min_unit_price": "1666.666666666666666666666667",
+          "max_unit_price": "1700",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 48,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cebolla-cabezona-blanca",
+          "product_name": "Cebolla cabezona blanca",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Cebollas",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "185000",
+          "max_price": "187000",
+          "unit": "kg",
+          "min_unit_price": "3700",
+          "max_unit_price": "3740",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 49,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cebolla-cabezona-roja-peruana",
+          "product_name": "Cebolla cabezona roja peruana",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Cebollas",
+          "presentation": "Bulto",
+          "quantity": "46",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "120000",
+          "max_price": "122000",
+          "unit": "kg",
+          "min_unit_price": "2608.695652173913043478260870",
+          "max_unit_price": "2652.173913043478260869565217",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 50,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cebolla-junca-berlin",
+          "product_name": "Cebolla junca berlín",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Cebollas",
+          "presentation": "Atado/manojo",
+          "quantity": "30",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "78000",
+          "max_price": "80000",
+          "unit": "kg",
+          "min_unit_price": "2600",
+          "max_unit_price": "2666.666666666666666666666667",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 51,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cebollin-chino",
+          "product_name": "Cebollín chino",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Cebollas",
+          "presentation": "Atado/manojo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "6000",
+          "max_price": "6200",
+          "unit": "kg",
+          "min_unit_price": "6000",
+          "max_unit_price": "6200",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 7,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "limon-tahiti",
+          "product_name": "Limón tahití",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "CÍtricos",
+          "presentation": "Bulto",
+          "quantity": "24",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "85000",
+          "max_price": "87000",
+          "unit": "kg",
+          "min_unit_price": "3541.666666666666666666666667",
+          "max_unit_price": "3625",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 8,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "naranja-valencia",
+          "product_name": "Naranja valencia",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "CÍtricos",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "2600",
+          "max_price": "2600",
+          "unit": "kg",
+          "min_unit_price": "2600",
+          "max_unit_price": "2600",
+          "source_page": 1
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 10,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "brocoli",
+          "product_name": "Brócoli",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "8500",
+          "max_price": "8700",
+          "unit": "kg",
+          "min_unit_price": "8500",
+          "max_unit_price": "8700",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 11,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cilantro",
+          "product_name": "Cilantro",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Atado/manojo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "7900",
+          "max_price": "8000",
+          "unit": "kg",
+          "min_unit_price": "7900",
+          "max_unit_price": "8000",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 12,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "coles",
+          "product_name": "Coles",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Atado/manojo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "5000",
+          "max_price": "5200",
+          "unit": "kg",
+          "min_unit_price": "5000",
+          "max_unit_price": "5200",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 13,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "coliflor",
+          "product_name": "Coliflor",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "8900",
+          "max_price": "9000",
+          "unit": "kg",
+          "min_unit_price": "8900",
+          "max_unit_price": "9000",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 14,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "espinaca",
+          "product_name": "Espinaca",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "8000",
+          "max_price": "8200",
+          "unit": "kg",
+          "min_unit_price": "8000",
+          "max_unit_price": "8200",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 15,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "lechuga-batavia",
+          "product_name": "Lechuga batavia",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "2900",
+          "max_price": "3000",
+          "unit": "kg",
+          "min_unit_price": "2900",
+          "max_unit_price": "3000",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 16,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "perejil",
+          "product_name": "Perejil",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "10000",
+          "max_price": "11000",
+          "unit": "kg",
+          "min_unit_price": "10000",
+          "max_unit_price": "11000",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 17,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "repollo-blanco",
+          "product_name": "Repollo blanco",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Bulto",
+          "quantity": "70",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "168000",
+          "max_price": "172000",
+          "unit": "kg",
+          "min_unit_price": "2400",
+          "max_unit_price": "2457.142857142857142857142857",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 6,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "tomate-riogrande-bumangues",
+          "product_name": "Tomate riogrande bumangués",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Tomates",
+          "presentation": "Caja de cartÓn",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "118000",
+          "max_price": "120000",
+          "unit": "kg",
+          "min_unit_price": "4720",
+          "max_unit_price": "4800",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 7,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "tomate-chonto",
+          "product_name": "Tomate chonto",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Tomates",
+          "presentation": "Caja de cartÓn",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "110000",
+          "max_price": "112000",
+          "unit": "kg",
+          "min_unit_price": "4400",
+          "max_unit_price": "4480",
+          "source_page": 2
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 9,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "apio",
+          "product_name": "Apio",
+          "market_name": "Barranquilla, Barranquillita",
+          "category": "Hortalizas",
+          "presentation": "Atado/manojo",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:30",
+          "min_price": "21000",
+          "max_price": "22000",
+          "unit": "kg",
+          "min_unit_price": "2100",
+          "max_unit_price": "2200",
+          "source_page": 2
+        }
+      ],
+      "classifications": [
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 10,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 11,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 12,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 13,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 14,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 15,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 16,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 17,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 18,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 19,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 20,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 21,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 22,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 23,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 24,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 27,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Plátano"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 29,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Papa"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 30,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Papa"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 32,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Yuca"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 35,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Leguminosas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 36,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Leguminosas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 37,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Leguminosas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 39,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 40,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 41,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 42,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 43,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 44,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 46,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Zanahorias"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 48,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Cebollas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 49,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Cebollas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 50,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Cebollas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 51,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Cebollas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 7,round 1",
+          "category_path": [
+            "Frutas",
+            "Cítricos"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 1,table 1,row 8,round 1",
+          "category_path": [
+            "Frutas",
+            "Cítricos"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 10,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 11,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 12,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 13,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 14,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 15,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 16,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 17,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 6,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Tomates"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 7,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Tomates"
+          ]
+        },
+        {
+          "document_id": "321878df17ed3fa4d7c325a799b7cf39d526cd33ae286e1bde5f14908b3cbde3",
+          "source_locator": "PDF page 2,table 1,row 9,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        }
+      ],
+      "product_corrections": [],
+      "conflicts": 0
+    },
+    {
+      "original": {
+        "id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+        "source_url": "https://www.dane.gov.co/files/operaciones/SIPSA/bol-SIPSADiario-regionales-07sep2026.zip",
+        "kind": "original",
+        "media_type": "application/pdf",
+        "metadata": {
+          "parents": [
+            "12994008dc0a233459abd4edc0cc4ffdb67b6bfcfd93423ed9abfbed1611d2af"
+          ],
+          "retention": "permanent",
+          "archive_entry": "Barranquilla, Granabastos-07-09-2026.pdf",
+          "ingestion_kind": "city-pdf",
+          "original_filename": "Barranquilla, Granabastos-07-09-2026.pdf"
+        }
+      },
+      "entry_name": "Barranquilla, Granabastos-07-09-2026.pdf",
+      "raw_rows": [
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 10,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "mora-de-castilla",
+          "product_name": "Mora de castilla",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Caja de cartÓn",
+          "quantity": "2.5",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "21000",
+          "max_price": "21000",
+          "unit": "kg",
+          "min_unit_price": "8400",
+          "max_unit_price": "8400",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 11,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "mora-de-castilla",
+          "product_name": "Mora de castilla",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Caja de cartÓn",
+          "quantity": "12.5",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "77000",
+          "max_price": "78000",
+          "unit": "kg",
+          "min_unit_price": "6160",
+          "max_unit_price": "6240",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 12,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pina-gold",
+          "product_name": "Piña gold",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "5900",
+          "max_price": "6000",
+          "unit": "kg",
+          "min_unit_price": "5900",
+          "max_unit_price": "6000",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 13,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pina-perolera",
+          "product_name": "Piña perolera",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Caja de madera",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "83000",
+          "max_price": "85000",
+          "unit": "kg",
+          "min_unit_price": "3320",
+          "max_unit_price": "3400",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 14,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "tomate-de-arbol",
+          "product_name": "Tomate de árbol",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "4700",
+          "max_price": "4800",
+          "unit": "kg",
+          "min_unit_price": "4700",
+          "max_unit_price": "4800",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 17,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "papa-criolla-limpia",
+          "product_name": "Papa criolla limpia",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Papa",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "315000",
+          "max_price": "317000",
+          "unit": "kg",
+          "min_unit_price": "6300",
+          "max_unit_price": "6340",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 18,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "papa-unica",
+          "product_name": "Papa única",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Papa",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "125000",
+          "max_price": "126000",
+          "unit": "kg",
+          "min_unit_price": "2500",
+          "max_unit_price": "2520",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 20,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "yuca-criolla",
+          "product_name": "Yuca criolla",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Yuca",
+          "presentation": "Bolsa",
+          "quantity": "40",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "106000",
+          "max_price": "108000",
+          "unit": "kg",
+          "min_unit_price": "2650",
+          "max_unit_price": "2700",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 23,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "arveja-verde-en-vaina",
+          "product_name": "Arveja verde en vaina",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Leguminosas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "9000",
+          "max_price": "9100",
+          "unit": "kg",
+          "min_unit_price": "9000",
+          "max_unit_price": "9100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 24,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "frijol-verde-en-vaina",
+          "product_name": "Fríjol verde en vaina",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Leguminosas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "9000",
+          "max_price": "9000",
+          "unit": "kg",
+          "min_unit_price": "9000",
+          "max_unit_price": "9000",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 25,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "habichuela",
+          "product_name": "Habichuela",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Leguminosas",
+          "presentation": "Saco",
+          "quantity": "20",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "130000",
+          "max_price": "132000",
+          "unit": "kg",
+          "min_unit_price": "6500",
+          "max_unit_price": "6600",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 27,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "ajo-importado",
+          "product_name": "Ajo importado",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Caja de cartÓn",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "55000",
+          "max_price": "56000",
+          "unit": "kg",
+          "min_unit_price": "5500",
+          "max_unit_price": "5600",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 28,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pepino-cohombro",
+          "product_name": "Pepino cohombro",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "115000",
+          "max_price": "118000",
+          "unit": "kg",
+          "min_unit_price": "2300",
+          "max_unit_price": "2360",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 29,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "pimenton",
+          "product_name": "Pimentón",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Caja de cartÓn",
+          "quantity": "12",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "50000",
+          "max_price": "50000",
+          "unit": "kg",
+          "min_unit_price": "4166.666666666666666666666667",
+          "max_unit_price": "4166.666666666666666666666667",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 30,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "remolacha",
+          "product_name": "Remolacha",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Bulto",
+          "quantity": "60",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "107000",
+          "max_price": "109000",
+          "unit": "kg",
+          "min_unit_price": "1783.333333333333333333333333",
+          "max_unit_price": "1816.666666666666666666666667",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 31,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "rabano-rojo",
+          "product_name": "Rábano rojo",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras hortalizas y verduras",
+          "presentation": "Unidad",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "5900",
+          "max_price": "6000",
+          "unit": "kg",
+          "min_unit_price": "5900",
+          "max_unit_price": "6000",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 33,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "zanahoria",
+          "product_name": "Zanahoria",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Zanahorias",
+          "presentation": "Bulto",
+          "quantity": "60",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "89000",
+          "max_price": "90000",
+          "unit": "kg",
+          "min_unit_price": "1483.333333333333333333333333",
+          "max_unit_price": "1500",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 35,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cebolla-cabezona-blanca",
+          "product_name": "Cebolla cabezona blanca",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Cebollas",
+          "presentation": "Bulto",
+          "quantity": "50",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "174000",
+          "max_price": "175000",
+          "unit": "kg",
+          "min_unit_price": "3480",
+          "max_unit_price": "3500",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 36,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "cebolla-junca-berlin",
+          "product_name": "Cebolla junca berlín",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Cebollas",
+          "presentation": "Atado/manojo",
+          "quantity": "30",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "83000",
+          "max_price": "85000",
+          "unit": "kg",
+          "min_unit_price": "2766.666666666666666666666667",
+          "max_unit_price": "2833.333333333333333333333333",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 38,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "tomate-riogrande-bumangues",
+          "product_name": "Tomate riogrande bumangués",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Tomates",
+          "presentation": "Caja de cartÓn",
+          "quantity": "22",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "107000",
+          "max_price": "109000",
+          "unit": "kg",
+          "min_unit_price": "4863.636363636363636363636364",
+          "max_unit_price": "4954.545454545454545454545455",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 39,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "tomate-chonto",
+          "product_name": "Tomate chonto",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Tomates",
+          "presentation": "Caja de cartÓn",
+          "quantity": "25",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "103000",
+          "max_price": "104000",
+          "unit": "kg",
+          "min_unit_price": "4120",
+          "max_unit_price": "4160",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 41,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "apio",
+          "product_name": "Apio",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Atado/manojo",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "20000",
+          "max_price": "21000",
+          "unit": "kg",
+          "min_unit_price": "2000",
+          "max_unit_price": "2100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 42,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "brocoli",
+          "product_name": "Brócoli",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "8000",
+          "max_price": "8100",
+          "unit": "kg",
+          "min_unit_price": "8000",
+          "max_unit_price": "8100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 43,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "coliflor",
+          "product_name": "Coliflor",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "8000",
+          "max_price": "8100",
+          "unit": "kg",
+          "min_unit_price": "8000",
+          "max_unit_price": "8100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 44,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "espinaca",
+          "product_name": "Espinaca",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "8000",
+          "max_price": "8100",
+          "unit": "kg",
+          "min_unit_price": "8000",
+          "max_unit_price": "8100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 45,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "lechuga-batavia",
+          "product_name": "Lechuga batavia",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "2900",
+          "max_price": "3000",
+          "unit": "kg",
+          "min_unit_price": "2900",
+          "max_unit_price": "3000",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 46,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "perejil",
+          "product_name": "Perejil",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Atado/manojo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "15000",
+          "max_price": "15100",
+          "unit": "kg",
+          "min_unit_price": "15000",
+          "max_unit_price": "15100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 47,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "repollo-blanco",
+          "product_name": "Repollo blanco",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Hortalizas",
+          "presentation": "Bulto",
+          "quantity": "70",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "166000",
+          "max_price": "168000",
+          "unit": "kg",
+          "min_unit_price": "2371.428571428571428571428571",
+          "max_unit_price": "2400",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 7,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "guayaba-pera",
+          "product_name": "Guayaba pera",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Caja de cartÓn",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "44000",
+          "max_price": "45000",
+          "unit": "kg",
+          "min_unit_price": "4400",
+          "max_unit_price": "4500",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 8,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "lulo",
+          "product_name": "Lulo",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Kilogramo",
+          "quantity": "1",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "7000",
+          "max_price": "7100",
+          "unit": "kg",
+          "min_unit_price": "7000",
+          "max_unit_price": "7100",
+          "source_page": 1
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 9,round 1",
+          "observed_on": "2026-09-07",
+          "product_id": "maracuya-antioqueno",
+          "product_name": "Maracuyá antioqueño",
+          "market_name": "Barranquilla, Granabastos",
+          "category": "Otras frutas",
+          "presentation": "Bolsa",
+          "quantity": "10",
+          "source_unit": "Kilogramo",
+          "round": 1,
+          "round_label": "Ronda 1 * 03:30 - 05:00",
+          "min_price": "60000",
+          "max_price": "62000",
+          "unit": "kg",
+          "min_unit_price": "6000",
+          "max_unit_price": "6200",
+          "source_page": 1
+        }
+      ],
+      "classifications": [
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 10,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 11,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 12,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 13,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 14,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 17,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Papa"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 18,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Papa"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 20,round 1",
+          "category_path": [
+            "Tuberculos, raices y platanos",
+            "Yuca"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 23,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Leguminosas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 24,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Leguminosas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 25,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Leguminosas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 27,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 28,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 29,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 30,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 31,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Otras hortalizas y verduras"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 33,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Zanahorias"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 35,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Cebollas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 36,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Cebollas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 38,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Tomates"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 39,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Tomates"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 41,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 42,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 43,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 44,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 45,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 46,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 47,round 1",
+          "category_path": [
+            "Verduras y hortalizas",
+            "Hortalizas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 7,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 8,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        },
+        {
+          "document_id": "8bbb5d72cc5e77845f09f47cbc2e3078d946883fd767d5c31a0318b6b67726e0",
+          "source_locator": "PDF page 1,table 1,row 9,round 1",
+          "category_path": [
+            "Frutas",
+            "Otras frutas"
+          ]
+        }
+      ],
+      "product_corrections": [],
+      "conflicts": 0
+    }
+  ]
+}

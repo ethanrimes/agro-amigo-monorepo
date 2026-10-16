@@ -9,7 +9,7 @@ from hashlib import sha256
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from .city_reports import CityZipPartialReview, _member_step, _review_step, parse_city_pdf, publish_city_zip
+from .city_reports import VERSION, CityZipPartialReview, _member_step, _review_step, parse_city_pdf, publish_city_zip
 from .worker import SourceDateMismatch
 
 OFFICIAL_ZIP = Path(__file__).resolve().parent / "testdata/bol-SIPSADiario-regionales-19ago2025.zip"
@@ -24,6 +24,49 @@ def bundle_bytes(names):
         for name in names:
             bundle.writestr(name, name.encode())
     return output.getvalue()
+
+
+def native_row():
+    return (
+        "PDF page 1,table 1,row 4,round 1", date(2026, 9, 17),
+        "tangelo", "Tangelo", "Bogotá, D.C., Corabastos", "Frutas > Cítricos",
+        "Canastilla", 25, "Kilogramo", 1, "Ronda 1", 110000, 120000,
+        "kg", 4400, 4800, 1,
+    )
+
+
+def publication_db():
+    """Represent the typed rows retained by a successful mock COPY.
+
+    ZIP orchestration tests still run both real publication-parity checks;
+    generic MagicMock cursors otherwise invent an unresolved conflict.
+    """
+    db = MagicMock()
+    stored = {}
+    classifications = {}
+
+    def execute(sql, params=()):
+        result = MagicMock()
+        result.fetchone.return_value = None
+        result.fetchall.return_value = []
+        if sql.startswith("SELECT id FROM source_document WHERE id=%s"):
+            result.fetchone.return_value = (params[0],)
+        elif "SELECT source_locator," in sql and "FROM regional_price " in sql:
+            result.fetchall.return_value = [r[1:] for r in stored.get(params[0], [])]
+        elif "SELECT source_locator,category_path FROM regional_classification" in sql:
+            result.fetchall.return_value = classifications.get(params[0], [])
+        return result
+
+    def retain(row):
+        if len(row) == 18:
+            stored.setdefault(row[0], []).append(row)
+
+    def classify(_db, did, rows):
+        classifications[did] = [(r[0], r[5].split(" > ")) for r in rows]
+
+    db.execute.side_effect = execute
+    db.cursor.return_value.__enter__.return_value.copy.return_value.__enter__.return_value.write_row.side_effect = retain
+    return db, retain, classify
 
 
 class CityZipReview(unittest.TestCase):
@@ -45,13 +88,12 @@ class CityZipReview(unittest.TestCase):
         with zipfile.ZipFile(io.BytesIO(data)) as bundle:
             member = bundle.getinfo(PEREIRA)
             self.assertEqual(len([m for m in bundle.infolist() if m.filename.endswith(".pdf")]), 68)
-        db = MagicMock()
-        db.execute.return_value.fetchall.return_value = []
+        db, retain, classify_rows = publication_db()
         with (
             patch("pipelines.ingestion.worker.archive", side_effect=lambda db, url, body, *a, **kw: sha256(body).hexdigest()) as archive,
             patch("pipelines.ingestion.pdf_sources.extract_pages") as extract,
-            patch("pipelines.ingestion.city_reports.save_classifications") as classify,
-            patch("pipelines.ingestion.city_reports._bulk_insert") as insert,
+            patch("pipelines.ingestion.city_reports.save_classifications", side_effect=classify_rows) as classify,
+            patch("pipelines.ingestion.city_reports._bulk_insert", side_effect=lambda _db, _table, rows: [retain(r) for r in rows]) as insert,
         ):
             count = publish_city_zip(
                 db, data, OFFICIAL_SHA,
@@ -70,7 +112,7 @@ class CityZipReview(unittest.TestCase):
         self.assertEqual(len(checkpoints), 68)
         self.assertEqual(sum(args[3] for args in checkpoints), 3421)
         self.assertEqual(sum(args[3] == 0 for args in checkpoints), 1)
-        self.assertIn((OFFICIAL_SHA, "city-v5", _member_step(member, date(2025, 8, 19)), 0), checkpoints)
+        self.assertIn((OFFICIAL_SHA, VERSION, _member_step(member, date(2025, 8, 19)), 0), checkpoints)
 
     @unittest.skipUnless(OFFICIAL_ZIP.exists(), "Retained official DANE city ZIP required")
     def test_heading_without_native_grid_or_with_unparsed_text_is_not_empty(self):
@@ -120,7 +162,10 @@ class CityZipReview(unittest.TestCase):
         )
 
     def publish(self, names, parser, db=None):
-        db = db or MagicMock()
+        if db is None:
+            db, _, classify_rows = publication_db()
+        else:
+            classify_rows = None
         with (
             patch(
                 "pipelines.ingestion.worker.archive",
@@ -133,7 +178,7 @@ class CityZipReview(unittest.TestCase):
                 "pipelines.ingestion.city_reports.parse_archived_city_pdf",
                 side_effect=parser,
             ),
-            patch("pipelines.ingestion.city_reports.save_classifications") as classify,
+            patch("pipelines.ingestion.city_reports.save_classifications", side_effect=classify_rows) as classify,
         ):
             try:
                 result = publish_city_zip(
@@ -149,7 +194,7 @@ class CityZipReview(unittest.TestCase):
         return db, result, archive, native, classify
 
     def test_valid_peers_publish_before_and_after_conflicting_member(self):
-        row = ("PDF page 1,table 1,row 4,round 1", date(2026, 9, 17))
+        row = native_row()
 
         def parser(db, data, did, day):
             if data == b"conflict.pdf":
@@ -198,7 +243,7 @@ class CityZipReview(unittest.TestCase):
 
     def test_all_valid_members_keep_successful_result(self):
         db, result, _, _, _ = self.publish(
-            ["one.pdf", "two.pdf"], lambda *args: [("native",)]
+            ["one.pdf", "two.pdf"], lambda *args: [native_row()]
         )
         self.assertEqual(result, 2)
         checkpoints = [
