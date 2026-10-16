@@ -193,6 +193,8 @@ URL_SOURCE_REPAIR_VERSIONS = {
         ('daily', ':jan2020-day15-native-year-review-v1'),
     'https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_enero_16_2020.xlsx':
         ('daily', ':jan2020-day16-native-year-review-v1'),
+    'https://www.dane.gov.co/files/investigaciones/agropecuario/sipsa/mayoristas_febrero_03_2020.xlsx':
+        ('daily', ':feb2020-day03-native-year-review-v1'),
 }
 
 

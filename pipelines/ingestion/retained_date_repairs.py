@@ -48,6 +48,9 @@ REPAIRS = {
     BASE + 'mayoristas_enero_16_2020.xlsx': (
         'daily', '83885449eb25388a124efeed3fa7e642ce487cbd68a11051e6daba3ee460f787',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', ':jan2020-day16-native-year-review-v1'),
+    BASE + 'mayoristas_febrero_03_2020.xlsx': (
+        'daily', 'c8d59b0c713dcf74d256f9d2ea49c1f73170fbf9f9770138cf3a335a64e2b9a6',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', ':feb2020-day03-native-year-review-v1'),
 }
 
 
