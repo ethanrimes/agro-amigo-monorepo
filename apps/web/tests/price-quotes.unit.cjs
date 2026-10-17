@@ -1134,20 +1134,19 @@ check('partition merge failure also rolls back and never returns a partial histo
   assert.equal(resumed.value.history[0].market_count,11);
 });
 
-check('one-market, monthly, and ambiguous-package selections never check out a partition client',async()=>{
+check('single-market ordinary and ambiguous reads use guarded snapshots without partition chunks',async()=>{
   await regional({market:'A',price:10});
   await monthly({product:'monthly',market:'a',price:100});
   await monthly({product:'monthly',market:'b',price:300});
   await regional({market:'A',price:20,presentation:' Bulto',round:2,doc:'b'.repeat(64)});
   await classify();
   const original=db;
-  let partitionReads=0;
+  const guardedMarketCounts=[];
   db={query:(...args)=>original.query(...args),connect:async()=>({
     query:async(sql,...args)=>{
-      if(typeof sql==='string' && sql.includes('selected AS MATERIALIZED') &&
+      if(typeof sql==='string' && sql.includes('ordinary_eligible_docs') &&
         Array.isArray(args[0]) && args[0].length===7){
-        partitionReads++;
-        throw new Error('unexpected partition checkout');
+        guardedMarketCounts.push(args[0][6].length);
       }
       return original.query(sql,...args);
     },release:()=>{},
@@ -1162,7 +1161,8 @@ check('one-market, monthly, and ambiguous-package selections never check out a p
     assert.equal(one.markets.length,1);
     assert.equal(monthlyResult.current.price,200);
     assert.equal(ambiguous.options.presentations.length,1);
-    assert.equal(partitionReads,0);
+    assert.equal(guardedMarketCounts.length,2,'one-market and ambiguous city selections each run one ordinary scoped query');
+    assert.deepEqual(guardedMarketCounts,[1,1],'each selected snapshot contains one market and cannot use partition chunks');
   }finally{db=original}
 });
 

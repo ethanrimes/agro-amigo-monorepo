@@ -1,4 +1,5 @@
 import "server-only";
+import type { PoolClient, QueryResultRow } from "pg";
 import { defaultProductPackage } from "../product-filter-defaults";
 import { cityFilterUnitsSql, cityDatedIdentityUnitSql, cityComparisonUnitSql, incomingCityPackageUnits } from "./city-package-equivalence";
 import { currentClassifications } from "../price-classification";
@@ -49,6 +50,47 @@ return `WITH ordinary_market_names AS MATERIALIZED (
   k.min_price,k.max_price,k.unit,k.min_unit_price,k.max_unit_price,k.source_page
  FROM ordinary_keys k JOIN ordinary_eligible_docs e ON e.document_id=k.document_id
 ) `; }
+
+const SELECTED_ORDINARY_VIEW_ELIGIBILITY = `AND EXISTS (SELECT 1 FROM published_regional_price accepted
+     WHERE accepted.document_id=k.document_id OFFSET 0)`;
+
+function selectedOrdinary078Sql(sql: string): string {
+  const directEligibility = FILTER_OPTIONS_078_DIRECT_ELIGIBILITY.replaceAll("key.document_id", "k.document_id");
+  if (sql.split(SELECTED_ORDINARY_VIEW_ELIGIBILITY).length !== 2)
+    throw new Error("SELECTED_ORDINARY_078_ELIGIBILITY_ANCHOR_MISMATCH");
+  return sql.replace(SELECTED_ORDINARY_VIEW_ELIGIBILITY, directEligibility);
+}
+
+async function guardedOrdinarySql(
+  client: PoolClient, sql: string,
+) {
+  await client.query("LOCK TABLE public.published_regional_price IN ACCESS SHARE MODE");
+  const view = (await client.query<{ definition_sha256: string | null }>(FILTER_OPTIONS_VIEW_HASH_SQL)).rows[0];
+  return view?.definition_sha256 === PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256
+    ? selectedOrdinary078Sql(sql)
+    : sql;
+}
+
+async function selectedOrdinarySnapshotQuery<T extends QueryResultRow>(
+  db: ReturnType<typeof database>, sql: string, args: (string | string[])[],
+): Promise<{ rows: T[] }> {
+  const client = await db.connect();
+  let transactionStarted = false;
+  try {
+    await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY");
+    transactionStarted = true;
+    const guardedSql = await guardedOrdinarySql(client, sql);
+    const result = await client.query<T>(guardedSql, args);
+    await client.query("COMMIT");
+    transactionStarted = false;
+    return result;
+  } catch (error) {
+    if (transactionStarted) await client.query("ROLLBACK").catch(() => {});
+    throw error;
+  } finally {
+    client.release();
+  }
+}
 
 // On the package path, marker rows propagate the view's document-wide eligibility
 // once per document instead of joining every source locator to its gate row.
@@ -232,7 +274,7 @@ export function cityPriceQuotes(classify: boolean, marketNameFilter = "", guardA
     AND money.source_locator=city.source_locator`; }
 export const CITY_PRICE_QUOTES = cityPriceQuotes(true);
 
-function priceQuotes(city: string) { return `
+function priceQuotes(city: string, monthlyFilter = "") { return `
   SELECT o.product_id,m.id AS market_id,m.id AS source_market_id,m.name AS market_name,m.city,m.region,
     p.name AS product_name,p.category,ARRAY[p.category]::text[] AS category_path,
     o.observed_on,o.price,o.min_price,o.max_price,o.unit,
@@ -243,6 +285,7 @@ function priceQuotes(city: string) { return `
     coalesce(substring(o.source_locator from '^PDF page ([1-9][0-9]{0,4})(?:[[:space:],;]|$)')::integer,1) AS source_page,
     NULL::text AS source_units
   FROM published_price_observation o JOIN market m ON m.id=o.market_id JOIN product p ON p.id=o.product_id
+  ${monthlyFilter}
   UNION ALL
 ${city}`; }
 // A municipality name can occur in multiple departments. Clarify the
@@ -256,6 +299,25 @@ export const PRICE_QUOTES = priceQuotes(CITY_PRICE_QUOTES);
 // Fetch that metadata only for the selected display rows, not each historical
 // observation feeding an aggregate or a picker.
 export const PRICE_QUOTE_VALUES = priceQuotes(cityPriceQuotes(false));
+const FILTER_REGION_SQL = (region: string) => `($2='' OR translate(lower(btrim(${region})), 'ÁÉÍÓÚÜÑ','áéíóúüñ')=translate(lower(btrim($2)),'ÁÉÍÓÚÜÑ','áéíóúüñ'))`;
+// The ambiguity fallback needs the same dated winners as PRICE_QUOTE_VALUES,
+// but only for the requested product/region. Push those exact dimensions into
+// each source arm before DISTINCT ON; the outer projection still applies the
+// same date cutoff and option grouping as the legacy fallback.
+export const PRODUCT_FILTER_OPTIONS_AMBIGUOUS_QUOTES_SQL = `
+  WITH quotes AS (${priceQuotes(
+    cityPriceQuotes(false, `WHERE r.product_id=$1 AND ${FILTER_REGION_SQL("m.region")}`),
+    `WHERE o.product_id=$1 AND ${FILTER_REGION_SQL("m.region")}`,
+  )})
+  SELECT DISTINCT series,market_id,
+    ${ordinaryMarketOptionNameSql("series", "market_name", "region")} AS market_name,
+    presentation,units,
+    min(observed_on) OVER (PARTITION BY series,market_id,presentation,units) AS first_report_on,
+    max(observed_on) OVER (PARTITION BY series,market_id,presentation,units) AS last_report_on
+  FROM quotes
+  WHERE product_id=$1 AND ${FILTER_REGION_SQL("region")}
+    AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date
+  ORDER BY series,market_name,presentation,units`;
 // National comparisons seek each retained product/package key in the ordered
 // city index, then resolve the newest date, round and publisher revision.
 // The recent variant applies the same fixed Bogotá-day cutoff at every key
@@ -447,7 +509,7 @@ const MERGE_PARTITIONED_CITY_SQL = `WITH partial AS (
   (SELECT coalesce(jsonb_agg(h ORDER BY h.date),'[]'::jsonb) FROM history h) AS history`;
 
 async function partitionedCityQuotes(
-  db: ReturnType<typeof database>,sql: string,args: (string | string[])[],marketIds: string[],
+  db: ReturnType<typeof database>,sql: string,args: (string | string[])[],marketIds: string[],guard078Eligibility = false,
 ): Promise<{ rows: { markets: ProductMarketQuote[]; history: ProductHistoryPoint[] }[] }> {
   const canonicalIds = [...new Set(marketIds.map(resolveCityMarketId))];
   const client = await db.connect();
@@ -455,13 +517,14 @@ async function partitionedCityQuotes(
   try {
     await client.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
     transactionStarted = true;
+    const selectedSql = guard078Eligibility ? await guardedOrdinarySql(client, sql) : sql;
     const markets: ProductMarketQuote[] = [];
     const history: Array<ProductHistoryPoint & { price_sum: string; price_count: number }> = [];
     const seenMarkets = new Set<string>();
     for (let offset = 0; offset < canonicalIds.length; offset += PARTITION_MARKETS) {
       const chunk = canonicalIds.slice(offset,offset + PARTITION_MARKETS);
       const result = await client.query<{ markets: ProductMarketQuote[]; history: typeof history }>(
-        sql,[...args.slice(0,6),chunk],
+        selectedSql,[...args.slice(0,6),chunk],
       );
       const row = result.rows[0];
       if (!row) throw new Error('CITY_HISTORY_CHUNK_EMPTY');
@@ -726,7 +789,7 @@ export async function readProductFilterOptionsSnapshot(
   id: string,
   region: string,
   expectedViewHash = PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256,
-): Promise<ProductFilterOption[]> {
+): Promise<FilterOptions> {
   const client = await db.connect();
   let transactionStarted = false;
   try {
@@ -743,10 +806,19 @@ export async function readProductFilterOptionsSnapshot(
     const sql = actualHash === expectedViewHash
       ? PRODUCT_FILTER_OPTIONS_078_SQL
       : PRODUCT_FILTER_OPTIONS_SQL;
-    const result = await client.query<ProductFilterOption>(sql, [id, region]);
+    let options = (await client.query<ProductFilterOption>(sql, [id, region])).rows;
+    const ambiguousPackages = options.some((option) => option.requires_revision_resolution);
+    if (ambiguousPackages) {
+      // Keep the ambiguity fallback inside the same guarded RR snapshot as the
+      // 078 definition check. This preserves the legacy winner/options semantics
+      // without reading the entire quote union for unrelated products.
+      options = (await client.query<ProductFilterOption>(
+        PRODUCT_FILTER_OPTIONS_AMBIGUOUS_QUOTES_SQL, [id, region],
+      )).rows;
+    }
     await client.query("COMMIT");
     transactionStarted = false;
-    return result.rows;
+    return { options, ambiguousPackages };
   } catch (error) {
     if (transactionStarted) await client.query("ROLLBACK").catch(() => {});
     throw error;
@@ -768,19 +840,7 @@ async function readFilterOptions(db: ReturnType<typeof database>, id: string, re
   // Share only overlapping reads; newly imported packages remain immediately
   // discoverable on the next completed request.
   const work = (async () => {
-    let options = await readProductFilterOptionsSnapshot(db, id, region);
-    const ambiguousPackages = options.some((option) => option.requires_revision_resolution);
-    if (ambiguousPackages) {
-      options = (await db.query<ProductFilterOption>(
-        `WITH quotes AS (${PRICE_QUOTE_VALUES}) SELECT DISTINCT series,market_id,
-          ${ordinaryMarketOptionNameSql("series", "market_name", "region")} AS market_name,presentation,units,
-          min(observed_on) OVER (PARTITION BY series,market_id,presentation,units) AS first_report_on,
-          max(observed_on) OVER (PARTITION BY series,market_id,presentation,units) AS last_report_on
-          FROM quotes WHERE product_id=$1 AND ($2='' OR translate(lower(btrim(region)),'ÁÉÍÓÚÜÑ','áéíóúüñ')=translate(lower(btrim($2)),'ÁÉÍÓÚÜÑ','áéíóúüñ')) AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY series,market_name,presentation,units`,
-        [id, region],
-      )).rows;
-    }
-    return { options, ambiguousPackages };
+    return readProductFilterOptionsSnapshot(db, id, region);
   })().finally(() => pending!.delete(key));
   pending.set(key, work);
   return work;
@@ -909,8 +969,12 @@ async function readFilteredProduct(
         coalesce((SELECT jsonb_agg(history ORDER BY date) FROM history),'[]'::jsonb) AS history`;
   const [quotes, additionalReferences] = await Promise.all([
     withProductDetailStage("selected_quotes", () => partitioned
-      ? partitionedCityQuotes(db,selectedSql(true,true),args,marketIds)
-      : db.query<{ markets: ProductMarketQuote[]; history: ProductHistoryPoint[] }>(selectedSql(ordinaryScoped || singleOrdinaryScoped,false,singleOrdinaryScoped),args)),
+      ? partitionedCityQuotes(db,selectedSql(true,true),args,marketIds,true)
+      : ordinaryScoped || singleOrdinaryScoped
+        ? selectedOrdinarySnapshotQuery<{ markets: ProductMarketQuote[]; history: ProductHistoryPoint[] }>(
+          db,selectedSql(ordinaryScoped || singleOrdinaryScoped,false,singleOrdinaryScoped),args,
+        )
+        : db.query<{ markets: ProductMarketQuote[]; history: ProductHistoryPoint[] }>(selectedSql(false,false),args)),
     region ? Promise.resolve([]) : withProductDetailStage("summary_references", () =>
       summaryReferencesForProduct(product.name)),
   ]);

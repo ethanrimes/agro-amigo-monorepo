@@ -21,11 +21,21 @@ const categoryPath=load('category-path-sql.ts',{});
 const alias=load('city-market-alias.ts',{'./category-path-sql':categoryPath});
 const pack=load('city-package-equivalence.ts',{});
 const diagnostics=load('product-detail-diagnostics.ts',{});
+const defaults=load('../product-filter-defaults.ts',{});
+let queryPool;
 const candidate=load('price-quotes.ts',{'../price-classification':classification,'../label-normalization':normalize,
- 'node:crypto':crypto,'./db':{WINDOW},'./summary-references':{},'./market-alias':{},'./city-market-alias':alias,
- './city-package-equivalence':pack,'./category-path-sql':categoryPath,'./product-detail-diagnostics':diagnostics});
+ 'node:crypto':crypto,'./db':{WINDOW,database:()=>queryPool},'./summary-references':{summaryReferencesForProduct:async()=>[]},'./market-alias':{resolveMarketAlias:async(_,id)=>id},'./city-market-alias':alias,
+ './city-package-equivalence':pack,'./category-path-sql':categoryPath,'./product-detail-diagnostics':diagnostics,'../product-filter-defaults':defaults});
 const currentSQL=candidate.PRODUCT_FILTER_OPTIONS_SQL;
 const optimizedSQL=candidate.PRODUCT_FILTER_OPTIONS_078_SQL;
+const ambiguousQuotesSQL=candidate.PRODUCT_FILTER_OPTIONS_AMBIGUOUS_QUOTES_SQL;
+const oldAmbiguousFallbackSQL=`WITH quotes AS (${candidate.PRICE_QUOTE_VALUES}) SELECT DISTINCT series,market_id,
+ CASE WHEN series IN ('farmgate','mill') THEN market_name || ' · ' || region ELSE market_name END AS market_name,
+ presentation,units,
+ min(observed_on) OVER (PARTITION BY series,market_id,presentation,units) AS first_report_on,
+ max(observed_on) OVER (PARTITION BY series,market_id,presentation,units) AS last_report_on
+ FROM quotes WHERE product_id=$1 AND ($2='' OR translate(lower(btrim(region)),'ÁÉÍÓÚÜÑ','áéíóúüñ')=translate(lower(btrim($2)),'ÁÉÍÓÚÜÑ','áéíóúüñ'))
+ AND observed_on<=(CURRENT_TIMESTAMP AT TIME ZONE 'America/Bogota')::date ORDER BY series,market_name,presentation,units`;
 const readSnapshot=candidate.readProductFilterOptionsSnapshot;
 assert.equal(candidate.PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256,
  'e804ec4ef27f4a19a194d6ff68933ac619524c591c5cb9b7551ab884cbe4c6a0',
@@ -55,7 +65,9 @@ test('source-wide publication gate and corrected city option keys match immutabl
  CREATE TEMP TABLE dane_city_cohort_current(archive_id text,source_url text,observed_on date);
  CREATE TEMP TABLE ingestion_asset(document_id text,kind text);
  CREATE INDEX correction_product ON regional_price_product_correction(corrected_product_id);
- CREATE TEMP TABLE price_observation(product_id text,market_id text,source_id text,unit text,observed_on date);
+ CREATE TEMP TABLE product(id text PRIMARY KEY,name text,category text);
+ CREATE TEMP TABLE price_observation(product_id text,market_id text,source_id text,unit text,observed_on date,
+   price numeric,min_price numeric,max_price numeric,document_id text,source_locator text,source_url text,period text);
  CREATE TEMP VIEW published_price_observation AS SELECT * FROM price_observation;
  CREATE TEMP TABLE city_pdf_publication_conflict(id text PRIMARY KEY,document_id text NOT NULL,archive_id text,entry_name text,processor_version text,native_sha256 text,stored_sha256 text,details jsonb,detected_at timestamptz);
  CREATE TEMP TABLE city_pdf_category_resolution(conflict_id text PRIMARY KEY,document_id text,archive_id text,member_checkpoint_step text);
@@ -111,9 +123,14 @@ test('source-wide publication gate and corrected city option keys match immutabl
  ('bog-d','Bogotà, Corabastos','Bogotá','Bogotá, D.C.','11001'),
  ('cali','Cali, Santa Elena','Cali','Valle del Cauca','76001'),
  ('other','Cali, Santa Helena','Cali','Valle del Cauca','76001');
- INSERT INTO price_observation VALUES('mandarina-arrayana','cali','monthly','kg','2026-08-31');`);
+ INSERT INTO product VALUES('mandarina-arrayana','Mandarina arrayana','Frutas'),
+   ('arroz-de-primera','Arroz de primera','Granos'),('unrelated-decoy','Decoy product','Otros');
+ INSERT INTO price_observation(product_id,market_id,source_id,unit,observed_on,price,min_price,max_price,source_url,period)
+   VALUES('mandarina-arrayana','cali','monthly','kg','2026-08-31',5000,4900,5100,'https://example.test/monthly','monthly'),
+   ('arroz-de-primera','cali','monthly','kg','2026-08-31',4000,3900,4100,'https://example.test/rice-monthly','monthly'),
+   ('unrelated-decoy','cali','monthly','kg','2026-08-31',9999,9900,10000,'https://example.test/decoy','monthly');`);
  const captured=[];
- const queryPool={connect:async()=>({
+ queryPool={query:async(sql,args)=>db.query(sql,args),connect:async()=>({
   query:async(sql,args)=>{captured.push(sql);return db.query(sql,args);},
   release:()=>{},
  })};
@@ -121,19 +138,23 @@ test('source-wide publication gate and corrected city option keys match immutabl
   FROM pg_catalog.pg_class c WHERE c.oid=pg_catalog.to_regclass('public.published_regional_price')`)).rows[0];
  assert(actualView?.definition,'owned PostgreSQL fixture must expose the current public 078 view');
  const actualViewHash=sha(actualView.definition);
+ const actualViewSql=actualView.definition.trim().replace(/;\s*$/,'');
  assert.match(actualViewHash,/^[a-f0-9]{64}$/,'owned PostgreSQL fixture view fingerprint is recorded independently');
  assert.equal(candidate.PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256,
   'e804ec4ef27f4a19a194d6ff68933ac619524c591c5cb9b7551ab884cbe4c6a0',
   'production fast-path remains pinned to the independently reviewed migration-078 definition');
- const optimized=(await readSnapshot(queryPool,'mandarina-arrayana','',candidate.PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256));
+ const optimizedResult=await readSnapshot(queryPool,'mandarina-arrayana','',candidate.PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256);
+ const optimized=optimizedResult.options;
+ assert.equal(optimizedResult.ambiguousPackages,false);
  assert(captured.includes(currentSQL),'production fingerprint mismatch on this fixture selects safe view-backed fallback');
  assert.deepStrictEqual(optimized,(await db.query(currentSQL,['mandarina-arrayana',''])).rows);
  captured.length=0;
- const fallback=(await readSnapshot(queryPool,'mandarina-arrayana','', '0'.repeat(64)));
+ const fallbackResult=await readSnapshot(queryPool,'mandarina-arrayana','', '0'.repeat(64));
+ const fallback=fallbackResult.options;
  assert(captured.includes(currentSQL),'different view fingerprint falls back to the view-backed AI query');
  assert.deepStrictEqual(fallback,optimized,'fallback keeps option rows unchanged');
  captured.length=0;
- const fixtureOptimized=(await readSnapshot(queryPool,'mandarina-arrayana','',actualViewHash));
+ const fixtureOptimized=(await readSnapshot(queryPool,'mandarina-arrayana','',actualViewHash)).options;
  assert(captured.includes(optimizedSQL),'fixture fingerprint selects optimized SQL through the test seam only');
  assert(captured.indexOf('LOCK TABLE public.published_regional_price IN ACCESS SHARE MODE')>0 &&
   captured.indexOf('LOCK TABLE public.published_regional_price IN ACCESS SHARE MODE')<captured.indexOf(optimizedSQL),
@@ -156,12 +177,12 @@ test('source-wide publication gate and corrected city option keys match immutabl
  await ddlClient.connect();
  try{
   await ddlClient.query("SET lock_timeout='500ms'");
-  await assert.rejects(ddlClient.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualView.definition}`),
+  await assert.rejects(ddlClient.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualViewSql}`),
    error=>error.code==='55P03','compatible view replacement waits while helper holds ACCESS SHARE');
   continueCandidate();
   await heldRead;
   await ddlClient.query("SET lock_timeout='2s'");
-  await ddlClient.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualView.definition}`);
+  await ddlClient.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualViewSql}`);
  }finally{
   continueCandidate();
   await ddlClient.end();
@@ -175,7 +196,7 @@ test('source-wide publication gate and corrected city option keys match immutabl
  })};
  await assert.rejects(readSnapshot(failingPool,'mandarina-arrayana','',actualViewHash),/fixture query failure/);
  assert.equal(releases,1,'failed query releases its connection and is not converted into an empty result');
- assert.deepStrictEqual(await readSnapshot(queryPool,'mandarina-arrayana','',actualViewHash),optimized,
+ assert.deepStrictEqual((await readSnapshot(queryPool,'mandarina-arrayana','',actualViewHash)).options,optimized,
   'a later request can retry after the failed query');
  async function queryCandidate(args){
   const baseline=await db.query(currentSQL,args);
@@ -320,18 +341,23 @@ test('source-wide publication gate and corrected city option keys match immutabl
  await quote({doc:'d11',day:'2025-04-01',product:'held-only',market:'Cali, Santa Elena',price:999});
  await db.query("INSERT INTO city_pdf_publication_conflict(id,document_id) VALUES ('conflict-held','d11')");
  await quote({doc:'d12',day:'2030-04-01',product:'future-only',market:'Cali, Santa Elena',price:100});
- await db.query("INSERT INTO price_observation VALUES('future-only','cali','monthly','kg','2030-04-01')");
+ await db.query("INSERT INTO price_observation(product_id,market_id,source_id,unit,observed_on,price,min_price,max_price,source_url,period) VALUES('future-only','cali','monthly','kg','2030-04-01',100,90,110,'https://example.test/future','monthly')");
  for (const product of ['held-only','future-only']) { const oldRows=(await db.query(old,[product,''])).rows;const newRows=(await queryCandidate([product,''])).rows;assert.deepStrictEqual(newRows,oldRows,'Held/future parity '+product);assert.equal(newRows.length,0);cases.push({product,region:'',rows:0}); }
  // Actual SQL059-style resolution lifts only the exact conflicting document.
- await db.query("INSERT INTO source_document VALUES ('d13','2025-01-13','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/resolved.pdf'),('d14','2025-01-14','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/blocked.pdf'),('d15','2025-01-15','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/rice.pdf'),('d16','2025-01-16','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/away.pdf')");
+ await db.query("INSERT INTO source_document VALUES ('d13','2025-01-13','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/resolved.pdf'),('d14','2025-01-14','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/blocked.pdf'),('d15','2025-01-15','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/rice.pdf'),('d16','2025-01-16','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/away.pdf'),('d23','2025-01-23','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/rice-literal.pdf'),('d24','2025-01-24','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/rice-bog-a.pdf'),('d25','2025-01-25','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/rice-bog-b.pdf'),('d26','2025-01-26','original','application/pdf','https://www.dane.gov.co/files/operaciones/SIPSA/unrelated-decoy.pdf')");
  await quote({doc:'d13',day:'2025-05-01',product:'resolved-only',market:'Cali, Santa Elena',price:123});
  await db.query("INSERT INTO city_pdf_publication_conflict(id,document_id) VALUES ('conflict-resolved','d13')");
  await db.query("INSERT INTO city_pdf_category_resolution VALUES ('conflict-resolved','d13','archive13','member13')");
  await db.query("INSERT INTO ingestion_checkpoint VALUES ('archive13','city-v8','member13',198)");
  await quote({doc:'d14',day:'2025-05-02',product:'sourcewide-held',market:'Cali, Santa Elena',price:456});
  await quote({doc:'d14',day:'2025-05-02',product:'unrelated-source',market:'Cali, Santa Elena',price:789});
+ await quote({doc:'d14',day:'2025-05-02',product:'arroz-de-primera',market:'Cali, Santa Elena',presentation:'Bolsa',quantity:25,sourceUnit:'Unidad 500 GR',unit:'Unidad 500 GR',price:41000,path:['Granos']});
  await db.query("INSERT INTO city_pdf_publication_conflict(id,document_id) VALUES ('conflict-unrelated','d14')");
  await quote({doc:'d15',day:'2025-05-03',product:'old-rice',correction:'arroz-de-primera',market:'Cali, Santa Elena',presentation:'Bolsa',quantity:25,sourceUnit:'Unidad 500 GR',unit:'Unidad 500 GR',price:43210,path:['Granos']});
+ await quote({doc:'d23',day:'2025-05-05',product:'arroz-de-primera',market:'Cali, Santa Elena',presentation:'Bolsa',quantity:25,sourceUnit:'Unidades 500 GR',unit:'Unidades 500 GR',price:43800,path:['Granos']});
+ await quote({doc:'d26',day:'2025-05-08',product:'unrelated-decoy',market:'Cali, Santa Elena',presentation:'Bolsa',quantity:25,sourceUnit:'Unidad 500 GR',unit:'Unidad 500 GR',price:90000,path:['Otros']});
+ await quote({doc:'d24',day:'2025-05-06',product:'arroz-de-primera',market:'Bogotá, Corabastos',presentation:'Bolsa',quantity:25,sourceUnit:'Unidad 500 GR',unit:'Unidad 500 GR',price:43800,path:['Granos']});
+ await quote({doc:'d25',day:'2025-05-07',product:'arroz-de-primera',market:'Bogotá, Corabastos',presentation:'Bolsa',quantity:25,sourceUnit:'Unidades 500 GR',unit:'Unidades 500 GR',price:43900,path:['Granos']});
  await quote({doc:'d16',day:'2025-05-04',product:'arroz-de-primera',correction:'elsewhere',market:'Cali, Santa Elena',presentation:'Bolsa',quantity:25,sourceUnit:'Unidad 500 GR',unit:'Unidad 500 GR',price:98765,path:['Granos']});
  for (const [product,count] of [['resolved-only',1],['sourcewide-held',0],['unrelated-source',0],['old-rice',0]]) {
    const a=(await db.query(old,[product,''])).rows,b=(await queryCandidate([product,''])).rows;
@@ -342,6 +368,178 @@ test('source-wide publication gate and corrected city option keys match immutabl
  assert.deepStrictEqual(riceNew,riceOld,'Corrected compact rice and corrected-away parity');
  assert(riceNew.some(r=>r.units==='25 × 500 g'),'Effective corrected product ID preserves compact-unit guard');
  cases.push({product:'arroz-de-primera',region:'Valle del Cauca',rows:riceNew.length,corrected_compact_units:true});
+
+ // The ambiguity fallback is product/region scoped in both source arms and
+ // runs inside the same 078-guarded repeatable-read snapshot as the option gate.
+ captured.length=0;
+ for(const region of ['', 'Valle del Cauca']){
+  const scoped=(await readSnapshot(queryPool,'arroz-de-primera',region,actualViewHash));
+  const legacy=(await db.query(oldAmbiguousFallbackSQL,['arroz-de-primera',region])).rows;
+  assert.equal(scoped.ambiguousPackages,true,'rice literal package spellings exercise the ambiguous path '+region);
+  assert.deepStrictEqual(scoped.options,legacy,'Ambiguous fallback full ordered option parity '+region);
+  if(region===''){
+   assert.equal(captured[0],'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+   assert.equal(captured[1],'LOCK TABLE public.published_regional_price IN ACCESS SHARE MODE');
+   assert.match(captured[2],/pg_get_viewdef/,'view hash is checked in the transaction');
+   assert.equal(captured[3],optimizedSQL);
+   assert.equal(captured[4],ambiguousQuotesSQL);
+   assert.equal(captured[5],'COMMIT','ambiguity query commits after same-snapshot fallback');
+  }
+ }
+ const outsideRegion=await readSnapshot(queryPool,'arroz-de-primera','bogotá d.c.',actualViewHash);
+ assert.equal(outsideRegion.ambiguousPackages,false,'no Bogotá package rows trigger an irrelevant ambiguity fallback');
+ assert.deepStrictEqual(outsideRegion.options,
+  (await db.query(optimizedSQL,['arroz-de-primera','bogotá d.c.'])).rows,
+  'nonmatching region remains on the guarded options query');
+ const scopedUnknownView=await readSnapshot(queryPool,'arroz-de-primera','Valle del Cauca','0'.repeat(64));
+ assert.equal(scopedUnknownView.ambiguousPackages,true);
+ assert(captured.includes(currentSQL),'unknown view hash retains the safe view-backed options query');
+ assert.deepStrictEqual(scopedUnknownView.options,
+  (await db.query(oldAmbiguousFallbackSQL,['arroz-de-primera','Valle del Cauca'])).rows,
+  'unknown published-view definitions retain the old view-backed eligibility and result semantics');
+ assert.notEqual(actualViewHash,candidate.PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256,
+  'the private migration fixture has its own fingerprint and is not presented as production 078');
+ // The source fixture is the repository migration-generated view, while the
+ // production fast-path hash is separately hard-pinned above. Inject this
+ // fixture's fingerprint only into the in-memory test module to exercise the
+ // recognized-view branch against its independently populated publication data.
+ candidate.PRODUCT_FILTER_OPTIONS_078_VIEW_SHA256=actualViewHash;
+
+ // Exercise the same guarded 078 gate on selected ordinary city quotes, not
+ // just filter options. This cohort covers corrected IDs, current and stale
+ // enrolled revisions, legacy/shared children, direct assets and held sources.
+ await db.query("INSERT INTO product VALUES('effective-078-product','Effective 078 Product','Grains'),('partition-ordinary','Partitioned ordinary product','Grains')");
+ await db.query(`INSERT INTO source_document VALUES
+  ('d27','2025-06-07','original','application/pdf','https://www.dane.gov.co/operaciones/ordinary-27.pdf'),
+  ('d28','2025-06-08','original','application/pdf','https://www.dane.gov.co/operaciones/ordinary-28.pdf'),
+  ('d29','2025-06-09','original','application/pdf','https://www.dane.gov.co/operaciones/ordinary-29.pdf'),
+  ('d30','2025-06-10','original','application/pdf','https://www.dane.gov.co/operaciones/ordinary-30.pdf'),
+  ('d31','2025-06-11','original','application/pdf','https://www.dane.gov.co/operaciones/ordinary-31.pdf')`);
+ for(const [doc,market,day] of [
+  ['d27','Ordinary Market A','2025-06-07'],['d28','Ordinary Market B','2025-06-08'],
+  ['d29','Ordinary Market C','2025-06-09'],['d30','Ordinary Market D','2025-06-10'],['d31','Ordinary Market E','2025-06-11'],
+ ]) await db.query('INSERT INTO market VALUES($1,$2,$3,$4,$5)',[
+  market.toLowerCase().replaceAll(' ','-'),market,market.replace('Market','Town'),'Valle del Cauca','76001']);
+ await quote({doc:'d17',day:'2026-09-01',product:'effective-078-product',market:'Cali, Santa Elena',price:120});
+ await quote({doc:'d13',day:'2025-05-09',product:'effective-078-product',market:'Cali, Santa Elena',price:110});
+ await quote({doc:'d18',day:'2025-05-10',product:'effective-078-product',market:'Cali, Santa Elena',price:100});
+ await quote({doc:'d19',day:'2025-05-11',product:'effective-078-product',market:'Cali, Santa Elena',price:130});
+ await quote({doc:'d20',day:'2025-05-12',product:'effective-078-product',market:'Cali, Santa Elena',price:140});
+ await quote({doc:'d21',day:'2025-05-13',product:'effective-078-product',market:'Cali, Santa Elena',price:150});
+ await quote({doc:'d22',day:'2025-05-14',product:'effective-078-product',market:'Cali, Santa Elena',price:160});
+ for(const [doc,market,day] of [
+  ['d27','Ordinary Market A','2025-06-07'],['d28','Ordinary Market B','2025-06-08'],
+  ['d29','Ordinary Market C','2025-06-09'],['d30','Ordinary Market D','2025-06-10'],['d31','Ordinary Market E','2025-06-11'],
+ ]) await quote({doc,day,product:'partition-ordinary',market,presentation:'Bulto',quantity:1,sourceUnit:'Kilogramo',unit:'Kilogramo',price:100});
+
+ const productArgs=['effective-078-product','Valle del Cauca',{
+  series:'city',market:'cali',presentation:'Canastilla',units:'25 Kilogramo',history:'all',
+ }];
+ captured.length=0;
+ const selectedKnown=await candidate.filteredProduct(...productArgs);
+ const selectedKnownSql=captured.find(sql=>sql.includes('ordinary_eligible_docs'));
+ assert(selectedKnownSql,'known 078 selected quote query is captured');
+ assert.match(selectedKnownSql,/AND \(\s*NOT EXISTS \(\s*SELECT 1 FROM source_archive_member enrolled_member/s,
+  'known 078 selected query substitutes document-wide eligibility before selected rows');
+ assert(!selectedKnownSql.includes('accepted.document_id=k.document_id OFFSET 0'),
+  'known selected-query gate no longer performs a published-view EXISTS for every quote');
+ assert.deepStrictEqual(selectedKnown.history.map(point=>point.date),
+  ['2024-02-01','2025-05-09','2025-05-11','2025-05-12','2025-05-13','2026-09-01'],
+  'selected history preserves resolved, legacy, direct, shared and current-head documents while excluding stale and held sources');
+
+ const selectedFailureCalls=[];let selectedFailureReleases=0;
+ const selectedFailurePool=queryPool;
+ queryPool={query:(...args)=>db.query(...args),connect:async()=>({
+  query:async(sql,args)=>{
+   selectedFailureCalls.push(sql);
+   if(typeof sql==='string' && sql.includes('ordinary_eligible_docs'))throw new Error('selected fixture failure');
+   return db.query(sql,args);
+  },release:()=>{selectedFailureReleases++;},
+ })};
+ try{
+  await assert.rejects(candidate.filteredProduct(...productArgs),error=>
+   error.stage==='selected_quotes' && error.message==='PRODUCT_DETAIL_STAGE_FAILED');
+  assert.equal(selectedFailureCalls[0],'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
+  assert(selectedFailureCalls[1].startsWith('LOCK TABLE public.published_regional_price IN ACCESS SHARE MODE'));
+  const failedSelectedIndex=selectedFailureCalls.findIndex(sql=>typeof sql==='string' && sql.includes('ordinary_eligible_docs'));
+  assert(failedSelectedIndex>0,'failure is raised by the selected history query after the options read');
+  assert(selectedFailureCalls.slice(failedSelectedIndex+1).includes('ROLLBACK'),
+   'selected-query failure rolls its guarded snapshot back');
+  assert.equal(selectedFailureCalls.slice(failedSelectedIndex+1).includes('COMMIT'),false,
+   'the failed selected snapshot never commits, while the preceding options snapshot may');
+  assert.equal(selectedFailureReleases,2,'options and failed selected snapshots each release their checked-out client');
+ }finally{queryPool=selectedFailurePool;}
+
+ // Unknown view definitions retain the exact legacy selected-query predicate.
+ await db.query(`CREATE OR REPLACE VIEW public.published_regional_price AS
+  SELECT * FROM (${actualViewSql}) original_view WHERE TRUE`);
+ try{
+  captured.length=0;
+  const selectedUnknown=await candidate.filteredProduct(...productArgs);
+  assert.deepStrictEqual(selectedUnknown,selectedKnown,'unknown-view selected history preserves every ordered result/provenance field');
+  const unknownSelectedSql=captured.find(sql=>sql.includes('ordinary_eligible_docs'));
+  assert(unknownSelectedSql?.includes('accepted.document_id=k.document_id OFFSET 0'),
+   'unknown view definition keeps the original published-view selected-query gate');
+ }finally{
+  await db.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualViewSql}`);
+ }
+
+ // The partitioned reader also pins the view and holds its lock until the
+ // final chunk/merge has committed; the unknown-hash baseline remains equal.
+ const partitionArgs=['partition-ordinary','Valle del Cauca',{
+  series:'city',market:'',presentation:'Bulto',units:'1 Kilogramo',history:'all',
+ }];
+ captured.length=0;
+ const partitionKnown=await candidate.filteredProduct(...partitionArgs);
+ assert.equal(partitionKnown.markets.length,5);
+ assert.equal(partitionKnown.history.length,5);
+ const partitionSelectedSql=captured.find(sql=>sql.includes('ordinary_eligible_docs'));
+ assert.match(partitionSelectedSql,/source_archive_member enrolled_member/,
+  'partition chunks use the 078 direct eligibility only under the guarded view hash');
+ await db.query(`CREATE OR REPLACE VIEW public.published_regional_price AS
+  SELECT * FROM (${actualViewSql}) original_view WHERE TRUE`);
+ try{
+  const partitionUnknown=await candidate.filteredProduct(...partitionArgs);
+  assert.deepStrictEqual(partitionUnknown,partitionKnown,'partitioned output is full-row equal under unknown-view fallback');
+ }finally{
+  await db.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualViewSql}`);
+ }
+
+ // DDL cannot replace the recognized view between its hash read and the
+ // selected query; the ACCESS SHARE lock spans selected SQL and commit.
+ let unblockSelected;let selectedEntered;
+ const selectedCanContinue=new Promise(resolve=>{unblockSelected=resolve;});
+ const selectedIsEntered=new Promise(resolve=>{selectedEntered=resolve;});
+ const baseConnect=queryPool.connect;
+ queryPool.connect=async()=>({
+  query:async(sql,args)=>{
+   if(sql.includes('ordinary_eligible_docs')){selectedEntered();await selectedCanContinue;}
+   return db.query(sql,args);
+  },release:()=>{},
+ });
+ const selectedHeld=candidate.filteredProduct(...productArgs);
+ await selectedIsEntered;
+ const selectedDdlClient=new Client({host:socket,port:65443,database:'postgres'});
+ await selectedDdlClient.connect();
+ try{
+  await selectedDdlClient.query("SET lock_timeout='500ms'");
+  await assert.rejects(selectedDdlClient.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualViewSql}`),
+   error=>error.code==='55P03','selected-query view replacement waits while the snapshot holds ACCESS SHARE');
+  unblockSelected();
+  await selectedHeld;
+  await selectedDdlClient.query("SET lock_timeout='2s'");
+  await selectedDdlClient.query(`CREATE OR REPLACE VIEW public.published_regional_price AS ${actualViewSql}`);
+ }finally{
+  unblockSelected();queryPool.connect=baseConnect;await selectedDdlClient.end();
+ }
+
+ const monthlyArm=ambiguousQuotesSQL.slice(0,ambiguousQuotesSQL.indexOf('UNION ALL'));
+ const cityArm=ambiguousQuotesSQL.slice(ambiguousQuotesSQL.indexOf('UNION ALL'));
+ assert.match(monthlyArm,/WHERE o\.product_id=\$1 AND/,'monthly branch is constrained before the union');
+ assert.match(cityArm,/WHERE r\.product_id=\$1 AND/,'city branch is constrained before its DISTINCT ON winner selection');
+ assert.match(cityArm,/regional_price_product_correction/,'corrected IDs remain in the city source branch');
+ assert.match(ambiguousQuotesSQL,/WHERE product_id=\$1 AND .*observed_on<=/s,
+  'outer dated option projection and exact region filtering remain intact');
  // Production-shaped volume locally only; compare complete ordered options.
  await db.query(`INSERT INTO regional_price(document_id,source_locator,observed_on,product_id,product_name,market_name,category,presentation,quantity,source_unit,round,round_label,min_price,max_price,unit,source_page)
  SELECT 'd10','volume-'||g::text,date '2025-05-01'+(g%1000),'mandarina-arrayana','Mandarina arrayana',
@@ -358,10 +556,11 @@ test('source-wide publication gate and corrected city option keys match immutabl
   ('mill-meta','GRANADA · molinos','Granada','Meta','50313'),
   ('mill-antioquia','GRANADA · molinos','Granada','Antioquia','05313'),
   ('farm-meta','GRANADA · leche en finca','Granada','Meta','50313')`);
- await db.query(`INSERT INTO price_observation VALUES
-  ('rice-display','mill-meta','dane-rice-mill','kg','2025-05-01'),
-  ('rice-display','mill-antioquia','dane-rice-mill','kg','2025-05-01'),
-  ('milk-display','farm-meta','dane-milk-farm','litre','2025-05-01')`);
+ await db.query(`INSERT INTO product VALUES('rice-display','Rice display','Grains'),('milk-display','Milk display','Dairy');
+  INSERT INTO price_observation(product_id,market_id,source_id,unit,observed_on,price,min_price,max_price,source_url,period) VALUES
+  ('rice-display','mill-meta','dane-rice-mill','kg','2025-05-01',100,90,110,'https://example.test/rice','monthly'),
+  ('rice-display','mill-antioquia','dane-rice-mill','kg','2025-05-01',100,90,110,'https://example.test/rice','monthly'),
+  ('milk-display','farm-meta','dane-milk-farm','litre','2025-05-01',100,90,110,'https://example.test/milk','monthly')`);
  for (const [product,expected] of [
   ['rice-display',[['mill-antioquia','GRANADA · molinos · Antioquia'],['mill-meta','GRANADA · molinos · Meta']]],
   ['milk-display',[['farm-meta','GRANADA · leche en finca · Meta']]],
